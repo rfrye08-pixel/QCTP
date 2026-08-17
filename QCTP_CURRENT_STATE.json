@@ -1,34 +1,40 @@
 {
   "schema": "qctp-current-state-v1",
   "project": "QCTP",
-  "updated_at": "2026-08-17T18:10:00-05:00",
-  "current_release_candidate": "1.1.3",
+  "updated_at": "2026-08-17T15:48:14-05:00",
+  "current_release_candidate": "1.1.4",
   "deployment": {
     "provider": "GitHub Pages",
     "url": "https://rfrye08-pixel.github.io/QCTP/",
-    "https": true
+    "https": true,
+    "latest_build_commit": "e201766a04d6f58b915eeba8ae928ef5568046bd",
+    "latest_build_status": "PASS"
   },
   "controlled_voice": {
     "name": "Chill Brian",
     "provider": "HeyGen neural speech",
     "status": "DEVICE_TEST_PASS",
-    "evidence": "User confirmed Test Chill Brian + tone passed on iPhone"
+    "evidence": [
+      "User confirmed Test Chill Brian + tone passed on iPhone",
+      "User confirmed normal 25-minute mode played correctly for approximately three minutes on iPhone"
+    ]
   },
   "verified": {
     "pages_build": "PASS",
     "neural_voice_preview": "PASS",
     "settings_test_button": "PASS",
+    "normal_mode_initial_device_playback": "PASS_APPROX_3_MINUTES",
     "day1_lesson_audio_generated": true,
     "day1_cue_audio_generated": true,
-    "exact_practice_timeline_seconds": 1500
+    "exact_practice_timeline_seconds": 1500,
+    "accelerated_mode_rev_1_1_3": "FAILED_SILENT",
+    "accelerated_mode_rev_1_1_4_fix": "DEPLOYED_NOT_REQUIRED_FOR_RELEASE_USE"
   },
   "open_holds": [
-    "Run the accelerated 90-second sequencer screen-up test on iPhone",
-    "Run the accelerated 90-second sequencer face-down test on iPhone",
-    "Confirm final display reaches COMPLETE 0:00",
-    "Confirm no Apple system voice appears anywhere in the active released flow",
-    "Confirm full lesson automatically transitions into practice"
+    "Confirm the first genuine full Day 1 session naturally reaches COMPLETE 0:00",
+    "Face-down or locked-screen continuity beyond the first approximately three minutes is not yet verified; use screen-up at low brightness for the first full session",
+    "Confirm the full neural lesson automatically transitions into the real practice during the first genuine Day 1 session"
   ],
-  "release_authority": "DEVICE_SEQUENCER_TEST_CANDIDATE",
-  "next_controlled_action": "Complete the 90-second screen-up and face-down device sequencer tests"
+  "release_authority": "LIMITED_DAY1_USE_SCREEN_UP",
+  "next_controlled_action": "Use normal mode for the genuine Day 1 lesson and practice; no separate diagnostic test is required"
 }
