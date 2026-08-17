@@ -1,46 +1,34 @@
 {
   "schema": "qctp-current-state-v2",
   "project": "QCTP",
-  "updated_at": "2026-08-17T16:28:00-05:00",
+  "updated_at": "2026-08-17T17:10:00-05:00",
   "product_identity": {
     "name": "QCTP",
     "expanded_name": "Quantum Consciousness Training Platform",
     "foundation_program": "112-day Quantum Consciousness Training Program",
-    "scope_decision": "Meditation and timed audio remain core subsystems, but QCTP is controlled as a broader learning, practice, studio, experiment, codex, mirror, and integration platform."
+    "scope_decision": "Meditation and timed audio remain core subsystems, but QCTP is controlled as a broader learning, practice, studio, experiment, voice-capture, codex, mirror, and integration platform."
   },
   "authority_refs": {
     "product_architecture": "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
     "robert_edward_grant_track": "QCTP_ROBERT_EDWARD_GRANT_INTEGRATION_REV0_2026-08-17.md",
+    "voice_capture_spec": "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
+    "codex_implementation_handoff": "QCTP_CODEX_REV2_IMPLEMENTATION_HANDOFF_REV0_2026-08-17.md",
     "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV2.json"
   },
   "active_macro_deliverable": "QCTP-PLATFORM-REV2",
   "implementation": {
     "released_branch": "main",
-    "isolated_rev2_branch": "qctp-platform-rev2",
-    "branch_status": "ALPHA_IMPLEMENTED_NOT_RUNTIME_VERIFIED",
-    "branch_version": "2.0.0-alpha.1",
-    "branch_head_after_implementation": "0c55155856708a7affb679ee7abab783c89ac103",
-    "branch_state_ref": "QCTP_REV2_BRANCH_STATE.json",
+    "prototype_rev2_branch": "qctp-platform-rev2",
+    "prototype_status": "ALPHA_REFERENCE_NOT_RUNTIME_VERIFIED",
+    "prototype_version": "2.0.0-alpha.1",
+    "production_implementation_agent": "Codex",
+    "codex_work_branch": "qctp-platform-rev2-codex",
+    "codex_branch_base_commit": "e94c035606006ed3d41769ea00a30d0c00754c8f",
+    "codex_branch_status": "EXECUTION_READY",
+    "codex_handoff_id": "QCTP-CODEX-REV2-HANDOFF-REV0",
     "branch_release_authority": "ZERO_RELEASE",
-    "implemented_surfaces": [
-      "Paths",
-      "Studio",
-      "Lab shell",
-      "Codex MVP",
-      "Mirror / Insights scaffold"
-    ],
-    "implemented_grant_mvp": [
-      "Twelve-module source-track map",
-      "REG-01-A Learn to See session",
-      "geometry reference",
-      "step checklist",
-      "raw-versus-interpretation records",
-      "auto-dictation timer",
-      "photo capture/compression",
-      "precept integration",
-      "Codex entry creation"
-    ],
-    "next_work_package": "Create a non-production preview deployment for qctp-platform-rev2 and run the Rev2 acceptance suite."
+    "implementation_decision": "Use Codex for the production Rev2 refactor, backend, voice capture, migrations, automated tests, and preview PR. ChatGPT retains product architecture, curriculum, source integration, configuration authority, acceptance criteria, and independent review.",
+    "next_work_package": "Execute QCTP-CODEX-REV2-HANDOFF-REV0 on qctp-platform-rev2-codex."
   },
   "current_release_candidate": "1.1.4",
   "deployment": {
@@ -72,6 +60,20 @@
     "accelerated_mode_rev_1_1_3": "FAILED_SILENT",
     "accelerated_mode_rev_1_1_4_fix": "DEPLOYED_NOT_REQUIRED_FOR_RELEASE_USE"
   },
+  "voice_capture_requirement": {
+    "status": "CONTROLLED_SPEC_COMPLETE_IMPLEMENTATION_OPEN",
+    "global_quick_capture": true,
+    "field_dictation": true,
+    "auto_dictation_recording": true,
+    "raw_audio_preserved": true,
+    "verbatim_transcript_preserved": true,
+    "clean_note_separate": true,
+    "local_first_binary_store": "IndexedDB or equivalent",
+    "secure_backend_required": true,
+    "client_api_keys_prohibited": true,
+    "preferred_mvp_transcription": "gpt-4o-mini-transcribe",
+    "optional_high_accuracy_transcription": "gpt-4o-transcribe"
+  },
   "rev2_scope": {
     "foundation_path_preserved": true,
     "source_tracks": [
@@ -89,6 +91,7 @@
       "Practice",
       "Studio",
       "Lab",
+      "Voice Capture",
       "Mirror",
       "Codex",
       "Integrate",
@@ -110,12 +113,15 @@
     "Confirm the first genuine full Day 1 session naturally reaches COMPLETE 0:00",
     "Face-down or locked-screen continuity beyond the first approximately three minutes is not yet verified; use screen-up at low brightness for the first full Foundation session",
     "Confirm the full neural lesson automatically transitions into the real practice during the first genuine Day 1 session",
-    "Create an isolated preview route for Rev2 without changing the main Pages release",
-    "Run browser runtime, local-data migration, REG-01 persistence, photo, timer, completion, Codex, JSON round-trip, Day 1 regression, and iPhone navigation tests"
+    "Codex must implement and test the production Rev2 architecture on qctp-platform-rev2-codex",
+    "Voice capture requires a secure backend and authenticated preview before production use",
+    "Run migration, IndexedDB audio persistence, offline queue, transcription, REG-01, Codex, Mirror, export/import, Day 1 regression, PWA, and iPhone navigation tests",
+    "No Rev2 branch may merge or deploy over main without explicit release authority"
   ],
   "release_authority": {
     "foundation_rev_1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
-    "platform_rev2": "ZERO_RELEASE"
+    "platform_rev2": "ZERO_RELEASE",
+    "voice_capture": "ZERO_RELEASE"
   },
-  "next_controlled_action": "Create a non-production preview deployment for qctp-platform-rev2 and run the Rev2 acceptance suite."
+  "next_controlled_action": "Execute QCTP-CODEX-REV2-HANDOFF-REV0 on branch qctp-platform-rev2-codex."
 }
