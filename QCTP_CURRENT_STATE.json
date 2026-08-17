@@ -1,7 +1,26 @@
 {
-  "schema": "qctp-current-state-v1",
+  "schema": "qctp-current-state-v2",
   "project": "QCTP",
-  "updated_at": "2026-08-17T15:48:14-05:00",
+  "updated_at": "2026-08-17T16:12:00-05:00",
+  "product_identity": {
+    "name": "QCTP",
+    "expanded_name": "Quantum Consciousness Training Platform",
+    "foundation_program": "112-day Quantum Consciousness Training Program",
+    "scope_decision": "Meditation and timed audio remain core subsystems, but QCTP is now controlled as a broader learning, practice, studio, experiment, codex, mirror, and integration platform."
+  },
+  "authority_refs": {
+    "product_architecture": "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+    "robert_edward_grant_track": "QCTP_ROBERT_EDWARD_GRANT_INTEGRATION_REV0_2026-08-17.md",
+    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV2.json"
+  },
+  "active_macro_deliverable": "QCTP-PLATFORM-REV2",
+  "implementation": {
+    "released_branch": "main",
+    "isolated_rev2_branch": "qctp-platform-rev2",
+    "branch_status": "CREATED",
+    "branch_release_authority": "ZERO_RELEASE",
+    "next_work_package": "Implement the non-destructive Rev2 mobile shell plus REG-01-A data model on qctp-platform-rev2."
+  },
   "current_release_candidate": "1.1.4",
   "deployment": {
     "provider": "GitHub Pages",
@@ -19,7 +38,7 @@
       "User confirmed normal 25-minute mode played correctly for approximately three minutes on iPhone"
     ]
   },
-  "verified": {
+  "foundation_runtime_verified": {
     "pages_build": "PASS",
     "neural_voice_preview": "PASS",
     "settings_test_button": "PASS",
@@ -30,11 +49,49 @@
     "accelerated_mode_rev_1_1_3": "FAILED_SILENT",
     "accelerated_mode_rev_1_1_4_fix": "DEPLOYED_NOT_REQUIRED_FOR_RELEASE_USE"
   },
+  "rev2_scope": {
+    "foundation_path_preserved": true,
+    "source_tracks": [
+      "Theresa Bullard",
+      "Joe Dispenza",
+      "HeartMath",
+      "Lynne McTaggart",
+      "Monroe Institute / William Buhlman",
+      "Controlled Remote Viewing",
+      "Psionics practitioner methods",
+      "Robert Edward Grant"
+    ],
+    "platform_pillars": [
+      "Learn",
+      "Practice",
+      "Studio",
+      "Lab",
+      "Mirror",
+      "Codex",
+      "Integrate",
+      "Insights"
+    ],
+    "robert_edward_grant_capabilities": [
+      "Philosophical and meditative geometry",
+      "Quadrivium learning",
+      "Number and constant exploration",
+      "Harmonic and sonic geometry",
+      "Mirror-consciousness and shadow work",
+      "Auto-dictation",
+      "24 Precepts daily integration",
+      "Synchronicity and pattern mapping",
+      "AI mirror product primitive"
+    ]
+  },
   "open_holds": [
     "Confirm the first genuine full Day 1 session naturally reaches COMPLETE 0:00",
     "Face-down or locked-screen continuity beyond the first approximately three minutes is not yet verified; use screen-up at low brightness for the first full session",
-    "Confirm the full neural lesson automatically transitions into the real practice during the first genuine Day 1 session"
+    "Confirm the full neural lesson automatically transitions into the real practice during the first genuine Day 1 session",
+    "Rev2 runtime must remain isolated until Day 1 regression, local-data migration, navigation, export/import, and new-entity persistence pass"
   ],
-  "release_authority": "LIMITED_DAY1_USE_SCREEN_UP",
-  "next_controlled_action": "Use normal mode for the genuine Day 1 lesson and practice; no separate diagnostic test is required"
+  "release_authority": {
+    "foundation_rev_1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
+    "platform_rev2": "ZERO_RELEASE"
+  },
+  "next_controlled_action": "Implement the non-destructive Rev2 mobile shell plus REG-01-A data model on qctp-platform-rev2."
 }
