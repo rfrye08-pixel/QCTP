@@ -3,6 +3,7 @@
   "manifest_id": "QCTP-PLATFORM-REV2",
   "title": "Quantum Consciousness Training Platform Rev2",
   "created_at": "2026-08-17T16:12:00-05:00",
+  "updated_at": "2026-08-17T16:12:00-05:00",
   "status": "ACTIVE",
   "north_star": "A mobile-first consciousness-development platform that unifies learning, guided practice, hands-on creation, personal experiments, longitudinal records, AI reflection, and daily integration.",
   "controlled_baseline": {
@@ -27,11 +28,13 @@
     {
       "id": "QCTP-R2-D03",
       "name": "Isolated Rev2 implementation branch",
-      "status": "OPEN",
-      "acceptance": [
-        "Branch starts from the current released main baseline",
-        "No automatic deployment over the released Pages app",
-        "Rev1.1.4 remains recoverable"
+      "status": "CLOSED",
+      "branch": "qctp-platform-rev2",
+      "base_commit": "12fc93ec9740b230642df6441af02eb5b34ea0f4",
+      "verification": [
+        "Branch was created from the current main baseline after the Rev2 authority files were committed",
+        "GitHub Pages remains sourced from main",
+        "Rev1.1.4 remains recoverable on main"
       ]
     },
     {
@@ -135,6 +138,6 @@
     }
   ],
   "release_authority": "ZERO_RELEASE_FOR_REV2_RUNTIME",
-  "current_macro_delta": "Product architecture and Robert Edward Grant source-track baseline are controlled. Runtime implementation has not begun.",
-  "next_controlled_action": "Create the isolated qctp-platform-rev2 branch and implement the non-destructive Rev2 mobile shell plus REG-01-A data model."
+  "current_macro_delta": "Product architecture, Robert Edward Grant source-track baseline, and isolated implementation branch are controlled. Three of twelve Rev2 deliverables are closed.",
+  "next_controlled_action": "Implement the non-destructive Rev2 mobile shell plus REG-01-A data model on qctp-platform-rev2."
 }
