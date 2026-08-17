@@ -1,0 +1,34 @@
+{
+  "schema": "qctp-current-state-v1",
+  "project": "QCTP",
+  "updated_at": "2026-08-17T18:10:00-05:00",
+  "current_release_candidate": "1.1.3",
+  "deployment": {
+    "provider": "GitHub Pages",
+    "url": "https://rfrye08-pixel.github.io/QCTP/",
+    "https": true
+  },
+  "controlled_voice": {
+    "name": "Chill Brian",
+    "provider": "HeyGen neural speech",
+    "status": "DEVICE_TEST_PASS",
+    "evidence": "User confirmed Test Chill Brian + tone passed on iPhone"
+  },
+  "verified": {
+    "pages_build": "PASS",
+    "neural_voice_preview": "PASS",
+    "settings_test_button": "PASS",
+    "day1_lesson_audio_generated": true,
+    "day1_cue_audio_generated": true,
+    "exact_practice_timeline_seconds": 1500
+  },
+  "open_holds": [
+    "Run the accelerated 90-second sequencer screen-up test on iPhone",
+    "Run the accelerated 90-second sequencer face-down test on iPhone",
+    "Confirm final display reaches COMPLETE 0:00",
+    "Confirm no Apple system voice appears anywhere in the active released flow",
+    "Confirm full lesson automatically transitions into practice"
+  ],
+  "release_authority": "DEVICE_SEQUENCER_TEST_CANDIDATE",
+  "next_controlled_action": "Complete the 90-second screen-up and face-down device sequencer tests"
+}
