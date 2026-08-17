@@ -1,5 +1,5 @@
-const CACHE = 'qctp-shell-v5';
-const SHELL = ['./', './index.html', './styles.css?v=1.1.2', './app.js?v=1.1.2', './hotfix-1.1.1.js?v=1.1.2', './hotfix-1.1.2.js?v=1.1.2', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const CACHE = 'qctp-shell-v6';
+const SHELL = ['./', './index.html', './styles.css?v=1.1.3', './app.js?v=1.1.3', './hotfix-1.1.1.js?v=1.1.3', './hotfix-1.1.2.js?v=1.1.3', './neural-audio-day1.js?v=1.1.3', './hotfix-1.1.3.js?v=1.1.3', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
