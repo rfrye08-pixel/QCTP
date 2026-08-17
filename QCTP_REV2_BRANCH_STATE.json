@@ -1,0 +1,58 @@
+{
+  "schema": "qctp-rev2-branch-state-v1",
+  "branch": "qctp-platform-rev2",
+  "updated_at": "2026-08-17T16:28:00-05:00",
+  "version": "2.0.0-alpha.1",
+  "base_runtime": "1.1.4",
+  "release_authority": "ZERO_RELEASE",
+  "implemented": {
+    "platform_navigation": ["Today", "Paths", "Practice", "Studio", "More"],
+    "additional_surfaces": ["Lab", "Codex", "Mirror / Insights"],
+    "path_engine": {
+      "foundation_preserved": true,
+      "grant_modules": 12,
+      "completion_based": true
+    },
+    "reg01_a": {
+      "title": "Learn to See",
+      "status": "IMPLEMENTED",
+      "duration_minutes": 35,
+      "features": [
+        "inline geometry reference",
+        "nine-phase checklist",
+        "raw observation field",
+        "separate interpretation field",
+        "five-minute auto-dictation timer",
+        "local photo compression and storage",
+        "daily precept integration",
+        "completion gate",
+        "Codex record creation"
+      ]
+    },
+    "mirror_journal": {
+      "status": "IMPLEMENTED_SCAFFOLD",
+      "raw_and_interpretation_separated": true,
+      "codex_linkage": true
+    },
+    "lab": "ARCHITECTURE_SHELL",
+    "codex": "LOCAL_RECORD_MVP"
+  },
+  "verification": {
+    "platform_rev2_js_syntax": "PASS_NODE_CHECK",
+    "branch_file_presence": "PASS",
+    "index_load_order": "PASS_STATIC_REVIEW",
+    "released_main_modified": false,
+    "browser_runtime": "NOT_YET_VERIFIED",
+    "iphone_portrait": "NOT_YET_VERIFIED",
+    "data_migration": "NOT_YET_VERIFIED",
+    "day1_regression": "NOT_YET_VERIFIED"
+  },
+  "holds": [
+    "Execute browser runtime validation against the isolated branch",
+    "Verify existing Rev1 local data remains intact",
+    "Verify Day 1 neural lesson and exact 25-minute practice remain unchanged",
+    "Verify REG-01 photo, timer, persistence, completion gate, Codex entry, and JSON export",
+    "Verify iPhone portrait navigation before any merge"
+  ],
+  "next_controlled_action": "Create a non-production preview deployment for qctp-platform-rev2 and run the Rev2 acceptance suite."
+}
