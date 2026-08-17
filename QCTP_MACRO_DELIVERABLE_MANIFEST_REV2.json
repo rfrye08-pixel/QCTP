@@ -3,9 +3,9 @@
   "manifest_id": "QCTP-PLATFORM-REV2",
   "title": "Quantum Consciousness Training Platform Rev2",
   "created_at": "2026-08-17T16:12:00-05:00",
-  "updated_at": "2026-08-17T16:28:00-05:00",
+  "updated_at": "2026-08-17T17:10:00-05:00",
   "status": "ACTIVE",
-  "north_star": "A mobile-first consciousness-development platform that unifies learning, guided practice, hands-on creation, personal experiments, longitudinal records, AI reflection, and daily integration.",
+  "north_star": "A mobile-first consciousness-development platform that unifies learning, guided practice, spoken and written capture, hands-on creation, personal experiments, longitudinal records, AI reflection, and daily integration.",
   "controlled_baseline": {
     "runtime_release": "1.1.4",
     "foundation_path_days": 112,
@@ -27,27 +27,19 @@
     },
     {
       "id": "QCTP-R2-D03",
-      "name": "Isolated Rev2 implementation branch",
+      "name": "Isolated Rev2 prototype branch",
       "status": "CLOSED",
       "branch": "qctp-platform-rev2",
-      "base_commit": "12fc93ec9740b230642df6441af02eb5b34ea0f4",
-      "verification": [
-        "Branch was created from the controlled main baseline",
-        "GitHub Pages remains sourced from main",
-        "Rev1.1.4 remains recoverable on main"
-      ]
+      "purpose": "Functional prototype and reference only",
+      "release_authority": "ZERO_RELEASE"
     },
     {
       "id": "QCTP-R2-D04",
       "name": "Platform information architecture and mobile shell",
       "status": "PARTIAL",
-      "branch_artifact": "platform-rev2.js",
-      "implemented": [
-        "Today, Paths, Practice, Studio, and More primary navigation",
-        "Lab, Codex, and Mirror / Insights secondary surfaces",
-        "Released-versus-reserved labels"
-      ],
+      "prototype_artifact": "platform-rev2.js on qctp-platform-rev2",
       "remaining": [
+        "Production refactor",
         "Browser runtime validation",
         "iPhone portrait validation"
       ]
@@ -56,33 +48,33 @@
       "id": "QCTP-R2-D05",
       "name": "Path engine",
       "status": "PARTIAL",
-      "implemented": [
+      "implemented_in_prototype": [
         "Foundation Path preserved as primary",
         "Twelve-module Robert Edward Grant source track",
         "Completion-based module state",
-        "Parallel secondary studio assignment on Today"
+        "Parallel secondary studio assignment"
       ],
       "remaining": [
-        "Generalize the path schema beyond Foundation and Grant",
-        "Validate import/export and progression migration"
+        "Typed generalized path schema",
+        "Migration and export/import tests",
+        "Production runtime verification"
       ]
     },
     {
       "id": "QCTP-R2-D06",
       "name": "Robert Edward Grant MVP",
       "status": "PARTIAL",
-      "implemented": [
-        "REG-01-A fully authored",
-        "Geometry reference and nine-phase checklist",
+      "implemented_in_prototype": [
+        "REG-01-A authored",
+        "Geometry reference and checklist",
         "Raw observation and separate interpretation",
-        "Five-minute auto-dictation timer",
-        "Local photo compression/storage",
-        "Precept integration and completion gate",
-        "Codex entry creation"
+        "Auto-dictation timer",
+        "Photo capture/compression",
+        "Precept integration and Codex record"
       ],
       "remaining": [
-        "Runtime and persistence test",
-        "Photo quota/error test",
+        "Production implementation",
+        "Persistence and photo tests",
         "JSON round-trip test"
       ]
     },
@@ -90,13 +82,8 @@
       "id": "QCTP-R2-D07",
       "name": "Geometry Studio",
       "status": "PARTIAL",
-      "implemented": [
-        "Step-based REG-01 session player",
-        "Inline SVG reference construction",
-        "Photo input and local artifact record",
-        "Observation, interpretation, and integration fields"
-      ],
       "remaining": [
+        "Production REG-01 session engine",
         "Interactive compass/straightedge canvas",
         "Angle and ratio tools",
         "Versioned artifact history"
@@ -116,27 +103,16 @@
       "id": "QCTP-R2-D09",
       "name": "Codex and longitudinal data model",
       "status": "PARTIAL",
-      "implemented": [
-        "Local Rev2 Codex entries",
-        "Geometry and Mirror record types",
-        "Raw observation and interpretation kept distinct",
-        "Existing full-state JSON export automatically includes platform data"
-      ],
       "remaining": [
+        "Typed versioned schemas",
         "Search, tags, backlinks, attachments, and revisions",
-        "Import/export round-trip verification",
-        "Migration/version schema"
+        "Migration and full JSON round-trip verification"
       ]
     },
     {
       "id": "QCTP-R2-D10",
       "name": "Mirror and Insights engine",
       "status": "PARTIAL",
-      "implemented": [
-        "Structured Mirror Journal scaffold",
-        "Event, emotion, judgment, quality, reflection, alternative, and action fields",
-        "Mirror-to-Codex linkage"
-      ],
       "remaining": [
         "AI retrieval over user records",
         "Traceable pattern evidence",
@@ -148,8 +124,8 @@
       "id": "QCTP-R2-D11",
       "name": "Full experiment Lab",
       "status": "PARTIAL",
-      "existing_capability": "Structured OBE, remote-viewing, psionics, dream, and intuition logs exist; the Rev2 Lab shell routes to them.",
-      "acceptance": [
+      "existing_capability": "Structured OBE, remote-viewing, psionics, dream, and intuition logs exist.",
+      "remaining": [
         "Blind target generation and feedback",
         "Protocol lock before result",
         "Scoring and calibration",
@@ -167,9 +143,37 @@
         "PWA install and offline shell pass",
         "Release authority is explicit"
       ]
+    },
+    {
+      "id": "QCTP-R2-D13",
+      "name": "First-class voice capture and transcription",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
+      "acceptance": [
+        "Global Quick Capture and field dictation",
+        "Timed auto-dictation recording",
+        "Pause, resume, cancel, playback, re-record, and append",
+        "Raw audio stored outside localStorage",
+        "Offline queue and retry",
+        "Raw audio, verbatim transcript, corrected transcript, and clean note remain separate",
+        "Secure server-side transcription with no frontend secret",
+        "Complete deletion and export",
+        "iPhone device acceptance"
+      ],
+      "release_authority": "ZERO_RELEASE"
+    },
+    {
+      "id": "QCTP-R2-D14",
+      "name": "Codex production implementation branch and handoff",
+      "status": "CLOSED_EXECUTION_READY",
+      "branch": "qctp-platform-rev2-codex",
+      "base_commit": "e94c035606006ed3d41769ea00a30d0c00754c8f",
+      "handoff_ref": "QCTP_CODEX_REV2_IMPLEMENTATION_HANDOFF_REV0_2026-08-17.md",
+      "implementation_agent": "Codex",
+      "release_authority": "ZERO_RELEASE"
     }
   ],
   "release_authority": "ZERO_RELEASE_FOR_REV2_RUNTIME",
-  "current_macro_delta": "Three deliverables are closed and seven have material implementation or existing partial capability. Rev2 remains isolated and unverified at runtime.",
-  "next_controlled_action": "Create a non-production preview deployment for qctp-platform-rev2 and run the Rev2 acceptance suite."
+  "current_macro_delta": "Product architecture, Grant integration, voice-capture requirements, prototype branch, and Codex execution branch are controlled. The next material work package is the production Rev2 implementation and acceptance suite in Codex.",
+  "next_controlled_action": "Execute QCTP-CODEX-REV2-HANDOFF-REV0 on qctp-platform-rev2-codex."
 }
