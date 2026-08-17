@@ -3,7 +3,7 @@
   "manifest_id": "QCTP-PLATFORM-REV2",
   "title": "Quantum Consciousness Training Platform Rev2",
   "created_at": "2026-08-17T16:12:00-05:00",
-  "updated_at": "2026-08-17T16:12:00-05:00",
+  "updated_at": "2026-08-17T16:28:00-05:00",
   "status": "ACTIVE",
   "north_star": "A mobile-first consciousness-development platform that unifies learning, guided practice, hands-on creation, personal experiments, longitudinal records, AI reflection, and daily integration.",
   "controlled_baseline": {
@@ -32,7 +32,7 @@
       "branch": "qctp-platform-rev2",
       "base_commit": "12fc93ec9740b230642df6441af02eb5b34ea0f4",
       "verification": [
-        "Branch was created from the current main baseline after the Rev2 authority files were committed",
+        "Branch was created from the controlled main baseline",
         "GitHub Pages remains sourced from main",
         "Rev1.1.4 remains recoverable on main"
       ]
@@ -40,44 +40,66 @@
     {
       "id": "QCTP-R2-D04",
       "name": "Platform information architecture and mobile shell",
-      "status": "OPEN",
-      "acceptance": [
-        "Today, Paths, Practice, Studio, Lab, Codex, and Mirror/Insights are represented",
-        "iPhone portrait navigation remains usable",
-        "Released versus reserved content is explicit"
+      "status": "PARTIAL",
+      "branch_artifact": "platform-rev2.js",
+      "implemented": [
+        "Today, Paths, Practice, Studio, and More primary navigation",
+        "Lab, Codex, and Mirror / Insights secondary surfaces",
+        "Released-versus-reserved labels"
+      ],
+      "remaining": [
+        "Browser runtime validation",
+        "iPhone portrait validation"
       ]
     },
     {
       "id": "QCTP-R2-D05",
       "name": "Path engine",
-      "status": "OPEN",
-      "acceptance": [
-        "Foundation and source/skill tracks coexist",
-        "Progress advances by completion, not calendar date",
-        "A primary path and secondary studio assignments can run in parallel"
+      "status": "PARTIAL",
+      "implemented": [
+        "Foundation Path preserved as primary",
+        "Twelve-module Robert Edward Grant source track",
+        "Completion-based module state",
+        "Parallel secondary studio assignment on Today"
+      ],
+      "remaining": [
+        "Generalize the path schema beyond Foundation and Grant",
+        "Validate import/export and progression migration"
       ]
     },
     {
       "id": "QCTP-R2-D06",
       "name": "Robert Edward Grant MVP",
-      "status": "OPEN",
-      "acceptance": [
-        "REG-01-A is fully authored",
-        "Geometry artifact capture works",
-        "Auto-dictation raw capture works",
-        "One precept assignment and review works",
-        "Records export through QCTP JSON"
+      "status": "PARTIAL",
+      "implemented": [
+        "REG-01-A fully authored",
+        "Geometry reference and nine-phase checklist",
+        "Raw observation and separate interpretation",
+        "Five-minute auto-dictation timer",
+        "Local photo compression/storage",
+        "Precept integration and completion gate",
+        "Codex entry creation"
+      ],
+      "remaining": [
+        "Runtime and persistence test",
+        "Photo quota/error test",
+        "JSON round-trip test"
       ]
     },
     {
       "id": "QCTP-R2-D07",
       "name": "Geometry Studio",
-      "status": "OPEN",
-      "acceptance": [
-        "Step-based geometry session player",
-        "Reference diagram support",
-        "Photo upload and artifact record",
-        "Measurement and reflection fields"
+      "status": "PARTIAL",
+      "implemented": [
+        "Step-based REG-01 session player",
+        "Inline SVG reference construction",
+        "Photo input and local artifact record",
+        "Observation, interpretation, and integration fields"
+      ],
+      "remaining": [
+        "Interactive compass/straightedge canvas",
+        "Angle and ratio tools",
+        "Versioned artifact history"
       ]
     },
     {
@@ -93,30 +115,40 @@
     {
       "id": "QCTP-R2-D09",
       "name": "Codex and longitudinal data model",
-      "status": "OPEN",
-      "acceptance": [
-        "Journal, dream, geometry, source, experiment, and insight records are searchable",
-        "Raw observations remain distinct from interpretations",
-        "Attachments and revisions are preserved",
-        "Complete export/import works"
+      "status": "PARTIAL",
+      "implemented": [
+        "Local Rev2 Codex entries",
+        "Geometry and Mirror record types",
+        "Raw observation and interpretation kept distinct",
+        "Existing full-state JSON export automatically includes platform data"
+      ],
+      "remaining": [
+        "Search, tags, backlinks, attachments, and revisions",
+        "Import/export round-trip verification",
+        "Migration/version schema"
       ]
     },
     {
       "id": "QCTP-R2-D10",
       "name": "Mirror and Insights engine",
-      "status": "OPEN",
-      "acceptance": [
-        "Patterns are traceable to source records",
-        "AI cannot silently alter raw entries",
-        "Reflections include one question and one actionable integration step",
-        "User can inspect and reject interpretations"
+      "status": "PARTIAL",
+      "implemented": [
+        "Structured Mirror Journal scaffold",
+        "Event, emotion, judgment, quality, reflection, alternative, and action fields",
+        "Mirror-to-Codex linkage"
+      ],
+      "remaining": [
+        "AI retrieval over user records",
+        "Traceable pattern evidence",
+        "User acceptance/rejection of generated reflections",
+        "Longitudinal dashboard"
       ]
     },
     {
       "id": "QCTP-R2-D11",
       "name": "Full experiment Lab",
       "status": "PARTIAL",
-      "existing_capability": "Structured OBE, remote-viewing, psionics, dream, and intuition logs exist in Rev1.x.",
+      "existing_capability": "Structured OBE, remote-viewing, psionics, dream, and intuition logs exist; the Rev2 Lab shell routes to them.",
       "acceptance": [
         "Blind target generation and feedback",
         "Protocol lock before result",
@@ -138,6 +170,6 @@
     }
   ],
   "release_authority": "ZERO_RELEASE_FOR_REV2_RUNTIME",
-  "current_macro_delta": "Product architecture, Robert Edward Grant source-track baseline, and isolated implementation branch are controlled. Three of twelve Rev2 deliverables are closed.",
-  "next_controlled_action": "Implement the non-destructive Rev2 mobile shell plus REG-01-A data model on qctp-platform-rev2."
+  "current_macro_delta": "Three deliverables are closed and seven have material implementation or existing partial capability. Rev2 remains isolated and unverified at runtime.",
+  "next_controlled_action": "Create a non-production preview deployment for qctp-platform-rev2 and run the Rev2 acceptance suite."
 }
