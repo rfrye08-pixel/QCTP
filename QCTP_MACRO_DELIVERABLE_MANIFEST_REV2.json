@@ -3,9 +3,9 @@
   "manifest_id": "QCTP-PLATFORM-REV2",
   "title": "Quantum Consciousness Training Platform Rev2",
   "created_at": "2026-08-17T16:12:00-05:00",
-  "updated_at": "2026-08-17T17:55:00-05:00",
+  "updated_at": "2026-08-17T18:15:00-05:00",
   "status": "ACTIVE",
-  "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness-development platform that unifies learning, guided practice, spoken and written capture, hands-on creation, personal experiments, longitudinal records, reflection, and daily integration.",
+  "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness-development platform that unifies learning, guided practice, spoken and written capture, hands-on creation, personal experiments, longitudinal records, local AI reflection, and daily integration.",
   "controlled_baseline": {
     "runtime_release": "1.1.4",
     "foundation_path_days": 112,
@@ -115,12 +115,13 @@
       "name": "Mirror and Insights engine",
       "status": "PARTIAL",
       "remaining": [
-        "Traceable local search and deterministic pattern evidence",
-        "Optional local-model adapter",
+        "Traceable Mirror Core deterministic analytics",
+        "No-cost Local AI Mirror provider and queue",
         "User acceptance/rejection of generated reflections",
-        "Longitudinal dashboard"
+        "Longitudinal dashboard",
+        "Optional cloud provider adapter kept off by default"
       ],
-      "cost_guard": "Cloud AI is optional and disabled by default. Free Local Mode must remain useful without it."
+      "cost_guard": "Cloud AI is optional and disabled by default. Free Local Mode includes useful Mirror Core and a local-model path."
     },
     {
       "id": "QCTP-R2-D11",
@@ -145,6 +146,7 @@
         "PWA install and offline shell pass",
         "Free Local Mode runs with no provider environment variables",
         "No outgoing metered-provider request occurs in Free Local Mode",
+        "Mirror Core works with no model provider",
         "Release authority is explicit"
       ]
     },
@@ -195,9 +197,28 @@
         "Automated test proves no metered-provider calls in Free Local Mode"
       ],
       "release_authority": "ZERO_RELEASE"
+    },
+    {
+      "id": "QCTP-R2-D16",
+      "name": "No-cost Local AI Mirror and Mirror Core",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
+      "acceptance": [
+        "Mirror Core provides traceable deterministic local insights with no API key",
+        "Local AI Mirror provider seam runs on user-owned hardware without per-use cloud fees",
+        "iPhone continues capture, search, Mirror Core, and queueing while PX13 companion is unavailable",
+        "Local AI answers cite exact source-record IDs",
+        "Generated reflections remain separate derived artifacts",
+        "User can accept, revise, or reject every reflection",
+        "Queued questions survive closure and reconnect",
+        "Cloud AI remains disabled by default",
+        "Free Local Mode test proves no metered AI request",
+        "Real local-model configuration is benchmarked on Ryan's PX13 before release"
+      ],
+      "release_authority": "ZERO_RELEASE"
     }
   ],
   "release_authority": "ZERO_RELEASE_FOR_REV2_RUNTIME",
-  "current_macro_delta": "Product architecture, Grant integration, voice capture, zero-cost runtime requirements, prototype branch, and Codex execution branch are controlled. Codex implementation is active by user report; no production artifact has yet been independently accepted.",
-  "next_controlled_action": "Codex must acknowledge and implement QCTP-ZERO-COST-RUNTIME-REV0 during the current qctp-platform-rev2-codex execution."
+  "current_macro_delta": "Product architecture, Grant integration, voice capture, zero-cost runtime, Local AI Mirror requirements, prototype branch, and Codex execution branch are controlled. Codex implementation is active by user report; no production artifact has yet been independently accepted.",
+  "next_controlled_action": "Codex must acknowledge and implement QCTP-LOCAL-AI-MIRROR-REV0 and QCTP-ZERO-COST-RUNTIME-REV0 during the current qctp-platform-rev2-codex execution."
 }
