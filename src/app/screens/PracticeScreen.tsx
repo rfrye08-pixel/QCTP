@@ -23,6 +23,9 @@ export interface PracticeScreenProps {
   onMorningComplete?: () => Promise<void> | void;
 }
 
+const SILENT_AUDIO_DATA_URL =
+  "data:audio/wav;base64,UklGRsQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
 function formatSeconds(seconds: number): string {
   const wholeSeconds = Math.max(0, Math.ceil(seconds));
   return `${Math.floor(wholeSeconds / 60)}:${String(wholeSeconds % 60).padStart(2, "0")}`;
@@ -44,6 +47,8 @@ export function PracticeScreen({
   const sequencerRef = useRef(sequencer);
   const lessonRef = useRef<HTMLAudioElement | null>(null);
   const cueAudioRef = useRef<HTMLAudioElement | null>(null);
+  const cueAudioPrimedRef = useRef(false);
+  const dispatchRef = useRef<(event: SequencerEvent) => void>(() => undefined);
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
 
   const releaseWakeLock = useCallback(async () => {
@@ -75,18 +80,70 @@ export function PracticeScreen({
     }
   }, []);
 
-  const playCue = useCallback((cue: Day1Cue) => {
-    cueAudioRef.current?.pause();
-    const audio = new Audio(cue.audioUrl);
+  const getCueAudio = useCallback(() => {
+    if (cueAudioRef.current) return cueAudioRef.current;
+    const audio = new Audio();
     audio.preload = "auto";
+    audio.playsInline = true;
     cueAudioRef.current = audio;
-    setAudioIssue(null);
-    void audio.play().catch(() => {
-      setAudioIssue(
-        "A guide cue could not play. The fixed timer and visible cue remain active.",
-      );
-    });
+    return audio;
   }, []);
+
+  const primeCueAudio = useCallback(() => {
+    if (cueAudioPrimedRef.current) return;
+    const audio = getCueAudio();
+    const priorVolume = audio.volume;
+    audio.pause();
+    audio.volume = 0;
+    audio.src = SILENT_AUDIO_DATA_URL;
+    audio.currentTime = 0;
+    audio.load();
+    void audio
+      .play()
+      .then(() => {
+        cueAudioPrimedRef.current = true;
+        audio.pause();
+        audio.currentTime = 0;
+        audio.removeAttribute("src");
+        audio.load();
+        audio.volume = priorVolume;
+      })
+      .catch(() => {
+        audio.volume = priorVolume;
+      });
+  }, [getCueAudio]);
+
+  const playCue = useCallback(
+    (cue: Day1Cue) => {
+      const audio = getCueAudio();
+      audio.pause();
+      audio.preload = "auto";
+      audio.playsInline = true;
+      audio.volume = 1;
+      audio.src = cue.audioUrl;
+      audio.currentTime = 0;
+      audio.load();
+      setAudioIssue(null);
+      void audio
+        .play()
+        .then(() => {
+          cueAudioPrimedRef.current = true;
+        })
+        .catch(() => {
+          setAudioIssue(
+            "Guide audio could not start, so the timer was paused. Check the iPhone media volume and connection, then tap Resume to retry.",
+          );
+          if (sequencerRef.current.status === "running") {
+            dispatchRef.current({
+              type: "pause",
+              nowMs: performance.now(),
+            });
+            void releaseWakeLock();
+          }
+        });
+    },
+    [getCueAudio, releaseWakeLock],
+  );
 
   const dispatch = useCallback(
     (event: SequencerEvent) => {
@@ -113,6 +170,7 @@ export function PracticeScreen({
     },
     [onMorningComplete, playCue, releaseWakeLock],
   );
+  dispatchRef.current = dispatch;
 
   const startPractice = useCallback(() => {
     lessonRef.current?.pause();
@@ -156,7 +214,13 @@ export function PracticeScreen({
   useEffect(
     () => () => {
       lessonRef.current?.pause();
-      cueAudioRef.current?.pause();
+      const cueAudio = cueAudioRef.current;
+      cueAudioRef.current = null;
+      if (cueAudio) {
+        cueAudio.pause();
+        cueAudio.removeAttribute("src");
+        cueAudio.load();
+      }
       const current = wakeLockRef.current;
       wakeLockRef.current = null;
       if (current) void current.release();
@@ -173,6 +237,17 @@ export function PracticeScreen({
     } else if (sequencer.status === "paused") {
       dispatch({ type: "resume", nowMs });
       void requestWakeLock();
+      const cueAudio = cueAudioRef.current;
+      if (cueAudio?.src && !cueAudio.ended) {
+        void cueAudio
+          .play()
+          .then(() => setAudioIssue(null))
+          .catch(() =>
+            setAudioIssue(
+              "Guide audio is still blocked. Keep the screen open, check media volume and connection, then tap Pause and Resume once more.",
+            ),
+          );
+      }
     }
   };
 
@@ -221,9 +296,14 @@ export function PracticeScreen({
         <audio
           ref={lessonRef}
           controls
+          playsInline
           preload="metadata"
           src={CHILL_BRIAN_AUDIO.lesson}
-          onPlay={() => setLessonPlaying(true)}
+          onPointerDown={primeCueAudio}
+          onPlay={() => {
+            setLessonPlaying(true);
+            primeCueAudio();
+          }}
           onPause={() => setLessonPlaying(false)}
           onEnded={startPractice}
           onError={() =>
