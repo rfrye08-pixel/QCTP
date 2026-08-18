@@ -1,7 +1,7 @@
 {
   "schema": "qctp-current-state-v3",
   "project": "QCTP",
-  "updated_at": "2026-08-18T00:30:00-05:00",
+  "updated_at": "2026-08-18T05:50:00-05:00",
   "status": "ACTIVE",
   "product_identity": {
     "name": "QCTP",
@@ -19,6 +19,7 @@
     "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV2.json",
     "implementation_status_overlay": "QCTP_REV2_IMPLEMENTATION_STATUS_OVERLAY_REV0_2026-08-18.json",
     "independent_repository_review": "QCTP_REV2_INDEPENDENT_REPOSITORY_REVIEW_REV0_2026-08-18.md",
+    "day1_iphone_audio_regression": "QCTP_DAY1_IPHONE_AUDIO_REGRESSION_REV0_2026-08-18.md",
     "codex_branch_state": "QCTP_REV2_CODEX_BRANCH_STATE.json on qctp-platform-rev2-codex",
     "codex_verification_record": "REV2_VERIFICATION.md on qctp-platform-rev2-codex"
   },
@@ -30,11 +31,11 @@
   },
   "rev2_candidate": {
     "branch": "qctp-platform-rev2-codex",
-    "head_sha": "ada1dad03f73072297fae366a77b7937c4e0ce44",
+    "head_sha": "80801cdf34a4856c95a4d9349aa8a019fdf6fa38",
     "version": "2.0.0-alpha.1",
     "draft_pull_request": "https://github.com/rfrye08-pixel/QCTP/pull/2",
     "pull_request_state": "OPEN_DRAFT_MERGEABLE_UNMERGED",
-    "implementation_disposition": "NON_BREATH_IMPLEMENTATION_COMPLETE_CANDIDATE",
+    "implementation_disposition": "NON_BREATH_IMPLEMENTATION_COMPLETE_CANDIDATE_WITH_DAY1_AUDIO_PATCH_PENDING_REBUILD_AND_DEVICE_VERIFY",
     "production_deployed": false,
     "release_authority": "ZERO_RELEASE"
   },
@@ -56,15 +57,15 @@
   ],
   "recorded_verification": {
     "evidence_class": "CODEX_RECORDED_PLUS_REPOSITORY_INSPECTION_NOT_INDEPENDENTLY_REEXECUTED",
-    "node_test_files": 40,
-    "node_tests_passed": 229,
-    "coverage_percent": {
+    "pre_audio_patch_node_test_files": 40,
+    "pre_audio_patch_node_tests_passed": 229,
+    "pre_audio_patch_coverage_percent": {
       "statements": 88.68,
       "branches": 79.23,
       "functions": 93.42,
       "lines": 90.32
     },
-    "playwright": {
+    "pre_audio_patch_playwright": {
       "scheduled": 20,
       "passed": 14,
       "intentional_project_gating_skips": 6,
@@ -75,7 +76,30 @@
     "dependency_vulnerabilities": 0,
     "local_whisper_base_real_transcription": "RECORDED_PASS",
     "px13_qwen3_8b_grounded_benchmark": "RECORDED_PASS",
-    "physical_iphone_mirror_round_trip": "RECORDED_TARGETED_PASS"
+    "physical_iphone_mirror_round_trip": "RECORDED_TARGETED_PASS",
+    "physical_iphone_day1_guide_audio": "FAIL_USER_OBSERVED_TIMER_RAN_WITHOUT_AUDIBLE_OPENING_CUE",
+    "post_audio_patch_test_files_added": 1,
+    "post_audio_patch_suite": "NOT_YET_RERUN",
+    "post_audio_patch_physical_iphone": "NOT_YET_VERIFIED"
+  },
+  "day1_audio_regression": {
+    "status": "PATCHED_ON_CANDIDATE_BRANCH_PENDING_LOCAL_REBUILD_AND_DEVICE_VERIFY",
+    "observed_at_remaining": "24:21",
+    "intentional_silence_context": "24:21 is between the controlled 25:00 opening cue and 24:15 second cue, but Ryan reported no audible opening cue.",
+    "diagnosed_risks": [
+      "New Audio object created for each delayed cue on iPhone",
+      "Service worker CacheFirst interception of cross-origin neural WAV media"
+    ],
+    "candidate_corrections": [
+      "Persistent reusable cue audio element",
+      "User-interaction audio priming for lesson-to-practice transition",
+      "Pause authoritative timer when cue playback fails",
+      "Resume retry on the same audio element",
+      "Remove service-worker interception of external neural WAV requests",
+      "Add persistent-element and playback-failure regression tests"
+    ],
+    "candidate_head": "80801cdf34a4856c95a4d9349aa8a019fdf6fa38",
+    "running_px13_dist_updated": false
   },
   "breathwork": {
     "status": "ONLY_KNOWN_UNIMPLEMENTED_PRODUCT_SUBSYSTEM",
@@ -95,6 +119,8 @@
     "default_until_calibrated": "Quiet non-maximal 4-second nasal inhale, 6-second smooth exhale, no holds, five minutes"
   },
   "release_acceptance_holds_not_missing_features": [
+    "Pull, rerun the complete checks, rebuild, and restart the PX13 candidate after the Day 1 audio patch",
+    "Verify audible opening cue and automatic 45-second cue on physical iPhone",
     "Optional CTranslate2 small high-accuracy model provisioning",
     "Remaining physical-iPhone microphone/background/offline/reconnect/notification/lifecycle/export checks",
     "Actual preserved-origin Rev1 migration comparison",
@@ -103,9 +129,10 @@
   "release_authority": {
     "released_rev1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
     "rev2_candidate": "ZERO_RELEASE",
+    "day1_audio_patch": "ZERO_RELEASE_PENDING_TEST",
     "breathwork": "ZERO_RELEASE",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "controlled_interpretation": "Ryan's correction is accepted: Codex has built the Rev2 non-breath platform. Breathwork is the only identified unimplemented product subsystem. Remaining non-breath items are acceptance/release holds, not broad missing implementation.",
-  "next_controlled_action": "When QCTP Codex usage is available, sync current main authority into qctp-platform-rev2-codex, implement QCTP-BREATH-REV0, rerun the full acceptance suite, update PR #2, and preserve unresolved release holds without merging."
+  "controlled_interpretation": "Codex built the Rev2 non-breath platform, and Breathwork remains the only identified unimplemented product subsystem. The physical-iPhone guide-audio failure is a newly discovered release regression in an implemented subsystem, not evidence that the broader platform is unbuilt.",
+  "next_controlled_action": "Pull the candidate audio patch onto the PX13 checkout, rerun the complete checks/build, restart the private QCTP runtime, and verify the opening and 45-second cues on physical iPhone before resuming the held Breathwork implementation."
 }
