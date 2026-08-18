@@ -6,7 +6,6 @@ import { PracticeScreen } from "./PracticeScreen";
 interface FakeAudioElement {
   src: string;
   preload: string;
-  playsInline: boolean;
   volume: number;
   currentTime: number;
   ended: boolean;
@@ -21,7 +20,6 @@ function fakeAudio(playResult: "resolve" | "reject" = "resolve"): FakeAudioEleme
   const audio: FakeAudioElement = {
     src: "",
     preload: "none",
-    playsInline: false,
     volume: 1,
     currentTime: 0,
     ended: false,
