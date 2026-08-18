@@ -184,6 +184,7 @@ export function QctpProvider({ children }: { children: ReactNode }) {
     failed: string[];
   }> | null>(null);
   const mirrorRunRef = useRef<Promise<void> | null>(null);
+  const mirrorConsecutiveFailuresRef = useRef(0);
   const sessionRestoreAttemptedRef = useRef(false);
   const [notificationPermission, setNotificationPermission] = useState<
     NotificationPermission | "unsupported"
@@ -505,10 +506,13 @@ export function QctpProvider({ children }: { children: ReactNode }) {
         await refreshMirror();
         return;
       }
-      setMirrorConnectivity("checking");
+      setMirrorConnectivity((current) =>
+        current === "online" ? current : "checking",
+      );
       try {
         const client = new MirrorServiceClient({ baseUrl: px13BaseUrl });
         const policy = await client.probe();
+        mirrorConsecutiveFailuresRef.current = 0;
         setMirrorPolicy(policy);
         setMirrorConnectivity("online");
         const result = await synchronizeMirrorRequests(
@@ -520,8 +524,19 @@ export function QctpProvider({ children }: { children: ReactNode }) {
           result.completedRequestIds.length,
         );
       } catch {
-        setMirrorConnectivity("offline");
-        setMirrorPolicy(null);
+        mirrorConsecutiveFailuresRef.current += 1;
+        if (mirrorConsecutiveFailuresRef.current >= 3) {
+          setMirrorPolicy(null);
+        }
+        setMirrorConnectivity((current) => {
+          if (
+            current === "online" &&
+            mirrorConsecutiveFailuresRef.current < 3
+          ) {
+            return current;
+          }
+          return "offline";
+        });
         await refreshMirror();
       }
     })();

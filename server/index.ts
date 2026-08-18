@@ -161,8 +161,8 @@ export const createConfiguredRuntime = (
     provider: mirrorProvider,
   });
   const mirrorRateLimiter = new MemoryFixedWindowRateLimiter({
-    limit: config.rateLimit,
-    windowMs: config.rateWindowMs,
+    limit: config.mirrorRateLimit,
+    windowMs: config.mirrorRateWindowMs,
   });
   app.use(
     "/api/mirror",

@@ -20,6 +20,8 @@ describe("server environment safety", () => {
       mirrorOllamaUrl: "http://127.0.0.1:11434",
       mirrorModel: "qwen3:8b",
       mirrorPollIntervalMs: 2_000,
+      mirrorRateLimit: 1_000,
+      mirrorRateWindowMs: 3_600_000,
       paidCloudEnabled: false,
       paidCloudHardSpendLimitUsd: 0,
     });
@@ -60,6 +62,24 @@ describe("server environment safety", () => {
     expect(synchronized.status).toBe(200);
     expect(synchronized.body).toEqual({ jobs: [] });
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("keeps normal Mirror polling independent from the transcription upload limit", async () => {
+    const config = loadServerConfig({
+      QCTP_API_TOKEN: token,
+      QCTP_TRANSCRIPTION_RATE_LIMIT: "1",
+      QCTP_MIRROR_RATE_LIMIT: "50",
+      QCTP_MIRROR_JOB_STORE_PATH: "test-data/mirror-rate-jobs.json",
+    });
+    const app = createConfiguredApp(config);
+
+    for (let requestNumber = 0; requestNumber < 3; requestNumber += 1) {
+      const response = await request(app)
+        .get("/api/mirror/policy")
+        .set("Authorization", `Bearer ${token}`);
+      expect(response.status).toBe(200);
+      expect(response.headers["ratelimit-limit"]).toBe("50");
+    }
   });
 
   it("requires a protected single-user bearer token", () => {

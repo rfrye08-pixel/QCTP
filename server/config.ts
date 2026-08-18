@@ -52,6 +52,18 @@ const EnvironmentSchema = z
       .min(250)
       .max(60_000)
       .default(2_000),
+    QCTP_MIRROR_RATE_LIMIT: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .max(10_000)
+      .default(1_000),
+    QCTP_MIRROR_RATE_WINDOW_MS: z.coerce
+      .number()
+      .int()
+      .min(1_000)
+      .max(24 * 60 * 60 * 1_000)
+      .default(60 * 60 * 1_000),
     QCTP_ENABLE_PAID_CLOUD: BooleanEnvironmentValueSchema,
     QCTP_PAID_CLOUD_HARD_SPEND_LIMIT_USD: z.coerce
       .number()
@@ -148,6 +160,8 @@ export interface ServerConfig {
   readonly mirrorModel: string;
   readonly mirrorJobStorePath: string;
   readonly mirrorPollIntervalMs: number;
+  readonly mirrorRateLimit: number;
+  readonly mirrorRateWindowMs: number;
   readonly paidCloudEnabled: boolean;
   readonly paidCloudHardSpendLimitUsd: number;
   readonly paidCloudMaximumUsdPerAudioMinute: number;
@@ -217,6 +231,8 @@ export const loadServerConfig = (
       result.data.QCTP_MIRROR_JOB_STORE_PATH ??
       join(applicationDataDirectory, "QCTP", "mirror-jobs.json"),
     mirrorPollIntervalMs: result.data.QCTP_MIRROR_POLL_INTERVAL_MS,
+    mirrorRateLimit: result.data.QCTP_MIRROR_RATE_LIMIT,
+    mirrorRateWindowMs: result.data.QCTP_MIRROR_RATE_WINDOW_MS,
     paidCloudEnabled:
       result.data.QCTP_TRANSCRIPTION_PROVIDER === "openai" &&
       result.data.QCTP_ENABLE_PAID_CLOUD,

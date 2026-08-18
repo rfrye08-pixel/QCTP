@@ -1,4 +1,10 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { deleteQctpDatabase } from "../data";
@@ -12,6 +18,20 @@ function SessionProbe() {
     <output aria-label="device session status">
       {runtime.localTranscriptionStatus}:{runtime.mirror.connectivity}
     </output>
+  );
+}
+
+function MirrorConnectionProbe() {
+  const runtime = useQctp();
+  return (
+    <>
+      <output aria-label="mirror connection status">
+        {runtime.mirror.connectivity}
+      </output>
+      <button type="button" onClick={() => void runtime.mirror.connect()}>
+        Synchronize
+      </button>
+    </>
   );
 }
 
@@ -101,5 +121,51 @@ describe("QCTP private device-session restoration", () => {
       expect(init).toMatchObject({ credentials: "include" });
       expect(init?.headers).not.toHaveProperty("Authorization");
     }
+  });
+
+  it("keeps a healthy online indicator stable across one transient background failure", async () => {
+    let mirrorPolicyCalls = 0;
+    const request = vi.fn((input: RequestInfo | URL): Promise<Response> => {
+      const target = requestUrl(input);
+      if (target.endsWith("/api/transcriptions/policy")) {
+        return Promise.resolve(
+          jsonResponse({
+            mode: "free-local",
+            provider: "local-whisper",
+            paidCloudEnabled: false,
+            hardSpendLimitUsd: 0,
+          }),
+        );
+      }
+      if (target.endsWith("/api/mirror/policy")) {
+        mirrorPolicyCalls += 1;
+        return mirrorPolicyCalls === 1
+          ? Promise.resolve(
+              jsonResponse({
+                mode: "free-local",
+                provider: "ollama-local",
+                model: "controlled-local-model",
+                paidCloudEnabled: false,
+                recurringApiCostUsd: 0,
+              }),
+            )
+          : Promise.reject(new Error("transient private-network failure"));
+      }
+      return Promise.reject(new Error(`Unexpected request: ${target}`));
+    });
+    vi.stubGlobal("fetch", request);
+
+    render(
+      <QctpProvider>
+        <MirrorConnectionProbe />
+      </QctpProvider>,
+    );
+    await screen.findByText("online");
+
+    fireEvent.click(screen.getByRole("button", { name: "Synchronize" }));
+    await waitFor(() => expect(mirrorPolicyCalls).toBe(2));
+    expect(screen.getByLabelText("mirror connection status")).toHaveTextContent(
+      "online",
+    );
   });
 });

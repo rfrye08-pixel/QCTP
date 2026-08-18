@@ -118,7 +118,7 @@
     "final_repository_suite": {
       "status": "PASS",
       "node_test_files": 40,
-      "node_tests": 227,
+      "node_tests": 229,
       "coverage_percent": {
         "statements": 88.68,
         "branches": 79.23,
@@ -133,7 +133,8 @@
       "dependency_vulnerabilities": 0,
       "integrated_preview_smoke": "PASS; loopback 18787; shell/manifest/service worker/CSP, 401 boundary, HttpOnly pairing, transcription and Mirror Free Local policies"
     },
-    "physical_iphone": "NOT_YET_VERIFIED",
+    "physical_iphone": "PARTIAL_PASS; private Tailscale HTTPS PWA boot, signed pairing, journal persistence, source selection, dictation, durable queue, PX13 qwen3:8b processing, grounded citation, result synchronization, and later retrieval verified; microphone duration/background/notification/full lifecycle protocol remains held",
+    "px13_automatic_startup": "PASS; current-user scheduled task restores gateway, Whisper companion, and Ollama; DPAPI-protected credential outside repository; controlled stop/start restored all three ports and private HTTPS returned 200",
     "real_whisper_model": "BASE_OFFICIAL_REVISION_HASH_LOAD_AND_REAL_LOCAL_TRANSCRIPTION_VERIFIED; SMALL_NOT_YET_PROVISIONED",
     "real_mirror_model": "QWEN3_8B_PROVISIONED_AND_STRUCTURED_GROUNDED_CONTRACT_VERIFIED_CPU_ONLY",
     "representative_mirror_benchmark_on_actual_px13": "PASS; 107.1 seconds wall time; 3 grounded claims; 6 valid source references; proposed question and action valid; qwen3.5:9b rejected after no response within 5 minutes; qwen3:14b excluded after prior unsafe system behavior",
@@ -149,11 +150,10 @@
   },
   "holds": [
     "Provision the verified CTranslate2 small high-accuracy model directory on the PX13",
-    "Configure a private device-trusted HTTPS PWA/API origin over the intended same-network or Tailscale path",
     "Run physical iPhone microphone, signed-session close/reopen, PWA/Mirror Core offline, queue/reconnect, notification/later retrieval, claim citation, lifecycle, deletion/restore/purge, export, and result-synchronization acceptance",
     "Run an actual Rev1-origin migration comparison without deleting the Rev1 source",
     "Confirm a genuine natural-duration Day 1 reaches 0:00, saves completion, and preserves Chill Brian behavior",
     "Do not merge or deploy without separate explicit release authority"
   ],
-  "next_controlled_action": "Configure the private device-trusted HTTPS origin, then run the complete physical-iPhone acceptance protocol with qwen3:8b."
+  "next_controlled_action": "Continue the physical-iPhone protocol with real microphone duration/background, offline/reconnect, notification, review, deletion/restore/purge, and export checks."
 }
