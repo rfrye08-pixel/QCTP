@@ -36,19 +36,19 @@ This file distinguishes automated implementation evidence from tests that requir
 
 These scoped results were run against the component changes before final repository consolidation. They do not replace the final commands in the next section.
 
-| Scope                                              | Result                                                                                         | Evidence boundary                                                                      |
-| -------------------------------------------------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Foundation/audio regression                        | PASS — 16 targeted tests                                                                       | exact content hashes/timing/progression; not natural-duration device playback          |
-| Domain, IndexedDB, migration, export/import        | PASS — targeted suites                                                                         | fake IndexedDB and deterministic binaries; not migrated production-origin browser data |
-| Voice recorder/persistence/acceptance/local client | PASS — targeted suites                                                                         | mocked MediaRecorder/network; not a physical ten-minute iPhone capture                 |
-| REG-01 engine/repository/UI                        | PASS — targeted suites                                                                         | relationship and transaction behavior with test blobs                                  |
-| Transcription gateway                              | PASS — 31 tests                                                                                | mock/local transport; no real Whisper model inference                                  |
-| Local Whisper companion                            | PASS — 44 tests, 99.17% statements                                                             | injected fake engine and blocked network; no CTranslate2 model provisioned or executed |
-| PX13 Mirror backend                                | PASS — 55 focused tests; 97.40% statements / 94.21% branches / 96.26% functions / 98.12% lines | structured mock/Ollama contracts; no real local model inference                        |
-| Offline Mirror Core and structured Journal         | PASS — 8 targeted tests, 97.67% statements / 87.87% branches / 98.11% functions / 99.34% lines | deterministic local analysis and traceable journal records; not generative inference   |
-| Codex authoring, evidence layers, and deletion     | PASS — 8 targeted tests                                                                        | user-operable workflows and selective deletion; no live remote artifact existed        |
-| Local AI provider seam and generated lifecycle     | PASS — restore/purge/client/UI suites plus full consolidated coverage                          | claim provenance, policy/delete proofs, dispositions, revisions, purge, export         |
-| Private device session and privacy boundary        | PASS — 119 focused security/lifecycle tests; dependency and secret scans clean                 | signed cookie/relaunch and deletion contracts; physical private-HTTPS path still held  |
+| Scope                                              | Result                                                                                          | Evidence boundary                                                                      |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Foundation/audio regression                        | PASS — 16 targeted tests                                                                        | exact content hashes/timing/progression; not natural-duration device playback          |
+| Domain, IndexedDB, migration, export/import        | PASS — targeted suites                                                                          | fake IndexedDB and deterministic binaries; not migrated production-origin browser data |
+| Voice recorder/persistence/acceptance/local client | PASS — targeted suites                                                                          | mocked MediaRecorder/network; not a physical ten-minute iPhone capture                 |
+| REG-01 engine/repository/UI                        | PASS — targeted suites                                                                          | relationship and transaction behavior with test blobs                                  |
+| Transcription gateway                              | PASS — 31 tests                                                                                 | mock/local transport; no real Whisper model inference                                  |
+| Local Whisper companion                            | PASS — 44 tests, 99.17% statements; official `base` package hash/size, load, and real inference | exact offline spoken sentence transcribed through the QCTP companion; `small` held     |
+| PX13 Mirror backend                                | PASS — 55 focused tests; 97.40% statements / 94.21% branches / 96.26% functions / 98.12% lines  | structured mock/Ollama contracts; no real local model inference                        |
+| Offline Mirror Core and structured Journal         | PASS — 8 targeted tests, 97.67% statements / 87.87% branches / 98.11% functions / 99.34% lines  | deterministic local analysis and traceable journal records; not generative inference   |
+| Codex authoring, evidence layers, and deletion     | PASS — 8 targeted tests                                                                         | user-operable workflows and selective deletion; no live remote artifact existed        |
+| Local AI provider seam and generated lifecycle     | PASS — restore/purge/client/UI suites plus full consolidated coverage                           | claim provenance, policy/delete proofs, dispositions, revisions, purge, export         |
+| Private device session and privacy boundary        | PASS — 119 focused security/lifecycle tests; dependency and secret scans clean                  | signed cookie/relaunch and deletion contracts; physical private-HTTPS path still held  |
 
 ## Final consolidated repository gates
 
@@ -111,13 +111,12 @@ The following are intentionally not claimed by mocked or desktop automation:
 2. Record, pause/resume, stop, reload, and replay at least one real ten-minute iPhone recording without truncation.
 3. Exercise Quick Capture, field dictation, and a five-minute REG auto-dictation on the physical device.
 4. Verify foreground/background, screen state, notification behavior, and later retrieval within iOS limitations.
-5. Provision and verify the `base` and `small` CTranslate2 Whisper directories under `%LOCALAPPDATA%\QCTP\whisper-models`; run a real local transcription.
-6. Provision a candidate no-cost Ollama-compatible model/runtime locally on the PX13; treat `qwen2.5:7b` only as the current development default, not an approved final model.
-7. Benchmark a representative grounded QCTP Mirror workload on Ryan's actual PX13. Record model/runtime identity, latency, RAM/storage behavior, result usefulness, citation validity, and proposed-question/action quality before selecting the release configuration.
-8. From the physical target iPhone over the intended private HTTPS path, pair once, close/reopen the installed PWA, exercise Mirror Core while PX13 is absent, queue and reconnect Local AI work, and inspect status, notification/later retrieval, citations, disposition/revision controls, deletion/restore/permanent purge, and export without manual PX13 UI or file transfer.
-9. Run the first genuine Day 1 session for the full natural 1,500 seconds; confirm lesson-to-practice transition, final cue, completion at 0:00, and persistence.
-10. Confirm continuity under the intended iPhone screen-up/background conditions; the existing Rev1 authority only records approximately three minutes of normal-mode iPhone playback.
-11. Test Rev1 migration using preserved data on its actual browser origin, then compare current day, all completion flags, workbook answers, logs, settings, and test state.
+5. The official `base` CTranslate2 directory is provisioned, hash-verified, load-verified, and passed an exact real offline transcription. Provision the `small` high-accuracy directory.
+6. `qwen3:8b` is provisioned and passed QCTP's structured grounded-reflection contract on the PX13 in CPU-only mode: 107.1 seconds wall time, three grounded claims, six valid source references, and valid proposed-question/action output. `qwen3.5:9b` was rejected after no response within five minutes; `qwen3:14b` remains excluded after unsafe system behavior during the earlier benchmark attempt.
+7. From the physical target iPhone over the intended private HTTPS path, pair once, close/reopen the installed PWA, exercise Mirror Core while PX13 is absent, queue and reconnect Local AI work, and inspect status, notification/later retrieval, citations, disposition/revision controls, deletion/restore/permanent purge, and export without manual PX13 UI or file transfer.
+8. Run the first genuine Day 1 session for the full natural 1,500 seconds; confirm lesson-to-practice transition, final cue, completion at 0:00, and persistence.
+9. Confirm continuity under the intended iPhone screen-up/background conditions; the existing Rev1 authority only records approximately three minutes of normal-mode iPhone playback.
+10. Test Rev1 migration using preserved data on its actual browser origin, then compare current day, all completion flags, workbook answers, logs, settings, and test state.
 
 ## Security review points
 

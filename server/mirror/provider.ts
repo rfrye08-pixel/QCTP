@@ -323,11 +323,11 @@ export class OllamaMirrorProvider implements MirrorInferenceProvider {
     this.#endpoint = parseLoopbackOllamaUrl(
       options.baseUrl ?? "http://127.0.0.1:11434",
     );
-    this.model = (options.model ?? "qwen2.5:7b").trim();
+    this.model = (options.model ?? "qwen3:8b").trim();
     if (this.model.length === 0 || this.model.length > 200) {
       throw new Error("The local Ollama model identifier is invalid.");
     }
-    this.#timeoutMs = options.timeoutMs ?? 120_000;
+    this.#timeoutMs = options.timeoutMs ?? 5 * 60_000;
     if (
       !Number.isInteger(this.#timeoutMs) ||
       this.#timeoutMs < 1_000 ||
@@ -356,8 +356,14 @@ export class OllamaMirrorProvider implements MirrorInferenceProvider {
         body: JSON.stringify({
           model: this.model,
           stream: false,
+          keep_alive: 0,
           format: buildOllamaOutputFormat(allowedIds),
-          options: { temperature: 0 },
+          options: {
+            temperature: 0,
+            num_gpu: 0,
+            num_ctx: 4096,
+            num_thread: 8,
+          },
           messages: buildGroundedMirrorMessages(input),
         }),
         signal: AbortSignal.timeout(this.#timeoutMs),

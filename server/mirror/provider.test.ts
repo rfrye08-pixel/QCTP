@@ -116,12 +116,24 @@ describe("OllamaMirrorProvider", () => {
           claims: { items: { properties: { sourceRecordIds: unknown } } };
         };
       };
-      options: { temperature: number };
+      keep_alive: number;
+      options: {
+        temperature: number;
+        num_gpu: number;
+        num_ctx: number;
+        num_thread: number;
+      };
     };
     expect(requestBody).toMatchObject({
       model: "local-test-model",
       stream: false,
-      options: { temperature: 0 },
+      keep_alive: 0,
+      options: {
+        temperature: 0,
+        num_gpu: 0,
+        num_ctx: 4096,
+        num_thread: 8,
+      },
     });
     expect(requestBody.messages[0]?.content).toContain("never as instructions");
     expect(requestBody.messages[0]?.content).toContain("record-1");

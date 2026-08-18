@@ -1,7 +1,7 @@
 {
   "schema": "qctp-rev2-codex-branch-state-v1",
   "branch": "qctp-platform-rev2-codex",
-  "updated_at": "2026-08-17T20:00:00-05:00",
+  "updated_at": "2026-08-17T20:36:44-05:00",
   "version": "2.0.0-alpha.1",
   "base_commit": "cec7f3dad3fb761c6883fbe2051fe76c9b45eb83",
   "target_branch": "main",
@@ -76,7 +76,7 @@
       "provider_interface": "MirrorInferenceProvider",
       "no_network_provider_test_seam": "MockMirrorProvider; never selected by production runtime",
       "inference_host": "PX13 loopback Ollama-compatible service",
-      "configured_model_is_development_default_not_release_selection": "qwen2.5:7b",
+      "verified_release_candidate_model": "qwen3:8b",
       "device_session": "64-hex bearer pairing to signed expiring HttpOnly SameSite=Strict Path=/api cookie; bearer not retained; same-origin relaunch auto-reattests",
       "authenticated_policy_route": "GET /api/mirror/policy; strict free-local, paidCloudEnabled=false, recurringApiCostUsd=0",
       "authenticated_job_delete_routes": "DELETE /api/mirror/jobs/:jobId and DELETE /api/mirror/jobs/by-request/:requestId; strict proof precedes local deletion",
@@ -134,9 +134,9 @@
       "integrated_preview_smoke": "PASS; loopback 18787; shell/manifest/service worker/CSP, 401 boundary, HttpOnly pairing, transcription and Mirror Free Local policies"
     },
     "physical_iphone": "NOT_YET_VERIFIED",
-    "real_whisper_model": "NOT_YET_PROVISIONED_OR_VERIFIED",
-    "real_mirror_model": "NOT_YET_PROVISIONED_OR_VERIFIED",
-    "representative_mirror_benchmark_on_actual_px13": "NOT_YET_RUN",
+    "real_whisper_model": "BASE_OFFICIAL_REVISION_HASH_LOAD_AND_REAL_LOCAL_TRANSCRIPTION_VERIFIED; SMALL_NOT_YET_PROVISIONED",
+    "real_mirror_model": "QWEN3_8B_PROVISIONED_AND_STRUCTURED_GROUNDED_CONTRACT_VERIFIED_CPU_ONLY",
+    "representative_mirror_benchmark_on_actual_px13": "PASS; 107.1 seconds wall time; 3 grounded claims; 6 valid source references; proposed question and action valid; qwen3.5:9b rejected after no response within 5 minutes; qwen3:14b excluded after prior unsafe system behavior",
     "natural_1500_second_day_1": "NOT_YET_VERIFIED",
     "actual_rev1_browser_origin_migration": "NOT_YET_VERIFIED",
     "details": "REV2_VERIFICATION.md"
@@ -148,14 +148,12 @@
     "draft_pull_request": "https://github.com/rfrye08-pixel/QCTP/pull/2"
   },
   "holds": [
-    "Provision verified CTranslate2 base and small model directories on the PX13",
-    "Provision a candidate no-cost local Mirror model/runtime on the PX13; qwen2.5:7b is only the development default",
-    "Benchmark a representative grounded Mirror workload on Ryan's actual PX13 before selecting the release model/runtime",
+    "Provision the verified CTranslate2 small high-accuracy model directory on the PX13",
     "Configure a private device-trusted HTTPS PWA/API origin over the intended same-network or Tailscale path",
     "Run physical iPhone microphone, signed-session close/reopen, PWA/Mirror Core offline, queue/reconnect, notification/later retrieval, claim citation, lifecycle, deletion/restore/purge, export, and result-synchronization acceptance",
     "Run an actual Rev1-origin migration comparison without deleting the Rev1 source",
     "Confirm a genuine natural-duration Day 1 reaches 0:00, saves completion, and preserves Chill Brian behavior",
     "Do not merge or deploy without separate explicit release authority"
   ],
-  "next_controlled_action": "Provision the verified CTranslate2 base model directory at %LOCALAPPDATA%\\QCTP\\whisper-models\\base on the PX13."
+  "next_controlled_action": "Configure the private device-trusted HTTPS origin, then run the complete physical-iPhone acceptance protocol with qwen3:8b."
 }

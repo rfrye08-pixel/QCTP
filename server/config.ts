@@ -44,7 +44,7 @@ const EnvironmentSchema = z
       .max(128)
       .default("small"),
     QCTP_MIRROR_OLLAMA_URL: z.string().default("http://127.0.0.1:11434"),
-    QCTP_MIRROR_MODEL: z.string().trim().min(1).max(200).default("qwen2.5:7b"),
+    QCTP_MIRROR_MODEL: z.string().trim().min(1).max(200).default("qwen3:8b"),
     QCTP_MIRROR_JOB_STORE_PATH: z.string().trim().min(1).max(4_096).optional(),
     QCTP_MIRROR_POLL_INTERVAL_MS: z.coerce
       .number()

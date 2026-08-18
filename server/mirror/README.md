@@ -139,7 +139,7 @@ The local prompt marks source text as untrusted and requests bounded structured 
 
 `MirrorInferenceProvider` is independent of the inference runtime and exposes `name`, `model`, and structured `generate({ prompt, sources })`. `OllamaMirrorProvider` is the current production-runtime adapter and accepts only unauthenticated exact-loopback HTTP. `MockMirrorProvider` is a deterministic no-network seam for contract tests and controlled offline demonstrations; it is never selected by the production runtime. Provider tests therefore prove orchestration and grounding contracts without proving the quality or performance of a real model.
 
-The configured `qwen2.5:7b` alias is a development default, not a frozen or validated release decision. Local AI Mirror remains under `ZERO_RELEASE` until a candidate runtime/model is provisioned and a representative grounded workload is benchmarked on Ryan's actual PX13, followed by physical-iPhone acceptance over the intended private HTTPS path.
+The configured `qwen3:8b` alias is the verified PX13 release candidate. It passed QCTP's structured grounded-reflection contract in CPU-only mode with valid source IDs and useful proposed question/action output. Local AI Mirror remains under `ZERO_RELEASE` until physical-iPhone acceptance over the intended private HTTPS path.
 
 ## Generated-reflection lifecycle ownership
 

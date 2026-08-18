@@ -116,7 +116,7 @@ The companion refuses non-loopback binding and never downloads a model. Provisio
 
 ## Provision no-cost PX13 Mirror inference
 
-Install and provision an Ollama-compatible model once on the PX13, then keep its HTTP service on exact loopback. `qwen2.5:7b` is the current configuration default for development; it is not a validated or frozen release selection. QCTP does not pull it automatically. The final model/runtime choice remains held until a representative grounded workload is benchmarked on Ryan's actual PX13. Start the QCTP gateway after the local model runtime is ready. Mirror prompts and selected source snapshots are processed by the PX13 worker and durable results synchronize back to the iPhone.
+Install and provision an Ollama-compatible model once on the PX13, then keep its HTTP service on exact loopback. `qwen3:8b` is the verified PX13 release candidate: it passed QCTP's structured grounded-reflection contract in CPU-only mode with valid claim citations and proposed question/action output. QCTP does not pull it automatically. Start the QCTP gateway after the local model runtime is ready. Mirror prompts and selected source snapshots are processed by the PX13 worker and durable results synchronize back to the iPhone. Physical-iPhone acceptance remains required before release.
 
 The iPhone/PWA is the complete Mirror client: it composes grounded requests, selects source records, persists offline jobs, displays queued/processing/retry/complete state, retries, synchronizes results and citations, and requests local completion notifications where the browser permits them. Normal use requires no file export and no model operation from the PX13 UI.
 

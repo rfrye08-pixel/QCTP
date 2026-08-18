@@ -18,7 +18,7 @@ describe("server environment safety", () => {
       transcriptionProvider: "local",
       localWhisperUrl: "http://127.0.0.1:8788/v1/audio/transcriptions",
       mirrorOllamaUrl: "http://127.0.0.1:11434",
-      mirrorModel: "qwen2.5:7b",
+      mirrorModel: "qwen3:8b",
       mirrorPollIntervalMs: 2_000,
       paidCloudEnabled: false,
       paidCloudHardSpendLimitUsd: 0,

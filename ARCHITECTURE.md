@@ -157,7 +157,7 @@ Free Local defaults:
 - `QCTP_TRANSCRIPTION_PROVIDER=local`
 - `QCTP_LOCAL_WHISPER_URL=http://127.0.0.1:8788/v1/audio/transcriptions`
 - `QCTP_MIRROR_OLLAMA_URL=http://127.0.0.1:11434`
-- `QCTP_MIRROR_MODEL=qwen2.5:7b`
+- `QCTP_MIRROR_MODEL=qwen3:8b`
 - `QCTP_MIRROR_JOB_STORE_PATH=<private OS application-data>/QCTP/mirror-jobs.json`
 
 The optional OpenAI adapter is constructed only when all of these server-side gates are satisfied: provider `openai`, explicit paid-cloud flag, positive hard spend limit, and server-only `OPENAI_API_KEY`. The application-side reservation limit does not replace a provider billing cap. This adapter is not selected in the controlled baseline.
