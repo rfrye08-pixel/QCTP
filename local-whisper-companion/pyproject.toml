@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qctp-local-whisper"
+dynamic = ["version"]
+description = "Loopback-only, no-metered-cost Whisper transcription companion for QCTP"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "faster-whisper>=1.1,<2",
+  "python-multipart>=0.0.20,<1",
+  "uvicorn>=0.30,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "basedpyright>=1.31,<2",
+  "httpx>=0.28,<1",
+  "pytest>=8.3,<10",
+  "pytest-cov>=6,<8",
+  "ruff>=0.11,<1",
+  "ty>=0.0.1a19",
+]
+
+[project.scripts]
+qctp-local-whisper = "qctp_local_whisper.cli:main"
+
+[tool.hatch.version]
+path = "src/qctp_local_whisper/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/qctp_local_whisper"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["B", "C4", "E", "F", "I", "N", "SIM", "UP", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers -ra"
+filterwarnings = ["error"]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+omit = ["*/__main__.py"]
+source = ["qctp_local_whisper"]
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true
+skip_covered = true
+
+[tool.basedpyright]
+include = ["src", "tests"]
+pythonVersion = "3.11"
+typeCheckingMode = "strict"
+
+[tool.ty.environment]
+python-version = "3.11"

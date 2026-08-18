@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="QCTP">
+  <rect width="512" height="512" rx="112" fill="#071017"/>
+  <circle cx="220" cy="256" r="126" fill="none" stroke="#8bb8ff" stroke-width="24"/>
+  <circle cx="292" cy="256" r="126" fill="none" stroke="#7bd8bb" stroke-width="24"/>
+  <circle cx="256" cy="256" r="12" fill="#f2c879"/>
+</svg>

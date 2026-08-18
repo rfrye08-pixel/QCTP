@@ -1,0 +1,161 @@
+{
+  "schema": "qctp-rev2-codex-branch-state-v1",
+  "branch": "qctp-platform-rev2-codex",
+  "updated_at": "2026-08-17T19:40:20-05:00",
+  "version": "2.0.0-alpha.1",
+  "base_commit": "9e30cf18050112fa4d54f905b2bc7cd9792bce19",
+  "target_branch": "main",
+  "status": "AUTOMATED_GATES_PASS_ZERO_RELEASE_HARDWARE_HOLDS",
+  "release_authority": "ZERO_RELEASE",
+  "branch_truth": "This ledger supersedes the preserved pre-implementation QCTP_CURRENT_STATE.json snapshot for this Rev2 branch only.",
+  "controlled_authorities": [
+    "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
+    "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md"
+  ],
+  "runtime_baseline": {
+    "mode": "Free Local",
+    "normal_recurring_api_cost_usd": 0,
+    "provider_key_required": false,
+    "paid_cloud_on_critical_path": false,
+    "paid_cloud_enabled": false
+  },
+  "implemented": {
+    "maintainable_platform": [
+      "TypeScript and React mobile PWA shell",
+      "versioned Zod domain schemas",
+      "IndexedDB repository and search-ready indexes",
+      "JSON and binary ZIP export/import",
+      "unit, integration, migration, and browser test suites"
+    ],
+    "foundation": {
+      "released_authored_days": [1],
+      "reserved_unfabricated_days": "2-112",
+      "day_1_duration_seconds": 1500,
+      "day_1_cue_count": 21,
+      "controlled_voice": "Chill Brian",
+      "natural_completion_required": true,
+      "test_mode_completion_credit": false
+    },
+    "voice_capture": {
+      "modes": [
+        "global quick capture",
+        "field dictation",
+        "5/10/20-minute auto-dictation",
+        "experiment voice log"
+      ],
+      "local_binary_store": "IndexedDB",
+      "explicit_acceptance_before_processing": true,
+      "offline_transcription_queue": true,
+      "interruption_safe_microphone_cleanup": true,
+      "selective_user_confirmed_deletion": true,
+      "source_layers_separate": true,
+      "default_transcription_route": "PX13 local Whisper companion"
+    },
+    "reg_01_a": {
+      "status": "IMPLEMENTED_CANDIDATE",
+      "controlled_steps": 9,
+      "five_minute_accepted_audio_gate": true,
+      "observation_interpretation_separate": true,
+      "photo_or_drawing_gate": true,
+      "atomic_outputs": ["Studio", "Codex", "Mirror", "source path advancement"]
+    },
+    "mirror": {
+      "controlled_layers": {
+        "mirror_core": "deterministic, always local, always available, not model-generated",
+        "local_ai_mirror": "optional generative inference on user-owned PX13 with no per-use API fee",
+        "cloud_ai_mirror": "optional future adapter only; absent and disabled in the controlled candidate"
+      },
+      "iphone_pwa_is_complete_client": true,
+      "offline_request_persistence": true,
+      "job_status_and_retry": true,
+      "result_synchronization": true,
+      "claim_level_source_record_citations": true,
+      "notification_or_later_retrieval": true,
+      "structured_journal": true,
+      "deterministic_offline_insights": true,
+      "provider_interface": "MirrorInferenceProvider",
+      "no_network_provider_test_seam": "MockMirrorProvider; never selected by production runtime",
+      "inference_host": "PX13 loopback Ollama-compatible service",
+      "configured_model_is_development_default_not_release_selection": "qwen2.5:7b",
+      "device_session": "64-hex bearer pairing to signed expiring HttpOnly SameSite=Strict Path=/api cookie; bearer not retained; same-origin relaunch auto-reattests",
+      "authenticated_policy_route": "GET /api/mirror/policy; strict free-local, paidCloudEnabled=false, recurringApiCostUsd=0",
+      "authenticated_job_delete_routes": "DELETE /api/mirror/jobs/:jobId and DELETE /api/mirror/jobs/by-request/:requestId; strict proof precedes local deletion",
+      "generated_reflection_lifecycle": {
+        "provider_types": ["deterministic", "local_model", "cloud_model"],
+        "dispositions": ["unreviewed", "accepted", "revised", "rejected"],
+        "revision_actions": [
+          "generated",
+          "accepted",
+          "revised",
+          "rejected",
+          "annotated",
+          "deleted",
+          "restored"
+        ],
+        "query_source_ids_and_citations_preserved": true,
+        "proposed_question_and_action_preserved": true,
+        "source_records_mutated_by_review": false,
+        "local_deletion": "typed paired tombstone/restore plus separately typed-confirmed permanent purge; deterministic feedback has parallel lifecycle controls",
+        "lifecycle_in_export_import": true
+      },
+      "private_remote_architecture": "private HTTPS reverse proxy over Tailscale/WireGuard",
+      "manual_file_export_required_for_normal_use": false,
+      "paid_cloud_required": false
+    },
+    "migration": {
+      "source": "localStorage:qctp-state",
+      "target": "IndexedDB:qctp-rev2-v3",
+      "idempotent_fingerprint_ledger": true,
+      "exact_source_snapshot_preserved": true,
+      "source_deleted": false,
+      "mirror_store_upgrade": "v1-to-v3"
+    }
+  },
+  "verification": {
+    "authority_update_status": "FINAL_AUTOMATED_CONSOLIDATION_PASS",
+    "counts_are_final": true,
+    "component_suites": "PASS_SCOPED",
+    "final_repository_suite": {
+      "status": "PASS",
+      "node_test_files": 40,
+      "node_tests": 227,
+      "coverage_percent": {
+        "statements": 88.68,
+        "branches": 79.23,
+        "functions": 93.42,
+        "lines": 90.32
+      },
+      "browser_passed": 14,
+      "browser_intentional_skips": 6,
+      "browser_failed": 0,
+      "python_tests": 44,
+      "python_coverage_percent": 99.17,
+      "dependency_vulnerabilities": 0,
+      "integrated_preview_smoke": "PASS; loopback 18787; shell/manifest/service worker/CSP, 401 boundary, HttpOnly pairing, transcription and Mirror Free Local policies"
+    },
+    "physical_iphone": "NOT_YET_VERIFIED",
+    "real_whisper_model": "NOT_YET_PROVISIONED_OR_VERIFIED",
+    "real_mirror_model": "NOT_YET_PROVISIONED_OR_VERIFIED",
+    "representative_mirror_benchmark_on_actual_px13": "NOT_YET_RUN",
+    "natural_1500_second_day_1": "NOT_YET_VERIFIED",
+    "actual_rev1_browser_origin_migration": "NOT_YET_VERIFIED",
+    "details": "REV2_VERIFICATION.md"
+  },
+  "preview": {
+    "production_deployment": false,
+    "github_pages_source_changed": false,
+    "local_preview": "dist; integrated loopback smoke-tested at http://127.0.0.1:18787 and then stopped; standard operator port remains 8787",
+    "draft_pull_request": "PENDING"
+  },
+  "holds": [
+    "Provision verified CTranslate2 base and small model directories on the PX13",
+    "Provision a candidate no-cost local Mirror model/runtime on the PX13; qwen2.5:7b is only the development default",
+    "Benchmark a representative grounded Mirror workload on Ryan's actual PX13 before selecting the release model/runtime",
+    "Configure a private device-trusted HTTPS PWA/API origin over the intended same-network or Tailscale path",
+    "Run physical iPhone microphone, signed-session close/reopen, PWA/Mirror Core offline, queue/reconnect, notification/later retrieval, claim citation, lifecycle, deletion/restore/purge, export, and result-synchronization acceptance",
+    "Run an actual Rev1-origin migration comparison without deleting the Rev1 source",
+    "Confirm a genuine natural-duration Day 1 reaches 0:00, saves completion, and preserves Chill Brian behavior",
+    "Do not merge or deploy without separate explicit release authority"
+  ],
+  "next_controlled_action": "Provision the verified CTranslate2 base model directory at %LOCALAPPDATA%\\QCTP\\whisper-models\\base on the PX13."
+}

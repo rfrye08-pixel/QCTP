@@ -3,13 +3,14 @@
   "manifest_id": "QCTP-PLATFORM-REV2",
   "title": "Quantum Consciousness Training Platform Rev2",
   "created_at": "2026-08-17T16:12:00-05:00",
-  "updated_at": "2026-08-17T17:10:00-05:00",
+  "updated_at": "2026-08-17T17:55:00-05:00",
   "status": "ACTIVE",
-  "north_star": "A mobile-first consciousness-development platform that unifies learning, guided practice, spoken and written capture, hands-on creation, personal experiments, longitudinal records, AI reflection, and daily integration.",
+  "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness-development platform that unifies learning, guided practice, spoken and written capture, hands-on creation, personal experiments, longitudinal records, reflection, and daily integration.",
   "controlled_baseline": {
     "runtime_release": "1.1.4",
     "foundation_path_days": 112,
     "voice": "Chill Brian",
+    "runtime_cost_mode": "FREE_LOCAL",
     "regression_guard": "The verified Day 1 lesson and exact 25-minute practice may not change without passing the existing device and timing tests."
   },
   "deliverables": [
@@ -114,11 +115,12 @@
       "name": "Mirror and Insights engine",
       "status": "PARTIAL",
       "remaining": [
-        "AI retrieval over user records",
-        "Traceable pattern evidence",
+        "Traceable local search and deterministic pattern evidence",
+        "Optional local-model adapter",
         "User acceptance/rejection of generated reflections",
         "Longitudinal dashboard"
-      ]
+      ],
+      "cost_guard": "Cloud AI is optional and disabled by default. Free Local Mode must remain useful without it."
     },
     {
       "id": "QCTP-R2-D11",
@@ -141,6 +143,8 @@
         "Existing local data migrates without loss",
         "New data entities persist and export",
         "PWA install and offline shell pass",
+        "Free Local Mode runs with no provider environment variables",
+        "No outgoing metered-provider request occurs in Free Local Mode",
         "Release authority is explicit"
       ]
     },
@@ -154,9 +158,11 @@
         "Timed auto-dictation recording",
         "Pause, resume, cancel, playback, re-record, and append",
         "Raw audio stored outside localStorage",
-        "Offline queue and retry",
+        "Offline recording and queue",
+        "Recording and saving work with no transcription provider",
         "Raw audio, verbatim transcript, corrected transcript, and clean note remain separate",
-        "Secure server-side transcription with no frontend secret",
+        "No-cost local or manual transcription path",
+        "Paid cloud transcription optional, disabled by default, and never in the critical path",
         "Complete deletion and export",
         "iPhone device acceptance"
       ],
@@ -165,15 +171,33 @@
     {
       "id": "QCTP-R2-D14",
       "name": "Codex production implementation branch and handoff",
-      "status": "CLOSED_EXECUTION_READY",
+      "status": "CLOSED_EXECUTION_ACTIVE_USER_REPORTED",
       "branch": "qctp-platform-rev2-codex",
       "base_commit": "e94c035606006ed3d41769ea00a30d0c00754c8f",
       "handoff_ref": "QCTP_CODEX_REV2_IMPLEMENTATION_HANDOFF_REV0_2026-08-17.md",
       "implementation_agent": "Codex",
       "release_authority": "ZERO_RELEASE"
+    },
+    {
+      "id": "QCTP-R2-D15",
+      "name": "Zero recurring cost runtime baseline",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
+      "acceptance": [
+        "No OpenAI API key required",
+        "No paid provider account required for core use",
+        "Core platform functions operate at zero recurring API cost",
+        "Released narration is static at runtime",
+        "Voice recording and playback operate locally",
+        "No-cost transcription path exists or recording remains fully usable without transcript",
+        "Cloud transcription and AI are explicit opt-in only",
+        "Settings clearly show Free Local Mode and paid services off",
+        "Automated test proves no metered-provider calls in Free Local Mode"
+      ],
+      "release_authority": "ZERO_RELEASE"
     }
   ],
   "release_authority": "ZERO_RELEASE_FOR_REV2_RUNTIME",
-  "current_macro_delta": "Product architecture, Grant integration, voice-capture requirements, prototype branch, and Codex execution branch are controlled. The next material work package is the production Rev2 implementation and acceptance suite in Codex.",
-  "next_controlled_action": "Execute QCTP-CODEX-REV2-HANDOFF-REV0 on qctp-platform-rev2-codex."
+  "current_macro_delta": "Product architecture, Grant integration, voice capture, zero-cost runtime requirements, prototype branch, and Codex execution branch are controlled. Codex implementation is active by user report; no production artifact has yet been independently accepted.",
+  "next_controlled_action": "Codex must acknowledge and implement QCTP-ZERO-COST-RUNTIME-REV0 during the current qctp-platform-rev2-codex execution."
 }

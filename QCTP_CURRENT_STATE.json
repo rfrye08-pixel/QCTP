@@ -1,7 +1,7 @@
 {
   "schema": "qctp-current-state-v2",
   "project": "QCTP",
-  "updated_at": "2026-08-17T17:10:00-05:00",
+  "updated_at": "2026-08-17T17:55:00-05:00",
   "product_identity": {
     "name": "QCTP",
     "expanded_name": "Quantum Consciousness Training Platform",
@@ -12,6 +12,7 @@
     "product_architecture": "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
     "robert_edward_grant_track": "QCTP_ROBERT_EDWARD_GRANT_INTEGRATION_REV0_2026-08-17.md",
     "voice_capture_spec": "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
+    "zero_recurring_cost_runtime": "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
     "codex_implementation_handoff": "QCTP_CODEX_REV2_IMPLEMENTATION_HANDOFF_REV0_2026-08-17.md",
     "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV2.json"
   },
@@ -24,11 +25,12 @@
     "production_implementation_agent": "Codex",
     "codex_work_branch": "qctp-platform-rev2-codex",
     "codex_branch_base_commit": "e94c035606006ed3d41769ea00a30d0c00754c8f",
-    "codex_branch_status": "EXECUTION_READY",
+    "codex_branch_status": "EXECUTION_ACTIVE_USER_REPORTED",
     "codex_handoff_id": "QCTP-CODEX-REV2-HANDOFF-REV0",
     "branch_release_authority": "ZERO_RELEASE",
-    "implementation_decision": "Use Codex for the production Rev2 refactor, backend, voice capture, migrations, automated tests, and preview PR. ChatGPT retains product architecture, curriculum, source integration, configuration authority, acceptance criteria, and independent review.",
-    "next_work_package": "Execute QCTP-CODEX-REV2-HANDOFF-REV0 on qctp-platform-rev2-codex."
+    "implementation_decision": "Use Codex for the production Rev2 refactor, backend/provider interfaces, voice capture, migrations, automated tests, and preview PR. ChatGPT retains product architecture, curriculum, source integration, configuration authority, acceptance criteria, and independent review.",
+    "cost_architecture_decision": "The production release baseline is Free Local Mode. Paid OpenAI or other metered-provider adapters are optional, disabled by default, and not permitted on the critical path.",
+    "next_work_package": "Codex must incorporate QCTP-ZERO-COST-RUNTIME-REV0 while executing QCTP-CODEX-REV2-HANDOFF-REV0 on qctp-platform-rev2-codex."
   },
   "current_release_candidate": "1.1.4",
   "deployment": {
@@ -44,6 +46,7 @@
     "name": "Chill Brian",
     "provider": "HeyGen neural speech",
     "status": "DEVICE_TEST_PASS",
+    "runtime_billing_rule": "Released narration is pre-rendered/static; normal playback may not invoke a metered TTS service.",
     "evidence": [
       "User confirmed Test Chill Brian + tone passed on iPhone",
       "User confirmed normal 25-minute mode played correctly for approximately three minutes on iPhone"
@@ -60,6 +63,31 @@
     "accelerated_mode_rev_1_1_3": "FAILED_SILENT",
     "accelerated_mode_rev_1_1_4_fix": "DEPLOYED_NOT_REQUIRED_FOR_RELEASE_USE"
   },
+  "runtime_cost_requirement": {
+    "status": "CONTROLLED",
+    "default_mode": "FREE_LOCAL",
+    "paid_api_required": false,
+    "openai_api_key_required": false,
+    "automatic_paid_provider_calls": false,
+    "user_selected_paid_transcription": false,
+    "core_app_recurring_usage_cost_target": 0,
+    "required_free_capabilities": [
+      "Foundation playback and sequencing",
+      "workbook and progress",
+      "voice recording and raw-audio playback",
+      "local-first storage",
+      "Studio, Lab, Codex, and Mirror Journal records",
+      "export/import",
+      "deterministic local search and insights"
+    ],
+    "preferred_no_cost_transcription": [
+      "local PX13 Whisper-compatible companion service",
+      "on-device/browser local transcription where acceptable",
+      "operating-system dictation as a labeled convenience fallback"
+    ],
+    "cloud_transcription": "OPTIONAL_DISABLED_BY_DEFAULT",
+    "cloud_ai_mirror": "OPTIONAL_DISABLED_BY_DEFAULT"
+  },
   "voice_capture_requirement": {
     "status": "CONTROLLED_SPEC_COMPLETE_IMPLEMENTATION_OPEN",
     "global_quick_capture": true,
@@ -69,10 +97,10 @@
     "verbatim_transcript_preserved": true,
     "clean_note_separate": true,
     "local_first_binary_store": "IndexedDB or equivalent",
-    "secure_backend_required": true,
     "client_api_keys_prohibited": true,
-    "preferred_mvp_transcription": "gpt-4o-mini-transcribe",
-    "optional_high_accuracy_transcription": "gpt-4o-transcribe"
+    "required_default_transcription": "NO_COST_LOCAL_OR_MANUAL",
+    "optional_paid_transcription_adapter": "OpenAI or other provider, explicit opt-in only",
+    "selected_runtime_setting": "PAID_TRANSCRIPTION_OFF"
   },
   "rev2_scope": {
     "foundation_path_preserved": true,
@@ -114,14 +142,16 @@
     "Face-down or locked-screen continuity beyond the first approximately three minutes is not yet verified; use screen-up at low brightness for the first full Foundation session",
     "Confirm the full neural lesson automatically transitions into the real practice during the first genuine Day 1 session",
     "Codex must implement and test the production Rev2 architecture on qctp-platform-rev2-codex",
-    "Voice capture requires a secure backend and authenticated preview before production use",
-    "Run migration, IndexedDB audio persistence, offline queue, transcription, REG-01, Codex, Mirror, export/import, Day 1 regression, PWA, and iPhone navigation tests",
+    "Codex must demonstrate Free Local Mode with no API credentials and no outgoing metered-provider calls",
+    "Implement or preserve a no-cost transcription path; cloud transcription may not block release or core operation",
+    "Run migration, IndexedDB audio persistence, offline queue, local/free transcription path, REG-01, Codex, Mirror, export/import, Day 1 regression, PWA, and iPhone navigation tests",
     "No Rev2 branch may merge or deploy over main without explicit release authority"
   ],
   "release_authority": {
     "foundation_rev_1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
     "platform_rev2": "ZERO_RELEASE",
-    "voice_capture": "ZERO_RELEASE"
+    "voice_capture": "ZERO_RELEASE",
+    "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "next_controlled_action": "Execute QCTP-CODEX-REV2-HANDOFF-REV0 on branch qctp-platform-rev2-codex."
+  "next_controlled_action": "Codex must acknowledge and implement QCTP-ZERO-COST-RUNTIME-REV0 without interrupting the current production refactor."
 }
