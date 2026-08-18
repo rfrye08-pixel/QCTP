@@ -1,16 +1,17 @@
 {
   "schema": "qctp-current-state-v2",
   "project": "QCTP",
-  "updated_at": "2026-08-17T18:15:00-05:00",
+  "updated_at": "2026-08-17T18:42:00-05:00",
   "product_identity": {
     "name": "QCTP",
     "expanded_name": "Quantum Consciousness Training Platform",
     "foundation_program": "112-day Quantum Consciousness Training Program",
-    "scope_decision": "Meditation and timed audio remain core subsystems, but QCTP is controlled as a broader learning, practice, studio, experiment, voice-capture, codex, mirror, and integration platform."
+    "scope_decision": "Meditation and timed audio remain core subsystems, but QCTP is controlled as a broader learning, respiratory-control, practice, studio, experiment, voice-capture, codex, mirror, and integration platform."
   },
   "authority_refs": {
     "product_architecture": "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
     "robert_edward_grant_track": "QCTP_ROBERT_EDWARD_GRANT_INTEGRATION_REV0_2026-08-17.md",
+    "breathwork_system": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
     "voice_capture_spec": "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
     "zero_recurring_cost_runtime": "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
     "local_ai_mirror_requirement": "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
@@ -29,10 +30,11 @@
     "codex_branch_status": "EXECUTION_ACTIVE_USER_REPORTED",
     "codex_handoff_id": "QCTP-CODEX-REV2-HANDOFF-REV0",
     "branch_release_authority": "ZERO_RELEASE",
-    "implementation_decision": "Use Codex for the production Rev2 refactor, backend/provider interfaces, voice capture, migrations, automated tests, local AI companion seam, and preview PR. ChatGPT retains product architecture, curriculum, source integration, configuration authority, acceptance criteria, and independent review.",
+    "implementation_decision": "Use Codex for the production Rev2 refactor, backend/provider interfaces, Breath Director, voice capture, migrations, automated tests, local AI companion seam, and preview PR. ChatGPT retains product architecture, curriculum, source integration, configuration authority, acceptance criteria, and independent review.",
     "cost_architecture_decision": "The production release baseline is Free Local Mode. Paid OpenAI or other metered-provider adapters are optional, disabled by default, and not permitted on the critical path.",
     "mirror_architecture_decision": "A real AI-assisted Mirror shall remain available without paid API usage through always-local Mirror Core plus an optional no-cost Local AI Mirror companion running on user-owned hardware. Cloud AI remains optional and off by default.",
-    "next_work_package": "Codex must incorporate QCTP-ZERO-COST-RUNTIME-REV0 and QCTP-LOCAL-AI-MIRROR-REV0 while executing QCTP-CODEX-REV2-HANDOFF-REV0 on qctp-platform-rev2-codex."
+    "breath_architecture_decision": "Breath control is a first-class state-control subsystem. QCTP shall provide a deterministic Breath Director, seven-session Breath Foundations track, exact method selection, calibration, safety blocking, and domain-specific transitions without requiring AI or paid APIs.",
+    "next_work_package": "Codex must incorporate QCTP-BREATH-REV0, QCTP-ZERO-COST-RUNTIME-REV0, and QCTP-LOCAL-AI-MIRROR-REV0 while executing QCTP-CODEX-REV2-HANDOFF-REV0 on qctp-platform-rev2-codex."
   },
   "current_release_candidate": "1.1.4",
   "deployment": {
@@ -65,6 +67,34 @@
     "accelerated_mode_rev_1_1_3": "FAILED_SILENT",
     "accelerated_mode_rev_1_1_4_fix": "DEPLOYED_NOT_REQUIRED_FOR_RELEASE_USE"
   },
+  "breathwork_requirement": {
+    "status": "CONTROLLED_SPEC_COMPLETE_IMPLEMENTATION_OPEN",
+    "default_until_calibrated": {
+      "method": "QCTP-B1 Foundation Resonance Breath",
+      "inhale_seconds": 4,
+      "exhale_seconds": 6,
+      "holds": false,
+      "inhale_route": "nose",
+      "exhale_route": "nose_default",
+      "duration_minutes": 5,
+      "volume": "quiet_nonmaximal_60_to_75_percent"
+    },
+    "breath_foundations_sessions": 7,
+    "breath_director_required": true,
+    "personal_calibration_required": true,
+    "hazardous_activity_blocking_required": true,
+    "required_methods": [
+      "Foundation resonance 4/6",
+      "Physiological sigh and cyclic sighing",
+      "Balanced 5/5",
+      "Box breathing",
+      "Alternate nostril without holds",
+      "Walking step breath"
+    ],
+    "advanced_forceful_or_retention_methods": "SEPARATE_FUTURE_GATE",
+    "foundation_day1_regression_protected": true,
+    "paid_api_required": false
+  },
   "runtime_cost_requirement": {
     "status": "CONTROLLED",
     "default_mode": "FREE_LOCAL",
@@ -75,6 +105,7 @@
     "core_app_recurring_usage_cost_target": 0,
     "required_free_capabilities": [
       "Foundation playback and sequencing",
+      "Breath Director and Breath Foundations",
       "workbook and progress",
       "voice recording and raw-audio playback",
       "local-first storage",
@@ -139,6 +170,7 @@
     ],
     "platform_pillars": [
       "Learn",
+      "Breath Director",
       "Practice",
       "Studio",
       "Lab",
@@ -165,19 +197,21 @@
     "Face-down or locked-screen continuity beyond the first approximately three minutes is not yet verified; use screen-up at low brightness for the first full Foundation session",
     "Confirm the full neural lesson automatically transitions into the real practice during the first genuine Day 1 session",
     "Codex must implement and test the production Rev2 architecture on qctp-platform-rev2-codex",
+    "Codex must implement and test Breath Foundations, Breath Director selection logic, calibration, local pacing, hazardous-state blocking, persistence, and export",
     "Codex must demonstrate Free Local Mode with no API credentials and no outgoing metered-provider calls",
     "Implement or preserve a no-cost transcription path; cloud transcription may not block release or core operation",
     "Implement Mirror Core and a local-model provider seam without cloud dependency",
     "Benchmark the Local AI Mirror on Ryan's PX13 before granting Local AI Mirror release authority",
-    "Run migration, IndexedDB audio persistence, offline queue, local/free transcription path, REG-01, Codex, Mirror, export/import, Day 1 regression, PWA, and iPhone navigation tests",
+    "Run migration, IndexedDB audio persistence, offline queue, local/free transcription path, Breath Director, REG-01, Codex, Mirror, export/import, Day 1 regression, PWA, and iPhone navigation tests",
     "No Rev2 branch may merge or deploy over main without explicit release authority"
   ],
   "release_authority": {
     "foundation_rev_1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
     "platform_rev2": "ZERO_RELEASE",
+    "breathwork_system": "ZERO_RELEASE",
     "voice_capture": "ZERO_RELEASE",
     "local_ai_mirror": "ZERO_RELEASE",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "next_controlled_action": "Codex must acknowledge and incorporate QCTP-LOCAL-AI-MIRROR-REV0 and QCTP-ZERO-COST-RUNTIME-REV0 without interrupting the active production refactor."
+  "next_controlled_action": "Codex must acknowledge and incorporate QCTP-BREATH-REV0, QCTP-LOCAL-AI-MIRROR-REV0, and QCTP-ZERO-COST-RUNTIME-REV0 without interrupting the active production refactor."
 }
