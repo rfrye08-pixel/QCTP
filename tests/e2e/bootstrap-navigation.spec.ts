@@ -21,6 +21,34 @@ test("boots the PWA into IndexedDB-backed Free Local Mode", async ({
   ).toBeVisible();
   await expect(page.getByText("25:00 exact", { exact: true })).toBeVisible();
   await expect(page.locator('link[rel="manifest"]')).toHaveCount(1);
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute(
+    "href",
+    /qctp-icon-180\.png$/u,
+  );
+  const iconMetadata = await page.evaluate(async () => {
+    const manifestLink = document.querySelector<HTMLLinkElement>(
+      'link[rel="manifest"]',
+    );
+    if (!manifestLink) throw new Error("PWA manifest link is missing.");
+    const manifest = (await fetch(manifestLink.href).then((response) =>
+      response.json(),
+    )) as { icons?: Array<{ src?: string; sizes?: string; purpose?: string }> };
+    return manifest.icons ?? [];
+  });
+  expect(iconMetadata).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        src: "qctp-icon-192.png",
+        sizes: "192x192",
+        purpose: "any",
+      }),
+      expect.objectContaining({
+        src: "qctp-icon-512.png",
+        sizes: "512x512",
+        purpose: "maskable",
+      }),
+    ]),
+  );
 
   const stores = await listStoreNames(page);
   expect(stores).toEqual(
