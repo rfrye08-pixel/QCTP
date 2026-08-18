@@ -51,17 +51,6 @@ export default defineConfig({
       workbox: {
         navigateFallback: "index.html",
         globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/resource2\.heygen\.ai\//,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "qctp-neural-audio-v1",
-              expiration: { maxEntries: 32, maxAgeSeconds: 60 * 60 * 24 * 30 },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
-        ],
       },
     }),
   ],
