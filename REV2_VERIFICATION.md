@@ -4,7 +4,7 @@
 
 **Branch:** `qctp-platform-rev2-codex`
 
-**Base commit:** `9e30cf18050112fa4d54f905b2bc7cd9792bce19`
+**Base commit:** `cec7f3dad3fb761c6883fbe2051fe76c9b45eb83`
 
 **Disposition:** `AUTOMATED REV2 CANDIDATE GATES PASS; DEVICE/MODEL/BENCHMARK HOLDS REMAIN`
 
@@ -136,3 +136,5 @@ The following are intentionally not claimed by mocked or desktop automation:
 ## Preview and release statement
 
 Only a non-production preview is authorized. No test in this document changes `ZERO_RELEASE`, authorizes a merge to `main`, or authorizes deployment. The draft PR must carry all unresolved device, model-provisioning, migration-origin, and natural-duration holds.
+
+Draft review location: https://github.com/rfrye08-pixel/QCTP/pull/2

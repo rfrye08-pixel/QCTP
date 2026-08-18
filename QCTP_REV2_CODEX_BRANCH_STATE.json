@@ -1,9 +1,9 @@
 {
   "schema": "qctp-rev2-codex-branch-state-v1",
   "branch": "qctp-platform-rev2-codex",
-  "updated_at": "2026-08-17T19:40:20-05:00",
+  "updated_at": "2026-08-17T20:00:00-05:00",
   "version": "2.0.0-alpha.1",
-  "base_commit": "9e30cf18050112fa4d54f905b2bc7cd9792bce19",
+  "base_commit": "cec7f3dad3fb761c6883fbe2051fe76c9b45eb83",
   "target_branch": "main",
   "status": "AUTOMATED_GATES_PASS_ZERO_RELEASE_HARDWARE_HOLDS",
   "release_authority": "ZERO_RELEASE",
@@ -145,7 +145,7 @@
     "production_deployment": false,
     "github_pages_source_changed": false,
     "local_preview": "dist; integrated loopback smoke-tested at http://127.0.0.1:18787 and then stopped; standard operator port remains 8787",
-    "draft_pull_request": "PENDING"
+    "draft_pull_request": "https://github.com/rfrye08-pixel/QCTP/pull/2"
   },
   "holds": [
     "Provision verified CTranslate2 base and small model directories on the PX13",
