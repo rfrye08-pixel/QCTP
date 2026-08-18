@@ -84,7 +84,6 @@ export function PracticeScreen({
     if (cueAudioRef.current) return cueAudioRef.current;
     const audio = new Audio();
     audio.preload = "auto";
-    audio.playsInline = true;
     cueAudioRef.current = audio;
     return audio;
   }, []);
@@ -118,7 +117,6 @@ export function PracticeScreen({
       const audio = getCueAudio();
       audio.pause();
       audio.preload = "auto";
-      audio.playsInline = true;
       audio.volume = 1;
       audio.src = cue.audioUrl;
       audio.currentTime = 0;
@@ -296,7 +294,6 @@ export function PracticeScreen({
         <audio
           ref={lessonRef}
           controls
-          playsInline
           preload="metadata"
           src={CHILL_BRIAN_AUDIO.lesson}
           onPointerDown={primeCueAudio}
