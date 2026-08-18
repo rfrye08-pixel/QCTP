@@ -3,14 +3,15 @@
   "manifest_id": "QCTP-PLATFORM-REV2",
   "title": "Quantum Consciousness Training Platform Rev2",
   "created_at": "2026-08-17T16:12:00-05:00",
-  "updated_at": "2026-08-17T18:15:00-05:00",
+  "updated_at": "2026-08-17T18:42:00-05:00",
   "status": "ACTIVE",
-  "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness-development platform that unifies learning, guided practice, spoken and written capture, hands-on creation, personal experiments, longitudinal records, local AI reflection, and daily integration.",
+  "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness-development platform that unifies learning, respiratory state control, guided practice, spoken and written capture, hands-on creation, personal experiments, longitudinal records, local AI reflection, and daily integration.",
   "controlled_baseline": {
     "runtime_release": "1.1.4",
     "foundation_path_days": 112,
     "voice": "Chill Brian",
     "runtime_cost_mode": "FREE_LOCAL",
+    "default_breath_until_calibrated": "4-second nasal inhale / 6-second smooth exhale / no holds / quiet non-maximal volume",
     "regression_guard": "The verified Day 1 lesson and exact 25-minute practice may not change without passing the existing device and timing tests."
   },
   "deliverables": [
@@ -57,6 +58,7 @@
       ],
       "remaining": [
         "Typed generalized path schema",
+        "Breath Foundations parallel skill track",
         "Migration and export/import tests",
         "Production runtime verification"
       ]
@@ -107,6 +109,7 @@
       "remaining": [
         "Typed versioned schemas",
         "Search, tags, backlinks, attachments, and revisions",
+        "Breath calibration and session records",
         "Migration and full JSON round-trip verification"
       ]
     },
@@ -117,6 +120,7 @@
       "remaining": [
         "Traceable Mirror Core deterministic analytics",
         "No-cost Local AI Mirror provider and queue",
+        "Breath-state correlation support",
         "User acceptance/rejection of generated reflections",
         "Longitudinal dashboard",
         "Optional cloud provider adapter kept off by default"
@@ -147,6 +151,7 @@
         "Free Local Mode runs with no provider environment variables",
         "No outgoing metered-provider request occurs in Free Local Mode",
         "Mirror Core works with no model provider",
+        "Breath Director works offline with no AI provider",
         "Release authority is explicit"
       ]
     },
@@ -216,9 +221,30 @@
         "Real local-model configuration is benchmarked on Ryan's PX13 before release"
       ],
       "release_authority": "ZERO_RELEASE"
+    },
+    {
+      "id": "QCTP-R2-D17",
+      "name": "Breath Director and Breath Foundations",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
+      "acceptance": [
+        "Goal-based deterministic Breath Director",
+        "Seven-session Breath Foundations onboarding and skill track",
+        "Structured protocols for 4/6 resonance, physiological sigh/cyclic sighing, 5/5 balance, box breathing, alternate nostril, and walking breath",
+        "Every method specifies cadence, route, volume, duration, posture, transition, and stop conditions",
+        "Personal cadence calibration persists calm, focus, sleep, and acute-reset profiles",
+        "Animated, audio, haptic, and silent local pacing options",
+        "Practice blocked during driving, machinery, ladders, water, and hazardous activity",
+        "Breath session effects persist and export",
+        "Focus 10/OBE guidance releases deliberate breath control after induction",
+        "Foundation Day 1 remains regression-protected",
+        "Automated cadence-math, selection, safety-block, persistence, and export tests",
+        "iPhone low-screen-interaction acceptance"
+      ],
+      "release_authority": "ZERO_RELEASE"
     }
   ],
   "release_authority": "ZERO_RELEASE_FOR_REV2_RUNTIME",
-  "current_macro_delta": "Product architecture, Grant integration, voice capture, zero-cost runtime, Local AI Mirror requirements, prototype branch, and Codex execution branch are controlled. Codex implementation is active by user report; no production artifact has yet been independently accepted.",
-  "next_controlled_action": "Codex must acknowledge and implement QCTP-LOCAL-AI-MIRROR-REV0 and QCTP-ZERO-COST-RUNTIME-REV0 during the current qctp-platform-rev2-codex execution."
+  "current_macro_delta": "Product architecture, Grant integration, voice capture, zero-cost runtime, Local AI Mirror, and Breath Director requirements are controlled. Codex implementation is active by user report; no production Rev2 artifact has yet been independently accepted.",
+  "next_controlled_action": "Codex must acknowledge and implement QCTP-BREATH-REV0, QCTP-LOCAL-AI-MIRROR-REV0, and QCTP-ZERO-COST-RUNTIME-REV0 during the current qctp-platform-rev2-codex execution."
 }
