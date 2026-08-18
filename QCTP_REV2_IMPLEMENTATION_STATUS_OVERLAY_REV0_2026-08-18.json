@@ -1,0 +1,65 @@
+{
+  "schema": "qctp-rev2-implementation-status-overlay-v1",
+  "overlay_id": "QCTP-R2-IMPLEMENTATION-STATUS-REV0",
+  "updated_at": "2026-08-18T00:30:00-05:00",
+  "authority": "This overlay supersedes older implementation-status fields in QCTP_MACRO_DELIVERABLE_MANIFEST_REV2.json where they conflict. Acceptance and release holds remain controlled separately.",
+  "review_ref": "QCTP_REV2_INDEPENDENT_REPOSITORY_REVIEW_REV0_2026-08-18.md",
+  "candidate": {
+    "branch": "qctp-platform-rev2-codex",
+    "head_sha": "ada1dad03f73072297fae366a77b7937c4e0ce44",
+    "pull_request": 2,
+    "pull_request_state": "DRAFT_OPEN_MERGEABLE_UNMERGED",
+    "version": "2.0.0-alpha.1"
+  },
+  "implementation_disposition": "NON_BREATH_IMPLEMENTATION_COMPLETE_CANDIDATE",
+  "deliverable_status": {
+    "QCTP-R2-D04": "IMPLEMENTED_CANDIDATE",
+    "QCTP-R2-D05": "IMPLEMENTED_CANDIDATE_EXCEPT_BREATH_TRACK",
+    "QCTP-R2-D06": "IMPLEMENTED_CANDIDATE",
+    "QCTP-R2-D07": "IMPLEMENTED_MVP_CANDIDATE",
+    "QCTP-R2-D08": "FUTURE_SCOPE_NOT_REQUIRED_FOR_CURRENT_REV2_MVP",
+    "QCTP-R2-D09": "IMPLEMENTED_CANDIDATE",
+    "QCTP-R2-D10": "IMPLEMENTED_CANDIDATE",
+    "QCTP-R2-D11": "IMPLEMENTED_MVP_CANDIDATE",
+    "QCTP-R2-D12": "RELEASE_ACCEPTANCE_OPEN",
+    "QCTP-R2-D13": "IMPLEMENTED_CANDIDATE",
+    "QCTP-R2-D14": "CLOSED_IMPLEMENTATION_DELIVERED_TO_DRAFT_PR",
+    "QCTP-R2-D15": "IMPLEMENTED_CANDIDATE",
+    "QCTP-R2-D16": "IMPLEMENTED_CANDIDATE",
+    "QCTP-R2-D17": "SPEC_CLOSED_IMPLEMENTATION_PENDING"
+  },
+  "only_known_unimplemented_product_subsystem": {
+    "deliverable_id": "QCTP-R2-D17",
+    "name": "Breath Director and Breath Foundations",
+    "authority_ref": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
+    "branch_presence": false
+  },
+  "recorded_automated_evidence": {
+    "node_test_files": 40,
+    "node_tests_passed": 229,
+    "coverage_percent": {
+      "statements": 88.68,
+      "branches": 79.23,
+      "functions": 93.42,
+      "lines": 90.32
+    },
+    "playwright_scheduled": 20,
+    "playwright_passed": 14,
+    "playwright_intentional_skips": 6,
+    "playwright_failed": 0,
+    "python_tests_passed": 44,
+    "python_coverage_percent": 99.17,
+    "dependency_vulnerabilities": 0,
+    "evidence_class": "CODEX_RECORDED_NOT_INDEPENDENTLY_REEXECUTED"
+  },
+  "release_acceptance_holds": [
+    "Optional CTranslate2 small high-accuracy model provisioning",
+    "Remaining physical-iPhone microphone/background/offline/reconnect/notification/lifecycle/export checks",
+    "Actual preserved-origin Rev1 migration comparison",
+    "Natural full-duration 1500-second Day 1 acceptance",
+    "Breathwork implementation and verification",
+    "Explicit merge/deployment authority"
+  ],
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "When QCTP Codex usage is available, implement QCTP-BREATH-REV0 on qctp-platform-rev2-codex, rerun the complete acceptance suite, and update draft PR #2 without merging."
+}
