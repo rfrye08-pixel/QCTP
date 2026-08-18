@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { PracticeScreen } from "./PracticeScreen";
@@ -69,7 +69,7 @@ describe("PracticeScreen guide audio", () => {
     render(<PracticeScreen />);
     fireEvent.click(screen.getByRole("button", { name: "Begin practice" }));
 
-    await waitFor(() => expect(audio.play).toHaveBeenCalledTimes(1));
+    expect(audio.play).toHaveBeenCalledTimes(1);
     expect(constructor).toHaveBeenCalledTimes(1);
 
     await act(async () => {
@@ -91,9 +91,12 @@ describe("PracticeScreen guide audio", () => {
     render(<PracticeScreen />);
     fireEvent.click(screen.getByRole("button", { name: "Begin practice" }));
 
-    await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Resume" })).toBeVisible(),
-    );
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(screen.getByRole("button", { name: "Resume" })).toBeVisible();
     expect(
       screen.getByText(/Guide audio could not start, so the timer was paused/),
     ).toBeVisible();
