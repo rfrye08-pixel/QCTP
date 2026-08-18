@@ -1,7 +1,7 @@
 {
   "schema": "qctp-current-state-v2",
   "project": "QCTP",
-  "updated_at": "2026-08-17T17:55:00-05:00",
+  "updated_at": "2026-08-17T18:15:00-05:00",
   "product_identity": {
     "name": "QCTP",
     "expanded_name": "Quantum Consciousness Training Platform",
@@ -13,6 +13,7 @@
     "robert_edward_grant_track": "QCTP_ROBERT_EDWARD_GRANT_INTEGRATION_REV0_2026-08-17.md",
     "voice_capture_spec": "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
     "zero_recurring_cost_runtime": "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
+    "local_ai_mirror_requirement": "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
     "codex_implementation_handoff": "QCTP_CODEX_REV2_IMPLEMENTATION_HANDOFF_REV0_2026-08-17.md",
     "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV2.json"
   },
@@ -28,9 +29,10 @@
     "codex_branch_status": "EXECUTION_ACTIVE_USER_REPORTED",
     "codex_handoff_id": "QCTP-CODEX-REV2-HANDOFF-REV0",
     "branch_release_authority": "ZERO_RELEASE",
-    "implementation_decision": "Use Codex for the production Rev2 refactor, backend/provider interfaces, voice capture, migrations, automated tests, and preview PR. ChatGPT retains product architecture, curriculum, source integration, configuration authority, acceptance criteria, and independent review.",
+    "implementation_decision": "Use Codex for the production Rev2 refactor, backend/provider interfaces, voice capture, migrations, automated tests, local AI companion seam, and preview PR. ChatGPT retains product architecture, curriculum, source integration, configuration authority, acceptance criteria, and independent review.",
     "cost_architecture_decision": "The production release baseline is Free Local Mode. Paid OpenAI or other metered-provider adapters are optional, disabled by default, and not permitted on the critical path.",
-    "next_work_package": "Codex must incorporate QCTP-ZERO-COST-RUNTIME-REV0 while executing QCTP-CODEX-REV2-HANDOFF-REV0 on qctp-platform-rev2-codex."
+    "mirror_architecture_decision": "A real AI-assisted Mirror shall remain available without paid API usage through always-local Mirror Core plus an optional no-cost Local AI Mirror companion running on user-owned hardware. Cloud AI remains optional and off by default.",
+    "next_work_package": "Codex must incorporate QCTP-ZERO-COST-RUNTIME-REV0 and QCTP-LOCAL-AI-MIRROR-REV0 while executing QCTP-CODEX-REV2-HANDOFF-REV0 on qctp-platform-rev2-codex."
   },
   "current_release_candidate": "1.1.4",
   "deployment": {
@@ -77,6 +79,8 @@
       "voice recording and raw-audio playback",
       "local-first storage",
       "Studio, Lab, Codex, and Mirror Journal records",
+      "Mirror Core deterministic local analysis",
+      "Local AI Mirror provider path on user-owned hardware",
       "export/import",
       "deterministic local search and insights"
     ],
@@ -87,6 +91,25 @@
     ],
     "cloud_transcription": "OPTIONAL_DISABLED_BY_DEFAULT",
     "cloud_ai_mirror": "OPTIONAL_DISABLED_BY_DEFAULT"
+  },
+  "local_ai_mirror_requirement": {
+    "status": "CONTROLLED_SPEC_COMPLETE_IMPLEMENTATION_OPEN",
+    "mirror_core_required": true,
+    "local_model_provider_required": true,
+    "paid_api_required": false,
+    "preferred_host": "Ryan's PX13 or other user-owned computer",
+    "iphone_behavior_when_host_offline": [
+      "Capture voice and text",
+      "Use deterministic Mirror Core",
+      "Search records",
+      "Queue Local AI Mirror questions",
+      "Review previously generated reflections"
+    ],
+    "required_provenance": true,
+    "source_record_links_required": true,
+    "user_accept_revise_reject_required": true,
+    "cloud_provider": "OPTIONAL_DISABLED_BY_DEFAULT",
+    "hardware_benchmark_required_before_release": true
   },
   "voice_capture_requirement": {
     "status": "CONTROLLED_SPEC_COMPLETE_IMPLEMENTATION_OPEN",
@@ -144,6 +167,8 @@
     "Codex must implement and test the production Rev2 architecture on qctp-platform-rev2-codex",
     "Codex must demonstrate Free Local Mode with no API credentials and no outgoing metered-provider calls",
     "Implement or preserve a no-cost transcription path; cloud transcription may not block release or core operation",
+    "Implement Mirror Core and a local-model provider seam without cloud dependency",
+    "Benchmark the Local AI Mirror on Ryan's PX13 before granting Local AI Mirror release authority",
     "Run migration, IndexedDB audio persistence, offline queue, local/free transcription path, REG-01, Codex, Mirror, export/import, Day 1 regression, PWA, and iPhone navigation tests",
     "No Rev2 branch may merge or deploy over main without explicit release authority"
   ],
@@ -151,7 +176,8 @@
     "foundation_rev_1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
     "platform_rev2": "ZERO_RELEASE",
     "voice_capture": "ZERO_RELEASE",
+    "local_ai_mirror": "ZERO_RELEASE",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "next_controlled_action": "Codex must acknowledge and implement QCTP-ZERO-COST-RUNTIME-REV0 without interrupting the current production refactor."
+  "next_controlled_action": "Codex must acknowledge and incorporate QCTP-LOCAL-AI-MIRROR-REV0 and QCTP-ZERO-COST-RUNTIME-REV0 without interrupting the active production refactor."
 }
