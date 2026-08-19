@@ -48,6 +48,7 @@ export function PracticeScreen({
   const lessonRef = useRef<HTMLAudioElement | null>(null);
   const cueAudioRef = useRef<HTMLAudioElement | null>(null);
   const cueAudioPrimedRef = useRef(false);
+  const testToneContextRef = useRef<AudioContext | null>(null);
   const dispatchRef = useRef<(event: SequencerEvent) => void>(() => undefined);
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
 
@@ -112,8 +113,62 @@ export function PracticeScreen({
       });
   }, [getCueAudio]);
 
+  const getTestToneContext = useCallback(() => {
+    if (testToneContextRef.current) return testToneContextRef.current;
+    if (typeof AudioContext === "undefined") return null;
+    const context = new AudioContext();
+    testToneContextRef.current = context;
+    return context;
+  }, []);
+
+  const primeTestTone = useCallback(() => {
+    const context = getTestToneContext();
+    if (!context || context.state !== "suspended") return;
+    void context.resume().catch(() => undefined);
+  }, [getTestToneContext]);
+
+  const playTestMarker = useCallback(() => {
+    const context = getTestToneContext();
+    if (!context) return;
+
+    const emit = () => {
+      try {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.frequency.value = 660;
+        gain.gain.setValueAtTime(0.0001, context.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.06,
+          context.currentTime + 0.01,
+        );
+        gain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          context.currentTime + 0.12,
+        );
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start();
+        oscillator.stop(context.currentTime + 0.13);
+      } catch {
+        // Verification timing remains valid when the local marker is unavailable.
+      }
+    };
+
+    if (context.state === "suspended") {
+      void context.resume().then(emit).catch(() => undefined);
+      return;
+    }
+    emit();
+  }, [getTestToneContext]);
+
   const playCue = useCallback(
     (cue: Day1Cue) => {
+      if (testMode) {
+        setAudioIssue(null);
+        playTestMarker();
+        return;
+      }
+
       const audio = getCueAudio();
       audio.pause();
       audio.preload = "auto";
@@ -140,7 +195,7 @@ export function PracticeScreen({
           }
         });
     },
-    [getCueAudio, releaseWakeLock],
+    [getCueAudio, playTestMarker, releaseWakeLock, testMode],
   );
 
   const dispatch = useCallback(
@@ -178,6 +233,7 @@ export function PracticeScreen({
     setLessonPlaying(false);
     setSaveStatus(null);
     setAudioIssue(null);
+    if (testMode) primeTestTone();
     if (
       sequencerRef.current.status === "ended" ||
       sequencerRef.current.status === "completed"
@@ -188,7 +244,7 @@ export function PracticeScreen({
     }
     dispatch({ type: "start", nowMs: performance.now() });
     void requestWakeLock();
-  }, [cueMode, dispatch, requestWakeLock, testMode]);
+  }, [cueMode, dispatch, primeTestTone, requestWakeLock, testMode]);
 
   useEffect(() => {
     if (sequencer.status !== "running") return;
@@ -222,6 +278,9 @@ export function PracticeScreen({
         cueAudio.removeAttribute("src");
         cueAudio.load();
       }
+      const testToneContext = testToneContextRef.current;
+      testToneContextRef.current = null;
+      if (testToneContext) void testToneContext.close();
       const current = wakeLockRef.current;
       wakeLockRef.current = null;
       if (current) void current.release();
@@ -239,7 +298,7 @@ export function PracticeScreen({
       dispatch({ type: "resume", nowMs });
       void requestWakeLock();
       const cueAudio = cueAudioRef.current;
-      if (cueAudio?.src && !cueAudio.ended) {
+      if (!testMode && cueAudio?.src && !cueAudio.ended) {
         void cueAudio
           .play()
           .then(() => setAudioIssue(null))
@@ -402,7 +461,8 @@ export function PracticeScreen({
         </p>
         {testMode ? (
           <p className="notice-inline">
-            Verification mode can never earn morning completion.
+            Verification mode uses local tone markers and can never earn morning
+            completion.
           </p>
         ) : null}
         {audioIssue ? (
