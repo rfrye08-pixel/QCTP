@@ -15,9 +15,8 @@ $RequiredAudioFixCommit = '80801cdf34a4856c95a4d9349aa8a019fdf6fa38'
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $StageRoot = $null
 $StageRepo = $null
-$DeployCandidate = $null
-$BackupDist = $null
 $LiveStaticRoot = $null
+$BackupDist = $null
 $ExitCode = 0
 
 function Write-Stage {
@@ -74,8 +73,8 @@ function Invoke-RobocopyMirror {
 function Test-HttpEndpoint {
     param(
         [Parameter(Mandatory = $true)][string]$Uri,
-        [int]$Attempts = 30,
-        [int]$DelaySeconds = 2
+        [int]$Attempts = 10,
+        [int]$DelayMilliseconds = 500
     )
 
     for ($attempt = 1; $attempt -le $Attempts; $attempt += 1) {
@@ -89,10 +88,8 @@ function Test-HttpEndpoint {
                 return $true
             }
         }
-        catch {
-            if ($attempt -eq $Attempts) { break }
-        }
-        Start-Sleep -Seconds $DelaySeconds
+        catch { }
+        Start-Sleep -Milliseconds $DelayMilliseconds
     }
     return $false
 }
@@ -104,6 +101,28 @@ function Test-RequiredAudioFix {
     return ($LASTEXITCODE -eq 0)
 }
 
+function New-IsolatedClone {
+    param([Parameter(Mandatory = $true)][string]$Head)
+
+    $root = Join-Path ([IO.Path]::GetTempPath()) ("qctp-private-runtime-stage-{0}-{1}" -f $PID, [Guid]::NewGuid().ToString('N'))
+    $repo = Join-Path $root 'QCTP'
+    New-Item -ItemType Directory -Path $root -Force | Out-Null
+
+    & git clone --no-hardlinks --no-checkout $RepoRoot $repo | Out-Host
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Could not create the isolated QCTP staging clone.'
+    }
+    & git -C $repo checkout --detach $Head | Out-Host
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not check out candidate $Head in isolated staging."
+    }
+
+    return [PSCustomObject]@{
+        Root = $root
+        Repository = $repo
+    }
+}
+
 function Write-RuntimeIdentity {
     param(
         [Parameter(Mandatory = $true)][string]$Head,
@@ -111,80 +130,24 @@ function Write-RuntimeIdentity {
     )
 
     $identity = [ordered]@{
-        schema = 'qctp-private-runtime-build-v4'
+        schema = 'qctp-private-runtime-build-v5'
         candidate_sha = $Head
         source_branch = $RequiredBranch
         audio_fix_present = $true
         isolated_staging_build = $true
-        live_static_root_discovered = $true
+        live_static_root_probed = $true
         in_place_static_mirror = $true
         built_at = (Get-Date).ToUniversalTime().ToString('o')
         release_authority = 'ZERO_RELEASE_DEVICE_TEST_CANDIDATE'
     }
-    $identityPath = Join-Path $DistDirectory 'QCTP_PRIVATE_RUNTIME_BUILD.json'
+    $path = Join-Path $DistDirectory 'QCTP_PRIVATE_RUNTIME_BUILD.json'
     $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-    [IO.File]::WriteAllText(
-        $identityPath,
-        ($identity | ConvertTo-Json -Depth 4),
-        $utf8NoBom
-    )
-    return $identityPath
+    [IO.File]::WriteAllText($path, ($identity | ConvertTo-Json -Depth 4), $utf8NoBom)
+    return $path
 }
 
-function Get-RuntimeIdentity {
-    param([string]$ExpectedHead)
-
-    $nonce = [Guid]::NewGuid().ToString('N')
-    $uri = "http://127.0.0.1:8787/QCTP_PRIVATE_RUNTIME_BUILD.json?candidate=$ExpectedHead&nonce=$nonce"
-    try {
-        $response = Invoke-WebRequest `
-            -UseBasicParsing `
-            -Uri $uri `
-            -Headers @{ 'Cache-Control' = 'no-cache'; Pragma = 'no-cache' } `
-            -TimeoutSec 8
-        return [PSCustomObject]@{
-            Success = $true
-            StatusCode = $response.StatusCode
-            Content = [string]$response.Content
-            Identity = ([string]$response.Content | ConvertFrom-Json)
-        }
-    }
-    catch {
-        return [PSCustomObject]@{
-            Success = $false
-            StatusCode = $null
-            Content = $_.Exception.Message
-            Identity = $null
-        }
-    }
-}
-
-function Test-RuntimeIdentity {
-    param(
-        [Parameter(Mandatory = $true)][string]$ExpectedHead,
-        [int]$Attempts = 10,
-        [int]$DelayMilliseconds = 500
-    )
-
-    for ($attempt = 1; $attempt -le $Attempts; $attempt += 1) {
-        $result = Get-RuntimeIdentity -ExpectedHead $ExpectedHead
-        if (
-            $result.Success -and
-            $null -ne $result.Identity -and
-            [string]$result.Identity.candidate_sha -eq $ExpectedHead -and
-            [bool]$result.Identity.audio_fix_present
-        ) {
-            return $true
-        }
-        Start-Sleep -Milliseconds $DelayMilliseconds
-    }
-    return $false
-}
-
-function Get-QctpListenerProcessInfo {
-    $connections = @(
-        Get-NetTCPConnection -LocalPort 8787 -State Listen -ErrorAction SilentlyContinue
-    )
+function Get-ListenerProcessInfo {
+    $connections = @(Get-NetTCPConnection -LocalPort 8787 -State Listen -ErrorAction SilentlyContinue)
     $details = @()
     foreach ($connection in $connections) {
         $process = Get-CimInstance `
@@ -194,13 +157,12 @@ function Get-QctpListenerProcessInfo {
         $details += [PSCustomObject]@{
             ProcessId = $connection.OwningProcess
             CommandLine = if ($null -eq $process) { '' } else { [string]$process.CommandLine }
-            ExecutablePath = if ($null -eq $process) { '' } else { [string]$process.ExecutablePath }
         }
     }
     return $details
 }
 
-function Add-RootsFromCommandLine {
+function Add-CommandLineRoots {
     param(
         [string]$CommandLine,
         [System.Collections.Generic.List[string]]$Candidates
@@ -229,51 +191,23 @@ function Get-CandidateStaticRoots {
         $candidates.Add($env:QCTP_LIVE_STATIC_ROOT_HINT)
     }
 
-    $processDetails = @(Get-QctpListenerProcessInfo)
-    foreach ($detail in $processDetails) {
+    foreach ($detail in @(Get-ListenerProcessInfo)) {
         Write-Host "Gateway listener PID $($detail.ProcessId): $($detail.CommandLine)" -ForegroundColor DarkGray
-        Add-RootsFromCommandLine -CommandLine $detail.CommandLine -Candidates $candidates
-    }
-
-    try {
-        if (Get-Command Get-ScheduledTask -ErrorAction SilentlyContinue) {
-            $tasks = @(
-                Get-ScheduledTask -ErrorAction Stop | Where-Object {
-                    $task = $_
-                    $actionText = ($task.Actions | ForEach-Object {
-                        "$($_.Execute) $($_.Arguments) $($_.WorkingDirectory)"
-                    }) -join ' '
-                    $task.TaskName -match 'QCTP' -or
-                    $task.TaskPath -match 'QCTP' -or
-                    $actionText -match 'QCTP' -or
-                    $actionText -match [regex]::Escape($RepoRoot)
-                }
-            )
-            foreach ($task in $tasks) {
-                foreach ($action in $task.Actions) {
-                    if (-not [string]::IsNullOrWhiteSpace([string]$action.WorkingDirectory)) {
-                        $candidates.Add((Join-Path ([string]$action.WorkingDirectory) 'dist'))
-                    }
-                    Add-RootsFromCommandLine `
-                        -CommandLine "$($action.Execute) $($action.Arguments)" `
-                        -Candidates $candidates
-                }
-            }
-        }
-    }
-    catch {
-        Write-Host "Scheduled-task inspection was unavailable: $($_.Exception.Message)" -ForegroundColor DarkGray
+        Add-CommandLineRoots -CommandLine $detail.CommandLine -Candidates $candidates
     }
 
     $searchRoots = @(
         (Join-Path $env:USERPROFILE 'Documents\Codex'),
         (Join-Path $env:LOCALAPPDATA 'QCTP'),
         (Join-Path $env:USERPROFILE 'Documents\QCTP')
-    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) -and (Test-Path -LiteralPath $_) }
+    ) | Where-Object {
+        -not [string]::IsNullOrWhiteSpace($_) -and
+        (Test-Path -LiteralPath $_)
+    }
 
     foreach ($searchRoot in $searchRoots) {
         Write-Host "Scanning for QCTP dist roots under $searchRoot" -ForegroundColor DarkGray
-        $indexFiles = @(
+        foreach ($indexFile in @(
             Get-ChildItem `
                 -LiteralPath $searchRoot `
                 -Filter index.html `
@@ -281,10 +215,9 @@ function Get-CandidateStaticRoots {
                 -Recurse `
                 -ErrorAction SilentlyContinue | Where-Object {
                     $_.Directory.Name -eq 'dist' -and
-                    ($_.Directory.FullName -match '(?i)QCTP')
+                    $_.Directory.FullName -match '(?i)QCTP'
                 }
-        )
-        foreach ($indexFile in $indexFiles) {
+        )) {
             $candidates.Add($indexFile.Directory.FullName)
         }
     }
@@ -310,99 +243,74 @@ function Resolve-LiveStaticRoot {
     Write-Host 'Candidate static roots:' -ForegroundColor DarkGray
     $candidates | ForEach-Object { Write-Host "  $_" -ForegroundColor DarkGray }
 
-    $token = [Guid]::NewGuid().ToString('N')
-    $fileName = "QCTP_RUNTIME_ROOT_PROBE_$token.json"
-    $writtenPaths = New-Object 'System.Collections.Generic.List[string]'
     $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-
-    try {
-        foreach ($candidate in $candidates) {
-            $probePath = Join-Path $candidate $fileName
-            try {
-                $payload = [ordered]@{
+    foreach ($candidate in $candidates) {
+        $token = [Guid]::NewGuid().ToString('N')
+        $fileName = "QCTP_RUNTIME_ROOT_PROBE_$token.json"
+        $probePath = Join-Path $candidate $fileName
+        try {
+            [IO.File]::WriteAllText(
+                $probePath,
+                (ConvertTo-Json ([ordered]@{
                     qctp_runtime_root_probe = $token
                     candidate_path = $candidate
-                } | ConvertTo-Json -Depth 3
-                [IO.File]::WriteAllText($probePath, $payload, $utf8NoBom)
-                $writtenPaths.Add($probePath)
+                }) -Depth 3),
+                $utf8NoBom
+            )
 
-                $uri = "http://127.0.0.1:8787/$fileName?nonce=$token"
-                $response = Invoke-WebRequest `
-                    -UseBasicParsing `
-                    -Uri $uri `
-                    -Headers @{ 'Cache-Control' = 'no-cache'; Pragma = 'no-cache' } `
-                    -TimeoutSec 8
-                $decoded = [string]$response.Content | ConvertFrom-Json
-                if ([string]$decoded.qctp_runtime_root_probe -eq $token) {
-                    Write-Host "Confirmed live QCTP static root: $candidate" -ForegroundColor Green
-                    return $candidate
+            $uri = "http://127.0.0.1:8787/$($fileName)?nonce=$token"
+            for ($attempt = 1; $attempt -le 5; $attempt += 1) {
+                try {
+                    $decoded = Invoke-RestMethod `
+                        -Uri $uri `
+                        -Headers @{ 'Cache-Control' = 'no-cache'; Pragma = 'no-cache' } `
+                        -TimeoutSec 8
+                    if ([string]$decoded.qctp_runtime_root_probe -eq $token) {
+                        Write-Host "Confirmed live QCTP static root: $candidate" -ForegroundColor Green
+                        return $candidate
+                    }
                 }
+                catch { }
+                Start-Sleep -Milliseconds 250
             }
-            catch {
-                Write-Host "Static-root probe did not match at $candidate" -ForegroundColor DarkGray
-            }
+            Write-Host "Static-root probe did not match at $candidate" -ForegroundColor DarkGray
         }
-    }
-    finally {
-        foreach ($path in $writtenPaths) {
-            Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
+        finally {
+            Remove-Item -LiteralPath $probePath -Force -ErrorAction SilentlyContinue
         }
     }
 
     throw 'The private gateway is healthy, but none of the discovered QCTP dist directories is the static root it is serving.'
 }
 
-function New-IsolatedClone {
-    param([Parameter(Mandatory = $true)][string]$Head)
-
-    $root = Join-Path ([IO.Path]::GetTempPath()) ("qctp-private-runtime-stage-{0}-{1}" -f $PID, [Guid]::NewGuid().ToString('N'))
-    $repo = Join-Path $root 'QCTP'
-    New-Item -ItemType Directory -Path $root -Force | Out-Null
-
-    & git clone --no-hardlinks --no-checkout $RepoRoot $repo | Out-Host
-    if ($LASTEXITCODE -ne 0) {
-        throw 'Could not create the isolated QCTP staging clone.'
-    }
-    & git -C $repo checkout --detach $Head | Out-Host
-    if ($LASTEXITCODE -ne 0) {
-        throw "Could not check out candidate $Head in isolated staging."
-    }
-
-    return [PSCustomObject]@{
-        Root = $root
-        Repository = $repo
-    }
-}
-
-function Copy-VerifiedDist {
+function Test-ServedIdentity {
     param(
-        [Parameter(Mandatory = $true)][string]$SourceDist,
-        [Parameter(Mandatory = $true)][string]$DestinationParent
+        [Parameter(Mandatory = $true)][string]$ExpectedHead,
+        [int]$Attempts = 12
     )
 
-    $candidate = Join-Path $DestinationParent ('.qctp-dist-candidate-' + [Guid]::NewGuid().ToString('N'))
-    New-Item -ItemType Directory -Path $candidate -Force | Out-Null
-    Copy-Item -Path (Join-Path $SourceDist '*') -Destination $candidate -Recurse -Force
-    if (-not (Test-Path -LiteralPath (Join-Path $candidate 'index.html'))) {
-        throw 'The staged deployment copy is missing index.html.'
+    for ($attempt = 1; $attempt -le $Attempts; $attempt += 1) {
+        try {
+            $uri = "http://127.0.0.1:8787/QCTP_PRIVATE_RUNTIME_BUILD.json?candidate=$ExpectedHead&nonce=$([Guid]::NewGuid().ToString('N'))"
+            $identity = Invoke-RestMethod `
+                -Uri $uri `
+                -Headers @{ 'Cache-Control' = 'no-cache'; Pragma = 'no-cache' } `
+                -TimeoutSec 8
+            if (
+                [string]$identity.candidate_sha -eq $ExpectedHead -and
+                [bool]$identity.audio_fix_present
+            ) {
+                return $true
+            }
+        }
+        catch { }
+        Start-Sleep -Milliseconds 500
     }
-    return $candidate
-}
-
-function Restore-PreviousDist {
-    param(
-        [Parameter(Mandatory = $true)][string]$CurrentDist,
-        [string]$BackupPath
-    )
-
-    Write-Host 'Restoring the previous private runtime dist package.' -ForegroundColor Yellow
-    if ($BackupPath -and (Test-Path -LiteralPath $BackupPath)) {
-        Invoke-RobocopyMirror -Source $BackupPath -Destination $CurrentDist
-    }
+    return $false
 }
 
 try {
-    Write-Stage 'QCTP audio-patch deployment preflight REV8'
+    Write-Stage 'QCTP audio-patch deployment preflight REV9'
     Set-Location $RepoRoot
 
     if (-not (Test-Path -LiteralPath (Join-Path $RepoRoot '.git'))) {
@@ -416,19 +324,14 @@ try {
 
     Write-Stage 'Confirming controlled candidate alignment'
     Invoke-Checked -Command git -Arguments @('fetch', 'origin', $RequiredBranch)
-
     $currentBranch = (& git branch --show-current).Trim()
-    if ($currentBranch -ne $RequiredBranch) {
-        throw "Expected branch $RequiredBranch, but the checkout is on $currentBranch. Run the locator/updater so it can preserve and align the checkout first."
-    }
-
     $head = (& git rev-parse HEAD).Trim()
     $remoteHead = (& git rev-parse "origin/$RequiredBranch").Trim()
-    if ($head -ne $remoteHead) {
-        throw "The local checkout is not aligned to the controlled remote. Local: $head Remote: $remoteHead. Rerun the locator/updater."
+    if ($currentBranch -ne $RequiredBranch -or $head -ne $remoteHead) {
+        throw "The checkout is not aligned to origin/$RequiredBranch. Rerun the locator/updater."
     }
     if (-not (Test-RequiredAudioFix -Repository $RepoRoot)) {
-        throw 'The checked-out candidate does not contain the controlled iPhone audio fix.'
+        throw 'The candidate does not contain the controlled iPhone audio fix.'
     }
     Write-Host "Candidate head: $head" -ForegroundColor Green
 
@@ -437,22 +340,16 @@ try {
     $StageRoot = $stage.Root
     $StageRepo = $stage.Repository
     Write-Host "Staging repository: $StageRepo" -ForegroundColor Green
-    Write-Host 'The active QCTP node_modules directory is never modified.' -ForegroundColor DarkGray
-
-    if (-not (Test-RequiredAudioFix -Repository $StageRepo)) {
-        throw 'The isolated staging clone does not contain the controlled iPhone audio fix.'
-    }
 
     Write-Stage 'Verifying controlled Day 1 audio inventory'
-    $day1Path = Join-Path $StageRepo 'src\foundation\day1.ts'
-    $day1Source = Get-Content -Raw -LiteralPath $day1Path
+    $day1Source = Get-Content -Raw -LiteralPath (Join-Path $StageRepo 'src\foundation\day1.ts')
     $audioUrls = @(
         [regex]::Matches($day1Source, 'https://resource2\.heygen\.ai/[^"\s]+\.wav') |
             ForEach-Object { $_.Value } |
             Sort-Object -Unique
     )
     if ($audioUrls.Count -lt 22) {
-        throw "Expected at least 22 controlled Day 1 neural-audio references, found $($audioUrls.Count)."
+        throw "Expected at least 22 controlled audio references, found $($audioUrls.Count)."
     }
     Write-Host "Verified $($audioUrls.Count) controlled audio references." -ForegroundColor Green
 
@@ -461,7 +358,7 @@ try {
         Write-Stage 'Installing exact dependencies in isolated staging'
         Invoke-Checked -Command npm -Arguments @('ci')
 
-        Write-Stage 'Running Windows-safe lint, type, coverage, and production build'
+        Write-Stage 'Running lint, type, coverage, and production build'
         Invoke-Checked -Command npm -Arguments @('run', 'lint')
         Invoke-Checked -Command npm -Arguments @('run', 'typecheck')
         Invoke-Checked -Command npm -Arguments @('run', 'test:coverage')
@@ -471,12 +368,8 @@ try {
         Invoke-Checked -Command npx -Arguments @('vitest', 'run', 'src/app/screens/PracticeScreen.test.tsx')
 
         if ($RunBrowserTests -and -not $SkipBrowserTests) {
-            Write-Stage 'Running browser acceptance tests'
             Invoke-Checked -Command npx -Arguments @('playwright', 'install', 'chromium')
             Invoke-Checked -Command npm -Arguments @('run', 'test:e2e')
-        }
-        else {
-            Write-Host 'Browser reinstall is skipped for private recovery. Repository browser CI remains authoritative.' -ForegroundColor DarkGray
         }
     }
     finally {
@@ -485,9 +378,8 @@ try {
 
     $stageDist = Join-Path $StageRepo 'dist'
     if (-not (Test-Path -LiteralPath (Join-Path $stageDist 'index.html'))) {
-        throw 'The isolated production build did not create dist\index.html.'
+        throw 'The isolated build did not create dist\index.html.'
     }
-
     $identityPath = Write-RuntimeIdentity -Head $head -DistDirectory $stageDist
     Write-Host "Wrote staged runtime identity: $identityPath" -ForegroundColor Green
 
@@ -497,45 +389,31 @@ try {
     }
     else {
         Write-Stage 'Confirming the existing private gateway is healthy'
-        if (-not (Test-HttpEndpoint -Uri 'http://127.0.0.1:8787/health' -Attempts 3 -DelaySeconds 1)) {
-            throw 'The existing private QCTP gateway is not healthy on port 8787. The verified build was not installed.'
+        if (-not (Test-HttpEndpoint -Uri 'http://127.0.0.1:8787/health' -Attempts 3)) {
+            throw 'The existing QCTP gateway is not healthy. No files were installed.'
         }
 
         Write-Stage 'Discovering the exact static root served by port 8787'
         $LiveStaticRoot = Resolve-LiveStaticRoot
-        $liveParent = Split-Path -Parent $LiveStaticRoot
-
-        Write-Stage 'Preparing verified dist package and rollback copy'
-        $DeployCandidate = Copy-VerifiedDist -SourceDist $stageDist -DestinationParent $liveParent
-        $BackupDist = Join-Path $liveParent ('.qctp-dist-backup-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
+        $BackupDist = Join-Path $StageRoot 'live-dist-backup'
         Invoke-RobocopyMirror -Source $LiveStaticRoot -Destination $BackupDist
 
-        Write-Stage 'Mirroring the verified PWA into the live static root'
+        Write-Stage 'Mirroring the verified PWA into the confirmed live static root'
         Write-Host "Live static root: $LiveStaticRoot" -ForegroundColor Green
-        Write-Host 'The gateway and active node_modules remain untouched.' -ForegroundColor DarkGray
-        Invoke-RobocopyMirror -Source $DeployCandidate -Destination $LiveStaticRoot
+        Invoke-RobocopyMirror -Source $stageDist -Destination $LiveStaticRoot
 
         Write-Stage 'Verifying exact served build identity'
-        $verified = (
-            (Test-HttpEndpoint -Uri 'http://127.0.0.1:8787/health') -and
-            (Test-HttpEndpoint -Uri 'http://127.0.0.1:8787/') -and
-            (Test-RuntimeIdentity -ExpectedHead $head)
-        )
-        if (-not $verified) {
-            $observed = Get-RuntimeIdentity -ExpectedHead $head
-            Write-Host "Observed identity response: $($observed.Content)" -ForegroundColor Yellow
-            Restore-PreviousDist -CurrentDist $LiveStaticRoot -BackupPath $BackupDist
-            throw "The gateway did not prove it was serving candidate $head. The previous live static package was restored."
+        if (-not (Test-ServedIdentity -ExpectedHead $head)) {
+            Write-Host 'Served identity did not match; restoring the previous static package.' -ForegroundColor Yellow
+            Invoke-RobocopyMirror -Source $BackupDist -Destination $LiveStaticRoot
+            throw "The gateway did not prove it was serving candidate $head. The previous static package was restored."
         }
-
-        Remove-PathWithRetry -Path $BackupDist
-        $BackupDist = $null
 
         Write-Host "`nQCTP AUDIO PATCH DEPLOYMENT: PASS" -ForegroundColor Green
         Write-Host "Candidate: $head"
         Write-Host "Verified live static root: $LiveStaticRoot"
-        Write-Host 'The private gateway is serving the newly built candidate identity.'
-        Write-Host 'Close the QCTP Home Screen app completely, reopen it, then verify the opening cue and automatic cue at 24:15.'
+        Write-Host 'The private gateway is serving the audio-patched candidate.'
+        Write-Host 'Close the iPhone Home Screen app, reopen it, and verify the opening cue plus the automatic cue at 24:15.'
     }
 }
 catch {
@@ -544,9 +422,6 @@ catch {
     Write-Host $_.Exception.Message -ForegroundColor Red
 }
 finally {
-    if ($DeployCandidate -and (Test-Path -LiteralPath $DeployCandidate)) {
-        try { Remove-PathWithRetry -Path $DeployCandidate } catch { }
-    }
     if ($StageRoot -and (Test-Path -LiteralPath $StageRoot)) {
         try { Remove-PathWithRetry -Path $StageRoot } catch {
             Write-Host "Staging cleanup warning: $($_.Exception.Message)" -ForegroundColor Yellow
