@@ -1,0 +1,224 @@
+{
+  "schema": "qctp-macro-deliverable-manifest-v3",
+  "manifest_id": "QCTP-PLATFORM-REV3-HARDENED",
+  "title": "Quantum Consciousness Training Platform — Hardened Protocol and Experience",
+  "created_at": "2026-08-18T06:35:00-05:00",
+  "status": "ACTIVE",
+  "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness training platform that teaches exact state-entry mechanics, verifies repeatable capability, supports serious personal experiments, preserves source lineage and raw evidence, and remains compelling and effortless to use on iPhone.",
+  "controlled_baseline": {
+    "released_runtime": "1.1.4",
+    "released_branch": "main",
+    "rev2_candidate_branch": "qctp-platform-rev2-codex",
+    "rev2_candidate_head": "80801cdf34a4856c95a4d9349aa8a019fdf6fa38",
+    "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2",
+    "runtime_cost_mode": "FREE_LOCAL",
+    "controlled_voice": "Chill Brian",
+    "foundation_days": 112,
+    "authored_released_days": [1],
+    "reserved_unfabricated_days": "2-112",
+    "release_authority": "ZERO_RELEASE_FOR_REV2_AND_REV3_CHANGES"
+  },
+  "deliverables": [
+    {
+      "id": "QCTP-R3-D01",
+      "name": "Maintainable Rev2 platform candidate",
+      "status": "COMPLETE_CANDIDATE",
+      "branch": "qctp-platform-rev2-codex",
+      "evidence": [
+        "React and TypeScript PWA",
+        "IndexedDB v3",
+        "Paths, Practice, Studio, Lab, Codex, Mirror, Insights, Settings",
+        "229 recorded passing Node tests before the later audio patch",
+        "44 recorded passing local-Whisper tests",
+        "draft PR #2"
+      ],
+      "holds": [
+        "post-audio-patch full suite",
+        "remaining physical-iPhone acceptance",
+        "actual-origin Rev1 migration comparison",
+        "natural 1500-second Day 1 acceptance"
+      ]
+    },
+    {
+      "id": "QCTP-R3-D02",
+      "name": "Free Local voice capture and transcription",
+      "status": "COMPLETE_CANDIDATE",
+      "acceptance_remaining": [
+        "physical ten-minute iPhone recording/background test",
+        "remaining lifecycle/export tests",
+        "optional local small-model provisioning"
+      ]
+    },
+    {
+      "id": "QCTP-R3-D03",
+      "name": "Mirror Core and Local AI Mirror",
+      "status": "COMPLETE_CANDIDATE",
+      "evidence": [
+        "deterministic Mirror Core",
+        "iPhone request queue and result client",
+        "PX13 qwen3:8b grounded benchmark recorded pass",
+        "source-record citations and review lifecycle"
+      ],
+      "acceptance_remaining": [
+        "remaining physical-iPhone offline/reconnect/notification/deletion/export protocol"
+      ]
+    },
+    {
+      "id": "QCTP-R3-D04",
+      "name": "Robert Edward Grant REG-01 MVP",
+      "status": "COMPLETE_CANDIDATE",
+      "authority_ref": "QCTP_ROBERT_EDWARD_GRANT_INTEGRATION_REV0_2026-08-17.md",
+      "acceptance_remaining": [
+        "physical-iPhone full REG-01 completion and artifact/export acceptance"
+      ]
+    },
+    {
+      "id": "QCTP-R3-D05",
+      "name": "Breath Director and Breath Foundations",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
+      "required": [
+        "deterministic goal-based selector",
+        "seven-session foundation track",
+        "local pacing",
+        "calibration",
+        "hazard blocking",
+        "persistence/export",
+        "domain integration",
+        "tests and iPhone acceptance"
+      ]
+    },
+    {
+      "id": "QCTP-R3-D06",
+      "name": "Training protocol hardening and exact instruction standard",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
+      "required": [
+        "state-gated progression",
+        "source-faithful versus synthesis labeling",
+        "operationalized instructions",
+        "look-alike states and correction logic",
+        "guidance fading",
+        "fail-closed sessions",
+        "raw observation/interpretation separation"
+      ]
+    },
+    {
+      "id": "QCTP-R3-D07",
+      "name": "State Atlas and core meditation recipes",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md",
+      "states": [
+        "Q1 Regulation",
+        "Q2 Coherence",
+        "Q3 Focused Attention",
+        "Q4 Open Monitoring",
+        "Q5 Gap",
+        "TC-PC Point Consciousness",
+        "M-F10 Focus 10",
+        "M-F12 Focus 12",
+        "QR Receiver",
+        "QO OBE Threshold",
+        "QI Imaginality"
+      ]
+    },
+    {
+      "id": "QCTP-R3-D08",
+      "name": "Meditation authoring, local audio assets, and QA system",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_PARTIAL",
+      "authority_ref": "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
+      "implemented_partial": [
+        "persistent audio-element patch",
+        "timer-pause-on-playback-failure patch",
+        "external neural-audio service-worker interception removed",
+        "candidate regression tests written"
+      ],
+      "remaining": [
+        "local audio-pack schema and storage",
+        "checksum preflight",
+        "post-patch full suite",
+        "PX13 rebuild/restart",
+        "physical-iPhone opening and delayed-cue acceptance",
+        "full natural-duration acceptance"
+      ]
+    },
+    {
+      "id": "QCTP-R3-D09",
+      "name": "User-friendly and compelling exploration experience",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+      "required": [
+        "one-button Today mission",
+        "State Map",
+        "simplified Practice cockpit",
+        "voice-first debrief",
+        "source-track Explore",
+        "Expeditions",
+        "capability milestones",
+        "evidence-based Discovery cards",
+        "accessibility and error recovery"
+      ]
+    },
+    {
+      "id": "QCTP-R3-D10",
+      "name": "Thomas Campbell source track",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_THOMAS_CAMPBELL_INTEGRATION_REV0_2026-08-18.md",
+      "modules": 10,
+      "required": [
+        "open-minded skepticism",
+        "point consciousness",
+        "intellect/intuition/noise",
+        "intent quality",
+        "fear/ego/belief audit",
+        "imaginality",
+        "remote information",
+        "probable future",
+        "OBE/healing intent",
+        "daily quality of consciousness"
+      ]
+    },
+    {
+      "id": "QCTP-R3-D11",
+      "name": "Hardened Day 1 candidate",
+      "status": "CONTENT_CANDIDATE_AUTHORED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_DAY1_HARDENING_DELTA_AND_CANDIDATE_SCRIPT_REV0_2026-08-18.md",
+      "preserved_duration_seconds": 1500,
+      "remaining": [
+        "content review",
+        "machine-readable session definition",
+        "Chill Brian render",
+        "local audio pack",
+        "automated regression",
+        "physical-iPhone full acceptance",
+        "explicit release authority"
+      ]
+    },
+    {
+      "id": "QCTP-R3-D12",
+      "name": "Foundation Days 2-112 hardened curriculum",
+      "status": "OPEN",
+      "guard": "Do not fabricate or release future days until each module is authored against the protocol, State Atlas, audio standard, and progression gates.",
+      "first_package": "Days 2-14 attentional control, open monitoring, Gap, and point-consciousness foundation"
+    },
+    {
+      "id": "QCTP-R3-D13",
+      "name": "Hardened release package and acceptance",
+      "status": "OPEN",
+      "acceptance": [
+        "candidate branch full suite pass",
+        "audio pack and offline pass",
+        "physical-iPhone core-flow pass",
+        "natural Day 1 pass",
+        "actual-origin migration pass",
+        "data export/recovery pass",
+        "accessibility pass",
+        "exact release manifest and checksums",
+        "explicit merge/deploy authority"
+      ]
+    }
+  ],
+  "current_macro_delta": "Rev2 non-breath platform implementation exists as a candidate. Breathwork, hardened state protocol, State Atlas integration, local audio-pack reliability, Thomas Campbell track, hardened Day 1, and UX upgrade are controlled implementation packages. The immediate practice-blocking audio patch exists on the candidate branch but has not been rebuilt or device-verified.",
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "Rebuild and device-verify the Rev2 Day 1 audio patch first. When QCTP implementation capacity is available, implement Breath Director plus the protocol/State Atlas/audio/UX/Campbell hardening package on the controlled candidate branch without rebuilding completed Rev2 subsystems."
+}
