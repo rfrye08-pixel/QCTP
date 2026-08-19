@@ -1,7 +1,7 @@
 {
-  "schema": "qctp-current-state-v8",
+  "schema": "qctp-current-state-v9",
   "project": "QCTP",
-  "updated_at": "2026-08-19T06:45:00-05:00",
+  "updated_at": "2026-08-19T16:36:00-05:00",
   "status": "ACTIVE",
   "product_identity": {
     "name": "QCTP",
@@ -11,7 +11,6 @@
     "experience_goal": "Serious, precise, exploratory, user-friendly, visually compelling, and capability-driven rather than timer- or streak-driven."
   },
   "authority_refs": {
-    "product_architecture": "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
     "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV3.json",
     "protocol_hardening": "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
     "state_atlas": "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md",
@@ -23,21 +22,16 @@
     "voice_capture_spec": "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
     "zero_recurring_cost_runtime": "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
     "local_ai_mirror_requirement": "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
-    "day1_hardened_candidate": "QCTP_DAY1_HARDENING_DELTA_AND_CANDIDATE_SCRIPT_REV0_2026-08-18.md",
     "day1_audio_regression": "QCTP_DAY1_IPHONE_AUDIO_REGRESSION_REV0_2026-08-18.md",
-    "day1_audio_patch_verification": "QCTP_DAY1_AUDIO_PATCH_VERIFICATION_REV1_2026-08-18.md on qctp-platform-rev2-codex",
-    "day1_audio_patch_state_overlay": "QCTP_DAY1_AUDIO_PATCH_STATE_OVERLAY_REV1.json on qctp-platform-rev2-codex",
     "day1_audio_physical_acceptance": "QCTP_DAY1_AUDIO_PHYSICAL_IPHONE_ACCEPTANCE_REV0_2026-08-18.md",
     "device_preview_404_correction": "QCTP_DEVICE_PREVIEW_404_CORRECTION_AND_REDEPLOYMENT_REV0_2026-08-18.md",
     "private_updater_divergence_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_DIVERGENCE_FAILURE_AND_RECOVERY_REV0_2026-08-19.md",
     "private_updater_range_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_RANGE_HEADER_FAILURE_AND_REV4_RECOVERY_REV0_2026-08-19.md",
     "private_updater_false_pass_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_FALSE_PASS_AND_AUDIO_SIGNATURE_FAILURE_REV0_2026-08-19.md",
-    "device_preview_source": "device-preview/index.html and device-preview/QCTP_DEVICE_PREVIEW_DEPLOYMENT.json on main",
-    "implementation_handoff": "QCTP_PROTOCOL_UX_HARDENING_IMPLEMENTATION_HANDOFF_REV0_2026-08-18.md",
-    "independent_repository_review": "QCTP_REV2_INDEPENDENT_REPOSITORY_REVIEW_REV0_2026-08-18.md",
-    "codex_branch_state": "QCTP_REV2_CODEX_BRANCH_STATE.json on qctp-platform-rev2-codex",
-    "codex_verification_record": "REV2_VERIFICATION.md on qctp-platform-rev2-codex",
-    "windows_updater_gate": ".github/workflows/qctp-windows-updater-gate.yml on main"
+    "private_updater_esbuild_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_ESBUILD_LOCK_AND_REV7_RECOVERY_REV0_2026-08-19.md",
+    "windows_updater_gate": ".github/workflows/qctp-windows-updater-gate.yml on main",
+    "candidate_deployment_script": "tools/Deploy-QctpAudioPatch.ps1 on qctp-platform-rev2-codex",
+    "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2"
   },
   "controlled_training_model": {
     "loop": "PREPARE -> INDUCE -> RECOGNIZE -> STABILIZE -> USE -> EXIT -> RECORD -> ADAPT",
@@ -51,143 +45,68 @@
     "timer_completion_equals_state_attainment": false,
     "source_terms_preserved": true,
     "raw_observation_separate_from_interpretation": true,
-    "guidance_fades_with_skill": true,
     "silent_failure_allowed": false
-  },
-  "state_atlas": {
-    "status": "CONTROLLED_SPEC_COMPLETE_IMPLEMENTATION_OPEN",
-    "states": [
-      "Q1 Regulated Body and Breath",
-      "Q2 Coherent Affective State",
-      "Q3 Focused Attention",
-      "Q4 Open Monitoring and Spatial Awareness",
-      "Q5 Gap Awareness",
-      "TC-PC Point Consciousness",
-      "M-F10 Focus 10 Candidate",
-      "M-F12 Focus 12 Candidate",
-      "QR Remote-Information Receiver",
-      "QO OBE Threshold",
-      "QI Stable Imaginality Environment"
-    ]
   },
   "released_runtime": {
     "branch": "main",
     "version": "1.1.4",
     "deployment": "https://rfrye08-pixel.github.io/QCTP/",
-    "release_authority": "LIMITED_DAY1_USE_SCREEN_UP",
-    "root_runtime_changed_by_device_preview": false
+    "release_authority": "LIMITED_DAY1_USE_SCREEN_UP"
   },
   "rev2_candidate": {
     "branch": "qctp-platform-rev2-codex",
-    "head_sha": "882dc26bffa49eef3647ed78ffc22b230f4f2852",
+    "head_sha": "1e8bd74ffaa1758258fbfc91001af1a1bfc1260b",
     "version": "2.0.0-alpha.1",
-    "draft_pull_request": "https://github.com/rfrye08-pixel/QCTP/pull/2",
+    "pull_request": 2,
     "pull_request_state": "OPEN_DRAFT_UNMERGED",
-    "pre_hardening_implementation_disposition": "NON_BREATH_PLATFORM_COMPLETE_CANDIDATE",
-    "current_disposition": "REV5_WINDOWS_VERIFIED_PRIVATE_RUNTIME_DEPLOYMENT_OPEN",
+    "implementation_disposition": "NON_BREATH_PLATFORM_COMPLETE_CANDIDATE",
+    "audio_deployment_disposition": "REV7_WINDOWS_LOCK_VERIFIED_READY_FOR_PX13_STATIC_DEPLOYMENT",
     "production_deployed": false,
     "release_authority": "ZERO_RELEASE"
   },
   "implemented_candidate_capabilities": [
     "React and TypeScript installable mobile PWA",
-    "versioned domain schemas and IndexedDB v3 local-first repository",
-    "Rev1 migration and JSON/ZIP export/import",
+    "IndexedDB v3 local-first records and Rev1 migration",
     "Paths, Practice, Studio, Lab, Codex, Mirror, Insights, and Settings",
-    "exact 1500-second current Day 1 with 21 controlled cues and Chill Brian",
-    "global voice capture, field dictation, 5/10/20-minute auto-dictation, and experiment voice logs",
-    "raw audio playback, offline queue, layered transcripts/notes/interpretation/tags, and deletion lifecycle",
-    "no-cost PX13 Whisper companion and authenticated gateway",
-    "Free Local Mode with no required API key and paid cloud disabled",
+    "exact 1500-second Day 1 with 21 controlled cues and Chill Brian",
+    "global and field voice capture plus timed auto-dictation",
+    "PX13 local Whisper transcription",
+    "Free Local Mode with no required API key",
     "deterministic Mirror Core and iPhone Local AI Mirror client",
-    "PX13 qwen3:8b local-model path with grounded source citations",
-    "private Tailscale HTTPS architecture and signed device session",
-    "Robert Edward Grant REG-01 Studio MVP",
-    "structured Codex, Mirror Journal, Insights, and experiment foundations"
-  ],
-  "open_implementation_packages": [
-    {
-      "id": "BREATH",
-      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
-      "ref": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md"
-    },
-    {
-      "id": "PROTOCOL_HARDENING",
-      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
-      "ref": "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md"
-    },
-    {
-      "id": "STATE_ATLAS",
-      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
-      "ref": "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md"
-    },
-    {
-      "id": "LOCAL_AUDIO_AND_QA",
-      "status": "FOCUSED_IPHONE_PASS_REV5_WINDOWS_VERIFIED_PRIVATE_DEPLOYMENT_OPEN",
-      "ref": "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md"
-    },
-    {
-      "id": "UX_EXPLORATION",
-      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
-      "ref": "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md"
-    },
-    {
-      "id": "THOMAS_CAMPBELL",
-      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
-      "ref": "QCTP_THOMAS_CAMPBELL_INTEGRATION_REV0_2026-08-18.md"
-    },
-    {
-      "id": "DAY1_HARDENED",
-      "status": "CONTENT_CANDIDATE_AUTHORED_IMPLEMENTATION_OPEN",
-      "ref": "QCTP_DAY1_HARDENING_DELTA_AND_CANDIDATE_SCRIPT_REV0_2026-08-18.md"
-    }
+    "PX13 qwen3:8b grounded local-model path",
+    "private Tailscale HTTPS architecture",
+    "Robert Edward Grant REG-01 MVP"
   ],
   "day1_audio_regression": {
-    "status": "FOCUSED_IPHONE_MECHANISM_PASS_REV5_WINDOWS_VERIFIED_PRIVATE_RUNTIME_DEPLOYMENT_OPEN",
-    "observed_failure": "Original private Rev2 timer advanced without audible opening cue on physical iPhone",
-    "candidate_corrections": [
+    "original_failure": "Private Rev2 timer advanced without audible opening cue on physical iPhone",
+    "corrected_mechanism": [
       "Persistent reusable guide-audio element",
       "User-interaction media priming",
-      "Timer fail-closed pause on cue playback rejection",
+      "Timer fail-closed pause on playback rejection",
       "Pause/resume retry on the same element",
-      "External neural-audio service-worker interception removed",
-      "Dedicated regression tests",
-      "Direct fail-closed updater exit propagation",
-      "Exact served-build identity verification"
+      "External neural-audio service-worker interception removed"
     ],
-    "focused_physical_acceptance": {
-      "url": "https://rfrye08-pixel.github.io/QCTP/device-preview/",
-      "endpoint_loaded_on_target_iphone": "PASS",
-      "opening_cue_audible": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
-      "automatic_45_second_cue_audible": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
-      "test_completed": "PASS",
-      "user_statement": "Both cues were audible",
-      "supporting_screenshot_sha256": "bb8d517df0713522eb8bed732bd016c68a1c27dab621d3b8148888f64287f38b",
-      "acceptance_ref": "QCTP_DAY1_AUDIO_PHYSICAL_IPHONE_ACCEPTANCE_REV0_2026-08-18.md"
+    "focused_iphone_acceptance": {
+      "endpoint": "https://rfrye08-pixel.github.io/QCTP/device-preview/",
+      "opening_cue": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
+      "automatic_45_second_cue": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
+      "supporting_screenshot_sha256": "bb8d517df0713522eb8bed732bd016c68a1c27dab621d3b8148888f64287f38b"
     },
-    "px13_updater_attempts": [
-      {
-        "revision": "REV1",
-        "result": "FAILED_POWERSHELL_PARSE_BEFORE_MUTATION"
-      },
-      {
-        "revision": "REV2",
-        "result": "FAILED_DIVERGED_BRANCH_BEFORE_BUILD_OR_RESTART"
-      },
-      {
-        "revision": "REV3_FIRST_RUN",
-        "result": "FAILED_RESTRICTED_RANGE_HEADER_BEFORE_BUILD_OR_RESTART"
-      },
-      {
-        "revision": "REV3_SECOND_RUN_WITH_REV4_CORE",
-        "result": "INNER_FAILED_AUDIO_SIGNATURE_GATE_OUTER_FALSE_PASS_INVALIDATED_NO_BUILD_OR_RESTART"
-      }
+    "px13_attempts": [
+      "REV1 failed PowerShell parsing before mutation",
+      "REV2 failed on divergent branch before build",
+      "REV3 first run failed on restricted Range header before build",
+      "REV4 path failed provider signature probe and produced an invalid outer PASS",
+      "REV5 failed npm ci because the running gateway locked active esbuild.exe"
     ],
-    "rev5_windows_verification": {
-      "candidate_sha": "882dc26bffa49eef3647ed78ffc22b230f4f2852",
-      "workflow_run_id": 32248851370,
-      "job_id": 96055205805,
-      "windows_powershell_parse": "PASS",
-      "npm_ci": "PASS_ZERO_VULNERABILITIES",
+    "rev7_recovery": {
+      "architecture": "Build in disposable isolated clone; leave active gateway and node_modules untouched; atomically swap only verified dist; verify exact served identity; restore prior dist on failure",
+      "candidate_sha": "1e8bd74ffaa1758258fbfc91001af1a1bfc1260b",
+      "windows_workflow_run_id": 32304223366,
+      "windows_job_id": 96233548675,
+      "active_esbuild_locked_during_test": true,
+      "powershell_parse": "PASS",
+      "isolated_npm_ci": "PASS_ZERO_VULNERABILITIES",
       "lint": "PASS",
       "typecheck": "PASS",
       "vitest_files": 41,
@@ -200,69 +119,26 @@
       },
       "production_build": "PASS",
       "dedicated_audio_tests": "4_PASS",
-      "runtime_identity_creation": "PASS",
+      "staged_runtime_identity": "PASS",
       "day1_audio_smoke": "PASS",
-      "disposition": "WINDOWS_VERIFIED_READY_FOR_PX13_DEPLOYMENT"
+      "disposition": "WINDOWS_LOCK_VERIFIED_READY_FOR_PX13_DEPLOYMENT"
     },
     "private_px13_dist_updated": false,
-    "private_full_pwa_retest": "OPEN"
+    "private_full_pwa_audio_retest": "OPEN"
   },
-  "day1_hardened_candidate": {
-    "status": "AUTHORED_ZERO_RELEASE",
-    "duration_seconds": 1500,
-    "preserves_phase_allocation": true,
-    "adds": [
-      "exact 4/6 breath instruction and release transition",
-      "state targets and look-alike corrections",
-      "voice-first debrief",
-      "capability scoring separate from completion",
-      "local audio-pack requirement",
-      "fail-closed timer requirement"
-    ]
-  },
-  "source_tracks": {
-    "active_controlled": [
-      "Robert Monroe / Monroe Institute",
-      "Thomas Campbell / My Big TOE",
-      "Robert Edward Grant",
-      "Theresa Bullard",
-      "Joe Dispenza",
-      "HeartMath",
-      "Lynne McTaggart",
-      "Controlled Remote Viewing",
-      "Psionics practitioner methods"
-    ],
-    "thomas_campbell_modules": 10
-  },
-  "recorded_verification": {
-    "evidence_class": "WINDOWS_CI_EXECUTED_PLUS_USER_REPORTED_PHYSICAL_IPHONE_ACCEPTANCE",
-    "rev5_windows_updater_gate": "PASS",
-    "rev5_node_test_files": 41,
-    "rev5_node_tests_passed": 233,
-    "rev5_dedicated_audio_tests_passed": 4,
-    "rev5_production_build": "PASS",
-    "rev5_runtime_identity_artifact": "PASS",
-    "rev5_day1_audio_smoke": "PASS",
-    "focused_preview_endpoint_on_physical_iphone": "PASS",
-    "focused_preview_opening_audio": "PASS",
-    "focused_preview_45_second_audio": "PASS",
-    "python_tests_passed_pre_patch": 44,
-    "dependency_vulnerabilities_rev5": 0,
-    "local_whisper_base_real_transcription": "RECORDED_PASS",
-    "px13_qwen3_8b_grounded_benchmark": "RECORDED_PASS",
-    "physical_iphone_mirror_round_trip": "RECORDED_TARGETED_PASS",
-    "physical_iphone_day1_guide_audio_original": "FAIL_USER_OBSERVED",
-    "physical_iphone_day1_audio_corrected_mechanism": "PASS_USER_REPORTED"
-  },
+  "open_implementation_packages": [
+    "Breath Director and seven-session Breath Foundations",
+    "Protocol-hardening runtime schemas and State Map",
+    "Thomas Campbell source-track MVP",
+    "User-experience exploration upgrade",
+    "Hardened Day 1 local audio pack",
+    "Foundation Days 2-112 authored under progression gates"
+  ],
   "release_acceptance_holds": [
-    "Rerun the already extracted REV3 locator/updater so it fetches and deploys Windows-verified REV5",
-    "Verify the opening and automatic 24:15 cue once in the full private PWA",
-    "Implement Breath Director",
-    "Implement hardened session/state/audio schemas and State Map",
-    "Implement Thomas Campbell MVP",
-    "Implement UX exploration upgrade",
-    "Render and validate hardened Day 1 local audio pack",
-    "Complete remaining physical-iPhone lifecycle tests",
+    "Rerun the already extracted REV3 locator so it fetches and deploys Windows lock-verified REV7",
+    "Verify opening and automatic 24:15 cue in the full private PWA",
+    "Repair or replace the active untracked node_modules before any future gateway restart or laptop-reboot acceptance",
+    "Complete remaining physical-iPhone lifecycle checks",
     "Run actual-origin Rev1 migration comparison",
     "Run natural full-duration hardened Day 1 acceptance",
     "Do not merge or deploy Rev2 without explicit release authority"
@@ -270,12 +146,11 @@
   "release_authority": {
     "released_rev1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
     "rev2_candidate": "ZERO_RELEASE",
-    "audio_patch": "WINDOWS_VERIFIED_DEVICE_TEST_CANDIDATE_PRIVATE_DEPLOYMENT_OPEN",
-    "diagnostic_preview": "PHYSICAL_AUDIO_ACCEPTANCE_COMPLETE_NO_PRODUCTION_AUTHORITY",
+    "audio_patch": "WINDOWS_LOCK_VERIFIED_DEVICE_TEST_CANDIDATE_PRIVATE_STATIC_DEPLOYMENT_OPEN",
     "breathwork": "ZERO_RELEASE",
     "hardening_package": "ZERO_RELEASE",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "controlled_interpretation": "The green PASS shown by the second REV3 run was false because a nested PowerShell wrapper failed to propagate the inner deployment failure. No install, build, restart, or private-runtime replacement occurred. REV5 removes the invalid external byte-signature blocker, directly propagates failures, writes an exact build identity, and verifies that port 8787 serves that identity. REV5 has now passed a dedicated Windows PowerShell execution gate before another PX13 attempt.",
-  "next_controlled_action": "Close the false-PASS terminal window and rerun RUN_QCTP_AUDIO_PATCH_UPDATE.cmd from the already extracted REV3 folder; confirm QCTP audio-patch deployment preflight REV5 and wait for both deployment and private-runtime PASS lines."
+  "controlled_interpretation": "The latest PX13 attempt failed because npm ci was run against the active checkout while the running gateway held esbuild.exe open. No verified dist was installed and the gateway continued serving the prior runtime. REV7 now builds in an isolated disposable clone and has passed a Windows test while the active esbuild path was deliberately locked. It leaves the gateway and active node_modules untouched and will replace only the verified static dist package after a healthy-gateway preflight.",
+  "next_controlled_action": "Rerun RUN_QCTP_AUDIO_PATCH_UPDATE.cmd from the already extracted REV3 folder. Confirm the REV7 heading and both final PASS lines, then retest the opening and automatic 24:15 cues in the full private iPhone PWA."
 }
