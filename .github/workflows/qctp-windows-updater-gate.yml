@@ -81,7 +81,7 @@ jobs:
           $serverSource = @'
           import { createReadStream, existsSync, statSync } from "node:fs";
           import { createServer } from "node:http";
-          import { extname, join, normalize, resolve } from "node:path";
+          import { extname, join, resolve } from "node:path";
 
           const root = resolve(process.env.QCTP_TEST_STATIC_ROOT);
           const mime = {
@@ -122,6 +122,7 @@ jobs:
           )
 
           $env:QCTP_TEST_STATIC_ROOT = $dist
+          "QCTP_LIVE_STATIC_ROOT_HINT=$dist" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           $stdoutPath = Join-Path $env:RUNNER_TEMP 'qctp-static-gateway.stdout.log'
           $stderrPath = Join-Path $env:RUNNER_TEMP 'qctp-static-gateway.stderr.log'
           $node = (Get-Command node).Source
