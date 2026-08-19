@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#071017" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>QCTP Day 1 Audio Acceptance</title>
+  <style>
+    :root { color-scheme: dark; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100svh; background: #071017; color: #eef7fb; display: grid; place-items: center; padding: max(24px, env(safe-area-inset-top)) 20px max(28px, env(safe-area-inset-bottom)); }
+    main { width: min(100%, 560px); }
+    .eyebrow { color: #75d7ff; letter-spacing: .12em; text-transform: uppercase; font-size: .76rem; font-weight: 700; }
+    h1 { margin: 8px 0 12px; font-size: clamp(2rem, 9vw, 3.2rem); line-height: 1; }
+    .card { background: #0d1c25; border: 1px solid #244455; border-radius: 24px; padding: 22px; box-shadow: 0 24px 70px rgba(0,0,0,.35); }
+    .timer { font-variant-numeric: tabular-nums; font-size: clamp(3rem, 18vw, 6rem); font-weight: 750; line-height: 1; margin: 24px 0 10px; }
+    .status { min-height: 4.5em; color: #c8dce6; line-height: 1.45; }
+    button { width: 100%; min-height: 56px; border: 0; border-radius: 16px; padding: 14px 18px; font: inherit; font-weight: 750; cursor: pointer; }
+    #start { background: #78dcff; color: #061017; }
+    #stop { margin-top: 10px; background: #17303d; color: #eaf7fc; }
+    button:disabled { opacity: .5; cursor: default; }
+    .notice { margin-top: 18px; padding: 14px; border-radius: 14px; background: #111f27; color: #afc6d1; font-size: .92rem; line-height: 1.45; }
+    .pass { color: #8ff0b4; }
+    .fail { color: #ff9d9d; }
+    .small { font-size: .82rem; color: #7996a4; margin-top: 14px; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Physical iPhone acceptance only</p>
+    <h1>Day 1 audio check</h1>
+    <div class="card">
+      <div id="timer" class="timer">0:00</div>
+      <p id="status" class="status">Raise the iPhone media volume, keep this page visible, then tap Begin 50-second test. You should hear the opening narration immediately and the next cue automatically at 0:45.</p>
+      <button id="start" type="button">Begin 50-second test</button>
+      <button id="stop" type="button" disabled>Stop test</button>
+      <div class="notice">This page uses one persistent audio element—the same iPhone-relevant mechanism under test. It does not change the released QCTP app and cannot earn a Day 1 completion.</div>
+      <p class="small">Candidate mechanism: persistent element · user-started opening cue · delayed source change on the same element · fail-closed timer.</p>
+    </div>
+  </main>
+  <script>
+    (() => {
+      const OPENING = "https://resource2.heygen.ai/text_to_speech/a0071e4bb842413bbeb2819c6b1de7c8/d2f4f24783d04e22ab49ee8fdc3715e0/id=9684dfc3-d99c-4aa7-9444-d13b5a5516e8.wav";
+      const SECOND = "https://resource2.heygen.ai/text_to_speech/a0071e4bb842413bbeb2819c6b1de7c8/d2f4f24783d04e22ab49ee8fdc3715e0/id=13fbdbb7-53c5-4ca2-861d-270e6ed7acbb.wav";
+      const audio = new Audio();
+      audio.preload = "auto";
+      audio.playsInline = true;
+      audio.volume = 1;
+
+      const start = document.getElementById("start");
+      const stop = document.getElementById("stop");
+      const timer = document.getElementById("timer");
+      const status = document.getElementById("status");
+      let interval = null;
+      let startedAt = 0;
+      let secondStarted = false;
+      let wakeLock = null;
+
+      const setElapsed = (seconds) => {
+        const whole = Math.max(0, Math.floor(seconds));
+        timer.textContent = `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, "0")}`;
+      };
+
+      const releaseWakeLock = async () => {
+        if (!wakeLock) return;
+        try { await wakeLock.release(); } catch (_) {}
+        wakeLock = null;
+      };
+
+      const stopTest = (message, className = "") => {
+        if (interval) window.clearInterval(interval);
+        interval = null;
+        audio.pause();
+        start.disabled = false;
+        stop.disabled = true;
+        status.className = `status ${className}`;
+        status.textContent = message;
+        void releaseWakeLock();
+      };
+
+      const playCue = async (url, label) => {
+        audio.pause();
+        audio.src = url;
+        audio.currentTime = 0;
+        audio.load();
+        try {
+          await audio.play();
+          status.className = "status";
+          status.textContent = label;
+          return true;
+        } catch (error) {
+          stopTest("Audio playback was blocked, so the timer stopped. Check media volume, disable Silent Mode only if needed, reload this page, and tap Begin once more.", "fail");
+          return false;
+        }
+      };
+
+      start.addEventListener("click", async () => {
+        start.disabled = true;
+        stop.disabled = false;
+        secondStarted = false;
+        setElapsed(0);
+        if ("wakeLock" in navigator) {
+          try { wakeLock = await navigator.wakeLock.request("screen"); } catch (_) {}
+        }
+        const openingOkay = await playCue(OPENING, "Opening cue requested. Confirm that Chill Brian is audible now. Keep the page visible; the second cue will start automatically at 0:45.");
+        if (!openingOkay) return;
+        startedAt = performance.now();
+        interval = window.setInterval(async () => {
+          const elapsed = (performance.now() - startedAt) / 1000;
+          setElapsed(elapsed);
+          if (!secondStarted && elapsed >= 45) {
+            secondStarted = true;
+            const secondOkay = await playCue(SECOND, "Second cue requested automatically at 0:45. If you heard both cues, the physical iPhone audio transition passes.");
+            if (!secondOkay) return;
+          }
+          if (elapsed >= 50) {
+            stopTest("Test complete. Report whether the opening cue and the automatic 0:45 cue were both audible.", "pass");
+          }
+        }, 100);
+      });
+
+      stop.addEventListener("click", () => stopTest("Test stopped. Tap Begin to run it again."));
+      window.addEventListener("pagehide", () => stopTest("Test stopped because the page closed."));
+    })();
+  </script>
+</body>
+</html>
