@@ -1,9 +1,9 @@
 {
-  "schema": "qctp-current-state-v10",
+  "schema": "qctp-current-state-v11",
   "project": "QCTP",
-  "updated_at": "2026-08-19T17:52:00-05:00",
+  "updated_at": "2026-08-19T18:35:00-05:00",
   "status": "ACTIVE",
-  "supersedes": "qctp-current-state-v9",
+  "supersedes": "qctp-current-state-v10",
   "product_identity": {
     "name": "QCTP",
     "expanded_name": "Quantum Consciousness Training Platform",
@@ -30,6 +30,7 @@
     "private_updater_false_pass_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_FALSE_PASS_AND_AUDIO_SIGNATURE_FAILURE_REV0_2026-08-19.md",
     "private_updater_esbuild_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_ESBUILD_LOCK_AND_REV7_RECOVERY_REV0_2026-08-19.md",
     "private_updater_live_root_recovery": "QCTP_PRIVATE_RUNTIME_LIVE_ROOT_FAILURE_AND_REV9_RECOVERY_REV0_2026-08-19.md",
+    "private_rev9_deployment_and_origin_mismatch": "QCTP_PRIVATE_RUNTIME_REV9_PX13_DEPLOYMENT_PASS_AND_WRONG_ORIGIN_REV0_2026-08-19.md",
     "candidate_deployment_script": "tools/Deploy-QctpAudioPatch.ps1 on qctp-platform-rev2-codex",
     "windows_updater_gate": ".github/workflows/qctp-windows-updater-gate.yml on main",
     "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2"
@@ -52,7 +53,8 @@
     "branch": "main",
     "version": "1.1.4",
     "deployment": "https://rfrye08-pixel.github.io/QCTP/",
-    "release_authority": "LIMITED_DAY1_USE_SCREEN_UP"
+    "release_authority": "LIMITED_DAY1_USE_SCREEN_UP",
+    "not_the_rev2_private_origin": true
   },
   "rev2_candidate": {
     "branch": "qctp-platform-rev2-codex",
@@ -61,7 +63,8 @@
     "pull_request": 2,
     "pull_request_state": "OPEN_DRAFT_UNMERGED",
     "implementation_disposition": "NON_BREATH_PLATFORM_COMPLETE_CANDIDATE",
-    "audio_deployment_disposition": "REV9_FULL_WINDOWS_LIVE_ROOT_SIMULATION_PASS_READY_FOR_PX13_DEPLOYMENT",
+    "audio_deployment_disposition": "REV9_PX13_STATIC_DEPLOYMENT_PASS_PRIVATE_IPHONE_ORIGIN_AND_AUDIO_RETEST_OPEN",
+    "private_px13_static_deployed": true,
     "production_deployed": false,
     "release_authority": "ZERO_RELEASE"
   },
@@ -93,34 +96,15 @@
       "automatic_45_second_cue": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
       "supporting_screenshot_sha256": "bb8d517df0713522eb8bed732bd016c68a1c27dab621d3b8148888f64287f38b"
     },
-    "latest_px13_attempt": {
-      "revision": "REV7",
-      "build_and_tests": "PASS",
-      "live_identity": "FAIL",
-      "rollback": "PASS_PREVIOUS_DIST_RESTORED",
-      "private_runtime_updated": false,
-      "evidence_sha256": "7e9fc689041c16571fe41316599d2722b9804b564b56c4b8044bff87c684a508"
-    },
-    "rev9_recovery": {
+    "rev9_windows_verification": {
       "candidate_sha": "1d437232cc4ff696ac495f2253347a485c231f2e",
-      "architecture": "Isolated build; proof-based live static-root discovery; in-place static mirror; exact served-identity verification; rollback on failure",
       "windows_workflow_run_id": 32310120082,
       "windows_job_id": 96251209634,
       "simulated_gateway_static_root_outside_repo": true,
       "active_esbuild_locked_during_test": true,
       "gateway_alive_through_full_test": true,
-      "powershell_parse": "PASS",
-      "npm_ci": "PASS_ZERO_VULNERABILITIES",
-      "lint": "PASS",
-      "typecheck": "PASS",
       "vitest_files": 41,
       "vitest_tests": 233,
-      "coverage_percent": {
-        "statements": 88.77,
-        "branches": 79.23,
-        "functions": 93.71,
-        "lines": 90.42
-      },
       "production_build": "PASS",
       "dedicated_audio_tests": "4_PASS",
       "live_static_root_discovery": "PASS",
@@ -128,8 +112,38 @@
       "exact_served_identity": "PASS",
       "final_result": "FULL_WINDOWS_LIVE_ROOT_DEPLOYMENT_SIMULATION_PASS"
     },
-    "private_px13_dist_updated": false,
-    "private_full_pwa_audio_retest": "OPEN"
+    "latest_px13_attempt": {
+      "revision": "REV9",
+      "candidate_sha": "1d437232cc4ff696ac495f2253347a485c231f2e",
+      "gateway_health": "PASS",
+      "live_static_root_discovery": "PASS",
+      "verified_live_static_root": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\work\\QCTP\\dist",
+      "static_mirror": "PASS",
+      "exact_served_identity": "PASS",
+      "audio_patch_deployment": "PASS",
+      "private_runtime_update": "PASS",
+      "evidence_sha256": "55fe787d8824340432bf7f456dba75172b99c6788123ff0306bd41d7c4d3dc22"
+    },
+    "private_px13_dist_updated": true,
+    "wrong_origin_observation": {
+      "observed_origin": "rfrye08-pixel.github.io",
+      "observed_version": "1.1.4",
+      "observed_navigation": "Today / Lesson / Practice / Workbook / Progress / More",
+      "disposition": "PUBLIC_REV1_ORIGIN_NOT_A_TEST_OF_PRIVATE_REV2",
+      "evidence_sha256": "a84109620f1e8e920a5903b941d038ac24058a1490706bf50ec33938f9bde8a3"
+    },
+    "private_origin_contract": {
+      "machine_name": "REOS",
+      "transport": "Tailscale Serve private HTTPS",
+      "required_url_suffix": ".ts.net",
+      "forbidden_origins_for_rev2_test": [
+        "https://rfrye08-pixel.github.io/QCTP/",
+        "https://rfrye08-pixel.github.io/QCTP/device-preview/"
+      ],
+      "exact_url_status": "MUST_BE_READ_FROM_PX13_TAILSCALE_SERVE_STATUS_NOT_GUESSED",
+      "retrieval_command": "\"%ProgramFiles%\\Tailscale\\tailscale.exe\" serve status"
+    },
+    "private_full_pwa_audio_retest": "OPEN_WRONG_ORIGIN_WAS_USED"
   },
   "open_implementation_packages": [
     "Breath Director and seven-session Breath Foundations",
@@ -140,8 +154,9 @@
     "Foundation Days 2-112 authored under progression gates"
   ],
   "release_acceptance_holds": [
-    "Run the existing REV3 locator so it fetches and deploys Windows-verified REV9 on the PX13",
-    "Verify opening and automatic 24:15 cue in the full private PWA",
+    "Retrieve the exact REOS Tailscale Serve HTTPS URL from the PX13 and open that .ts.net origin on the iPhone",
+    "Verify the Rev2 navigation Today / Paths / Practice / Studio / More before testing",
+    "Verify opening and automatic 24:15 cue in the full private Rev2 PWA",
     "Repair or replace the active untracked node_modules before any later gateway restart or laptop-reboot acceptance",
     "Complete remaining physical-iPhone lifecycle checks",
     "Run actual-origin Rev1 migration comparison",
@@ -152,11 +167,11 @@
   "release_authority": {
     "released_rev1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
     "rev2_candidate": "ZERO_RELEASE",
-    "audio_patch": "REV9_WINDOWS_VERIFIED_DEVICE_TEST_CANDIDATE_PX13_DEPLOYMENT_OPEN",
+    "audio_patch": "PX13_DEPLOYED_DEVICE_TEST_CANDIDATE_PRIVATE_IPHONE_AUDIO_RETEST_OPEN",
     "breathwork": "ZERO_RELEASE",
     "hardening_package": "ZERO_RELEASE",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "controlled_interpretation": "The prior PX13 attempt built successfully but updated a directory that port 8787 was not serving; the updater restored the previous static package. REV9 now proves the exact live static root before deployment and has passed a full Windows simulation with an alternate static root, locked active esbuild binary, live gateway, 233 tests, production build, four audio tests, in-place deployment, and exact served-identity verification.",
-  "next_controlled_action": "Rerun RUN_QCTP_AUDIO_PATCH_UPDATE.cmd from the already extracted REV3 folder. Confirm the REV9 heading and both final PASS lines, then retest the opening and automatic 24:15 cues in the full private iPhone PWA."
+  "controlled_interpretation": "REV9 successfully installed and verified the audio-patched candidate in the exact static root served by the PX13 private gateway. The subsequent iPhone screenshot came from the public GitHub Pages Rev1.1.4 origin, so its Chill Brian load failure does not test the deployed private Rev2 candidate. The remaining immediate task is to retrieve the complete REOS .ts.net Tailscale Serve URL, open that exact private origin, verify the Rev2 navigation, and perform the two-cue audio check.",
+  "next_controlled_action": "On the PX13 run \"%ProgramFiles%\\Tailscale\\tailscale.exe\" serve status, copy the complete https://...ts.net line into Safari with Tailscale connected, confirm the Rev2 navigation, and test the opening plus automatic 24:15 cues."
 }
