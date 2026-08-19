@@ -1,0 +1,1 @@
+QCTP updater REV8 must pass the Windows live-root deployment simulation before another PX13 attempt.
