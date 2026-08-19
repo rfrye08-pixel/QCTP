@@ -24,16 +24,16 @@ The patch:
 
 A fresh checkout of the controlled candidate was recorded as passing:
 
-| Gate | Recorded result |
-| --- | --- |
-| `npm ci` | PASS |
-| `npm run check` | PASS |
-| Formatting | PASS |
-| ESLint | PASS |
-| TypeScript build | PASS |
-| Vitest | PASS — 41 files / 231 tests |
-| Production Vite/PWA build | PASS |
-| `npm run test:e2e` | PASS — 14 passed / 6 controlled skips / 0 failed |
+| Gate                      | Recorded result                                  |
+| ------------------------- | ------------------------------------------------ |
+| `npm ci`                  | PASS                                             |
+| `npm run check`           | PASS                                             |
+| Formatting                | PASS                                             |
+| ESLint                    | PASS                                             |
+| TypeScript build          | PASS                                             |
+| Vitest                    | PASS — 41 files / 231 tests                      |
+| Production Vite/PWA build | PASS                                             |
+| `npm run test:e2e`        | PASS — 14 passed / 6 controlled skips / 0 failed |
 
 These are code/build results and are kept distinct from physical-device evidence.
 
