@@ -111,4 +111,18 @@ describe("PracticeScreen guide audio", () => {
       screen.getByText(/Guide audio could not start, so the timer was paused/),
     ).toBeVisible();
   });
+
+  it("keeps accelerated verification independent of neural audio", () => {
+    const constructor = vi.fn();
+    vi.stubGlobal("Audio", constructor);
+
+    render(<PracticeScreen testMode />);
+    fireEvent.click(screen.getByRole("button", { name: "Begin practice" }));
+
+    expect(constructor).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "Pause" })).toBeVisible();
+    expect(
+      screen.getByText(/Verification mode uses local tone markers/),
+    ).toBeVisible();
+  });
 });
