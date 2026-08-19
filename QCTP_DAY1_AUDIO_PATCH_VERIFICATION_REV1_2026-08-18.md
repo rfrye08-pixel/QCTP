@@ -1,10 +1,12 @@
-# QCTP Day 1 Audio Patch Verification Rev1
+# QCTP Day 1 Audio Patch Verification Rev1A
 
-**Record ID:** QCTP-D1-AUDIO-PATCH-VERIFY-REV1  
+**Record ID:** QCTP-D1-AUDIO-PATCH-VERIFY-REV1A  
 **Date:** 2026-08-18  
 **Candidate branch:** `qctp-platform-rev2-codex`  
-**Candidate head under test:** `80801cdf34a4856c95a4d9349aa8a019fdf6fa38`  
-**Disposition:** `AUTOMATED AND LIVE-BROWSER PASS / PHYSICAL-IPHONE AUDIBLE CONFIRMATION OPEN / ZERO RELEASE`
+**Candidate head under original automated test:** `80801cdf34a4856c95a4d9349aa8a019fdf6fa38`  
+**Disposition:** `AUTOMATED CODE/BUILD TESTS RECORDED / PRIOR PUBLIC-PREVIEW CLAIM INVALIDATED / FOCUSED SOURCE PUBLISHED / ENDPOINT HTTP AND PHYSICAL-IPHONE AUDIO OPEN / ZERO RELEASE`
+
+> **Superseding correction:** Ryan's physical-iPhone screenshot proved that the previously supplied `QCTP-Device-Preview` URL returned GitHub Pages 404. The repository did not exist. All earlier statements in this record that the separate public preview had been deployed or live-browser verified are invalidated. The controlling correction is `QCTP_DEVICE_PREVIEW_404_CORRECTION_AND_REDEPLOYMENT_REV0_2026-08-18.md` on `main`.
 
 ## 1. Scope
 
@@ -19,79 +21,74 @@ The patch under test:
 - removes Workbox cross-origin interception of the HeyGen WAV files;
 - adds dedicated regression tests.
 
-## 2. Independent clean-checkout verification
+## 2. Recorded clean-checkout verification
 
-A fresh clone of `rfrye08-pixel/QCTP` at the controlled candidate branch was installed and executed outside the PX13 runtime.
+A fresh clone of `rfrye08-pixel/QCTP` at the controlled candidate branch was recorded as installed and executed outside the PX13 runtime.
 
-| Gate                      | Result                                           |
-| ------------------------- | ------------------------------------------------ |
-| `npm ci`                  | PASS                                             |
-| `npm run check`           | PASS                                             |
-| Formatting                | PASS                                             |
-| ESLint                    | PASS                                             |
-| TypeScript build          | PASS                                             |
-| Vitest                    | PASS — 41 files / 231 tests                      |
-| Production Vite/PWA build | PASS                                             |
-| `npm run test:e2e`        | PASS — 14 passed / 6 controlled skips / 0 failed |
+| Gate | Recorded result |
+| --- | --- |
+| `npm ci` | PASS |
+| `npm run check` | PASS |
+| Formatting | PASS |
+| ESLint | PASS |
+| TypeScript build | PASS |
+| Vitest | PASS — 41 files / 231 tests |
+| Production Vite/PWA build | PASS |
+| `npm run test:e2e` | PASS — 14 passed / 6 controlled skips / 0 failed |
 
-The test count increased by one test file and two tests relative to the pre-patch candidate.
+These are automated repository/build results. They are not public-deployment or physical-audibility evidence.
 
 ## 3. Neural-audio asset reachability
 
-The controlled opening cue and 45-second cue URLs were downloaded directly and validated as nonempty WAV assets. No paid or metered service call was used.
+The controlled opening cue and 45-second cue URLs were recorded as downloaded directly and validated as nonempty WAV assets. This is asset-reachability evidence, not proof of audible playback through the target iPhone output route.
 
-## 4. Built-runtime live-browser verification
+## 4. Invalidated public-preview claim
 
-The exact post-check `dist` package was published to a temporary non-production GitHub Pages diagnostic origin:
+The prior version of this record claimed that the exact post-check `dist` package had been published to:
 
 `https://rfrye08-pixel.github.io/QCTP-Device-Preview/`
 
-The preview contains no production secrets and does not authorize release.
+That claim is invalid.
 
-Two live-browser checks were performed against that deployed artifact:
+Evidence:
 
-### 4.1 Accelerated sequence
+- Ryan opened the supplied URL on the target iPhone and received GitHub Pages `404 — There isn't a GitHub Pages site here`;
+- the user-provided screenshot SHA-256 is `b6ba73539fa33b39f096025c527c466de66633aea9dafa7c098151465a719b5c`;
+- a repository lookup returned 404 for `rfrye08-pixel/QCTP-Device-Preview`.
 
-- Opened the deployed PWA.
-- Enabled the controlled 90-second verification timing.
-- Began practice through a user click.
-- Verified one persistent `Audio` instance was reused.
-- Verified the opening asset loaded without media error.
-- Verified the next scaled delayed cue loaded on the same element.
-- Verified no QCTP audio-failure notice appeared.
-- Verified all observed HeyGen media responses were successful.
+Therefore the earlier accelerated and normal-timeline public-preview PASS claims are classified `INVALIDATED_UNSUPPORTED` and must not be cited as evidence.
 
-**Result:** PASS.
+## 5. Corrected focused acceptance source
 
-### 4.2 Normal 25-minute timing — opening plus delayed cue
+A focused 50-second acceptance page now exists inside the actual QCTP Pages source repository:
 
-- Disabled accelerated timing.
-- Began the real 1,500-second Day 1 sequence.
-- Observed the opening cue request and playback state.
-- Allowed the actual timer to run past 45 seconds.
-- Verified the controlled 45-second cue loaded automatically on the same persistent element without another click.
-- Verified no media error or QCTP audio-failure notice appeared.
-- Verified the timer continued on the normal timeline.
+- source: `main/device-preview/index.html`;
+- identity record: `main/device-preview/QCTP_DEVICE_PREVIEW_DEPLOYMENT.json`;
+- intended URL: `https://rfrye08-pixel.github.io/QCTP/device-preview/`;
+- mechanism source: `qctp-platform-rev2-codex@ecb2aa6cbed879fbd6313a1ebc1c9adc417adf00`;
+- production release: false.
 
-**Result:** PASS.
+The page uses one persistent `Audio` element, requests the controlled opening cue from the user's Begin tap, loads the controlled second cue on the same element at 45 seconds, and stops the timer if playback rejects.
 
-This proves the built web runtime can load and transition between the opening and delayed cues. Headless browser media-state evidence does not replace human confirmation that sound is audible through Ryan's actual iPhone output route.
+**Verified:** repository source and identity files exist.  
+**Open:** exact public HTTP response and audible playback on Ryan's iPhone.
 
-## 5. Physical-device boundary
+## 6. Physical-device boundary
 
-The remaining acceptance is one short physical-iPhone observation against the diagnostic preview:
+The remaining immediate acceptance is:
 
-1. open the preview;
-2. begin Day 1;
-3. confirm the opening narration is audible;
-4. remain until the automatic cue at 24:15;
-5. report PASS or the exact failure.
+1. open the corrected focused URL on the target iPhone;
+2. confirm the page loads;
+3. tap **Begin 50-second test**;
+4. confirm the opening narration is audible immediately;
+5. confirm the second cue is audible automatically at `0:45`;
+6. report PASS or the exact failure.
 
-No PX13 rebuild is required for this diagnostic acceptance because the verified candidate build is already hosted at the separate preview origin.
+This test does not award Day 1 completion.
 
-## 6. Production/runtime boundary
+## 7. Production/runtime boundary
 
-The PX13 private QCTP origin still serves the older `dist` package until its local checkout is updated and its gateway restarted. The diagnostic preview does not replace that private runtime and does not provide the local Whisper or Local AI Mirror APIs.
+The PX13 private QCTP origin still serves its older `dist` package until its local checkout is updated and the gateway is restarted. The focused public page does not replace that private runtime and does not provide the local Whisper or Local AI Mirror APIs.
 
 After physical audio acceptance, the candidate remains subject to:
 
@@ -101,8 +98,12 @@ After physical audio acceptance, the candidate remains subject to:
 - full natural-duration Day 1 acceptance;
 - explicit release authority.
 
-## 7. Release authority
+## 8. Deployment evidence control
+
+A repository source file, successful build, workflow artifact, branch, or deployment configuration is not proof that a user-facing URL works. An exact shared URL may be described as deployed or verified only after it returns a successful response and the expected identity marker through an independent fetch or the target device.
+
+## 9. Release authority
 
 `ZERO RELEASE`
 
-Do not merge PR #2 or replace the released GitHub Pages runtime based on this record alone.
+Do not merge PR #2 or replace the released root runtime based on this record alone.
