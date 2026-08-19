@@ -1,2 +1,2 @@
 QCTP updater REV8 must pass the Windows live-root deployment simulation before another PX13 attempt.
-Gate revision: explicit alternate static server and dynamic-file preflight.
+Gate revision: explicit alternate static server via environment root, no-BOM script, process diagnostics, and dynamic-file preflight.
