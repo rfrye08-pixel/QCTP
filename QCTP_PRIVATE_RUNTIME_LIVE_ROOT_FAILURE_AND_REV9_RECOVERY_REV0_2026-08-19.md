@@ -22,8 +22,8 @@ It then mirrored the staged `dist` into the checkout directory it assumed was li
 
 - source: Ryan's direct PX13 terminal screenshot in the active QCTP thread;
 - image dimensions: 2048 × 1068 pixels;
-- received PNG size: 405,760 bytes;
-- SHA-256: `58fe82b7a6c4cf05a4cb41bdd4fd6a639db8111f4fce6b6fc1883d2d41e2c44d`;
+- received PNG size: 450,151 bytes;
+- SHA-256: `7e9fc689041c16571fe41316599d2722b9804b564b56c4b8044bff87c684a508`;
 - ChatGPT file ID: `file_00000000d16481fdb5bef7ee1cc8a5df`;
 - evidence class: **USER-PROVIDED / DIRECT PX13 TERMINAL SCREENSHOT**.
 
