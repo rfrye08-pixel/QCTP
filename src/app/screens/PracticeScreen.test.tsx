@@ -25,7 +25,7 @@ interface FakeAudioElement {
 function fakeAudio(
   playResult: "resolve" | "reject" = "resolve",
 ): FakeAudioElement {
-  let audio: FakeAudioElement;
+  const audio = {} as FakeAudioElement;
   const play = vi.fn((): Promise<void> => {
     if (playResult === "reject") {
       return Promise.reject(
@@ -36,7 +36,7 @@ function fakeAudio(
     return Promise.resolve();
   });
 
-  audio = {
+  Object.assign(audio, {
     src: "",
     preload: "none",
     volume: 1,
@@ -51,7 +51,7 @@ function fakeAudio(
     removeAttribute: vi.fn((name: string) => {
       if (name === "src") audio.src = "";
     }),
-  };
+  } satisfies FakeAudioElement);
   return audio;
 }
 
