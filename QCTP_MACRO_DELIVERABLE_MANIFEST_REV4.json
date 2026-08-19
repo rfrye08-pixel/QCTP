@@ -1,0 +1,129 @@
+{
+  "schema": "qctp-macro-deliverable-manifest-v4",
+  "manifest_id": "QCTP-PLATFORM-REV4-HARDENED",
+  "title": "Quantum Consciousness Training Platform — Hardened Protocol and Experience",
+  "updated_at": "2026-08-19T17:52:00-05:00",
+  "status": "ACTIVE",
+  "supersedes": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV3.json",
+  "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness training platform that teaches exact state-entry mechanics, verifies repeatable capability, supports serious personal experiments, preserves source lineage and raw evidence, and remains compelling and effortless to use on iPhone.",
+  "controlled_baseline": {
+    "released_runtime": "1.1.4",
+    "released_branch": "main",
+    "rev2_candidate_branch": "qctp-platform-rev2-codex",
+    "rev2_candidate_head": "1d437232cc4ff696ac495f2253347a485c231f2e",
+    "candidate_pr": 2,
+    "runtime_cost_mode": "FREE_LOCAL",
+    "controlled_voice": "Chill Brian",
+    "foundation_days": 112,
+    "authored_released_days": [1],
+    "release_authority": "ZERO_RELEASE_FOR_REV2_REV3_AND_REV4_CHANGES"
+  },
+  "deliverables": [
+    {
+      "id": "QCTP-R4-D01",
+      "name": "Maintainable Rev2 platform candidate",
+      "status": "COMPLETE_CANDIDATE",
+      "evidence": [
+        "React and TypeScript PWA",
+        "IndexedDB v3 local-first storage and migration",
+        "voice capture and PX13 local transcription",
+        "Mirror Core and Local AI Mirror",
+        "Robert Edward Grant REG-01",
+        "41 files / 233 Node tests PASS in REV9 Windows deployment simulation",
+        "production PWA build PASS",
+        "draft PR #2"
+      ]
+    },
+    {
+      "id": "QCTP-R4-D02",
+      "name": "Day 1 iPhone audio recovery",
+      "status": "REV9_WINDOWS_LIVE_ROOT_DEPLOYMENT_PASS_PX13_INSTALL_OPEN",
+      "implemented": [
+        "persistent reusable audio element",
+        "user-interaction media authorization",
+        "timer fail-closed pause on playback rejection",
+        "pause-resume retry on same element",
+        "external neural-audio service-worker interception removed",
+        "isolated staging build",
+        "proof-based live static-root discovery",
+        "in-place verified static deployment",
+        "rollback on failed served identity"
+      ],
+      "evidence": {
+        "focused_physical_iphone_opening_cue": "PASS_USER_REPORTED",
+        "focused_physical_iphone_45_second_cue": "PASS_USER_REPORTED",
+        "rev9_windows_workflow_run": 32310120082,
+        "rev9_windows_job": 96251209634,
+        "rev9_full_live_root_simulation": "PASS",
+        "rev9_node_tests": 233,
+        "rev9_dedicated_audio_tests": 4,
+        "rev9_candidate_sha": "1d437232cc4ff696ac495f2253347a485c231f2e"
+      },
+      "remaining": [
+        "run the Windows-verified REV9 updater on the PX13",
+        "verify opening and automatic 24:15 cue in the full private PWA",
+        "complete natural 1500-second Day 1 acceptance",
+        "replace live third-party audio with checksum-verified local audio packs before release"
+      ]
+    },
+    {
+      "id": "QCTP-R4-D03",
+      "name": "Breath Director and Breath Foundations",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md"
+    },
+    {
+      "id": "QCTP-R4-D04",
+      "name": "Training protocol hardening and State Atlas",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_refs": [
+        "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
+        "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md"
+      ]
+    },
+    {
+      "id": "QCTP-R4-D05",
+      "name": "User-friendly exploration experience",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md"
+    },
+    {
+      "id": "QCTP-R4-D06",
+      "name": "Thomas Campbell source track",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_THOMAS_CAMPBELL_INTEGRATION_REV0_2026-08-18.md",
+      "modules": 10
+    },
+    {
+      "id": "QCTP-R4-D07",
+      "name": "Hardened Day 1 and local audio pack",
+      "status": "CONTENT_CANDIDATE_AUTHORED_IMPLEMENTATION_OPEN",
+      "authority_refs": [
+        "QCTP_DAY1_HARDENING_DELTA_AND_CANDIDATE_SCRIPT_REV0_2026-08-18.md",
+        "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md"
+      ]
+    },
+    {
+      "id": "QCTP-R4-D08",
+      "name": "Foundation Days 2-112 hardened curriculum",
+      "status": "OPEN",
+      "guard": "Do not fabricate or release future days until each day passes protocol, State Atlas, audio, progression, and device acceptance."
+    },
+    {
+      "id": "QCTP-R4-D09",
+      "name": "Hardened release package and acceptance",
+      "status": "OPEN",
+      "required": [
+        "private PX13 audio-patch install and physical iPhone retest",
+        "remaining microphone, offline, reconnect, notification, lifecycle, and export checks",
+        "actual-origin Rev1 migration comparison",
+        "natural full-duration Day 1 acceptance",
+        "local audio-pack and offline acceptance",
+        "explicit merge and deployment authority"
+      ]
+    }
+  ],
+  "current_macro_delta": "REV9 now passes a full Windows simulation in which the running gateway serves a static root outside the repository while the active esbuild binary remains locked. The updater proved live-root discovery, isolated build, in-place deployment, exact served identity, and final PASS. The remaining immediate action is one PX13 run followed by the two-cue full-PWA iPhone check.",
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "Run the existing REV3 locator on the PX13 so it fetches REV9, then verify both final PASS lines and the opening plus automatic 24:15 cues in the full private iPhone PWA."
+}
