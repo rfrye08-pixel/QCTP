@@ -56,9 +56,11 @@ function fakeAudio(
 }
 
 let originalAudio: typeof Audio;
+let originalAudioContext: typeof AudioContext | undefined;
 
 beforeEach(() => {
   originalAudio = globalThis.Audio;
+  originalAudioContext = globalThis.AudioContext;
   vi.useFakeTimers();
 });
 
@@ -66,6 +68,7 @@ afterEach(() => {
   cleanup();
   vi.useRealTimers();
   vi.stubGlobal("Audio", originalAudio);
+  vi.stubGlobal("AudioContext", originalAudioContext);
 });
 
 describe("PracticeScreen guide audio", () => {
@@ -124,5 +127,19 @@ describe("PracticeScreen guide audio", () => {
     expect(
       screen.getByText(/Verification mode uses local tone markers/),
     ).toBeVisible();
+  });
+
+  it("starts accelerated verification when Web Audio cannot be created", () => {
+    const audioContextConstructor = vi.fn(function AudioContextMock() {
+      throw new Error("Web Audio unavailable");
+    });
+    vi.stubGlobal("AudioContext", audioContextConstructor);
+
+    render(<PracticeScreen testMode />);
+    fireEvent.click(screen.getByRole("button", { name: "Begin practice" }));
+
+    expect(audioContextConstructor).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button", { name: "Pause" })).toBeVisible();
+    expect(screen.getByTestId("practice-timer")).toHaveTextContent("1:30");
   });
 });
