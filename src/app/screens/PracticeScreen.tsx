@@ -168,7 +168,10 @@ export function PracticeScreen({
     },
     [onMorningComplete, playCue, releaseWakeLock],
   );
-  dispatchRef.current = dispatch;
+
+  useEffect(() => {
+    dispatchRef.current = dispatch;
+  }, [dispatch]);
 
   const startPractice = useCallback(() => {
     lessonRef.current?.pause();
