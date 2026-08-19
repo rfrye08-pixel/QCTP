@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 import { Blob as NodeBlob } from "node:buffer";
 
 import "@testing-library/jest-dom/vitest";
