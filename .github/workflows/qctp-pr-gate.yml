@@ -32,13 +32,15 @@ jobs:
     timeout-minutes: 45
 
     steps:
-      - name: Check out candidate merge ref
+      - name: Check out candidate head
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Set up Node 22
+      - name: Set up Node 24
         uses: actions/setup-node@v4
         with:
-          node-version: 22.12.0
+          node-version: 24.15.0
           cache: npm
 
       - name: Install Node dependencies
@@ -76,7 +78,7 @@ jobs:
       - name: Upload verified PWA distribution
         uses: actions/upload-artifact@v4
         with:
-          name: qctp-candidate-dist-${{ github.sha }}
+          name: qctp-candidate-dist-${{ github.event.pull_request.head.sha || github.sha }}
           path: dist/
           if-no-files-found: error
           retention-days: 14
