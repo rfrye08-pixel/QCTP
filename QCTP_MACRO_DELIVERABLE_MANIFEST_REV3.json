@@ -3,13 +3,14 @@
   "manifest_id": "QCTP-PLATFORM-REV3-HARDENED",
   "title": "Quantum Consciousness Training Platform — Hardened Protocol and Experience",
   "created_at": "2026-08-18T06:35:00-05:00",
+  "updated_at": "2026-08-18T23:52:42-05:00",
   "status": "ACTIVE",
   "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness training platform that teaches exact state-entry mechanics, verifies repeatable capability, supports serious personal experiments, preserves source lineage and raw evidence, and remains compelling and effortless to use on iPhone.",
   "controlled_baseline": {
     "released_runtime": "1.1.4",
     "released_branch": "main",
     "rev2_candidate_branch": "qctp-platform-rev2-codex",
-    "rev2_candidate_head": "80801cdf34a4856c95a4d9349aa8a019fdf6fa38",
+    "rev2_candidate_head": "1a179146a9101c7485ef3ef7da6d0f2bea350d0a",
     "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2",
     "runtime_cost_mode": "FREE_LOCAL",
     "controlled_voice": "Chill Brian",
@@ -28,12 +29,14 @@
         "React and TypeScript PWA",
         "IndexedDB v3",
         "Paths, Practice, Studio, Lab, Codex, Mirror, Insights, Settings",
-        "229 recorded passing Node tests before the later audio patch",
+        "recorded post-audio-patch clean-checkout suite: 41 files / 231 tests",
+        "recorded Playwright: 14 pass / 6 controlled skips / 0 fail",
         "44 recorded passing local-Whisper tests",
         "draft PR #2"
       ],
       "holds": [
-        "post-audio-patch full suite",
+        "update and restart private PX13 runtime",
+        "full-private-PWA opening and delayed-cue retest",
         "remaining physical-iPhone acceptance",
         "actual-origin Rev1 migration comparison",
         "natural 1500-second Day 1 acceptance"
@@ -125,20 +128,23 @@
     {
       "id": "QCTP-R3-D08",
       "name": "Meditation authoring, local audio assets, and QA system",
-      "status": "SPEC_CLOSED_IMPLEMENTATION_PARTIAL",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_PARTIAL_DEVICE_MECHANISM_PASS",
       "authority_ref": "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
       "implemented_partial": [
         "persistent audio-element patch",
         "timer-pause-on-playback-failure patch",
         "external neural-audio service-worker interception removed",
-        "candidate regression tests written"
+        "candidate regression tests",
+        "corrected focused endpoint loaded on target iPhone",
+        "opening cue audible on target iPhone",
+        "automatic 45-second cue audible on target iPhone"
       ],
+      "physical_acceptance_ref": "QCTP_DAY1_AUDIO_PHYSICAL_IPHONE_ACCEPTANCE_REV0_2026-08-18.md",
       "remaining": [
+        "pull/build/restart private PX13 runtime",
+        "repeat opening-plus-45-second check in full private PWA",
         "local audio-pack schema and storage",
         "checksum preflight",
-        "post-patch full suite",
-        "PX13 rebuild/restart",
-        "physical-iPhone opening and delayed-cue acceptance",
         "full natural-duration acceptance"
       ]
     },
@@ -218,7 +224,7 @@
       ]
     }
   ],
-  "current_macro_delta": "Rev2 non-breath platform implementation exists as a candidate. Breathwork, hardened state protocol, State Atlas integration, local audio-pack reliability, Thomas Campbell track, hardened Day 1, and UX upgrade are controlled implementation packages. The immediate practice-blocking audio patch exists on the candidate branch but has not been rebuilt or device-verified.",
+  "current_macro_delta": "The focused physical-iPhone audio mechanism now passes: the corrected endpoint loaded and both the user-started opening cue and automatic 45-second cue were audible. The immediate remaining audio action is to update/restart the private PX13 runtime and repeat that short check in the full PWA. Breathwork, hardened state protocol, State Atlas integration, local audio-pack reliability, Thomas Campbell track, hardened Day 1, and UX upgrade remain controlled implementation packages.",
   "release_authority": "ZERO_RELEASE",
-  "next_controlled_action": "Rebuild and device-verify the Rev2 Day 1 audio patch first. When QCTP implementation capacity is available, implement Breath Director plus the protocol/State Atlas/audio/UX/Campbell hardening package on the controlled candidate branch without rebuilding completed Rev2 subsystems."
+  "next_controlled_action": "Update the private PX13 QCTP runtime from qctp-platform-rev2-codex, restart the gateway, and verify the opening plus automatic 24:15 cue in the full private PWA."
 }
