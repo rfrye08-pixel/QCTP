@@ -17,9 +17,7 @@ $StageRoot = $null
 $StageRepo = $null
 $DeployCandidate = $null
 $BackupDist = $null
-$StartedTasks = @()
-$GatewayWasRunning = $false
-$DeploymentSwapped = $false
+$ExitCode = 0
 
 function Write-Stage {
     param([Parameter(Mandatory = $true)][string]$Message)
@@ -33,17 +31,16 @@ function Invoke-Checked {
     )
 
     & $Command @Arguments
-    $exitCode = $LASTEXITCODE
-    if ($exitCode -ne 0) {
-        throw "Command failed with exit code $($exitCode): $Command $($Arguments -join ' ')"
+    $code = $LASTEXITCODE
+    if ($code -ne 0) {
+        throw "Command failed with exit code $($code): $Command $($Arguments -join ' ')"
     }
 }
 
 function Remove-PathWithRetry {
     param(
         [Parameter(Mandatory = $true)][string]$Path,
-        [int]$Attempts = 8,
-        [int]$DelayMilliseconds = 500
+        [int]$Attempts = 8
     )
 
     if (-not (Test-Path -LiteralPath $Path)) { return }
@@ -54,7 +51,7 @@ function Remove-PathWithRetry {
         }
         catch {
             if ($attempt -eq $Attempts) { throw }
-            Start-Sleep -Milliseconds $DelayMilliseconds
+            Start-Sleep -Milliseconds 500
         }
     }
 }
@@ -81,50 +78,6 @@ function Test-HttpEndpoint {
     return $false
 }
 
-function Get-QctpScheduledTasks {
-    $repoPattern = [regex]::Escape($RepoRoot)
-    try {
-        return @(
-            Get-ScheduledTask -ErrorAction Stop | Where-Object {
-                $task = $_
-                $actionText = ($task.Actions | ForEach-Object {
-                    "$($_.Execute) $($_.Arguments) $($_.WorkingDirectory)"
-                }) -join ' '
-                $task.TaskName -match 'QCTP' -or
-                $task.TaskPath -match 'QCTP' -or
-                $actionText -match $repoPattern
-            }
-        )
-    }
-    catch {
-        Write-Host 'Scheduled-task inspection is unavailable. The updater will preserve a running gateway and deploy the static build without stopping it.' -ForegroundColor Yellow
-        return @()
-    }
-}
-
-function Get-GatewayConnections {
-    return @(Get-NetTCPConnection -State Listen -LocalPort 8787 -ErrorAction SilentlyContinue)
-}
-
-function Stop-GatewayConnections {
-    param([object[]]$Connections)
-
-    foreach ($connection in @($Connections)) {
-        if ($connection.OwningProcess -gt 0) {
-            Stop-Process -Id $connection.OwningProcess -Force -ErrorAction SilentlyContinue
-        }
-    }
-}
-
-function Start-QctpTasks {
-    param([object[]]$Tasks)
-
-    foreach ($task in @($Tasks)) {
-        Write-Host "Starting scheduled task: $($task.TaskPath)$($task.TaskName)"
-        Start-ScheduledTask -InputObject $task
-    }
-}
-
 function Test-RequiredAudioFix {
     param([Parameter(Mandatory = $true)][string]$Repository)
 
@@ -139,11 +92,12 @@ function Write-RuntimeIdentity {
     )
 
     $identity = [ordered]@{
-        schema = 'qctp-private-runtime-build-v2'
+        schema = 'qctp-private-runtime-build-v3'
         candidate_sha = $Head
         source_branch = $RequiredBranch
         audio_fix_present = $true
         isolated_staging_build = $true
+        live_static_swap = $true
         built_at = (Get-Date).ToUniversalTime().ToString('o')
         release_authority = 'ZERO_RELEASE_DEVICE_TEST_CANDIDATE'
     }
@@ -168,17 +122,29 @@ function Test-RuntimeIdentity {
     }
 }
 
-function New-IsolatedStagingWorktree {
+function New-IsolatedClone {
     param([Parameter(Mandatory = $true)][string]$Head)
 
     $root = Join-Path ([IO.Path]::GetTempPath()) ("qctp-private-runtime-stage-{0}-{1}" -f $PID, [Guid]::NewGuid().ToString('N'))
     $repo = Join-Path $root 'QCTP'
     New-Item -ItemType Directory -Path $root -Force | Out-Null
-    Invoke-Checked -Command git -Arguments @('-C', $RepoRoot, 'worktree', 'add', '--detach', $repo, $Head)
-    return @($root, $repo)
+
+    & git clone --no-hardlinks --no-checkout $RepoRoot $repo | Out-Host
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Could not create the isolated QCTP staging clone.'
+    }
+    & git -C $repo checkout --detach $Head | Out-Host
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not check out candidate $Head in isolated staging."
+    }
+
+    return [PSCustomObject]@{
+        Root = $root
+        Repository = $repo
+    }
 }
 
-function Copy-VerifiedDistToDeployCandidate {
+function Copy-VerifiedDist {
     param([Parameter(Mandatory = $true)][string]$SourceDist)
 
     $candidate = Join-Path $RepoRoot ('.qctp-dist-candidate-' + [Guid]::NewGuid().ToString('N'))
@@ -192,16 +158,11 @@ function Copy-VerifiedDistToDeployCandidate {
 
 function Restore-PreviousDist {
     param(
-        [string]$CurrentDist,
-        [string]$BackupPath,
-        [object[]]$Tasks,
-        [bool]$TasksWereUsed
+        [Parameter(Mandatory = $true)][string]$CurrentDist,
+        [string]$BackupPath
     )
 
-    Write-Host 'Attempting to restore the previous private runtime dist package.' -ForegroundColor Yellow
-    if ($TasksWereUsed) {
-        Stop-GatewayConnections -Connections (Get-GatewayConnections)
-    }
+    Write-Host 'Restoring the previous private runtime dist package.' -ForegroundColor Yellow
     if (Test-Path -LiteralPath $CurrentDist) {
         $failedPath = "$CurrentDist.failed-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
         Move-Item -LiteralPath $CurrentDist -Destination $failedPath -Force -ErrorAction SilentlyContinue
@@ -209,13 +170,10 @@ function Restore-PreviousDist {
     if ($BackupPath -and (Test-Path -LiteralPath $BackupPath)) {
         Move-Item -LiteralPath $BackupPath -Destination $CurrentDist -Force
     }
-    if ($TasksWereUsed) {
-        Start-QctpTasks -Tasks $Tasks
-    }
 }
 
 try {
-    Write-Stage 'QCTP audio-patch deployment preflight REV6'
+    Write-Stage 'QCTP audio-patch deployment preflight REV7'
     Set-Location $RepoRoot
 
     if (-not (Test-Path -LiteralPath (Join-Path $RepoRoot '.git'))) {
@@ -240,28 +198,24 @@ try {
     if ($head -ne $remoteHead) {
         throw "The local checkout is not aligned to the controlled remote. Local: $head Remote: $remoteHead. Rerun the locator/updater."
     }
-
     if (-not (Test-RequiredAudioFix -Repository $RepoRoot)) {
         throw 'The checked-out candidate does not contain the controlled iPhone audio fix.'
     }
     Write-Host "Candidate head: $head" -ForegroundColor Green
 
-    Write-Stage 'Creating an isolated staging worktree'
-    $stagePaths = New-IsolatedStagingWorktree -Head $head
-    $StageRoot = $stagePaths[0]
-    $StageRepo = $stagePaths[1]
+    Write-Stage 'Creating isolated staging clone'
+    $stage = New-IsolatedClone -Head $head
+    $StageRoot = $stage.Root
+    $StageRepo = $stage.Repository
     Write-Host "Staging repository: $StageRepo" -ForegroundColor Green
-    Write-Host 'The active QCTP node_modules directory will not be modified, so the running gateway cannot lock npm ci.' -ForegroundColor DarkGray
+    Write-Host 'The active QCTP node_modules directory is never modified. A running gateway or esbuild process cannot block npm ci in staging.' -ForegroundColor DarkGray
 
     if (-not (Test-RequiredAudioFix -Repository $StageRepo)) {
-        throw 'The isolated staging worktree does not contain the controlled iPhone audio fix.'
+        throw 'The isolated staging clone does not contain the controlled iPhone audio fix.'
     }
 
-    Write-Stage 'Verifying the controlled Day 1 audio inventory'
+    Write-Stage 'Verifying controlled Day 1 audio inventory'
     $day1Path = Join-Path $StageRepo 'src\foundation\day1.ts'
-    if (-not (Test-Path -LiteralPath $day1Path)) {
-        throw "Day 1 source is missing: $day1Path"
-    }
     $day1Source = Get-Content -Raw -LiteralPath $day1Path
     $audioUrls = @(
         [regex]::Matches($day1Source, 'https://resource2\.heygen\.ai/[^"\s]+\.wav') |
@@ -271,32 +225,29 @@ try {
     if ($audioUrls.Count -lt 22) {
         throw "Expected at least 22 controlled Day 1 neural-audio references, found $($audioUrls.Count)."
     }
-    Write-Host "Verified $($audioUrls.Count) controlled audio references in the source definition." -ForegroundColor Green
-    Write-Host 'External provider byte probing is not a deployment blocker. Target-iPhone opening and delayed-cue playback already passed, and runtime playback fails closed.' -ForegroundColor DarkGray
+    Write-Host "Verified $($audioUrls.Count) controlled audio references." -ForegroundColor Green
 
     Push-Location $StageRepo
     try {
-        Write-Stage 'Installing exact Node dependencies in isolated staging'
+        Write-Stage 'Installing exact dependencies in isolated staging'
         Invoke-Checked -Command npm -Arguments @('ci')
 
-        Write-Stage 'Running Windows-safe lint, type, coverage, and production-build gates'
-        Write-Host 'The cross-platform formatting gate is enforced by Linux candidate CI; it is not repeated after Windows line-ending conversion.' -ForegroundColor DarkGray
+        Write-Stage 'Running Windows-safe lint, type, coverage, and production build'
         Invoke-Checked -Command npm -Arguments @('run', 'lint')
         Invoke-Checked -Command npm -Arguments @('run', 'typecheck')
         Invoke-Checked -Command npm -Arguments @('run', 'test:coverage')
         Invoke-Checked -Command npm -Arguments @('run', 'build')
 
-        Write-Stage 'Running the dedicated iPhone audio regression tests'
+        Write-Stage 'Running dedicated iPhone audio regression tests'
         Invoke-Checked -Command npx -Arguments @('vitest', 'run', 'src/app/screens/PracticeScreen.test.tsx')
 
-        $shouldRunBrowserTests = $RunBrowserTests -and -not $SkipBrowserTests
-        if ($shouldRunBrowserTests) {
+        if ($RunBrowserTests -and -not $SkipBrowserTests) {
             Write-Stage 'Running browser acceptance tests'
             Invoke-Checked -Command npx -Arguments @('playwright', 'install', 'chromium')
             Invoke-Checked -Command npm -Arguments @('run', 'test:e2e')
         }
         else {
-            Write-Host 'Full browser-suite reinstall is skipped in this private-runtime recovery. Repository CI remains the governing browser gate.' -ForegroundColor DarkGray
+            Write-Host 'Browser reinstall is skipped for private recovery. Repository browser CI remains authoritative.' -ForegroundColor DarkGray
         }
     }
     finally {
@@ -304,65 +255,45 @@ try {
     }
 
     $stageDist = Join-Path $StageRepo 'dist'
-    $stageIndex = Join-Path $stageDist 'index.html'
-    if (-not (Test-Path -LiteralPath $stageIndex)) {
+    if (-not (Test-Path -LiteralPath (Join-Path $stageDist 'index.html'))) {
         throw 'The isolated production build did not create dist\index.html.'
     }
 
     $identityPath = Write-RuntimeIdentity -Head $head -DistDirectory $stageDist
     Write-Host "Wrote staged runtime identity: $identityPath" -ForegroundColor Green
-    Write-Host "Verified staged dist build timestamp: $((Get-Item -LiteralPath $stageIndex).LastWriteTime)" -ForegroundColor Green
 
     if ($VerifyBuildOnly) {
         Write-Host "`nQCTP AUDIO PATCH BUILD VERIFICATION: PASS" -ForegroundColor Green
         Write-Host "Candidate: $head"
     }
     else {
-        Write-Stage 'Preparing verified dist package for atomic deployment'
-        $DeployCandidate = Copy-VerifiedDistToDeployCandidate -SourceDist $stageDist
+        Write-Stage 'Confirming the existing private gateway is healthy before static deployment'
+        if (-not (Test-HttpEndpoint -Uri 'http://127.0.0.1:8787/health' -Attempts 3 -DelaySeconds 1)) {
+            throw 'The existing private QCTP gateway is not healthy on port 8787. The verified build was not installed.'
+        }
+
+        Write-Stage 'Preparing verified dist package'
+        $DeployCandidate = Copy-VerifiedDist -SourceDist $stageDist
         $currentDist = Join-Path $RepoRoot 'dist'
         $BackupDist = Join-Path $RepoRoot ('.qctp-dist-backup-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
 
-        $tasks = Get-QctpScheduledTasks
-        $gatewayConnections = Get-GatewayConnections
-        $GatewayWasRunning = ($gatewayConnections.Count -gt 0)
-        $tasksWereUsed = ($tasks.Count -gt 0 -and -not $SkipRestart)
-
-        if ($tasksWereUsed) {
-            Write-Stage 'Stopping the private QCTP gateway for the dist swap'
-            Stop-GatewayConnections -Connections $gatewayConnections
-        }
-        elseif ($GatewayWasRunning) {
-            Write-Host 'No controllable QCTP scheduled task was found. The running gateway will remain online and will read the atomically replaced static dist package.' -ForegroundColor Yellow
-        }
-        elseif (-not $SkipRestart) {
-            throw 'No running QCTP gateway or controllable QCTP scheduled task was found. The verified build was not deployed.'
-        }
-
-        Write-Stage 'Installing the verified dist package'
+        Write-Stage 'Atomically replacing only the static PWA dist package'
+        Write-Host 'The running gateway and active node_modules remain untouched.' -ForegroundColor DarkGray
         if (Test-Path -LiteralPath $currentDist) {
             Move-Item -LiteralPath $currentDist -Destination $BackupDist -Force
         }
         Move-Item -LiteralPath $DeployCandidate -Destination $currentDist -Force
         $DeployCandidate = $null
-        $DeploymentSwapped = $true
 
-        if ($tasksWereUsed) {
-            Write-Stage 'Restarting the private QCTP services'
-            Start-QctpTasks -Tasks $tasks
-            $StartedTasks = @($tasks)
-        }
-
-        Write-Stage 'Verifying the rebuilt private runtime'
-        $runtimeVerified = (
+        Write-Stage 'Verifying exact served build identity'
+        $verified = (
             (Test-HttpEndpoint -Uri 'http://127.0.0.1:8787/health') -and
             (Test-HttpEndpoint -Uri 'http://127.0.0.1:8787/') -and
             (Test-RuntimeIdentity -ExpectedHead $head)
         )
-        if (-not $runtimeVerified) {
-            Restore-PreviousDist -CurrentDist $currentDist -BackupPath $BackupDist -Tasks $tasks -TasksWereUsed $tasksWereUsed
-            $DeploymentSwapped = $false
-            throw "The private gateway did not prove that it was serving candidate $head. The previous dist package was restored."
+        if (-not $verified) {
+            Restore-PreviousDist -CurrentDist $currentDist -BackupPath $BackupDist
+            throw "The gateway did not prove it was serving candidate $head. The previous dist package was restored."
         }
 
         if (Test-Path -LiteralPath $BackupDist) {
@@ -372,26 +303,24 @@ try {
 
         Write-Host "`nQCTP AUDIO PATCH DEPLOYMENT: PASS" -ForegroundColor Green
         Write-Host "Candidate: $head"
-        Write-Host 'The private gateway is serving the newly built candidate identity.'
+        Write-Host 'The existing private gateway is serving the newly built static candidate identity.'
         Write-Host 'Close the QCTP Home Screen app completely, reopen it, then verify the opening cue and automatic cue at 24:15.'
     }
 }
 catch {
+    $ExitCode = 1
     Write-Host "`nQCTP AUDIO PATCH DEPLOYMENT: FAILED" -ForegroundColor Red
     Write-Host $_.Exception.Message -ForegroundColor Red
-    exit 1
 }
 finally {
     if ($DeployCandidate -and (Test-Path -LiteralPath $DeployCandidate)) {
-        Remove-PathWithRetry -Path $DeployCandidate -ErrorAction SilentlyContinue
+        try { Remove-PathWithRetry -Path $DeployCandidate } catch { }
     }
-    if ($StageRepo -and (Test-Path -LiteralPath $StageRepo)) {
-        & git -C $RepoRoot worktree remove --force $StageRepo 2>$null
-    }
-    & git -C $RepoRoot worktree prune 2>$null
     if ($StageRoot -and (Test-Path -LiteralPath $StageRoot)) {
-        Remove-PathWithRetry -Path $StageRoot -ErrorAction SilentlyContinue
+        try { Remove-PathWithRetry -Path $StageRoot } catch {
+            Write-Host "Staging cleanup warning: $($_.Exception.Message)" -ForegroundColor Yellow
+        }
     }
 }
 
-exit 0
+exit $ExitCode
