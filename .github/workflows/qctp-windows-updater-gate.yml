@@ -55,11 +55,11 @@ jobs:
             exit 1
           }
 
-      - name: Install active runtime dependencies for the simulation
+      - name: Install active runtime dependencies for the lock simulation
         shell: cmd
         run: npm ci
 
-      - name: Start a gateway whose static root is outside the repository
+      - name: Start a gateway with an explicit static root outside the repository
         shell: powershell
         run: |
           $runtimeRoot = Join-Path $env:USERPROFILE 'Documents\Codex\QCTP-runtime-sim'
@@ -71,31 +71,68 @@ jobs:
           '{"candidate_sha":"old-runtime","audio_fix_present":false}' |
             Set-Content -LiteralPath (Join-Path $dist 'QCTP_PRIVATE_RUNTIME_BUILD.json') -Encoding UTF8
 
-          $env:QCTP_API_TOKEN = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
-          $env:QCTP_TRANSCRIPTION_PROVIDER = 'mock'
-          $env:PORT = '8787'
-          $env:QCTP_MIRROR_JOB_STORE_PATH = Join-Path $runtimeRoot 'mirror-jobs.json'
+          $serverPath = Join-Path $env:RUNNER_TEMP 'qctp-static-gateway.mjs'
+          @'
+          import { createReadStream, existsSync, statSync } from "node:fs";
+          import { createServer } from "node:http";
+          import { extname, join, normalize } from "node:path";
+          import { fileURLToPath } from "node:url";
+
+          const root = process.argv[2];
+          const mime = {
+            ".html": "text/html; charset=utf-8",
+            ".json": "application/json; charset=utf-8",
+            ".js": "text/javascript; charset=utf-8",
+            ".css": "text/css; charset=utf-8",
+            ".png": "image/png",
+            ".svg": "image/svg+xml",
+            ".webmanifest": "application/manifest+json",
+          };
+          const server = createServer((request, response) => {
+            const url = new URL(request.url ?? "/", "http://127.0.0.1");
+            if (url.pathname === "/health") {
+              response.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" });
+              response.end('{"status":"ok"}');
+              return;
+            }
+            const relative = decodeURIComponent(url.pathname).replace(/^\/+/, "");
+            let candidate = normalize(join(root, relative || "index.html"));
+            if (!candidate.startsWith(normalize(root)) || !existsSync(candidate) || !statSync(candidate).isFile()) {
+              candidate = join(root, "index.html");
+            }
+            response.writeHead(200, {
+              "content-type": mime[extname(candidate)] ?? "application/octet-stream",
+              "cache-control": "no-store",
+            });
+            createReadStream(candidate).pipe(response);
+          });
+          server.listen(8787, "127.0.0.1");
+          '@ | Set-Content -LiteralPath $serverPath -Encoding UTF8
+
           $node = (Get-Command node).Source
-          $tsx = Join-Path $PWD 'node_modules\tsx\dist\cli.mjs'
-          $server = Join-Path $PWD 'server\index.ts'
           $process = Start-Process `
             -FilePath $node `
-            -ArgumentList @($tsx, $server) `
+            -ArgumentList @($serverPath, $dist) `
             -WorkingDirectory $runtimeRoot `
             -PassThru `
             -WindowStyle Hidden
           $process.Id | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP 'qctp-gateway.pid')
-          $runtimeRoot | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP 'qctp-runtime-root.txt')
 
           for ($attempt = 1; $attempt -le 30; $attempt += 1) {
             try {
-              $response = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8787/health' -TimeoutSec 4
-              if ($response.StatusCode -eq 200) { exit 0 }
+              $health = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8787/health' -TimeoutSec 4
+              $rootResponse = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8787/' -TimeoutSec 4
+              if ($health.StatusCode -eq 200 -and $rootResponse.Content -match 'QCTP old runtime') {
+                $probePath = Join-Path $dist 'pre-updater-probe.json'
+                '{"probe":"visible"}' | Set-Content -LiteralPath $probePath -Encoding UTF8
+                $probe = Invoke-RestMethod -Uri 'http://127.0.0.1:8787/pre-updater-probe.json' -TimeoutSec 4
+                if ([string]$probe.probe -eq 'visible') { exit 0 }
+              }
             }
             catch { }
             Start-Sleep -Seconds 1
           }
-          throw 'The simulated QCTP gateway did not become healthy.'
+          throw 'The explicit alternate-root gateway did not become verifiably ready.'
 
       - name: Prove live-root discovery and deployment while active esbuild is locked
         shell: powershell
