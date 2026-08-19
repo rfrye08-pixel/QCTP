@@ -158,8 +158,12 @@ try {
     Write-Stage 'Installing exact Node dependencies'
     Invoke-Checked -Command npm -Arguments @('ci')
 
-    Write-Stage 'Running formatting, lint, type, coverage, and production-build gates'
-    Invoke-Checked -Command npm -Arguments @('run', 'check')
+    Write-Stage 'Running Windows-safe lint, type, coverage, and production-build gates'
+    Write-Host 'The cross-platform formatting gate is enforced by Linux candidate CI; it is not repeated after Windows line-ending conversion.' -ForegroundColor DarkGray
+    Invoke-Checked -Command npm -Arguments @('run', 'lint')
+    Invoke-Checked -Command npm -Arguments @('run', 'typecheck')
+    Invoke-Checked -Command npm -Arguments @('run', 'test:coverage')
+    Invoke-Checked -Command npm -Arguments @('run', 'build')
 
     Write-Stage 'Running the dedicated iPhone audio regression tests'
     Invoke-Checked -Command npx -Arguments @('vitest', 'run', 'src/app/screens/PracticeScreen.test.tsx')
