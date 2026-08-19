@@ -59,22 +59,24 @@ jobs:
         shell: cmd
         run: npm ci
 
-      - name: Start a gateway with an explicit static root outside the repository
+      - name: Prove live-root deployment while active esbuild is locked
         shell: powershell
         run: |
+          $ErrorActionPreference = 'Stop'
           $runtimeRoot = Join-Path $env:RUNNER_TEMP 'qctp-runtime-sim'
           if (Test-Path $runtimeRoot) { Remove-Item $runtimeRoot -Recurse -Force }
           $dist = Join-Path $runtimeRoot 'dist'
           New-Item -ItemType Directory -Path $dist -Force | Out-Null
+          $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
           [IO.File]::WriteAllText(
             (Join-Path $dist 'index.html'),
             '<!doctype html><title>QCTP old runtime</title><main>old</main>',
-            (New-Object System.Text.UTF8Encoding($false))
+            $utf8NoBom
           )
           [IO.File]::WriteAllText(
             (Join-Path $dist 'QCTP_PRIVATE_RUNTIME_BUILD.json'),
             '{"candidate_sha":"old-runtime","audio_fix_present":false}',
-            (New-Object System.Text.UTF8Encoding($false))
+            $utf8NoBom
           )
 
           $serverPath = Join-Path $env:RUNNER_TEMP 'qctp-static-gateway.mjs'
@@ -115,92 +117,82 @@ jobs:
             process.stdout.write(`QCTP test gateway serving ${root}\n`);
           });
           '@
-          [IO.File]::WriteAllText(
-            $serverPath,
-            $serverSource,
-            (New-Object System.Text.UTF8Encoding($false))
-          )
+          [IO.File]::WriteAllText($serverPath, $serverSource, $utf8NoBom)
 
           $env:QCTP_TEST_STATIC_ROOT = $dist
-          "QCTP_LIVE_STATIC_ROOT_HINT=$dist" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $env:QCTP_LIVE_STATIC_ROOT_HINT = $dist
           $stdoutPath = Join-Path $env:RUNNER_TEMP 'qctp-static-gateway.stdout.log'
           $stderrPath = Join-Path $env:RUNNER_TEMP 'qctp-static-gateway.stderr.log'
           $node = (Get-Command node).Source
-          $process = Start-Process `
-            -FilePath $node `
-            -ArgumentList @($serverPath) `
-            -WorkingDirectory $runtimeRoot `
-            -RedirectStandardOutput $stdoutPath `
-            -RedirectStandardError $stderrPath `
-            -PassThru `
-            -WindowStyle Hidden
-          $process.Id | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP 'qctp-gateway.pid')
+          $process = $null
+          $stream = $null
 
-          for ($attempt = 1; $attempt -le 30; $attempt += 1) {
-            if ($process.HasExited) {
-              Write-Host 'Gateway stdout:'
-              if (Test-Path $stdoutPath) { Get-Content $stdoutPath }
-              Write-Host 'Gateway stderr:'
-              if (Test-Path $stderrPath) { Get-Content $stderrPath }
-              throw "The explicit static gateway exited early with code $($process.ExitCode)."
-            }
-            try {
-              $health = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8787/health' -TimeoutSec 4
-              $rootResponse = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8787/' -TimeoutSec 4
-              if ($health.StatusCode -eq 200 -and $rootResponse.Content -match 'QCTP old runtime') {
-                $probePath = Join-Path $dist 'pre-updater-probe.json'
-                [IO.File]::WriteAllText(
-                  $probePath,
-                  '{"probe":"visible"}',
-                  (New-Object System.Text.UTF8Encoding($false))
-                )
-                $probe = Invoke-RestMethod -Uri ("http://127.0.0.1:8787/pre-updater-probe.json?nonce=" + [Guid]::NewGuid().ToString('N')) -TimeoutSec 4
-                if ([string]$probe.probe -eq 'visible') {
-                  Write-Host "Explicit alternate-root gateway is ready at $dist"
-                  exit 0
+          try {
+            $process = Start-Process `
+              -FilePath $node `
+              -ArgumentList @($serverPath) `
+              -WorkingDirectory $runtimeRoot `
+              -RedirectStandardOutput $stdoutPath `
+              -RedirectStandardError $stderrPath `
+              -PassThru `
+              -WindowStyle Hidden
+
+            $ready = $false
+            for ($attempt = 1; $attempt -le 30; $attempt += 1) {
+              if ($process.HasExited) {
+                throw "The explicit static gateway exited early with code $($process.ExitCode)."
+              }
+              try {
+                $health = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8787/health' -TimeoutSec 4
+                $rootResponse = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8787/' -TimeoutSec 4
+                if ($health.StatusCode -eq 200 -and $rootResponse.Content -match 'QCTP old runtime') {
+                  $probePath = Join-Path $dist 'pre-updater-probe.json'
+                  [IO.File]::WriteAllText($probePath, '{"probe":"visible"}', $utf8NoBom)
+                  $probe = Invoke-RestMethod -Uri ("http://127.0.0.1:8787/pre-updater-probe.json?nonce=" + [Guid]::NewGuid().ToString('N')) -TimeoutSec 4
+                  if ([string]$probe.probe -eq 'visible') {
+                    $ready = $true
+                    break
+                  }
                 }
               }
+              catch { }
+              Start-Sleep -Seconds 1
             }
-            catch { }
-            Start-Sleep -Seconds 1
-          }
+            if (-not $ready) {
+              throw 'The explicit alternate-root gateway did not become verifiably ready.'
+            }
+            Write-Host "Explicit alternate-root gateway is ready at $dist"
 
-          Write-Host 'Gateway stdout:'
-          if (Test-Path $stdoutPath) { Get-Content $stdoutPath }
-          Write-Host 'Gateway stderr:'
-          if (Test-Path $stderrPath) { Get-Content $stderrPath }
-          throw 'The explicit alternate-root gateway did not become verifiably ready.'
+            $lockPath = Join-Path $PWD 'node_modules\@esbuild\win32-x64\esbuild.exe'
+            $stream = [IO.File]::Open(
+              $lockPath,
+              [IO.FileMode]::Open,
+              [IO.FileAccess]::Read,
+              [IO.FileShare]::None
+            )
 
-      - name: Prove live-root discovery and deployment while active esbuild is locked
-        shell: powershell
-        run: |
-          $lockPath = Join-Path $PWD 'node_modules\@esbuild\win32-x64\esbuild.exe'
-          $stream = [IO.File]::Open($lockPath, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::None)
-          try {
             & powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\Deploy-QctpAudioPatch.ps1 -SkipBrowserTests
             if ($LASTEXITCODE -ne 0) {
               throw "Updater verification failed with exit code $LASTEXITCODE"
             }
+
+            $expected = (git rev-parse HEAD).Trim()
+            $identity = Invoke-RestMethod -Uri ("http://127.0.0.1:8787/QCTP_PRIVATE_RUNTIME_BUILD.json?nonce=" + [Guid]::NewGuid().ToString('N')) -TimeoutSec 8
+            if ([string]$identity.candidate_sha -ne [string]$expected) {
+              throw "The simulated gateway is not serving the expected candidate. Expected $expected, found $($identity.candidate_sha)."
+            }
+            if (-not [bool]$identity.audio_fix_present) {
+              throw 'The served identity does not attest the Day 1 audio fix.'
+            }
+            Write-Host 'Full Windows live-root deployment simulation: PASS'
           }
           finally {
-            $stream.Dispose()
-          }
-
-          $expected = (git rev-parse HEAD).Trim()
-          $identity = Invoke-RestMethod -Uri ("http://127.0.0.1:8787/QCTP_PRIVATE_RUNTIME_BUILD.json?nonce=" + [Guid]::NewGuid().ToString('N')) -TimeoutSec 8
-          if ([string]$identity.candidate_sha -ne [string]$expected) {
-            throw "The simulated gateway is not serving the expected candidate. Expected $expected, found $($identity.candidate_sha)."
-          }
-          if (-not [bool]$identity.audio_fix_present) {
-            throw 'The served identity does not attest the Day 1 audio fix.'
-          }
-
-      - name: Stop simulated gateway
-        if: always()
-        shell: powershell
-        run: |
-          $pidPath = Join-Path $env:RUNNER_TEMP 'qctp-gateway.pid'
-          if (Test-Path $pidPath) {
-            $gatewayPid = [int](Get-Content -Raw $pidPath)
-            Stop-Process -Id $gatewayPid -Force -ErrorAction SilentlyContinue
+            if ($null -ne $stream) { $stream.Dispose() }
+            if ($null -ne $process -and -not $process.HasExited) {
+              Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+            }
+            Write-Host 'Gateway stdout:'
+            if (Test-Path $stdoutPath) { Get-Content $stdoutPath }
+            Write-Host 'Gateway stderr:'
+            if (Test-Path $stderrPath) { Get-Content $stderrPath }
           }
