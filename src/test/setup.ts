@@ -1,54 +1,23 @@
+import { Blob as NodeBlob } from "node:buffer";
+
 import "@testing-library/jest-dom/vitest";
 import "fake-indexeddb/auto";
 
-if (!Blob.prototype.arrayBuffer) {
-  Object.defineProperty(Blob.prototype, "arrayBuffer", {
-    configurable: true,
-    value(this: Blob): Promise<ArrayBuffer> {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.addEventListener(
-          "load",
-          () => resolve(reader.result as ArrayBuffer),
-          { once: true },
-        );
-        reader.addEventListener(
-          "error",
-          () =>
-            reject(reader.error ?? new Error("Unable to read Blob as bytes.")),
-          { once: true },
-        );
-        reader.readAsArrayBuffer(this);
-      });
-    },
-  });
-}
+// jsdom's Blob can lose its prototype when fake-indexeddb delegates cloning to
+// Node's structuredClone implementation. That produces stored binary records
+// whose `arrayBuffer()` method is missing even though real browsers preserve
+// Blob identity. Use Node's standards-compatible, structured-clone-safe Blob
+// for repository, export/import, transcription, and voice-capture tests.
+Object.defineProperty(globalThis, "Blob", {
+  configurable: true,
+  writable: true,
+  value: NodeBlob,
+});
 
-if (!Blob.prototype.text) {
-  Object.defineProperty(Blob.prototype, "text", {
+if (typeof window !== "undefined") {
+  Object.defineProperty(window, "Blob", {
     configurable: true,
-    value(this: Blob): Promise<string> {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.addEventListener(
-          "load",
-          () => {
-            if (typeof reader.result === "string") {
-              resolve(reader.result);
-              return;
-            }
-            reject(new Error("FileReader returned a non-text result."));
-          },
-          { once: true },
-        );
-        reader.addEventListener(
-          "error",
-          () =>
-            reject(reader.error ?? new Error("Unable to read Blob as text.")),
-          { once: true },
-        );
-        reader.readAsText(this);
-      });
-    },
+    writable: true,
+    value: NodeBlob,
   });
 }
