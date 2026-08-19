@@ -62,23 +62,28 @@ jobs:
       - name: Start a gateway with an explicit static root outside the repository
         shell: powershell
         run: |
-          $runtimeRoot = Join-Path $env:USERPROFILE 'Documents\Codex\QCTP-runtime-sim'
+          $runtimeRoot = Join-Path $env:RUNNER_TEMP 'qctp-runtime-sim'
           if (Test-Path $runtimeRoot) { Remove-Item $runtimeRoot -Recurse -Force }
           $dist = Join-Path $runtimeRoot 'dist'
           New-Item -ItemType Directory -Path $dist -Force | Out-Null
-          '<!doctype html><title>QCTP old runtime</title><main>old</main>' |
-            Set-Content -LiteralPath (Join-Path $dist 'index.html') -Encoding UTF8
-          '{"candidate_sha":"old-runtime","audio_fix_present":false}' |
-            Set-Content -LiteralPath (Join-Path $dist 'QCTP_PRIVATE_RUNTIME_BUILD.json') -Encoding UTF8
+          [IO.File]::WriteAllText(
+            (Join-Path $dist 'index.html'),
+            '<!doctype html><title>QCTP old runtime</title><main>old</main>',
+            (New-Object System.Text.UTF8Encoding($false))
+          )
+          [IO.File]::WriteAllText(
+            (Join-Path $dist 'QCTP_PRIVATE_RUNTIME_BUILD.json'),
+            '{"candidate_sha":"old-runtime","audio_fix_present":false}',
+            (New-Object System.Text.UTF8Encoding($false))
+          )
 
           $serverPath = Join-Path $env:RUNNER_TEMP 'qctp-static-gateway.mjs'
-          @'
+          $serverSource = @'
           import { createReadStream, existsSync, statSync } from "node:fs";
           import { createServer } from "node:http";
-          import { extname, join, normalize } from "node:path";
-          import { fileURLToPath } from "node:url";
+          import { extname, join, normalize, resolve } from "node:path";
 
-          const root = process.argv[2];
+          const root = resolve(process.env.QCTP_TEST_STATIC_ROOT);
           const mime = {
             ".html": "text/html; charset=utf-8",
             ".json": "application/json; charset=utf-8",
@@ -96,8 +101,8 @@ jobs:
               return;
             }
             const relative = decodeURIComponent(url.pathname).replace(/^\/+/, "");
-            let candidate = normalize(join(root, relative || "index.html"));
-            if (!candidate.startsWith(normalize(root)) || !existsSync(candidate) || !statSync(candidate).isFile()) {
+            let candidate = resolve(root, relative || "index.html");
+            if (!candidate.startsWith(root) || !existsSync(candidate) || !statSync(candidate).isFile()) {
               candidate = join(root, "index.html");
             }
             response.writeHead(200, {
@@ -106,32 +111,63 @@ jobs:
             });
             createReadStream(candidate).pipe(response);
           });
-          server.listen(8787, "127.0.0.1");
-          '@ | Set-Content -LiteralPath $serverPath -Encoding UTF8
+          server.listen(8787, "127.0.0.1", () => {
+            process.stdout.write(`QCTP test gateway serving ${root}\n`);
+          });
+          '@
+          [IO.File]::WriteAllText(
+            $serverPath,
+            $serverSource,
+            (New-Object System.Text.UTF8Encoding($false))
+          )
 
+          $env:QCTP_TEST_STATIC_ROOT = $dist
+          $stdoutPath = Join-Path $env:RUNNER_TEMP 'qctp-static-gateway.stdout.log'
+          $stderrPath = Join-Path $env:RUNNER_TEMP 'qctp-static-gateway.stderr.log'
           $node = (Get-Command node).Source
           $process = Start-Process `
             -FilePath $node `
-            -ArgumentList @($serverPath, $dist) `
+            -ArgumentList @($serverPath) `
             -WorkingDirectory $runtimeRoot `
+            -RedirectStandardOutput $stdoutPath `
+            -RedirectStandardError $stderrPath `
             -PassThru `
             -WindowStyle Hidden
           $process.Id | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP 'qctp-gateway.pid')
 
           for ($attempt = 1; $attempt -le 30; $attempt += 1) {
+            if ($process.HasExited) {
+              Write-Host 'Gateway stdout:'
+              if (Test-Path $stdoutPath) { Get-Content $stdoutPath }
+              Write-Host 'Gateway stderr:'
+              if (Test-Path $stderrPath) { Get-Content $stderrPath }
+              throw "The explicit static gateway exited early with code $($process.ExitCode)."
+            }
             try {
               $health = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8787/health' -TimeoutSec 4
               $rootResponse = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8787/' -TimeoutSec 4
               if ($health.StatusCode -eq 200 -and $rootResponse.Content -match 'QCTP old runtime') {
                 $probePath = Join-Path $dist 'pre-updater-probe.json'
-                '{"probe":"visible"}' | Set-Content -LiteralPath $probePath -Encoding UTF8
-                $probe = Invoke-RestMethod -Uri 'http://127.0.0.1:8787/pre-updater-probe.json' -TimeoutSec 4
-                if ([string]$probe.probe -eq 'visible') { exit 0 }
+                [IO.File]::WriteAllText(
+                  $probePath,
+                  '{"probe":"visible"}',
+                  (New-Object System.Text.UTF8Encoding($false))
+                )
+                $probe = Invoke-RestMethod -Uri ("http://127.0.0.1:8787/pre-updater-probe.json?nonce=" + [Guid]::NewGuid().ToString('N')) -TimeoutSec 4
+                if ([string]$probe.probe -eq 'visible') {
+                  Write-Host "Explicit alternate-root gateway is ready at $dist"
+                  exit 0
+                }
               }
             }
             catch { }
             Start-Sleep -Seconds 1
           }
+
+          Write-Host 'Gateway stdout:'
+          if (Test-Path $stdoutPath) { Get-Content $stdoutPath }
+          Write-Host 'Gateway stderr:'
+          if (Test-Path $stderrPath) { Get-Content $stderrPath }
           throw 'The explicit alternate-root gateway did not become verifiably ready.'
 
       - name: Prove live-root discovery and deployment while active esbuild is locked
