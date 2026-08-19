@@ -1,8 +1,9 @@
 {
-  "schema": "qctp-current-state-v9",
+  "schema": "qctp-current-state-v10",
   "project": "QCTP",
-  "updated_at": "2026-08-19T16:36:00-05:00",
+  "updated_at": "2026-08-19T17:52:00-05:00",
   "status": "ACTIVE",
+  "supersedes": "qctp-current-state-v9",
   "product_identity": {
     "name": "QCTP",
     "expanded_name": "Quantum Consciousness Training Platform",
@@ -11,7 +12,7 @@
     "experience_goal": "Serious, precise, exploratory, user-friendly, visually compelling, and capability-driven rather than timer- or streak-driven."
   },
   "authority_refs": {
-    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV3.json",
+    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV4.json",
     "protocol_hardening": "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
     "state_atlas": "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md",
     "meditation_audio_qa": "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
@@ -24,13 +25,13 @@
     "local_ai_mirror_requirement": "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
     "day1_audio_regression": "QCTP_DAY1_IPHONE_AUDIO_REGRESSION_REV0_2026-08-18.md",
     "day1_audio_physical_acceptance": "QCTP_DAY1_AUDIO_PHYSICAL_IPHONE_ACCEPTANCE_REV0_2026-08-18.md",
-    "device_preview_404_correction": "QCTP_DEVICE_PREVIEW_404_CORRECTION_AND_REDEPLOYMENT_REV0_2026-08-18.md",
     "private_updater_divergence_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_DIVERGENCE_FAILURE_AND_RECOVERY_REV0_2026-08-19.md",
     "private_updater_range_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_RANGE_HEADER_FAILURE_AND_REV4_RECOVERY_REV0_2026-08-19.md",
     "private_updater_false_pass_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_FALSE_PASS_AND_AUDIO_SIGNATURE_FAILURE_REV0_2026-08-19.md",
     "private_updater_esbuild_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_ESBUILD_LOCK_AND_REV7_RECOVERY_REV0_2026-08-19.md",
-    "windows_updater_gate": ".github/workflows/qctp-windows-updater-gate.yml on main",
+    "private_updater_live_root_recovery": "QCTP_PRIVATE_RUNTIME_LIVE_ROOT_FAILURE_AND_REV9_RECOVERY_REV0_2026-08-19.md",
     "candidate_deployment_script": "tools/Deploy-QctpAudioPatch.ps1 on qctp-platform-rev2-codex",
+    "windows_updater_gate": ".github/workflows/qctp-windows-updater-gate.yml on main",
     "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2"
   },
   "controlled_training_model": {
@@ -55,12 +56,12 @@
   },
   "rev2_candidate": {
     "branch": "qctp-platform-rev2-codex",
-    "head_sha": "1e8bd74ffaa1758258fbfc91001af1a1bfc1260b",
+    "head_sha": "1d437232cc4ff696ac495f2253347a485c231f2e",
     "version": "2.0.0-alpha.1",
     "pull_request": 2,
     "pull_request_state": "OPEN_DRAFT_UNMERGED",
     "implementation_disposition": "NON_BREATH_PLATFORM_COMPLETE_CANDIDATE",
-    "audio_deployment_disposition": "REV7_WINDOWS_LOCK_VERIFIED_READY_FOR_PX13_STATIC_DEPLOYMENT",
+    "audio_deployment_disposition": "REV9_FULL_WINDOWS_LIVE_ROOT_SIMULATION_PASS_READY_FOR_PX13_DEPLOYMENT",
     "production_deployed": false,
     "release_authority": "ZERO_RELEASE"
   },
@@ -92,21 +93,24 @@
       "automatic_45_second_cue": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
       "supporting_screenshot_sha256": "bb8d517df0713522eb8bed732bd016c68a1c27dab621d3b8148888f64287f38b"
     },
-    "px13_attempts": [
-      "REV1 failed PowerShell parsing before mutation",
-      "REV2 failed on divergent branch before build",
-      "REV3 first run failed on restricted Range header before build",
-      "REV4 path failed provider signature probe and produced an invalid outer PASS",
-      "REV5 failed npm ci because the running gateway locked active esbuild.exe"
-    ],
-    "rev7_recovery": {
-      "architecture": "Build in disposable isolated clone; leave active gateway and node_modules untouched; atomically swap only verified dist; verify exact served identity; restore prior dist on failure",
-      "candidate_sha": "1e8bd74ffaa1758258fbfc91001af1a1bfc1260b",
-      "windows_workflow_run_id": 32304223366,
-      "windows_job_id": 96233548675,
+    "latest_px13_attempt": {
+      "revision": "REV7",
+      "build_and_tests": "PASS",
+      "live_identity": "FAIL",
+      "rollback": "PASS_PREVIOUS_DIST_RESTORED",
+      "private_runtime_updated": false,
+      "evidence_sha256": "7e9fc689041c16571fe41316599d2722b9804b564b56c4b8044bff87c684a508"
+    },
+    "rev9_recovery": {
+      "candidate_sha": "1d437232cc4ff696ac495f2253347a485c231f2e",
+      "architecture": "Isolated build; proof-based live static-root discovery; in-place static mirror; exact served-identity verification; rollback on failure",
+      "windows_workflow_run_id": 32310120082,
+      "windows_job_id": 96251209634,
+      "simulated_gateway_static_root_outside_repo": true,
       "active_esbuild_locked_during_test": true,
+      "gateway_alive_through_full_test": true,
       "powershell_parse": "PASS",
-      "isolated_npm_ci": "PASS_ZERO_VULNERABILITIES",
+      "npm_ci": "PASS_ZERO_VULNERABILITIES",
       "lint": "PASS",
       "typecheck": "PASS",
       "vitest_files": 41,
@@ -119,9 +123,10 @@
       },
       "production_build": "PASS",
       "dedicated_audio_tests": "4_PASS",
-      "staged_runtime_identity": "PASS",
-      "day1_audio_smoke": "PASS",
-      "disposition": "WINDOWS_LOCK_VERIFIED_READY_FOR_PX13_DEPLOYMENT"
+      "live_static_root_discovery": "PASS",
+      "in_place_static_deployment": "PASS",
+      "exact_served_identity": "PASS",
+      "final_result": "FULL_WINDOWS_LIVE_ROOT_DEPLOYMENT_SIMULATION_PASS"
     },
     "private_px13_dist_updated": false,
     "private_full_pwa_audio_retest": "OPEN"
@@ -135,22 +140,23 @@
     "Foundation Days 2-112 authored under progression gates"
   ],
   "release_acceptance_holds": [
-    "Rerun the already extracted REV3 locator so it fetches and deploys Windows lock-verified REV7",
+    "Run the existing REV3 locator so it fetches and deploys Windows-verified REV9 on the PX13",
     "Verify opening and automatic 24:15 cue in the full private PWA",
-    "Repair or replace the active untracked node_modules before any future gateway restart or laptop-reboot acceptance",
+    "Repair or replace the active untracked node_modules before any later gateway restart or laptop-reboot acceptance",
     "Complete remaining physical-iPhone lifecycle checks",
     "Run actual-origin Rev1 migration comparison",
     "Run natural full-duration hardened Day 1 acceptance",
-    "Do not merge or deploy Rev2 without explicit release authority"
+    "Replace live third-party audio with checksum-verified local audio packs before release",
+    "Do not merge or release Rev2 without explicit authority"
   ],
   "release_authority": {
     "released_rev1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
     "rev2_candidate": "ZERO_RELEASE",
-    "audio_patch": "WINDOWS_LOCK_VERIFIED_DEVICE_TEST_CANDIDATE_PRIVATE_STATIC_DEPLOYMENT_OPEN",
+    "audio_patch": "REV9_WINDOWS_VERIFIED_DEVICE_TEST_CANDIDATE_PX13_DEPLOYMENT_OPEN",
     "breathwork": "ZERO_RELEASE",
     "hardening_package": "ZERO_RELEASE",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "controlled_interpretation": "The latest PX13 attempt failed because npm ci was run against the active checkout while the running gateway held esbuild.exe open. No verified dist was installed and the gateway continued serving the prior runtime. REV7 now builds in an isolated disposable clone and has passed a Windows test while the active esbuild path was deliberately locked. It leaves the gateway and active node_modules untouched and will replace only the verified static dist package after a healthy-gateway preflight.",
-  "next_controlled_action": "Rerun RUN_QCTP_AUDIO_PATCH_UPDATE.cmd from the already extracted REV3 folder. Confirm the REV7 heading and both final PASS lines, then retest the opening and automatic 24:15 cues in the full private iPhone PWA."
+  "controlled_interpretation": "The prior PX13 attempt built successfully but updated a directory that port 8787 was not serving; the updater restored the previous static package. REV9 now proves the exact live static root before deployment and has passed a full Windows simulation with an alternate static root, locked active esbuild binary, live gateway, 233 tests, production build, four audio tests, in-place deployment, and exact served-identity verification.",
+  "next_controlled_action": "Rerun RUN_QCTP_AUDIO_PATCH_UPDATE.cmd from the already extracted REV3 folder. Confirm the REV9 heading and both final PASS lines, then retest the opening and automatic 24:15 cues in the full private iPhone PWA."
 }
