@@ -1,0 +1,3 @@
+QCTP Windows updater gate trigger
+Revision: REV5
+Purpose: verify the deterministic fail-closed private-runtime deployment entrypoint on Windows PowerShell before the PX13 rerun.
