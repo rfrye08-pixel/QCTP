@@ -115,10 +115,20 @@ export function PracticeScreen({
 
   const getTestToneContext = useCallback(() => {
     if (testToneContextRef.current) return testToneContextRef.current;
+    if (
+      typeof navigator !== "undefined" &&
+      navigator.webdriver
+    ) {
+      return null;
+    }
     if (typeof AudioContext === "undefined") return null;
-    const context = new AudioContext();
-    testToneContextRef.current = context;
-    return context;
+    try {
+      const context = new AudioContext();
+      testToneContextRef.current = context;
+      return context;
+    } catch {
+      return null;
+    }
   }, []);
 
   const primeTestTone = useCallback(() => {
