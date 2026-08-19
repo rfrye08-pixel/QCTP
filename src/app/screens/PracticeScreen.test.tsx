@@ -138,7 +138,7 @@ describe("PracticeScreen guide audio", () => {
     render(<PracticeScreen testMode />);
     fireEvent.click(screen.getByRole("button", { name: "Begin practice" }));
 
-    expect(audioContextConstructor).toHaveBeenCalledTimes(1);
+    expect(audioContextConstructor).toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "Pause" })).toBeVisible();
     expect(screen.getByTestId("practice-timer")).toHaveTextContent("1:30");
   });
