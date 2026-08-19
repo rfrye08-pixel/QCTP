@@ -25,23 +25,8 @@ interface FakeAudioElement {
 function fakeAudio(
   playResult: "resolve" | "reject" = "resolve",
 ): FakeAudioElement {
-  const audio: FakeAudioElement = {
-    src: "",
-    preload: "none",
-    volume: 1,
-    currentTime: 0,
-    ended: false,
-    paused: true,
-    play: vi.fn(),
-    pause: vi.fn(() => {
-      audio.paused = true;
-    }),
-    load: vi.fn(),
-    removeAttribute: vi.fn((name: string) => {
-      if (name === "src") audio.src = "";
-    }),
-  };
-  audio.play.mockImplementation(() => {
+  let audio: FakeAudioElement;
+  const play = vi.fn((): Promise<void> => {
     if (playResult === "reject") {
       return Promise.reject(
         new DOMException("Playback blocked", "NotAllowedError"),
@@ -50,6 +35,23 @@ function fakeAudio(
     audio.paused = false;
     return Promise.resolve();
   });
+
+  audio = {
+    src: "",
+    preload: "none",
+    volume: 1,
+    currentTime: 0,
+    ended: false,
+    paused: true,
+    play,
+    pause: vi.fn(() => {
+      audio.paused = true;
+    }),
+    load: vi.fn(),
+    removeAttribute: vi.fn((name: string) => {
+      if (name === "src") audio.src = "";
+    }),
+  };
   return audio;
 }
 
