@@ -1,0 +1,63 @@
+name: QCTP Windows updater verification
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "tools/Deploy-QctpAudioPatch.ps1"
+      - ".github/workflows/qctp-windows-updater-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qctp-windows-updater-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-windows-updater:
+    name: Verify updater on Windows PowerShell
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out candidate head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Put checkout on the controlled candidate branch
+        shell: powershell
+        run: |
+          git checkout -B qctp-platform-rev2-codex $env:GITHUB_SHA
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.15.0
+          cache: npm
+
+      - name: Parse updater with Windows PowerShell
+        shell: powershell
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'tools\Deploy-QctpAudioPatch.ps1'),
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            exit 1
+          }
+
+      - name: Run non-mutating updater build verification
+        shell: cmd
+        run: >-
+          powershell.exe -NoProfile -ExecutionPolicy Bypass
+          -File tools\Deploy-QctpAudioPatch.ps1
+          -VerifyBuildOnly -SkipBrowserTests
