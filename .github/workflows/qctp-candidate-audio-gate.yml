@@ -52,8 +52,8 @@ jobs:
       - name: Run formatting, lint, types, coverage, and production build
         run: npm run check
 
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright Chromium and WebKit
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Run browser acceptance suite
         run: npm run test:e2e
