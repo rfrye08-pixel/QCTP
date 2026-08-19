@@ -3,14 +3,14 @@
   "manifest_id": "QCTP-PLATFORM-REV3-HARDENED",
   "title": "Quantum Consciousness Training Platform — Hardened Protocol and Experience",
   "created_at": "2026-08-18T06:35:00-05:00",
-  "updated_at": "2026-08-18T23:52:42-05:00",
+  "updated_at": "2026-08-19T06:45:00-05:00",
   "status": "ACTIVE",
   "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness training platform that teaches exact state-entry mechanics, verifies repeatable capability, supports serious personal experiments, preserves source lineage and raw evidence, and remains compelling and effortless to use on iPhone.",
   "controlled_baseline": {
     "released_runtime": "1.1.4",
     "released_branch": "main",
     "rev2_candidate_branch": "qctp-platform-rev2-codex",
-    "rev2_candidate_head": "1a179146a9101c7485ef3ef7da6d0f2bea350d0a",
+    "rev2_candidate_head": "882dc26bffa49eef3647ed78ffc22b230f4f2852",
     "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2",
     "runtime_cost_mode": "FREE_LOCAL",
     "controlled_voice": "Chill Brian",
@@ -29,13 +29,14 @@
         "React and TypeScript PWA",
         "IndexedDB v3",
         "Paths, Practice, Studio, Lab, Codex, Mirror, Insights, Settings",
-        "recorded post-audio-patch clean-checkout suite: 41 files / 231 tests",
-        "recorded Playwright: 14 pass / 6 controlled skips / 0 fail",
+        "Windows updater gate: 41 files / 233 tests PASS",
+        "Windows production build PASS",
+        "Day 1 audio smoke PASS",
         "44 recorded passing local-Whisper tests",
         "draft PR #2"
       ],
       "holds": [
-        "update and restart private PX13 runtime",
+        "run the Windows-verified REV5 updater on the PX13",
         "full-private-PWA opening and delayed-cue retest",
         "remaining physical-iPhone acceptance",
         "actual-origin Rev1 migration comparison",
@@ -128,7 +129,7 @@
     {
       "id": "QCTP-R3-D08",
       "name": "Meditation authoring, local audio assets, and QA system",
-      "status": "SPEC_CLOSED_IMPLEMENTATION_PARTIAL_DEVICE_MECHANISM_PASS",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_PARTIAL_REV5_WINDOWS_VERIFIED",
       "authority_ref": "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
       "implemented_partial": [
         "persistent audio-element patch",
@@ -137,12 +138,19 @@
         "candidate regression tests",
         "corrected focused endpoint loaded on target iPhone",
         "opening cue audible on target iPhone",
-        "automatic 45-second cue audible on target iPhone"
+        "automatic 45-second cue audible on target iPhone",
+        "local divergent branch preserved before alignment",
+        "false nested-script PASS eliminated",
+        "invalid external RIFF/WAVE deployment blocker removed",
+        "exact private-runtime build identity verification added",
+        "REV5 parsed and executed successfully in Windows PowerShell CI",
+        "REV5 Windows gate: 41 files / 233 tests PASS, production build PASS, dedicated audio tests 4 PASS"
       ],
       "physical_acceptance_ref": "QCTP_DAY1_AUDIO_PHYSICAL_IPHONE_ACCEPTANCE_REV0_2026-08-18.md",
+      "updater_recovery_ref": "QCTP_PRIVATE_RUNTIME_UPDATER_FALSE_PASS_AND_AUDIO_SIGNATURE_FAILURE_REV0_2026-08-19.md",
       "remaining": [
-        "pull/build/restart private PX13 runtime",
-        "repeat opening-plus-45-second check in full private PWA",
+        "rerun the existing REV3 locator so it deploys Windows-verified REV5",
+        "repeat opening-plus-45-second check in the full private PWA",
         "local audio-pack schema and storage",
         "checksum preflight",
         "full natural-duration acceptance"
@@ -224,7 +232,7 @@
       ]
     }
   ],
-  "current_macro_delta": "The focused physical-iPhone audio mechanism now passes: the corrected endpoint loaded and both the user-started opening cue and automatic 45-second cue were audible. The immediate remaining audio action is to update/restart the private PX13 runtime and repeat that short check in the full PWA. Breathwork, hardened state protocol, State Atlas integration, local audio-pack reliability, Thomas Campbell track, hardened Day 1, and UX upgrade remain controlled implementation packages.",
+  "current_macro_delta": "The corrected Day 1 audio mechanism passes on the target iPhone, and the private-runtime deployment route now passes a dedicated Windows PowerShell gate with 233 tests, production build, dedicated audio tests, true failure propagation, and exact served-build identity verification. The prior green updater PASS was invalid and did not change the runtime. The immediate remaining action is one rerun of the already extracted REV3 locator so it fetches and deploys REV5, followed by the short full-PWA cue check.",
   "release_authority": "ZERO_RELEASE",
-  "next_controlled_action": "Update the private PX13 QCTP runtime from qctp-platform-rev2-codex, restart the gateway, and verify the opening plus automatic 24:15 cue in the full private PWA."
+  "next_controlled_action": "Close the false-PASS window and rerun RUN_QCTP_AUDIO_PATCH_UPDATE.cmd from the existing REV3 folder; verify both true PASS lines, then test the opening and automatic 24:15 cue in the private PWA."
 }
