@@ -155,7 +155,10 @@ export function PracticeScreen({
     };
 
     if (context.state === "suspended") {
-      void context.resume().then(emit).catch(() => undefined);
+      void context
+        .resume()
+        .then(emit)
+        .catch(() => undefined);
       return;
     }
     emit();
