@@ -1,0 +1,12 @@
+{
+  "schema": "qctp-device-preview-deployment-v2",
+  "published_at": "2026-08-19T04:36:00Z",
+  "pages_path": "/QCTP/device-preview/",
+  "candidate_mechanism_source": "qctp-platform-rev2-codex@ecb2aa6cbed879fbd6313a1ebc1c9adc417adf00",
+  "scope": "PHYSICAL_IPHONE_DAY1_AUDIO_ACCEPTANCE_ONLY",
+  "opening_cue_at_seconds": 0,
+  "automatic_second_cue_at_seconds": 45,
+  "persistent_audio_element": true,
+  "production_release": false,
+  "release_authority": "ZERO_RELEASE"
+}
