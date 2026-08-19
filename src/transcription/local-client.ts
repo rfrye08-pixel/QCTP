@@ -213,11 +213,13 @@ export class LocalTranscriptionClient {
       );
     }
     const audio = await repository.assembleRecordingBlob(recordingId);
-    const uploadAudio = new Blob([await audio.arrayBuffer()], {
-      type: recording.mimeType,
-    });
+    const uploadAudio = new File(
+      [await audio.arrayBuffer()],
+      filenameForMimeType(recording.mimeType),
+      { type: recording.mimeType },
+    );
     const form = new FormData();
-    form.set("audio", uploadAudio, filenameForMimeType(recording.mimeType));
+    form.set("audio", uploadAudio);
     form.set("recordingId", recording.id);
     form.set("accuracy", accuracy);
     const response = await this.request(
