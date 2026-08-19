@@ -25,16 +25,16 @@ The patch under test:
 
 A fresh clone of `rfrye08-pixel/QCTP` at the controlled candidate branch was recorded as installed and executed outside the PX13 runtime.
 
-| Gate | Recorded result |
-| --- | --- |
-| `npm ci` | PASS |
-| `npm run check` | PASS |
-| Formatting | PASS |
-| ESLint | PASS |
-| TypeScript build | PASS |
-| Vitest | PASS — 41 files / 231 tests |
-| Production Vite/PWA build | PASS |
-| `npm run test:e2e` | PASS — 14 passed / 6 controlled skips / 0 failed |
+| Gate                      | Recorded result                                  |
+| ------------------------- | ------------------------------------------------ |
+| `npm ci`                  | PASS                                             |
+| `npm run check`           | PASS                                             |
+| Formatting                | PASS                                             |
+| ESLint                    | PASS                                             |
+| TypeScript build          | PASS                                             |
+| Vitest                    | PASS — 41 files / 231 tests                      |
+| Production Vite/PWA build | PASS                                             |
+| `npm run test:e2e`        | PASS — 14 passed / 6 controlled skips / 0 failed |
 
 These are automated repository/build results. They are not public-deployment or physical-audibility evidence.
 
