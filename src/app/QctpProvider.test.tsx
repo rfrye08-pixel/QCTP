@@ -1,4 +1,5 @@
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -162,7 +163,17 @@ describe("QCTP private device-session restoration", () => {
     );
     await screen.findByText("online");
 
-    fireEvent.click(screen.getByRole("button", { name: "Synchronize" }));
+    // The online state is visible before the initial background synchronization
+    // promise necessarily releases its concurrency lock. One click may
+    // correctly join that in-flight run, so allow a second deliberate click
+    // after a task turn rather than racing the lock.
+    for (let attempt = 0; attempt < 2 && mirrorPolicyCalls < 2; attempt += 1) {
+      fireEvent.click(screen.getByRole("button", { name: "Synchronize" }));
+      await act(
+        () => new Promise<void>((resolve) => window.setTimeout(resolve, 0)),
+      );
+    }
+
     await waitFor(() => expect(mirrorPolicyCalls).toBe(2));
     expect(screen.getByLabelText("mirror connection status")).toHaveTextContent(
       "online",
