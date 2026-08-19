@@ -6,6 +6,13 @@ on:
       - main
     paths:
       - ".github/workflows/qctp-device-preview-deploy.yml"
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    paths:
+      - ".github/qctp-device-preview-trigger.txt"
   workflow_dispatch:
 
 permissions:
@@ -18,6 +25,10 @@ concurrency:
 jobs:
   verify-and-deploy:
     name: Verify candidate and publish isolated preview
+    if: >-
+      github.event_name != 'pull_request_target' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+       github.event.pull_request.head.ref == 'qctp-device-preview-trigger')
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
