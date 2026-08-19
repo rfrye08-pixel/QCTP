@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "tools/Deploy-QctpAudioPatch.ps1"
+      - "tools/**"
       - ".github/workflows/qctp-windows-updater-gate.yml"
   workflow_dispatch:
 
