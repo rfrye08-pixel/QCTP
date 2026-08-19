@@ -13,7 +13,7 @@ $RequiredAudioFixCommit = '80801cdf34a4856c95a4d9349aa8a019fdf6fa38'
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 
 function Write-Stage {
-    param([string]$Message)
+    param([Parameter(Mandatory = $true)][string]$Message)
     Write-Host "`n=== $Message ===" -ForegroundColor Cyan
 }
 
@@ -25,8 +25,113 @@ function Invoke-Checked {
 
     & $Command @Arguments
     if ($LASTEXITCODE -ne 0) {
-        throw "Command failed with exit code $LASTEXITCODE: $Command $($Arguments -join ' ')"
+        throw "Command failed with exit code $($LASTEXITCODE): $Command $($Arguments -join ' ')"
     }
+}
+
+function Get-RecoveryRoot {
+    $documents = [Environment]::GetFolderPath('MyDocuments')
+    if ([string]::IsNullOrWhiteSpace($documents)) {
+        $documents = Join-Path $env:USERPROFILE 'Documents'
+    }
+    $root = Join-Path $documents 'QCTP Recovery Backups'
+    New-Item -ItemType Directory -Path $root -Force | Out-Null
+    return $root
+}
+
+function Preserve-LocalBranchAndAlign {
+    param(
+        [Parameter(Mandatory = $true)][string]$Repository,
+        [Parameter(Mandatory = $true)][string]$Branch
+    )
+
+    Invoke-Checked -Command git -Arguments @('-C', $Repository, 'fetch', 'origin', $Branch)
+
+    $currentBranch = (& git -C $Repository branch --show-current).Trim()
+    if ($currentBranch -ne $Branch) {
+        & git -C $Repository show-ref --verify --quiet "refs/heads/$Branch"
+        if ($LASTEXITCODE -eq 0) {
+            Invoke-Checked -Command git -Arguments @('-C', $Repository, 'checkout', $Branch)
+        }
+        else {
+            Invoke-Checked -Command git -Arguments @('-C', $Repository, 'checkout', '-B', $Branch, "origin/$Branch")
+        }
+    }
+
+    $localHead = (& git -C $Repository rev-parse HEAD).Trim()
+    $remoteHead = (& git -C $Repository rev-parse "origin/$Branch").Trim()
+    if ($localHead -eq $remoteHead) {
+        Write-Host "Controlled branch already matches origin at $localHead" -ForegroundColor Green
+        return
+    }
+
+    $countText = ((& git -C $Repository rev-list --left-right --count "$localHead...$remoteHead") -join ' ').Trim()
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Could not compare local and remote QCTP branch heads.'
+    }
+    $counts = @($countText -split '\s+' | Where-Object { $_ -ne '' })
+    if ($counts.Count -lt 2) {
+        throw "Unexpected branch-comparison output: $countText"
+    }
+    $localOnly = [int]$counts[0]
+    $remoteOnly = [int]$counts[1]
+
+    if ($localOnly -gt 0) {
+        $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+        $backupBranch = "qctp-local-preserved-$timestamp"
+        $suffix = 1
+        while ($true) {
+            & git -C $Repository show-ref --verify --quiet "refs/heads/$backupBranch"
+            if ($LASTEXITCODE -ne 0) { break }
+            $backupBranch = "qctp-local-preserved-$timestamp-$suffix"
+            $suffix += 1
+        }
+
+        Invoke-Checked -Command git -Arguments @('-C', $Repository, 'branch', $backupBranch, $localHead)
+
+        $recoveryRoot = Get-RecoveryRoot
+        $recoveryDir = Join-Path $recoveryRoot $backupBranch
+        New-Item -ItemType Directory -Path $recoveryDir -Force | Out-Null
+
+        @(
+            'QCTP local branch preservation',
+            "Created: $(Get-Date -Format o)",
+            "Repository: $Repository",
+            "Original local head: $localHead",
+            "Controlled remote head: $remoteHead",
+            "Preserved local branch: $backupBranch",
+            "Local-only commits: $localOnly",
+            "Remote-only commits: $remoteOnly",
+            '',
+            'The active controlled branch was aligned to origin only after this backup branch was created.',
+            'Do not delete the preserved branch or recovery bundle until the QCTP candidate is formally released.'
+        ) | Set-Content -LiteralPath (Join-Path $recoveryDir 'RECOVERY_README.txt') -Encoding UTF8
+
+        (& git -C $Repository log --oneline --decorate --graph --max-count=120 $backupBranch) |
+            Set-Content -LiteralPath (Join-Path $recoveryDir 'LOCAL_BRANCH_HISTORY.txt') -Encoding UTF8
+        (& git -C $Repository log --oneline "origin/$Branch..$backupBranch") |
+            Set-Content -LiteralPath (Join-Path $recoveryDir 'LOCAL_ONLY_COMMITS.txt') -Encoding UTF8
+        (& git -C $Repository log --oneline "$backupBranch..origin/$Branch") |
+            Set-Content -LiteralPath (Join-Path $recoveryDir 'REMOTE_ONLY_COMMITS.txt') -Encoding UTF8
+        (& git -C $Repository diff --stat $remoteHead $localHead) |
+            Set-Content -LiteralPath (Join-Path $recoveryDir 'LOCAL_VS_REMOTE_DIFFSTAT.txt') -Encoding UTF8
+
+        $bundlePath = Join-Path $recoveryDir "$backupBranch.bundle"
+        & git -C $Repository bundle create $bundlePath "refs/heads/$backupBranch" "refs/remotes/origin/$Branch"
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host 'The local backup branch was created, but the optional portable Git bundle could not be created.' -ForegroundColor Yellow
+        }
+        else {
+            Write-Host "Preserved divergent local commits in branch $backupBranch and bundle $bundlePath" -ForegroundColor Yellow
+        }
+    }
+
+    Invoke-Checked -Command git -Arguments @('-C', $Repository, 'reset', '--hard', "origin/$Branch")
+    $alignedHead = (& git -C $Repository rev-parse HEAD).Trim()
+    if ($alignedHead -ne $remoteHead) {
+        throw "Controlled branch alignment failed. Expected $remoteHead, found $alignedHead."
+    }
+    Write-Host "Controlled branch aligned to origin at $alignedHead" -ForegroundColor Green
 }
 
 function Test-HttpEndpoint {
@@ -81,13 +186,7 @@ try {
     }
 
     Write-Stage 'Synchronizing the controlled candidate branch'
-    Invoke-Checked git fetch origin $RequiredBranch
-
-    $currentBranch = (& git branch --show-current).Trim()
-    if ($currentBranch -ne $RequiredBranch) {
-        Invoke-Checked git checkout $RequiredBranch
-    }
-    Invoke-Checked git pull --ff-only origin $RequiredBranch
+    Preserve-LocalBranchAndAlign -Repository $RepoRoot -Branch $RequiredBranch
 
     & git merge-base --is-ancestor $RequiredAudioFixCommit HEAD
     if ($LASTEXITCODE -ne 0) {
@@ -122,18 +221,18 @@ try {
     Write-Host "Verified $($audioUrls.Count) neural-audio assets." -ForegroundColor Green
 
     Write-Stage 'Installing exact Node dependencies'
-    Invoke-Checked npm ci
+    Invoke-Checked -Command npm -Arguments @('ci')
 
     Write-Stage 'Running formatting, lint, type, coverage, and production-build gates'
-    Invoke-Checked npm run check
+    Invoke-Checked -Command npm -Arguments @('run', 'check')
 
     Write-Stage 'Running the dedicated iPhone audio regression tests'
-    Invoke-Checked npx vitest run src/app/screens/PracticeScreen.test.tsx
+    Invoke-Checked -Command npx -Arguments @('vitest', 'run', 'src/app/screens/PracticeScreen.test.tsx')
 
     if (-not $SkipBrowserTests) {
         Write-Stage 'Running browser acceptance tests'
-        Invoke-Checked npx playwright install chromium
-        Invoke-Checked npm run test:e2e
+        Invoke-Checked -Command npx -Arguments @('playwright', 'install', 'chromium')
+        Invoke-Checked -Command npm -Arguments @('run', 'test:e2e')
     }
 
     $distIndex = Join-Path $RepoRoot 'dist\index.html'
