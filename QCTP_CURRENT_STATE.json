@@ -1,7 +1,7 @@
 {
-  "schema": "qctp-current-state-v7",
+  "schema": "qctp-current-state-v8",
   "project": "QCTP",
-  "updated_at": "2026-08-18T23:52:42-05:00",
+  "updated_at": "2026-08-19T06:45:00-05:00",
   "status": "ACTIVE",
   "product_identity": {
     "name": "QCTP",
@@ -29,11 +29,15 @@
     "day1_audio_patch_state_overlay": "QCTP_DAY1_AUDIO_PATCH_STATE_OVERLAY_REV1.json on qctp-platform-rev2-codex",
     "day1_audio_physical_acceptance": "QCTP_DAY1_AUDIO_PHYSICAL_IPHONE_ACCEPTANCE_REV0_2026-08-18.md",
     "device_preview_404_correction": "QCTP_DEVICE_PREVIEW_404_CORRECTION_AND_REDEPLOYMENT_REV0_2026-08-18.md",
+    "private_updater_divergence_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_DIVERGENCE_FAILURE_AND_RECOVERY_REV0_2026-08-19.md",
+    "private_updater_range_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_RANGE_HEADER_FAILURE_AND_REV4_RECOVERY_REV0_2026-08-19.md",
+    "private_updater_false_pass_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_FALSE_PASS_AND_AUDIO_SIGNATURE_FAILURE_REV0_2026-08-19.md",
     "device_preview_source": "device-preview/index.html and device-preview/QCTP_DEVICE_PREVIEW_DEPLOYMENT.json on main",
     "implementation_handoff": "QCTP_PROTOCOL_UX_HARDENING_IMPLEMENTATION_HANDOFF_REV0_2026-08-18.md",
     "independent_repository_review": "QCTP_REV2_INDEPENDENT_REPOSITORY_REVIEW_REV0_2026-08-18.md",
     "codex_branch_state": "QCTP_REV2_CODEX_BRANCH_STATE.json on qctp-platform-rev2-codex",
-    "codex_verification_record": "REV2_VERIFICATION.md on qctp-platform-rev2-codex"
+    "codex_verification_record": "REV2_VERIFICATION.md on qctp-platform-rev2-codex",
+    "windows_updater_gate": ".github/workflows/qctp-windows-updater-gate.yml on main"
   },
   "controlled_training_model": {
     "loop": "PREPARE -> INDUCE -> RECOGNIZE -> STABILIZE -> USE -> EXIT -> RECORD -> ADAPT",
@@ -75,12 +79,12 @@
   },
   "rev2_candidate": {
     "branch": "qctp-platform-rev2-codex",
-    "head_sha": "1a179146a9101c7485ef3ef7da6d0f2bea350d0a",
+    "head_sha": "882dc26bffa49eef3647ed78ffc22b230f4f2852",
     "version": "2.0.0-alpha.1",
     "draft_pull_request": "https://github.com/rfrye08-pixel/QCTP/pull/2",
     "pull_request_state": "OPEN_DRAFT_UNMERGED",
     "pre_hardening_implementation_disposition": "NON_BREATH_PLATFORM_COMPLETE_CANDIDATE",
-    "current_disposition": "FOCUSED_PHYSICAL_IPHONE_AUDIO_PASS_PRIVATE_PX13_RUNTIME_UPDATE_OPEN",
+    "current_disposition": "REV5_WINDOWS_VERIFIED_PRIVATE_RUNTIME_DEPLOYMENT_OPEN",
     "production_deployed": false,
     "release_authority": "ZERO_RELEASE"
   },
@@ -118,7 +122,7 @@
     },
     {
       "id": "LOCAL_AUDIO_AND_QA",
-      "status": "FOCUSED_PHYSICAL_IPHONE_PASS_PRIVATE_RUNTIME_UPDATE_OPEN",
+      "status": "FOCUSED_IPHONE_PASS_REV5_WINDOWS_VERIFIED_PRIVATE_DEPLOYMENT_OPEN",
       "ref": "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md"
     },
     {
@@ -138,38 +142,20 @@
     }
   ],
   "day1_audio_regression": {
-    "status": "FOCUSED_PHYSICAL_IPHONE_OPENING_AND_DELAYED_CUE_PASS_PRIVATE_RUNTIME_UPDATE_OPEN",
+    "status": "FOCUSED_IPHONE_MECHANISM_PASS_REV5_WINDOWS_VERIFIED_PRIVATE_RUNTIME_DEPLOYMENT_OPEN",
     "observed_failure": "Original private Rev2 timer advanced without audible opening cue on physical iPhone",
     "candidate_corrections": [
       "Persistent reusable guide-audio element",
       "User-interaction media priming",
       "Timer fail-closed pause on cue playback rejection",
       "Pause/resume retry on the same element",
-      "External neural-audio Workbox interception removed",
-      "Dedicated regression tests"
+      "External neural-audio service-worker interception removed",
+      "Dedicated regression tests",
+      "Direct fail-closed updater exit propagation",
+      "Exact served-build identity verification"
     ],
-    "recorded_clean_checkout": {
-      "npm_ci": "RECORDED_PASS",
-      "npm_run_check": "RECORDED_PASS",
-      "vitest_files": 41,
-      "vitest_tests": 231,
-      "production_build": "RECORDED_PASS",
-      "playwright_passed": 14,
-      "playwright_controlled_skips": 6,
-      "playwright_failed": 0
-    },
-    "invalidated_preview": {
-      "url": "https://rfrye08-pixel.github.io/QCTP-Device-Preview/",
-      "repository_exists": false,
-      "user_observed_result": "GITHUB_PAGES_404",
-      "user_screenshot_sha256": "b6ba73539fa33b39f096025c527c466de66633aea9dafa7c098151465a719b5c",
-      "prior_deployed_claim": "INVALIDATED_UNSUPPORTED",
-      "prior_live_browser_transition_claim": "INVALIDATED_UNSUPPORTED"
-    },
     "focused_physical_acceptance": {
       "url": "https://rfrye08-pixel.github.io/QCTP/device-preview/",
-      "source_path": "device-preview/index.html",
-      "identity_path": "device-preview/QCTP_DEVICE_PREVIEW_DEPLOYMENT.json",
       "endpoint_loaded_on_target_iphone": "PASS",
       "opening_cue_audible": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
       "automatic_45_second_cue_audible": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
@@ -177,6 +163,46 @@
       "user_statement": "Both cues were audible",
       "supporting_screenshot_sha256": "bb8d517df0713522eb8bed732bd016c68a1c27dab621d3b8148888f64287f38b",
       "acceptance_ref": "QCTP_DAY1_AUDIO_PHYSICAL_IPHONE_ACCEPTANCE_REV0_2026-08-18.md"
+    },
+    "px13_updater_attempts": [
+      {
+        "revision": "REV1",
+        "result": "FAILED_POWERSHELL_PARSE_BEFORE_MUTATION"
+      },
+      {
+        "revision": "REV2",
+        "result": "FAILED_DIVERGED_BRANCH_BEFORE_BUILD_OR_RESTART"
+      },
+      {
+        "revision": "REV3_FIRST_RUN",
+        "result": "FAILED_RESTRICTED_RANGE_HEADER_BEFORE_BUILD_OR_RESTART"
+      },
+      {
+        "revision": "REV3_SECOND_RUN_WITH_REV4_CORE",
+        "result": "INNER_FAILED_AUDIO_SIGNATURE_GATE_OUTER_FALSE_PASS_INVALIDATED_NO_BUILD_OR_RESTART"
+      }
+    ],
+    "rev5_windows_verification": {
+      "candidate_sha": "882dc26bffa49eef3647ed78ffc22b230f4f2852",
+      "workflow_run_id": 32248851370,
+      "job_id": 96055205805,
+      "windows_powershell_parse": "PASS",
+      "npm_ci": "PASS_ZERO_VULNERABILITIES",
+      "lint": "PASS",
+      "typecheck": "PASS",
+      "vitest_files": 41,
+      "vitest_tests": 233,
+      "coverage_percent": {
+        "statements": 88.77,
+        "branches": 79.23,
+        "functions": 93.71,
+        "lines": 90.42
+      },
+      "production_build": "PASS",
+      "dedicated_audio_tests": "4_PASS",
+      "runtime_identity_creation": "PASS",
+      "day1_audio_smoke": "PASS",
+      "disposition": "WINDOWS_VERIFIED_READY_FOR_PX13_DEPLOYMENT"
     },
     "private_px13_dist_updated": false,
     "private_full_pwa_retest": "OPEN"
@@ -209,18 +235,19 @@
     "thomas_campbell_modules": 10
   },
   "recorded_verification": {
-    "evidence_class": "RECORDED_AUTOMATED TESTS PLUS USER-REPORTED PHYSICAL-IPHONE ACCEPTANCE",
-    "post_audio_patch_node_tests_passed_recorded": 231,
-    "post_audio_patch_node_test_files_recorded": 41,
-    "post_audio_patch_playwright_passed_recorded": 14,
-    "post_audio_patch_playwright_controlled_skips_recorded": 6,
-    "post_audio_patch_playwright_failed_recorded": 0,
-    "post_audio_patch_build_recorded": "PASS",
+    "evidence_class": "WINDOWS_CI_EXECUTED_PLUS_USER_REPORTED_PHYSICAL_IPHONE_ACCEPTANCE",
+    "rev5_windows_updater_gate": "PASS",
+    "rev5_node_test_files": 41,
+    "rev5_node_tests_passed": 233,
+    "rev5_dedicated_audio_tests_passed": 4,
+    "rev5_production_build": "PASS",
+    "rev5_runtime_identity_artifact": "PASS",
+    "rev5_day1_audio_smoke": "PASS",
     "focused_preview_endpoint_on_physical_iphone": "PASS",
     "focused_preview_opening_audio": "PASS",
     "focused_preview_45_second_audio": "PASS",
     "python_tests_passed_pre_patch": 44,
-    "dependency_vulnerabilities_pre_patch": 0,
+    "dependency_vulnerabilities_rev5": 0,
     "local_whisper_base_real_transcription": "RECORDED_PASS",
     "px13_qwen3_8b_grounded_benchmark": "RECORDED_PASS",
     "physical_iphone_mirror_round_trip": "RECORDED_TARGETED_PASS",
@@ -228,7 +255,7 @@
     "physical_iphone_day1_audio_corrected_mechanism": "PASS_USER_REPORTED"
   },
   "release_acceptance_holds": [
-    "Pull/build/restart the private PX13 QCTP runtime from the corrected candidate",
+    "Rerun the already extracted REV3 locator/updater so it fetches and deploys Windows-verified REV5",
     "Verify the opening and automatic 24:15 cue once in the full private PWA",
     "Implement Breath Director",
     "Implement hardened session/state/audio schemas and State Map",
@@ -243,12 +270,12 @@
   "release_authority": {
     "released_rev1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
     "rev2_candidate": "ZERO_RELEASE",
-    "audio_patch": "FOCUSED_DEVICE_ACCEPTANCE_PASS_PRIVATE_RUNTIME_OPEN",
+    "audio_patch": "WINDOWS_VERIFIED_DEVICE_TEST_CANDIDATE_PRIVATE_DEPLOYMENT_OPEN",
     "diagnostic_preview": "PHYSICAL_AUDIO_ACCEPTANCE_COMPLETE_NO_PRODUCTION_AUTHORITY",
     "breathwork": "ZERO_RELEASE",
     "hardening_package": "ZERO_RELEASE",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "controlled_interpretation": "Ryan's physical-iPhone test proves that the corrected persistent-audio mechanism can audibly play both the user-started opening cue and the automatic 45-second cue on the target device. This closes the focused device-mechanism acceptance. It does not update or prove the full private PX13 PWA, which remains on the older dist until pulled, built, restarted, and retested.",
-  "next_controlled_action": "Update the private PX13 QCTP runtime from qctp-platform-rev2-codex, restart the gateway, and verify the opening plus automatic 24:15 cue in the full private PWA."
+  "controlled_interpretation": "The green PASS shown by the second REV3 run was false because a nested PowerShell wrapper failed to propagate the inner deployment failure. No install, build, restart, or private-runtime replacement occurred. REV5 removes the invalid external byte-signature blocker, directly propagates failures, writes an exact build identity, and verifies that port 8787 serves that identity. REV5 has now passed a dedicated Windows PowerShell execution gate before another PX13 attempt.",
+  "next_controlled_action": "Close the false-PASS terminal window and rerun RUN_QCTP_AUDIO_PATCH_UPDATE.cmd from the already extracted REV3 folder; confirm QCTP audio-patch deployment preflight REV5 and wait for both deployment and private-runtime PASS lines."
 }
