@@ -1,0 +1,31 @@
+{
+  "schema": "qctp-macro-deliverable-delta-v1",
+  "delta_id": "QCTP-REV3A-PX13-AUDIO-DEPLOYMENT-REV7",
+  "updated_at": "2026-08-19T16:36:00-05:00",
+  "parent_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV3.json",
+  "candidate_branch": "qctp-platform-rev2-codex",
+  "candidate_sha": "1e8bd74ffaa1758258fbfc91001af1a1bfc1260b",
+  "affected_deliverables": {
+    "QCTP-R3-D01": {
+      "delta": "Private-runtime updater no longer mutates active node_modules. Isolated staging build passed on Windows while active esbuild.exe was deliberately locked.",
+      "status": "COMPLETE_CANDIDATE_PRIVATE_STATIC_DEPLOYMENT_OPEN"
+    },
+    "QCTP-R3-D08": {
+      "delta": "REV7 adds isolated clone build, atomic verified-dist swap, exact served-identity check, and rollback without gateway restart.",
+      "status": "DEVICE_MECHANISM_PASS_REV7_WINDOWS_LOCK_VERIFIED_PX13_DEPLOYMENT_OPEN"
+    }
+  },
+  "verification": {
+    "workflow_run_id": 32304223366,
+    "job_id": 96233548675,
+    "active_esbuild_exclusive_lock": "PASS",
+    "isolated_npm_ci": "PASS_ZERO_VULNERABILITIES",
+    "node_tests": "41_FILES_233_PASS",
+    "production_build": "PASS",
+    "dedicated_audio_tests": "4_PASS",
+    "staged_runtime_identity": "PASS"
+  },
+  "remaining_hold": "Run the existing REV3 locator again so it fetches REV7, atomically installs the verified static dist on the PX13, and proves the exact identity through port 8787.",
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "Rerun RUN_QCTP_AUDIO_PATCH_UPDATE.cmd from the existing REV3 folder."
+}
