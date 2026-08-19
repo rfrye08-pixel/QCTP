@@ -1,4 +1,10 @@
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { PracticeScreen } from "./PracticeScreen";
@@ -16,7 +22,9 @@ interface FakeAudioElement {
   removeAttribute: ReturnType<typeof vi.fn>;
 }
 
-function fakeAudio(playResult: "resolve" | "reject" = "resolve"): FakeAudioElement {
+function fakeAudio(
+  playResult: "resolve" | "reject" = "resolve",
+): FakeAudioElement {
   const audio: FakeAudioElement = {
     src: "",
     preload: "none",
@@ -35,7 +43,9 @@ function fakeAudio(playResult: "resolve" | "reject" = "resolve"): FakeAudioEleme
   };
   audio.play.mockImplementation(() => {
     if (playResult === "reject") {
-      return Promise.reject(new DOMException("Playback blocked", "NotAllowedError"));
+      return Promise.reject(
+        new DOMException("Playback blocked", "NotAllowedError"),
+      );
     }
     audio.paused = false;
     return Promise.resolve();
