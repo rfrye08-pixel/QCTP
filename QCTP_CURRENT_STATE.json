@@ -1,7 +1,7 @@
 {
-  "schema": "qctp-current-state-v6",
+  "schema": "qctp-current-state-v7",
   "project": "QCTP",
-  "updated_at": "2026-08-18T23:43:00-05:00",
+  "updated_at": "2026-08-18T23:52:42-05:00",
   "status": "ACTIVE",
   "product_identity": {
     "name": "QCTP",
@@ -25,8 +25,9 @@
     "local_ai_mirror_requirement": "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
     "day1_hardened_candidate": "QCTP_DAY1_HARDENING_DELTA_AND_CANDIDATE_SCRIPT_REV0_2026-08-18.md",
     "day1_audio_regression": "QCTP_DAY1_IPHONE_AUDIO_REGRESSION_REV0_2026-08-18.md",
-    "day1_audio_patch_verification": "QCTP_DAY1_AUDIO_PATCH_VERIFICATION_REV1_2026-08-18.md on qctp-platform-rev2-codex; any public-preview deployment claim is superseded by QCTP_DEVICE_PREVIEW_404_CORRECTION_AND_REDEPLOYMENT_REV0_2026-08-18.md",
-    "day1_audio_patch_state_overlay": "QCTP_DAY1_AUDIO_PATCH_STATE_OVERLAY_REV1.json on qctp-platform-rev2-codex; deployment portion superseded",
+    "day1_audio_patch_verification": "QCTP_DAY1_AUDIO_PATCH_VERIFICATION_REV1_2026-08-18.md on qctp-platform-rev2-codex",
+    "day1_audio_patch_state_overlay": "QCTP_DAY1_AUDIO_PATCH_STATE_OVERLAY_REV1.json on qctp-platform-rev2-codex",
+    "day1_audio_physical_acceptance": "QCTP_DAY1_AUDIO_PHYSICAL_IPHONE_ACCEPTANCE_REV0_2026-08-18.md",
     "device_preview_404_correction": "QCTP_DEVICE_PREVIEW_404_CORRECTION_AND_REDEPLOYMENT_REV0_2026-08-18.md",
     "device_preview_source": "device-preview/index.html and device-preview/QCTP_DEVICE_PREVIEW_DEPLOYMENT.json on main",
     "implementation_handoff": "QCTP_PROTOCOL_UX_HARDENING_IMPLEMENTATION_HANDOFF_REV0_2026-08-18.md",
@@ -74,12 +75,12 @@
   },
   "rev2_candidate": {
     "branch": "qctp-platform-rev2-codex",
-    "head_sha": "ecb2aa6cbed879fbd6313a1ebc1c9adc417adf00",
+    "head_sha": "1a179146a9101c7485ef3ef7da6d0f2bea350d0a",
     "version": "2.0.0-alpha.1",
     "draft_pull_request": "https://github.com/rfrye08-pixel/QCTP/pull/2",
     "pull_request_state": "OPEN_DRAFT_UNMERGED",
     "pre_hardening_implementation_disposition": "NON_BREATH_PLATFORM_COMPLETE_CANDIDATE",
-    "current_disposition": "FOCUSED_DEVICE_AUDIO_ACCEPTANCE_SOURCE_PUBLISHED_ENDPOINT_HTTP_AND_PHYSICAL_IPHONE_OPEN",
+    "current_disposition": "FOCUSED_PHYSICAL_IPHONE_AUDIO_PASS_PRIVATE_PX13_RUNTIME_UPDATE_OPEN",
     "production_deployed": false,
     "release_authority": "ZERO_RELEASE"
   },
@@ -117,7 +118,7 @@
     },
     {
       "id": "LOCAL_AUDIO_AND_QA",
-      "status": "FOCUSED_ACCEPTANCE_SOURCE_PUBLISHED_ENDPOINT_AND_PHYSICAL_IPHONE_OPEN",
+      "status": "FOCUSED_PHYSICAL_IPHONE_PASS_PRIVATE_RUNTIME_UPDATE_OPEN",
       "ref": "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md"
     },
     {
@@ -137,9 +138,8 @@
     }
   ],
   "day1_audio_regression": {
-    "status": "SOURCE_PUBLISHED_ENDPOINT_HTTP_AND_PHYSICAL_IPHONE_OPEN",
-    "observed_failure": "Timer advanced without audible opening cue on physical iPhone",
-    "candidate_head": "ecb2aa6cbed879fbd6313a1ebc1c9adc417adf00",
+    "status": "FOCUSED_PHYSICAL_IPHONE_OPENING_AND_DELAYED_CUE_PASS_PRIVATE_RUNTIME_UPDATE_OPEN",
+    "observed_failure": "Original private Rev2 timer advanced without audible opening cue on physical iPhone",
     "candidate_corrections": [
       "Persistent reusable guide-audio element",
       "User-interaction media priming",
@@ -148,7 +148,7 @@
       "External neural-audio Workbox interception removed",
       "Dedicated regression tests"
     ],
-    "prior_recorded_clean_checkout": {
+    "recorded_clean_checkout": {
       "npm_ci": "RECORDED_PASS",
       "npm_run_check": "RECORDED_PASS",
       "vitest_files": 41,
@@ -166,20 +166,20 @@
       "prior_deployed_claim": "INVALIDATED_UNSUPPORTED",
       "prior_live_browser_transition_claim": "INVALIDATED_UNSUPPORTED"
     },
-    "corrected_focused_preview": {
+    "focused_physical_acceptance": {
       "url": "https://rfrye08-pixel.github.io/QCTP/device-preview/",
       "source_path": "device-preview/index.html",
       "identity_path": "device-preview/QCTP_DEVICE_PREVIEW_DEPLOYMENT.json",
-      "source_exists_on_main": "PASS",
-      "persistent_audio_element": true,
-      "opening_cue_seconds": 0,
-      "automatic_second_cue_seconds": 45,
-      "fail_closed_timer": true,
-      "live_http_response": "OPEN_UNVERIFIED",
-      "physical_iphone_opening_audible": "OPEN",
-      "physical_iphone_45_second_cue_audible": "OPEN"
+      "endpoint_loaded_on_target_iphone": "PASS",
+      "opening_cue_audible": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
+      "automatic_45_second_cue_audible": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
+      "test_completed": "PASS",
+      "user_statement": "Both cues were audible",
+      "supporting_screenshot_sha256": "bb8d517df0713522eb8bed732bd016c68a1c27dab621d3b8148888f64287f38b",
+      "acceptance_ref": "QCTP_DAY1_AUDIO_PHYSICAL_IPHONE_ACCEPTANCE_REV0_2026-08-18.md"
     },
-    "private_px13_dist_updated": false
+    "private_px13_dist_updated": false,
+    "private_full_pwa_retest": "OPEN"
   },
   "day1_hardened_candidate": {
     "status": "AUTHORED_ZERO_RELEASE",
@@ -209,28 +209,27 @@
     "thomas_campbell_modules": 10
   },
   "recorded_verification": {
-    "evidence_class": "REPOSITORY_SOURCE_VERIFIED; PRIOR AUTOMATED TEST RESULTS RECORDED; PUBLIC ENDPOINT HTTP AND PHYSICAL IPHONE AUDIO OPEN",
+    "evidence_class": "RECORDED_AUTOMATED TESTS PLUS USER-REPORTED PHYSICAL-IPHONE ACCEPTANCE",
     "post_audio_patch_node_tests_passed_recorded": 231,
     "post_audio_patch_node_test_files_recorded": 41,
     "post_audio_patch_playwright_passed_recorded": 14,
     "post_audio_patch_playwright_controlled_skips_recorded": 6,
     "post_audio_patch_playwright_failed_recorded": 0,
     "post_audio_patch_build_recorded": "PASS",
-    "prior_public_preview_live_browser_claim": "INVALIDATED_UNSUPPORTED",
-    "focused_preview_source_on_main": "PASS",
-    "focused_preview_http": "OPEN",
+    "focused_preview_endpoint_on_physical_iphone": "PASS",
+    "focused_preview_opening_audio": "PASS",
+    "focused_preview_45_second_audio": "PASS",
     "python_tests_passed_pre_patch": 44,
     "dependency_vulnerabilities_pre_patch": 0,
     "local_whisper_base_real_transcription": "RECORDED_PASS",
     "px13_qwen3_8b_grounded_benchmark": "RECORDED_PASS",
     "physical_iphone_mirror_round_trip": "RECORDED_TARGETED_PASS",
     "physical_iphone_day1_guide_audio_original": "FAIL_USER_OBSERVED",
-    "physical_iphone_invalid_preview_url": "FAIL_USER_OBSERVED_404",
-    "physical_iphone_day1_guide_audio_patched": "OPEN"
+    "physical_iphone_day1_audio_corrected_mechanism": "PASS_USER_REPORTED"
   },
   "release_acceptance_holds": [
-    "Open the exact corrected device-preview URL on the physical iPhone, confirm the page loads, then confirm the immediate opening cue and automatic 0:45 cue are audible",
-    "Pull/build/restart the private PX13 runtime only after physical audio confirmation",
+    "Pull/build/restart the private PX13 QCTP runtime from the corrected candidate",
+    "Verify the opening and automatic 24:15 cue once in the full private PWA",
     "Implement Breath Director",
     "Implement hardened session/state/audio schemas and State Map",
     "Implement Thomas Campbell MVP",
@@ -244,12 +243,12 @@
   "release_authority": {
     "released_rev1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
     "rev2_candidate": "ZERO_RELEASE",
-    "audio_patch": "DEVICE_TEST_CANDIDATE",
-    "diagnostic_preview": "SOURCE_PUBLISHED_PHYSICAL_AUDIO_ACCEPTANCE_ONLY_ENDPOINT_UNVERIFIED",
+    "audio_patch": "FOCUSED_DEVICE_ACCEPTANCE_PASS_PRIVATE_RUNTIME_OPEN",
+    "diagnostic_preview": "PHYSICAL_AUDIO_ACCEPTANCE_COMPLETE_NO_PRODUCTION_AUTHORITY",
     "breathwork": "ZERO_RELEASE",
     "hardening_package": "ZERO_RELEASE",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "controlled_interpretation": "Ryan's physical-iPhone screenshot proved that the previously supplied QCTP-Device-Preview URL returned a GitHub Pages 404 and that the earlier deployed/live-browser claim was false. That claim is invalidated. A focused 50-second acceptance page now exists in the actual QCTP/main Pages source at device-preview/, using one persistent audio element, the controlled opening cue, the controlled 45-second cue, and a fail-closed timer. Source existence is verified; the exact public HTTP endpoint and physical iPhone audibility are still open. The released root app and private PX13 runtime remain unchanged.",
-  "next_controlled_action": "Open https://rfrye08-pixel.github.io/QCTP/device-preview/ on the physical iPhone; if it loads, tap Begin 50-second test and report whether the opening cue and automatic 0:45 cue are both audible."
+  "controlled_interpretation": "Ryan's physical-iPhone test proves that the corrected persistent-audio mechanism can audibly play both the user-started opening cue and the automatic 45-second cue on the target device. This closes the focused device-mechanism acceptance. It does not update or prove the full private PX13 PWA, which remains on the older dist until pulled, built, restarted, and retested.",
+  "next_controlled_action": "Update the private PX13 QCTP runtime from qctp-platform-rev2-codex, restart the gateway, and verify the opening plus automatic 24:15 cue in the full private PWA."
 }
