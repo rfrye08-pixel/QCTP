@@ -1,0 +1,58 @@
+name: QCTP Day 1 audio smoke
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "src/app/screens/PracticeScreen.tsx"
+      - "src/app/screens/PracticeScreen.test.tsx"
+      - "src/audio-player/**"
+      - "src/foundation/day1.ts"
+      - "vite.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/qctp-day1-audio-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qctp-day1-audio-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify fail-closed Day 1 audio and package dist
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out candidate head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.15.0
+          cache: npm
+
+      - name: Install exact dependencies
+        run: npm ci
+
+      - name: Verify repository formatting, lint, types, tests, coverage, and build
+        run: npm run check
+
+      - name: Re-run the audio and sequencer regression boundary
+        run: npx vitest run src/app/screens/PracticeScreen.test.tsx src/audio-player/sequencer.test.ts
+
+      - name: Upload verified PWA distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: qctp-day1-audio-dist-${{ github.event.pull_request.head.sha || github.sha }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
