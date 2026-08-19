@@ -1,12 +1,14 @@
 {
-  "schema": "qctp-day1-audio-patch-state-overlay-v1",
-  "overlay_id": "QCTP-D1-AUDIO-PATCH-OVERLAY-REV1",
-  "updated_at": "2026-08-18T07:35:00-05:00",
+  "schema": "qctp-day1-audio-patch-state-overlay-v1a",
+  "overlay_id": "QCTP-D1-AUDIO-PATCH-OVERLAY-REV1A",
+  "updated_at": "2026-08-18T23:43:00-05:00",
   "branch": "qctp-platform-rev2-codex",
-  "head_under_test": "80801cdf34a4856c95a4d9349aa8a019fdf6fa38",
-  "status": "AUTOMATED_AND_LIVE_BROWSER_PASS_PHYSICAL_IPHONE_AUDIBLE_CONFIRMATION_OPEN",
+  "original_head_under_test": "80801cdf34a4856c95a4d9349aa8a019fdf6fa38",
+  "current_mechanism_source_head": "ecb2aa6cbed879fbd6313a1ebc1c9adc417adf00",
+  "status": "AUTOMATED_RESULTS_RECORDED_PRIOR_PUBLIC_PREVIEW_INVALIDATED_FOCUSED_SOURCE_PUBLISHED_ENDPOINT_AND_PHYSICAL_IPHONE_OPEN",
   "verification_ref": "QCTP_DAY1_AUDIO_PATCH_VERIFICATION_REV1_2026-08-18.md",
-  "independent_verification": {
+  "superseding_correction_ref": "QCTP_DEVICE_PREVIEW_404_CORRECTION_AND_REDEPLOYMENT_REV0_2026-08-18.md on main",
+  "recorded_automated_verification": {
     "npm_ci": "PASS",
     "npm_run_check": "PASS",
     "vitest_files": 41,
@@ -15,23 +17,32 @@
     "playwright_passed": 14,
     "playwright_controlled_skips": 6,
     "playwright_failed": 0,
-    "opening_and_45_second_assets_reachable": "PASS",
-    "deployed_accelerated_audio_transition": "PASS",
-    "deployed_normal_opening_plus_45_second_transition": "PASS"
+    "opening_and_45_second_assets_reachable": "PASS"
   },
-  "diagnostic_preview": {
+  "invalidated_preview": {
     "url": "https://rfrye08-pixel.github.io/QCTP-Device-Preview/",
-    "runtime": "exact post-check dist artifact",
+    "repository_exists": false,
+    "target_iphone_result": "GITHUB_PAGES_404",
+    "user_screenshot_sha256": "b6ba73539fa33b39f096025c527c466de66633aea9dafa7c098151465a719b5c",
+    "deployed_accelerated_audio_transition": "INVALIDATED_UNSUPPORTED",
+    "deployed_normal_opening_plus_45_second_transition": "INVALIDATED_UNSUPPORTED"
+  },
+  "focused_acceptance_source": {
+    "url": "https://rfrye08-pixel.github.io/QCTP/device-preview/",
+    "source_path": "main/device-preview/index.html",
+    "identity_path": "main/device-preview/QCTP_DEVICE_PREVIEW_DEPLOYMENT.json",
+    "source_exists": "PASS",
+    "public_http": "OPEN_UNVERIFIED",
     "production": false,
-    "contains_secrets": false,
     "local_px13_apis": false
   },
   "remaining_holds": [
-    "Human audible confirmation on the physical iPhone for the opening cue and automatic 45-second cue",
+    "Confirm the exact corrected URL loads on the physical iPhone",
+    "Confirm the opening cue and automatic 0:45 cue are audible on the physical iPhone",
     "Update and restart the private PX13 runtime after physical audio acceptance",
     "Full natural-duration Day 1 acceptance",
     "Remaining Rev2 device, migration, and release holds"
   ],
   "release_authority": "ZERO_RELEASE",
-  "next_controlled_action": "Open the diagnostic preview on the physical iPhone and confirm the opening narration plus the automatic cue at 24:15 are audible."
+  "next_controlled_action": "Open https://rfrye08-pixel.github.io/QCTP/device-preview/ on the physical iPhone; if it loads, tap Begin 50-second test and report whether the opening cue and automatic 0:45 cue are both audible."
 }
