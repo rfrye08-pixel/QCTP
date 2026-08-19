@@ -32,7 +32,7 @@ jobs:
       - name: Put checkout on the controlled candidate branch
         shell: powershell
         run: |
-          git checkout -B qctp-platform-rev2-codex $env:GITHUB_SHA
+          git checkout -B qctp-platform-rev2-codex "${{ github.event.pull_request.head.sha || github.sha }}"
 
       - name: Set up Node 24
         uses: actions/setup-node@v4
