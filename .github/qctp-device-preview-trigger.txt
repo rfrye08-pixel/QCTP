@@ -1,0 +1,3 @@
+QCTP device-preview deployment trigger
+Candidate: ecb2aa6cbed879fbd6313a1ebc1c9adc417adf00
+Purpose: physical-iPhone Day 1 audio acceptance only
