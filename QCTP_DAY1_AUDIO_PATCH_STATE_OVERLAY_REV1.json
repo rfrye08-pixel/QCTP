@@ -1,0 +1,37 @@
+{
+  "schema": "qctp-day1-audio-patch-state-overlay-v1",
+  "overlay_id": "QCTP-D1-AUDIO-PATCH-OVERLAY-REV1",
+  "updated_at": "2026-08-18T07:35:00-05:00",
+  "branch": "qctp-platform-rev2-codex",
+  "head_under_test": "80801cdf34a4856c95a4d9349aa8a019fdf6fa38",
+  "status": "AUTOMATED_AND_LIVE_BROWSER_PASS_PHYSICAL_IPHONE_AUDIBLE_CONFIRMATION_OPEN",
+  "verification_ref": "QCTP_DAY1_AUDIO_PATCH_VERIFICATION_REV1_2026-08-18.md",
+  "independent_verification": {
+    "npm_ci": "PASS",
+    "npm_run_check": "PASS",
+    "vitest_files": 41,
+    "vitest_tests": 231,
+    "production_build": "PASS",
+    "playwright_passed": 14,
+    "playwright_controlled_skips": 6,
+    "playwright_failed": 0,
+    "opening_and_45_second_assets_reachable": "PASS",
+    "deployed_accelerated_audio_transition": "PASS",
+    "deployed_normal_opening_plus_45_second_transition": "PASS"
+  },
+  "diagnostic_preview": {
+    "url": "https://rfrye08-pixel.github.io/QCTP-Device-Preview/",
+    "runtime": "exact post-check dist artifact",
+    "production": false,
+    "contains_secrets": false,
+    "local_px13_apis": false
+  },
+  "remaining_holds": [
+    "Human audible confirmation on the physical iPhone for the opening cue and automatic 45-second cue",
+    "Update and restart the private PX13 runtime after physical audio acceptance",
+    "Full natural-duration Day 1 acceptance",
+    "Remaining Rev2 device, migration, and release holds"
+  ],
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "Open the diagnostic preview on the physical iPhone and confirm the opening narration plus the automatic cue at 24:15 are audible."
+}
