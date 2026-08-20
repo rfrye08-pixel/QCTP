@@ -48,6 +48,14 @@ jobs:
       - name: Materialize or verify the local Day 1 audio pack
         run: node tools/cache-day1-audio.mjs
 
+      - name: Export generated Day 1 audio pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: qctp-day1-local-audio-${{ github.event.pull_request.head.sha || github.sha }}
+          path: public/audio/day1/
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Install Node dependencies
         run: npm ci
 
@@ -82,14 +90,6 @@ jobs:
           uv run ruff check .
           uv run basedpyright
           uv run ty check
-
-      - name: Upload verified local Day 1 audio pack
-        uses: actions/upload-artifact@v4
-        with:
-          name: qctp-day1-local-audio-${{ github.event.pull_request.head.sha || github.sha }}
-          path: public/audio/day1/
-          if-no-files-found: error
-          retention-days: 14
 
       - name: Upload verified PWA distribution
         uses: actions/upload-artifact@v4
