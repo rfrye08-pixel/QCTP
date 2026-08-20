@@ -1,9 +1,9 @@
 {
-  "schema": "qctp-current-state-v11",
+  "schema": "qctp-current-state-v12",
   "project": "QCTP",
-  "updated_at": "2026-08-19T18:35:00-05:00",
+  "updated_at": "2026-08-19T20:56:00-05:00",
   "status": "ACTIVE",
-  "supersedes": "qctp-current-state-v10",
+  "supersedes": "qctp-current-state-v11",
   "product_identity": {
     "name": "QCTP",
     "expanded_name": "Quantum Consciousness Training Platform",
@@ -12,7 +12,7 @@
     "experience_goal": "Serious, precise, exploratory, user-friendly, visually compelling, and capability-driven rather than timer- or streak-driven."
   },
   "authority_refs": {
-    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV4.json",
+    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV5.json",
     "protocol_hardening": "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
     "state_atlas": "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md",
     "meditation_audio_qa": "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
@@ -24,14 +24,12 @@
     "zero_recurring_cost_runtime": "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
     "local_ai_mirror_requirement": "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
     "day1_audio_regression": "QCTP_DAY1_IPHONE_AUDIO_REGRESSION_REV0_2026-08-18.md",
-    "day1_audio_physical_acceptance": "QCTP_DAY1_AUDIO_PHYSICAL_IPHONE_ACCEPTANCE_REV0_2026-08-18.md",
-    "private_updater_divergence_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_DIVERGENCE_FAILURE_AND_RECOVERY_REV0_2026-08-19.md",
-    "private_updater_range_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_RANGE_HEADER_FAILURE_AND_REV4_RECOVERY_REV0_2026-08-19.md",
-    "private_updater_false_pass_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_FALSE_PASS_AND_AUDIO_SIGNATURE_FAILURE_REV0_2026-08-19.md",
-    "private_updater_esbuild_recovery": "QCTP_PRIVATE_RUNTIME_UPDATER_ESBUILD_LOCK_AND_REV7_RECOVERY_REV0_2026-08-19.md",
-    "private_updater_live_root_recovery": "QCTP_PRIVATE_RUNTIME_LIVE_ROOT_FAILURE_AND_REV9_RECOVERY_REV0_2026-08-19.md",
+    "day1_audio_focused_acceptance": "QCTP_DAY1_AUDIO_PHYSICAL_IPHONE_ACCEPTANCE_REV0_2026-08-18.md",
     "private_rev9_deployment_and_origin_mismatch": "QCTP_PRIVATE_RUNTIME_REV9_PX13_DEPLOYMENT_PASS_AND_WRONG_ORIGIN_REV0_2026-08-19.md",
-    "candidate_deployment_script": "tools/Deploy-QctpAudioPatch.ps1 on qctp-platform-rev2-codex",
+    "private_correct_origin_failure_and_rev10_recovery": "QCTP_DAY1_PRIVATE_IPHONE_EXTERNAL_AUDIO_FAILURE_AND_SAME_ORIGIN_REV10_RECOVERY_REV0_2026-08-19.md",
+    "candidate_rev10_verification": "tools/QCTP_DAY1_SAME_ORIGIN_AUDIO_REV10_VERIFICATION_REV0_2026-08-19.md on qctp-platform-rev2-codex",
+    "candidate_branch_state": "QCTP_REV2_CODEX_BRANCH_STATE.json on qctp-platform-rev2-codex",
+    "candidate_deployment_script": "tools/Deploy-QctpAudioPatch.ps1 REV10 on qctp-platform-rev2-codex",
     "windows_updater_gate": ".github/workflows/qctp-windows-updater-gate.yml on main",
     "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2"
   },
@@ -56,15 +54,25 @@
     "release_authority": "LIMITED_DAY1_USE_SCREEN_UP",
     "not_the_rev2_private_origin": true
   },
+  "private_runtime": {
+    "machine": "REOS",
+    "origin": "https://reos.tail6ed282.ts.net/",
+    "transport": "Tailscale Serve private HTTPS",
+    "loopback_gateway": "http://127.0.0.1:8787",
+    "currently_installed_candidate": "1d437232cc4ff696ac495f2253347a485c231f2e",
+    "currently_installed_audio_mode": "LIVE_THIRD_PARTY_HEYGEN_URLS",
+    "latest_install_result": "REV9_STATIC_DEPLOYMENT_PASS",
+    "rev10_installed": false
+  },
   "rev2_candidate": {
     "branch": "qctp-platform-rev2-codex",
-    "head_sha": "1d437232cc4ff696ac495f2253347a485c231f2e",
+    "head_sha": "86de3a1a4dad034615afb198f7fd90a7e2056e49",
+    "verified_implementation_head": "05a4b81158ca389305b2aa13854cf41ce8ce2ae5",
     "version": "2.0.0-alpha.1",
     "pull_request": 2,
     "pull_request_state": "OPEN_DRAFT_UNMERGED",
     "implementation_disposition": "NON_BREATH_PLATFORM_COMPLETE_CANDIDATE",
-    "audio_deployment_disposition": "REV9_PX13_STATIC_DEPLOYMENT_PASS_PRIVATE_IPHONE_ORIGIN_AND_AUDIO_RETEST_OPEN",
-    "private_px13_static_deployed": true,
+    "audio_deployment_disposition": "REV10_ALL_EXACT_HEAD_MACHINE_GATES_PASS_PX13_INSTALL_OPEN",
     "production_deployed": false,
     "release_authority": "ZERO_RELEASE"
   },
@@ -73,6 +81,7 @@
     "IndexedDB v3 local-first records and Rev1 migration",
     "Paths, Practice, Studio, Lab, Codex, Mirror, Insights, and Settings",
     "exact 1500-second Day 1 with 21 controlled cues and Chill Brian",
+    "checksum-verified same-origin Day 1 lesson and cue pack",
     "global and field voice capture plus timed auto-dictation",
     "PX13 local Whisper transcription",
     "Free Local Mode with no required API key",
@@ -82,96 +91,121 @@
     "Robert Edward Grant REG-01 MVP"
   ],
   "day1_audio_regression": {
-    "original_failure": "Private Rev2 timer advanced without audible opening cue on physical iPhone",
-    "corrected_mechanism": [
-      "Persistent reusable guide-audio element",
-      "User-interaction media priming",
-      "Timer fail-closed pause on playback rejection",
-      "Pause/resume retry on the same element",
-      "External neural-audio service-worker interception removed"
-    ],
-    "focused_iphone_acceptance": {
+    "initial_private_failure": "The earlier Rev2 player could advance without audible narration until fail-closed behavior was added.",
+    "focused_device_mechanism_acceptance": {
       "endpoint": "https://rfrye08-pixel.github.io/QCTP/device-preview/",
       "opening_cue": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
       "automatic_45_second_cue": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
-      "supporting_screenshot_sha256": "bb8d517df0713522eb8bed732bd016c68a1c27dab621d3b8148888f64287f38b"
+      "scope": "Persistent iPhone audio element only; did not prove the full private app or remove the external media dependency."
     },
-    "rev9_windows_verification": {
+    "rev9_private_install": {
       "candidate_sha": "1d437232cc4ff696ac495f2253347a485c231f2e",
-      "windows_workflow_run_id": 32310120082,
-      "windows_job_id": 96251209634,
-      "simulated_gateway_static_root_outside_repo": true,
-      "active_esbuild_locked_during_test": true,
-      "gateway_alive_through_full_test": true,
-      "vitest_files": 41,
-      "vitest_tests": 233,
-      "production_build": "PASS",
-      "dedicated_audio_tests": "4_PASS",
-      "live_static_root_discovery": "PASS",
-      "in_place_static_deployment": "PASS",
+      "px13_static_install": "PASS",
       "exact_served_identity": "PASS",
-      "final_result": "FULL_WINDOWS_LIVE_ROOT_DEPLOYMENT_SIMULATION_PASS"
+      "private_origin": "https://reos.tail6ed282.ts.net/"
     },
-    "latest_px13_attempt": {
-      "revision": "REV9",
-      "candidate_sha": "1d437232cc4ff696ac495f2253347a485c231f2e",
-      "gateway_health": "PASS",
-      "live_static_root_discovery": "PASS",
-      "verified_live_static_root": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\work\\QCTP\\dist",
-      "static_mirror": "PASS",
-      "exact_served_identity": "PASS",
-      "audio_patch_deployment": "PASS",
-      "private_runtime_update": "PASS",
-      "evidence_sha256": "55fe787d8824340432bf7f456dba75172b99c6788123ff0306bd41d7c4d3dc22"
+    "correct_private_origin_failure": {
+      "status": "CONFIRMED",
+      "origin": "https://reos.tail6ed282.ts.net/",
+      "navigation": "Today / Paths / Practice / Studio / More",
+      "timer_state": "PAUSED_AT_24_49",
+      "displayed_failure": "Guide audio is still blocked",
+      "completion_credit": false,
+      "evidence_class": "USER_PROVIDED_DIRECT_PHYSICAL_IPHONE_SCREENSHOT_AND_REPORT",
+      "file_id": "file_000000004eac81fd88a5ee03c67f709d",
+      "sha256": "784b64f1e6efa3066ccb71092796bc31c6ed1cc7c7399f8287cd7c284189dffd",
+      "pixel_dimensions": "1125x2436",
+      "bytes": 635656
     },
-    "private_px13_dist_updated": true,
-    "wrong_origin_observation": {
-      "observed_origin": "rfrye08-pixel.github.io",
-      "observed_version": "1.1.4",
-      "observed_navigation": "Today / Lesson / Practice / Workbook / Progress / More",
-      "disposition": "PUBLIC_REV1_ORIGIN_NOT_A_TEST_OF_PRIVATE_REV2",
-      "evidence_sha256": "a84109620f1e8e920a5903b941d038ac24058a1490706bf50ec33938f9bde8a3"
+    "root_cause": "The lesson and practice player still used protected resource2.heygen.ai source references as live runtime media URLs.",
+    "rev10_same_origin_correction": {
+      "status": "IMPLEMENTED_AND_ALL_MACHINE_GATES_PASS",
+      "candidate_head": "86de3a1a4dad034615afb198f7fd90a7e2056e49",
+      "runtime_dependency_removed": "Live third-party audio is no longer required for Day 1 playback.",
+      "pack_schema": "qctp-day1-local-audio-pack-v2",
+      "media_type": "audio/mpeg",
+      "file_count": 23,
+      "total_bytes": 13340411,
+      "manifest_sha256": "63294f74eb4f5426eae3c8b42cdf89a2adb09ccae54e06c41264a528b2db40a5",
+      "runtime_root": "same-origin /audio/day1/",
+      "lesson_and_all_21_cues_local": true,
+      "source_lineage_preserved": true,
+      "persistent_audio_element_preserved": true,
+      "fail_closed_timer_preserved": true,
+      "build_time_pack_verification": true,
+      "service_worker_precache": "38 entries / 14130.74 KiB including local audio",
+      "gateway_csp": "same-origin media only",
+      "deployment_identity_schema": "qctp-private-runtime-build-v6",
+      "rollback_on_failed_identity_or_audio_hash": true
     },
-    "private_origin_contract": {
-      "machine_name": "REOS",
-      "transport": "Tailscale Serve private HTTPS",
-      "required_url_suffix": ".ts.net",
-      "forbidden_origins_for_rev2_test": [
-        "https://rfrye08-pixel.github.io/QCTP/",
-        "https://rfrye08-pixel.github.io/QCTP/device-preview/"
-      ],
-      "exact_url_status": "MUST_BE_READ_FROM_PX13_TAILSCALE_SERVE_STATUS_NOT_GUESSED",
-      "retrieval_command": "\"%ProgramFiles%\\Tailscale\\tailscale.exe\" serve status"
+    "exact_head_verification": {
+      "full_candidate": {
+        "workflow_run_id": 32322451181,
+        "job_id": 96287184044,
+        "result": "PASS",
+        "node_test_files": 43,
+        "node_tests": 238,
+        "browser_passed": 16,
+        "browser_controlled_skips": 6,
+        "browser_failed": 0,
+        "python_tests": 44,
+        "dependency_vulnerabilities": 0,
+        "production_build": "PASS",
+        "local_audio_artifact_id": 9390224954,
+        "local_audio_artifact_sha256": "c37161efa3f238073b2a063e477c3fa5014d0ea78fa2dd8f8594dd2540a2c9a1",
+        "dist_artifact_id": 9390273418,
+        "dist_artifact_sha256": "6b5f7200d02b5902007b7739f905ca98d9db7232e5f96dbbdcb7cda3e174a24a"
+      },
+      "audio_smoke": {
+        "workflow_run_id": 32322451214,
+        "job_id": 96287156046,
+        "result": "PASS"
+      },
+      "windows_updater": {
+        "workflow_run_id": 32322451183,
+        "job_id": 96287155892,
+        "result": "PASS",
+        "active_esbuild_locked": true,
+        "gateway_static_root_outside_repository": true,
+        "isolated_build": "PASS",
+        "live_root_discovery": "PASS",
+        "served_identity": "PASS",
+        "served_manifest_and_audio_hashes": "PASS",
+        "rollback_contract": "PASS"
+      }
     },
-    "private_full_pwa_audio_retest": "OPEN_WRONG_ORIGIN_WAS_USED"
+    "rev10_px13_install": "OPEN",
+    "rev10_private_iphone_opening_cue": "OPEN",
+    "rev10_private_iphone_24_15_cue": "OPEN",
+    "natural_1500_second_day1": "OPEN"
   },
   "open_implementation_packages": [
     "Breath Director and seven-session Breath Foundations",
     "Protocol-hardening runtime schemas and State Map",
     "Thomas Campbell source-track MVP",
     "User-experience exploration upgrade",
-    "Hardened Day 1 local audio pack",
+    "Hardened Day 1 script integration beyond the completed local audio pack",
     "Foundation Days 2-112 authored under progression gates"
   ],
   "release_acceptance_holds": [
-    "Retrieve the exact REOS Tailscale Serve HTTPS URL from the PX13 and open that .ts.net origin on the iPhone",
-    "Verify the Rev2 navigation Today / Paths / Practice / Studio / More before testing",
-    "Verify opening and automatic 24:15 cue in the full private Rev2 PWA",
-    "Repair or replace the active untracked node_modules before any later gateway restart or laptop-reboot acceptance",
-    "Complete remaining physical-iPhone lifecycle checks",
+    "Install machine-verified REV10 on the PX13 using the existing locator/updater",
+    "Verify the private app visibly reports same-origin checksum-verified narration",
+    "Verify the opening and automatic 24:15 cue in the full private Rev2 PWA",
+    "Run natural full-duration hardened Day 1 acceptance to 0:00 and confirm completion persistence",
+    "Repair or replace the active untracked node_modules before later gateway-restart or laptop-reboot acceptance",
+    "Complete remaining physical-iPhone microphone, offline, reconnect, notification, lifecycle, deletion, and export checks",
     "Run actual-origin Rev1 migration comparison",
-    "Run natural full-duration hardened Day 1 acceptance",
-    "Replace live third-party audio with checksum-verified local audio packs before release",
+    "Provision the verified CTranslate2 small high-accuracy model directory on the PX13",
     "Do not merge or release Rev2 without explicit authority"
   ],
   "release_authority": {
     "released_rev1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
     "rev2_candidate": "ZERO_RELEASE",
-    "audio_patch": "PX13_DEPLOYED_DEVICE_TEST_CANDIDATE_PRIVATE_IPHONE_AUDIO_RETEST_OPEN",
+    "rev10_same_origin_audio": "WINDOWS_VERIFIED_DEVICE_TEST_CANDIDATE_PX13_INSTALL_OPEN",
     "breathwork": "ZERO_RELEASE",
     "hardening_package": "ZERO_RELEASE",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "controlled_interpretation": "REV9 successfully installed and verified the audio-patched candidate in the exact static root served by the PX13 private gateway. The subsequent iPhone screenshot came from the public GitHub Pages Rev1.1.4 origin, so its Chill Brian load failure does not test the deployed private Rev2 candidate. The remaining immediate task is to retrieve the complete REOS .ts.net Tailscale Serve URL, open that exact private origin, verify the Rev2 navigation, and perform the two-cue audio check.",
-  "next_controlled_action": "On the PX13 run \"%ProgramFiles%\\Tailscale\\tailscale.exe\" serve status, copy the complete https://...ts.net line into Safari with Tailscale connected, confirm the Rev2 navigation, and test the opening plus automatic 24:15 cues."
+  "controlled_interpretation": "The correct private Rev2 origin genuinely failed because the deployed Rev9 package still dereferenced live third-party narration. REV10 removes that dependency and has passed exact-head repository, browser, local-Whisper, audio-smoke, and Windows live-root deployment gates. The immediate remaining work is installation on REOS and one physical-iPhone opening-plus-24:15 cue check; no REV10 physical PASS is claimed yet.",
+  "next_controlled_action": "Rerun RUN_QCTP_AUDIO_PATCH_UPDATE.cmd from the already extracted REV3 folder, require the REV10 heading and both PASS markers, then reopen https://reos.tail6ed282.ts.net/ and verify the opening plus automatic 24:15 cues."
 }
