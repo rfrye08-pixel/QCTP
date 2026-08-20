@@ -29,6 +29,60 @@ test("Day 1 presents the exact 25:00 sequence and early exit earns nothing", asy
   expect(foundation[0]?.completion["1"]?.morning ?? false).toBe(false);
 });
 
+test("Day 1 narration is a checksum-manifested same-origin MP3 pack", async ({
+  page,
+}) => {
+  const thirdPartyAudioRequests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("resource2.heygen.ai")) {
+      thirdPartyAudioRequests.push(request.url());
+    }
+  });
+
+  await openQctp(page, "#/practice");
+
+  await expect(page.getByTestId("day1-lesson-audio")).toHaveAttribute(
+    "src",
+    /audio\/day1\/lesson\.mp3$/,
+  );
+
+  const manifest = await page.evaluate(async () => {
+    const response = await fetch("audio/day1/manifest.json", {
+      cache: "no-store",
+    });
+    return {
+      status: response.status,
+      body: (await response.json()) as {
+        schema: string;
+        fileCount: number;
+        totalBytes: number;
+        mediaType: string;
+        files: Array<{
+          relativePath: string;
+          mediaType: string;
+          sha256: string;
+        }>;
+      },
+    };
+  });
+
+  expect(manifest.status).toBe(200);
+  expect(manifest.body.schema).toBe("qctp-day1-local-audio-pack-v2");
+  expect(manifest.body.fileCount).toBe(23);
+  expect(manifest.body.totalBytes).toBe(13_340_411);
+  expect(manifest.body.mediaType).toBe("audio/mpeg");
+  expect(manifest.body.files).toHaveLength(23);
+  expect(
+    manifest.body.files.every(
+      (file) =>
+        file.relativePath.endsWith(".mp3") &&
+        file.mediaType === "audio/mpeg" &&
+        /^[a-f0-9]{64}$/.test(file.sha256),
+    ),
+  ).toBe(true);
+  expect(thirdPartyAudioRequests).toEqual([]);
+});
+
 test("shortened test mode completes its timer but cannot earn Day 1 credit", async ({
   page,
 }, testInfo) => {
