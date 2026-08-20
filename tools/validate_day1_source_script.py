@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Controlled action: QCTP-D1-SOURCE-A02
 import hashlib, json, pathlib, re, sys
 
 root = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else '.')
