@@ -21,7 +21,7 @@ async function patchE2eCopy() {
   content = replaceIfPresent(
     content,
     'page.getByText("Verification mode can never earn morning completion.")',
-    'page.getByText(/Verification mode .* can never earn morning completion\\./)',
+    "page.getByText(/Verification mode .* can never earn morning completion\\./)",
   );
   await write(path, content);
 }
