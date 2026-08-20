@@ -1,0 +1,5 @@
+QCTP-D1-AUDIO-A03
+triggered_at=2026-08-20T18:30:00-05:00
+reason=HeyGen free TTS minutes exhausted after four locked cues; reroute to local zero-cost voice cloning
+locked_script_sha256=2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555
+release_authority=ZERO_RELEASE
