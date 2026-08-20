@@ -1,43 +1,54 @@
 {
-  "schema": "qctp-current-state-v13",
+  "schema": "qctp-current-state-v14",
   "project": "QCTP",
-  "updated_at": "2026-08-20T09:30:00-05:00",
+  "updated_at": "2026-08-20T11:15:00-05:00",
   "status": "ACTIVE",
-  "supersedes": "qctp-current-state-v12",
+  "supersedes": "qctp-current-state-v13",
   "product_identity": {
     "name": "QCTP",
     "expanded_name": "Quantum Consciousness Training Platform",
     "foundation_program": "112-day Quantum Consciousness Training Program",
-    "scope": "Exact state training, Breath Director, guided practice, source tracks, Studio, Lab, voice capture, local transcription, Codex, Mirror, Insights, experiments, and daily integration.",
-    "experience_goal": "Serious, precise, exploratory, user-friendly, visually compelling, and capability-driven rather than timer- or streak-driven."
+    "scope": "Source-grounded lessons and practices, exact state training, Breath Director, guided practice, source tracks, Studio, Lab, voice capture, local transcription, Codex, Mirror, Insights, experiments, and daily integration.",
+    "experience_goal": "Teach the selected course teachers' and practitioner lineages' actual methods, improve their clarity and delivery without silently replacing them, and make the complete system serious, precise, exploratory, user-friendly, and capability-driven."
   },
   "authority_refs": {
-    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV6.json",
+    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV7.json",
+    "source_fidelity_standard": "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
+    "day1_source_reconstruction_handoff": "QCTP_DAY1_SOURCE_BASELINE_RECONSTRUCTION_HANDOFF_REV0_2026-08-20.md",
+    "product_architecture": "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
     "protocol_hardening": "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
     "state_atlas": "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md",
     "meditation_audio_qa": "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
     "ux_engagement": "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+    "breathwork_system": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
     "thomas_campbell_track": "QCTP_THOMAS_CAMPBELL_INTEGRATION_REV0_2026-08-18.md",
     "robert_edward_grant_track": "QCTP_ROBERT_EDWARD_GRANT_INTEGRATION_REV0_2026-08-17.md",
-    "breathwork_system": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
     "voice_capture_spec": "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
     "zero_recurring_cost_runtime": "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
     "local_ai_mirror_requirement": "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
     "day1_natural_session_guidance_audit": "QCTP_DAY1_FIRST_NATURAL_SESSION_GUIDANCE_AUDIT_REV0_2026-08-20.md",
-    "day1_guidance_rev1": "QCTP_DAY1_GUIDANCE_BREATH_AND_SOUND_PROTOCOL_REV1_2026-08-20.md",
-    "day1_guidance_rev1_handoff": "QCTP_DAY1_GUIDANCE_REV1_IMPLEMENTATION_HANDOFF_2026-08-20.md",
-    "private_correct_origin_failure_and_rev10_recovery": "QCTP_DAY1_PRIVATE_IPHONE_EXTERNAL_AUDIO_FAILURE_AND_SAME_ORIGIN_REV10_RECOVERY_REV0_2026-08-19.md",
+    "held_day1_guidance_design": "QCTP_DAY1_GUIDANCE_BREATH_AND_SOUND_PROTOCOL_REV1_2026-08-20.md",
+    "held_day1_guidance_handoff": "QCTP_DAY1_GUIDANCE_REV1_IMPLEMENTATION_HANDOFF_2026-08-20.md",
     "candidate_branch_state": "QCTP_REV2_CODEX_BRANCH_STATE.json on qctp-platform-rev2-codex",
     "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2"
   },
-  "superseded_for_day1_guidance_audio": [
-    {
-      "ref": "QCTP_DAY1_HARDENING_DELTA_AND_CANDIDATE_SCRIPT_REV0_2026-08-18.md",
-      "replacement": "QCTP_DAY1_GUIDANCE_BREATH_AND_SOUND_PROTOCOL_REV1_2026-08-20.md",
-      "scope": "Day 1 spoken guidance, sound-bed architecture, anti-startle behavior, breath-coaching script, and physical content acceptance",
-      "preserved": "25-minute phase allocation, target capabilities, capability-credit separation, local audio requirement, and valid prior analysis"
-    }
-  ],
+  "source_fidelity_control": {
+    "status": "CONTROLLED",
+    "user_correction": "The people and source traditions in the course provide the meditation-guidance baseline. QCTP builds a better implementation from that baseline.",
+    "production_loop": "PRIMARY SOURCE METHOD -> SOURCE-FAITHFUL BASELINE -> QCTP ENHANCEMENT DELTA -> AUDIO/APP IMPLEMENTATION -> VERIFICATION -> USER ACCEPTANCE",
+    "practice_classes": [
+      "SOURCE_FAITHFUL",
+      "SOURCE_ENHANCED",
+      "QCTP_SYNTHESIS",
+      "QCTP_ORIGINAL"
+    ],
+    "segment_level_crosswalk_required": true,
+    "source_specific_breath_preserved": true,
+    "source_specific_terminology_preserved": true,
+    "unresolved_source_segments_renderable": false,
+    "qctp_support_must_be_labeled": true,
+    "paid_script_copying_allowed": false
+  },
   "controlled_training_model": {
     "loop": "PREPARE -> INDUCE -> RECOGNIZE -> STABILIZE -> USE -> EXIT -> RECORD -> ADAPT",
     "reliability_levels": [
@@ -49,7 +60,7 @@
     ],
     "timer_completion_equals_state_attainment": false,
     "technical_audio_continuity_equals_content_acceptance": false,
-    "source_terms_preserved": true,
+    "generic_qctp_method_may_replace_source_method": false,
     "raw_observation_separate_from_interpretation": true,
     "silent_failure_allowed": false
   },
@@ -68,7 +79,7 @@
     "last_proven_installed_candidate": "1d437232cc4ff696ac495f2253347a485c231f2e",
     "latest_user_session_candidate_identity": "NOT_REATTESTED",
     "latest_user_session_script_family": "PROTECTED_REV1_1_4_DAY1_GUIDANCE",
-    "guidance_rev1_installed": false
+    "source_reconstructed_day1_installed": false
   },
   "rev2_candidate": {
     "branch": "qctp-platform-rev2-codex",
@@ -78,10 +89,21 @@
     "pull_request_state": "OPEN_DRAFT_UNMERGED",
     "implementation_disposition": "NON_BREATH_PLATFORM_COMPLETE_CANDIDATE",
     "audio_delivery_disposition": "SAME_ORIGIN_TECHNICAL_FOUNDATION_PRESERVED",
-    "guidance_disposition": "CURRENT_DAY1_GUIDANCE_REJECTED_REV1_DESIGN_COMPLETE_IMPLEMENTATION_OPEN",
+    "guidance_disposition": "CURRENT_GUIDANCE_REJECTED_SOURCE_BASELINE_RECONSTRUCTION_REQUIRED",
     "production_deployed": false,
     "release_authority": "ZERO_RELEASE"
   },
+  "course_source_tracks": [
+    "Theresa Bullard",
+    "Joe Dispenza",
+    "HeartMath",
+    "Lynne McTaggart",
+    "Monroe Institute / William Buhlman",
+    "Thomas Campbell",
+    "Controlled Remote Viewing sources",
+    "psionics practitioner methods",
+    "Robert Edward Grant"
+  ],
   "day1_first_natural_session": {
     "date": "2026-08-20",
     "evidence_class": "USER_REPORTED_FULL_NATURAL_DURATION_PHYSICAL_IPHONE_EXPERIENCE",
@@ -91,7 +113,7 @@
     "breath_coaching": "FAIL",
     "cue_entry_startle": "FAIL",
     "guidance_quality": "FAIL",
-    "binaural_or_continuous_support_requested": true,
+    "continuous_support_requested": true,
     "state_access_credit": "NOT_PROMOTED_FROM_COMPLETION",
     "content_release_effect": "CURRENT_DAY1_GUIDANCE_REJECTED"
   },
@@ -109,65 +131,78 @@
     "cues_over_145_wpm": 10,
     "coherence_entry_wpm": 176,
     "return_wpm": 203,
-    "integrated_loudness_range_lufs": "-20.7_TO_-17.4",
-    "true_peak_range_dbfs": "-1.9_TO_-0.5",
     "continuous_support_bed": false,
     "active_non_test_precue_marker": false,
-    "disposition": "MEASURED_RESULTS_SUPPORT_USER_STARTLE_AND_PACING_REPORT"
+    "disposition": "VALID_ENGINEERING_AND_USER_EXPERIENCE_EVIDENCE"
   },
-  "day1_guidance_rev1": {
-    "status": "CONTROLLED_DESIGN_COMPLETE_IMPLEMENTATION_OPEN",
+  "day1_source_baseline": {
+    "status": "OPEN",
+    "action_id": "QCTP-D1-SOURCE-A01",
+    "handoff_ref": "QCTP_DAY1_SOURCE_BASELINE_RECONSTRUCTION_HANDOFF_REV0_2026-08-20.md",
+    "initial_course_anchors": [
+      "https://youtu.be/4f9GOGTaXuc",
+      "https://youtu.be/-qt2FYdP_EA"
+    ],
+    "exact_teacher_segment_map": "NOT_YET_CONTROLLED",
+    "primary_source_evidence_packet": "OPEN",
+    "segment_crosswalk": "OPEN",
+    "source_faithful_baseline": "OPEN",
+    "qctp_enhancement_delta": "OPEN",
+    "source_labeled_script": "OPEN",
+    "voice_rendering_authorized": false
+  },
+  "prior_day1_guidance_rev1": {
+    "status": "HELD_SOURCE_FIDELITY_CORRECTION_REQUIRED",
     "protocol_ref": "QCTP_DAY1_GUIDANCE_BREATH_AND_SOUND_PROTOCOL_REV1_2026-08-20.md",
     "handoff_ref": "QCTP_DAY1_GUIDANCE_REV1_IMPLEMENTATION_HANDOFF_2026-08-20.md",
-    "phase_allocation_preserved": true,
-    "selected_breath_protocol": "QCTP-B1_4_IN_6_OUT_NO_HOLD",
-    "teach_first": true,
-    "continuous_voice_stem": true,
-    "continuous_support_bed": true,
-    "support_modes": [
-      "OFF",
-      "AMBIENT",
-      "BINAURAL_LOW",
-      "BINAURAL_MEDIUM"
+    "reason": "It moved from the guidance audit to a QCTP-authored meditation without first controlling the teacher/source baseline for every segment.",
+    "preserved_engineering": [
+      "continuous audio architecture",
+      "anti-startle pre-cue marker and fades",
+      "slower narration and mastering limits",
+      "Ambient/Binaural support options",
+      "local/offline packaging",
+      "readiness and fail-closed behavior",
+      "improved return timing",
+      "voice-first debrief and adaptation",
+      "capability credit separate from timer completion"
     ],
-    "default_ryan_candidate": "BINAURAL_LOW",
-    "soft_precue_marker": true,
-    "bed_ducking_and_voice_fades": true,
-    "phase_specific_wpm_limits": true,
-    "return_begins_by": "24:20",
-    "adaptive_post_session_feedback": true,
-    "continuous_media_timer": true,
-    "live_third_party_audio_required": false,
-    "physical_acceptance": "OPEN"
+    "held_content": [
+      "exact spoken sequence",
+      "QCTP-B1 as the assumed Day 1 baseline breath method",
+      "fixed binaural trajectory",
+      "source attribution",
+      "voice and sound-bed rendering"
+    ]
   },
   "open_implementation_packages": [
-    "Day 1 Guidance Rev1 locked script, Chill Brian render, support-bed generation, continuous player, and physical acceptance",
+    "Day 1 primary-source evidence packet and source-practice crosswalk",
+    "Day 1 source-faithful baseline and explicit QCTP enhancement delta",
+    "Source-labeled Day 1 script, voice render, support-bed production, continuous player, and physical acceptance",
     "Breath Director and seven-session Breath Foundations",
     "Protocol-hardening runtime schemas and State Map",
-    "Thomas Campbell source-track MVP",
+    "Source-track MVPs and crosswalks",
     "User-experience exploration upgrade",
-    "Foundation Days 2-112 authored under the revised production method"
+    "Foundation Days 2-112 authored under the source-first production method"
   ],
   "release_acceptance_holds": [
-    "Lock and render Day 1 Guidance Rev1 spoken copy",
-    "Generate deterministic Ambient and Binaural support beds plus breath rail",
-    "Integrate continuous voice/support stems and fallback composite mix",
-    "Complete automated content, timing, loudness, offline, drift, and fail-closed regression",
-    "Complete five-minute physical-iPhone guidance-quality acceptance without another full-duration test",
-    "Complete natural full-duration Guidance Rev1 acceptance after the five-minute gate passes",
-    "Complete remaining physical-iPhone microphone, lifecycle, migration, and export checks",
+    "Recover and verify the original Day 1 teacher/source map",
+    "Complete the segment-level source-practice crosswalk",
+    "Review the source-faithful baseline and enhancement delta",
+    "Do not render new voice or support audio while any source segment is unresolved",
+    "Complete five-minute and natural-duration physical acceptance after source-grounded implementation",
+    "Complete remaining physical-iPhone lifecycle, migration, and export checks",
     "Do not merge or release Rev2 without explicit authority"
   ],
   "release_authority": {
     "released_rev1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
     "rev2_candidate": "ZERO_RELEASE",
     "current_day1_guidance": "CONTENT_ACCEPTANCE_FAIL",
-    "day1_guidance_rev1": "DESIGN_AUTHORIZED_IMPLEMENTATION_AND_DEVICE_TEST_ONLY",
-    "binaural_support_profile": "ENGINEERING_CANDIDATE_A_B_ACCEPTANCE_REQUIRED",
-    "breathwork": "ZERO_RELEASE",
-    "hardening_package": "ZERO_RELEASE",
+    "prior_day1_guidance_rev1": "HELD_NO_RENDER",
+    "source_first_day1_reconstruction": "RESEARCH_AND_CONTENT_DEVELOPMENT_AUTHORIZED",
+    "audio_and_app_enhancement_layer": "DESIGN_PRESERVED_IMPLEMENTATION_HELD_PENDING_SOURCE_CROSSWALK",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "controlled_interpretation": "Ryan's first complete natural Day 1 run proves the current app can carry a session through the full duration, but it rejects the guidance as a training instrument. Measured audio confirms long digital silences, abrupt unannounced voice entries, fast induction and return cues, no exact breath coaching, and inadequate first-session guidance density. Day 1 Guidance Rev1 now controls the corrective design: exact QCTP-B1 coaching, Teach-first density, continuous Ambient/Binaural sound support, soft predictive cue markers, slower mastered narration, continuous media stems, a complete return, and adaptive debrief.",
-  "next_controlled_action": "Execute QCTP-D1-G1-A01: lock the spoken Rev1 script, render Chill Brian cues and continuous voice stems, generate Ambient/Binaural support beds, integrate the five-minute acceptance build, and close automated regression before asking Ryan to test again."
+  "controlled_interpretation": "Ryan corrected the authority hierarchy. The course teachers' and practitioner lineages' meditation guidance is the baseline; QCTP shall preserve the actual method and build a better implementation around it. The prior audit remains valid and its audio/UX engineering improvements are preserved, but the QCTP-authored Day 1 script, assumed breath method, and fixed binaural profile are held until a complete source evidence packet and segment-level crosswalk establish what the source practitioners actually teach.",
+  "next_controlled_action": "Execute QCTP-D1-SOURCE-A01 by producing the Day 1 primary-source evidence packet and complete segment-level source-practice crosswalk before any new voice or sound-bed rendering."
 }
