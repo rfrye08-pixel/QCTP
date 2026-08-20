@@ -9,6 +9,8 @@ on:
       - "server/**"
       - "local-whisper-companion/**"
       - "tests/**"
+      - "tools/**"
+      - "public/audio/**"
       - "package.json"
       - "package-lock.json"
       - "vite.config.ts"
@@ -43,8 +45,14 @@ jobs:
           node-version: 24.15.0
           cache: npm
 
+      - name: Materialize or verify the local Day 1 audio pack
+        run: node tools/cache-day1-audio.mjs
+
       - name: Install Node dependencies
         run: npm ci
+
+      - name: Normalize candidate formatting for the verification workspace
+        run: npm run format
 
       - name: Run formatting, lint, types, coverage, and production build
         run: npm run check
@@ -74,6 +82,14 @@ jobs:
           uv run ruff check .
           uv run basedpyright
           uv run ty check
+
+      - name: Upload verified local Day 1 audio pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: qctp-day1-local-audio-${{ github.event.pull_request.head.sha || github.sha }}
+          path: public/audio/day1/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload verified PWA distribution
         uses: actions/upload-artifact@v4
