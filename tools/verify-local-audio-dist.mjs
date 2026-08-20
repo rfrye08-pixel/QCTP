@@ -1,10 +1,5 @@
 import { createHash } from "node:crypto";
-import {
-  readdir,
-  readFile,
-  stat,
-  writeFile,
-} from "node:fs/promises";
+import { readdir, readFile, stat, writeFile } from "node:fs/promises";
 import { basename, extname, join, resolve } from "node:path";
 import process from "node:process";
 
@@ -93,18 +88,27 @@ async function validatePack(audioRoot, manifest, label) {
         record.relativePath.endsWith(".mp3"),
       `${label}: non-MP3 manifest path for ${record.id}.`,
     );
-    assert(record.mediaType === "audio/mpeg", `${label}: wrong record media type.`);
+    assert(
+      record.mediaType === "audio/mpeg",
+      `${label}: wrong record media type.`,
+    );
     const path = join(audioRoot, record.relativePath);
     const body = await readFile(path);
     assert(isMp3(body), `${label}: ${record.relativePath} is not MP3 data.`);
-    assert(body.length === record.bytes, `${label}: byte mismatch for ${record.relativePath}.`);
+    assert(
+      body.length === record.bytes,
+      `${label}: byte mismatch for ${record.relativePath}.`,
+    );
     assert(
       sha256(body) === record.sha256,
       `${label}: checksum mismatch for ${record.relativePath}.`,
     );
     totalBytes += body.length;
   }
-  assert(totalBytes === expectedTotalBytes, `${label}: accumulated byte total mismatch.`);
+  assert(
+    totalBytes === expectedTotalBytes,
+    `${label}: accumulated byte total mismatch.`,
+  );
 }
 
 function countVitest(report) {
@@ -137,7 +141,8 @@ async function main() {
   validateManifest(sourceManifest, "source pack");
   validateManifest(builtManifest, "built pack");
   assert(
-    JSON.stringify(sourceManifest.files) === JSON.stringify(builtManifest.files),
+    JSON.stringify(sourceManifest.files) ===
+      JSON.stringify(builtManifest.files),
     "Built manifest does not match the controlled source manifest.",
   );
   await validatePack(publicRoot, sourceManifest, "source pack");
@@ -155,13 +160,19 @@ async function main() {
     practiceSource.includes("src={DAY1_LOCAL_AUDIO.lesson}"),
     "Lesson runtime is not using the local lesson asset.",
   );
-  assert(!practiceSource.includes("cue.audioUrl"), "Practice runtime still uses remote cue URLs.");
+  assert(
+    !practiceSource.includes("cue.audioUrl"),
+    "Practice runtime still uses remote cue URLs.",
+  );
   assert(
     !practiceSource.includes("CHILL_BRIAN_AUDIO.lesson"),
     "Lesson runtime still uses the remote lesson URL.",
   );
 
-  const serverSource = await readFile(resolve(root, "server", "index.ts"), "utf8");
+  const serverSource = await readFile(
+    resolve(root, "server", "index.ts"),
+    "utf8",
+  );
   assert(
     !serverSource.includes("resource2.heygen.ai"),
     "Runtime CSP still authorizes the third-party audio host.",
@@ -186,17 +197,34 @@ async function main() {
     "audio/day1/cue-1490.mp3",
     "audio/day1/manifest.json",
   ]) {
-    assert(serviceWorker.includes(required), `Service worker does not precache ${required}.`);
+    assert(
+      serviceWorker.includes(required),
+      `Service worker does not precache ${required}.`,
+    );
   }
 
   const vitestReport = await readJson(resolve(root, "vitest-results.json"));
-  const playwrightReport = await readJson(resolve(root, "playwright-results.json"));
+  const playwrightReport = await readJson(
+    resolve(root, "playwright-results.json"),
+  );
   const vitest = countVitest(vitestReport);
   const playwright = countPlaywright(playwrightReport);
-  assert(vitest.failedTests === 0, "Machine-readable Vitest report contains failures.");
-  assert(vitest.tests >= 236, `Expected at least 236 unit tests; found ${vitest.tests}.`);
-  assert(playwright.failed === 0, "Machine-readable Playwright report contains failures.");
-  assert(playwright.passed >= 14, `Expected at least 14 browser passes; found ${playwright.passed}.`);
+  assert(
+    vitest.failedTests === 0,
+    "Machine-readable Vitest report contains failures.",
+  );
+  assert(
+    vitest.tests >= 236,
+    `Expected at least 236 unit tests; found ${vitest.tests}.`,
+  );
+  assert(
+    playwright.failed === 0,
+    "Machine-readable Playwright report contains failures.",
+  );
+  assert(
+    playwright.passed >= 14,
+    `Expected at least 14 browser passes; found ${playwright.passed}.`,
+  );
 
   if (!(await exists(evidencePath))) {
     const evidence = {
@@ -231,7 +259,11 @@ async function main() {
       next_controlled_action:
         "Pass the Windows updater simulation, then deploy this candidate to the PX13 and verify the opening plus automatic 24:15 cues on the physical iPhone.",
     };
-    await writeFile(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
+    await writeFile(
+      evidencePath,
+      `${JSON.stringify(evidence, null, 2)}\n`,
+      "utf8",
+    );
   }
 
   console.log(
