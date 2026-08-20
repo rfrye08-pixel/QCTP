@@ -1,37 +1,35 @@
 {
-  "schema": "qctp-current-state-v15",
+  "schema": "qctp-current-state-v16",
   "project": "QCTP",
-  "updated_at": "2026-08-20T17:10:00-05:00",
+  "updated_at": "2026-08-20T18:05:00-05:00",
   "status": "ACTIVE",
-  "supersedes": "qctp-current-state-v14",
+  "supersedes": "qctp-current-state-v15",
   "product_identity": {
     "name": "QCTP",
     "expanded_name": "Quantum Consciousness Training Platform",
     "foundation_program": "112-day Quantum Consciousness Training Program",
     "scope": "Source-grounded lessons and practices, exact state training, Breath Director, guided practice, source tracks, Studio, Lab, voice capture, local transcription, Codex, Mirror, Insights, experiments, and daily integration.",
-    "experience_goal": "Teach the selected teachers' and practitioner lineages' actual methods, improve clarity and delivery without silently replacing them, and make the complete system serious, precise, exploratory, user-friendly, and capability-driven."
+    "experience_goal": "Teach selected teachers' and practitioner lineages' actual methods, improve clarity and delivery without silently replacing them, and make the complete system serious, precise, exploratory, user-friendly, and capability-driven."
   },
   "authority_refs": {
-    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV8.json",
+    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV9.json",
     "source_fidelity_standard": "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
-    "day1_source_reconstruction_handoff": "QCTP_DAY1_SOURCE_BASELINE_RECONSTRUCTION_HANDOFF_REV0_2026-08-20.md",
     "day1_source_evidence_packet": "QCTP_DAY1_PRIMARY_SOURCE_EVIDENCE_PACKET_REV0.md",
     "day1_source_crosswalk": "QCTP_DAY1_SOURCE_PRACTICE_CROSSWALK_REV0.csv",
-    "day1_source_fidelity_review": "QCTP_DAY1_SOURCE_FIDELITY_REVIEW_REV0.md",
+    "day1_source_map_review": "QCTP_DAY1_SOURCE_FIDELITY_REVIEW_REV0.md",
+    "day1_source_faithful_baseline": "QCTP_DAY1_SOURCE_FAITHFUL_BASELINE_REV0.md",
+    "day1_qctp_enhancement_delta": "QCTP_DAY1_QCTP_ENHANCEMENT_DELTA_REV0.md",
+    "day1_source_labeled_script": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0.json and PART1-PART5",
+    "day1_independent_script_review": "QCTP_DAY1_INDEPENDENT_SOURCE_FIDELITY_REVIEW_REV0.md",
+    "day1_script_machine_verification": "QCTP_DAY1_SOURCE_SCRIPT_MACHINE_VERIFICATION_REV0.json",
+    "day1_script_lock": "QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json",
+    "day1_audio_implementation_handoff": "QCTP_DAY1_SOURCE_GROUNDED_AUDIO_IMPLEMENTATION_HANDOFF_REV0_2026-08-20.md",
     "product_architecture": "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
     "protocol_hardening": "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
     "state_atlas": "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md",
     "meditation_audio_qa": "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
     "ux_engagement": "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
     "breathwork_system": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
-    "thomas_campbell_track": "QCTP_THOMAS_CAMPBELL_INTEGRATION_REV0_2026-08-18.md",
-    "robert_edward_grant_track": "QCTP_ROBERT_EDWARD_GRANT_INTEGRATION_REV0_2026-08-17.md",
-    "voice_capture_spec": "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
-    "zero_recurring_cost_runtime": "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
-    "local_ai_mirror_requirement": "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
-    "day1_natural_session_guidance_audit": "QCTP_DAY1_FIRST_NATURAL_SESSION_GUIDANCE_AUDIT_REV0_2026-08-20.md",
-    "held_day1_guidance_design": "QCTP_DAY1_GUIDANCE_BREATH_AND_SOUND_PROTOCOL_REV1_2026-08-20.md",
-    "held_day1_guidance_handoff": "QCTP_DAY1_GUIDANCE_REV1_IMPLEMENTATION_HANDOFF_2026-08-20.md",
     "candidate_branch_state": "QCTP_REV2_CODEX_BRANCH_STATE.json on qctp-platform-rev2-codex",
     "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2"
   },
@@ -78,21 +76,19 @@
     "origin": "https://reos.tail6ed282.ts.net/",
     "transport": "Tailscale Serve private HTTPS",
     "loopback_gateway": "http://127.0.0.1:8787",
-    "last_proven_installed_candidate": "1d437232cc4ff696ac495f2253347a485c231f2e",
-    "latest_user_session_candidate_identity": "NOT_REATTESTED",
     "latest_user_session_script_family": "PROTECTED_REV1_1_4_DAY1_GUIDANCE",
-    "source_reconstructed_day1_installed": false
+    "source_grounded_day1_installed": false,
+    "content_acceptance": "FAIL_CURRENT_GUIDANCE"
   },
   "rev2_candidate": {
     "branch": "qctp-platform-rev2-codex",
-    "observed_head_before_source_trigger": "b87c402c4780ec8c21e24c877d7c04007985b8fb",
-    "source_research_trigger_commit": "9c32d7df567d2eea6f9ed2181604c997cfd92cde",
+    "observed_head_sha": "3420743b0ad9d64d4961912c3d7624cbec24b6ed",
     "version": "2.0.0-alpha.1",
     "pull_request": 2,
     "pull_request_state": "OPEN_DRAFT_UNMERGED",
     "implementation_disposition": "NON_BREATH_PLATFORM_COMPLETE_CANDIDATE",
     "audio_delivery_disposition": "SAME_ORIGIN_TECHNICAL_FOUNDATION_PRESERVED",
-    "guidance_disposition": "SOURCE_MAP_COMPLETE_SOURCE_FAITHFUL_SCRIPT_OPEN",
+    "guidance_disposition": "SOURCE_GROUNDED_SCRIPT_LOCKED_TEST_RENDER_AUTHORIZED",
     "production_deployed": false,
     "release_authority": "ZERO_RELEASE"
   },
@@ -113,61 +109,70 @@
     "action_id": "QCTP-D1-SOURCE-A01",
     "status": "COMPLETE",
     "result": "PRIMARY_SOURCE_EVIDENCE_PACKET_AND_COMPLETE_SEGMENT_CROSSWALK_DELIVERED",
-    "source_research": {
-      "workflow_file": ".github/workflows/qctp-day1-source-research.yml",
-      "workflow_run_id": 32421663051,
-      "job_id": 96594801940,
-      "job_conclusion": "SUCCESS",
-      "artifact_id": 9425906327,
-      "artifact_zip_sha256": "fb17448afd46858e9aae0dbb78af22c6a443e1cebfa4cbf897d49f36337e3e58",
-      "theresa_video_id": "4f9GOGTaXuc",
-      "theresa_transcript_segments": 2120,
-      "theresa_transcript_sha256": "cd6d7ef3bf75cec7b78aa59696c248cc811578424b55102d61a1b2262ed0d70e",
-      "mossbridge_video_id": "-qt2FYdP_EA",
-      "mossbridge_transcript_segments": 5388,
-      "mossbridge_transcript_sha256": "448620af35d88134930352d88372a9daeb06f73edc00e1695c456e31cd22de94"
-    },
     "source_map": {
-      "00_00_to_03_00": "Bullard contraction-awareness operation plus QCTP baseline scaffolding",
+      "00_00_to_03_00": "Bullard contraction awareness plus QCTP baseline support",
       "03_00_to_08_00": "HeartMath Quick Coherence",
-      "08_00_to_23_00": "Dr. Joe Dispenza body-area-to-broad-space induction",
-      "23_00_to_25_00": "QCTP pure observation and return scaffolding",
-      "mossbridge_anchor": "DEFERRED_TO_LATER_EMBODIED_PSI_REMOTE_VIEWING_PRECOGNITION_OBE_TRACKS"
+      "08_00_to_23_00": "Dispenza body-area-to-broad-space induction",
+      "23_00_to_25_00": "QCTP pure observation and return",
+      "mossbridge": "DEFERRED_TO_LATER_PSI_REMOTE_VIEWING_PRECOGNITION_OBE_TRACKS"
     },
-    "crosswalk_validation": {
-      "timed_start_seconds": 0,
-      "timed_end_seconds": 1500,
-      "timed_duration_seconds": 1500,
-      "timed_segments": 11,
-      "gaps": 0,
-      "overlaps": 0,
-      "unresolved_timed_source_rows": 0
-    },
-    "controlled_changes": [
-      "QCTP-B1 four-in/six-out removed as Day 1 baseline",
-      "HeartMath five-in/five-out-or-comfortable established as Day 1 coherence baseline",
-      "one-to-ten breath counting deferred to Day 2 Breath-Count Precision",
-      "Bullard paid Gap methods deferred to Week 2 and not copied",
-      "Mossbridge psi/OBE/remote-viewing content deferred to later tracks",
-      "existing 1500-second duration and major phase boundaries preserved"
-    ],
-    "verification": "PASS_FOR_SOURCE_MAP_CLOSURE_NOT_RENDER_AUTHORITY"
+    "verification": "PASS"
   },
-  "day1_source_baseline": {
-    "status": "SOURCE_MAP_COMPLETE_BASELINE_SCRIPT_OPEN",
-    "primary_source_evidence_packet": "COMPLETE",
-    "segment_crosswalk": "COMPLETE",
-    "source_fidelity_review": "PASS_FOR_SOURCE_MAP_CLOSURE",
-    "source_faithful_baseline": "OPEN",
-    "qctp_enhancement_delta": "OPEN",
-    "source_labeled_script": "OPEN",
-    "independent_script_fidelity_review": "OPEN",
-    "voice_rendering_authorized": false
+  "day1_source_action_a02": {
+    "action_id": "QCTP-D1-SOURCE-A02",
+    "status": "COMPLETE",
+    "result": "SOURCE_FAITHFUL_BASELINE_ENHANCEMENT_DELTA_SOURCE_LABELED_SCRIPT_AND_SCRIPT_LOCK_DELIVERED",
+    "source_faithful_baseline": "COMPLETE",
+    "qctp_enhancement_delta": "COMPLETE",
+    "script": {
+      "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+      "script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+      "duration_seconds": 1500,
+      "cue_parts": 5,
+      "cue_count": 35,
+      "total_word_count": 774,
+      "guidance_tier": "TEACH",
+      "major_phase_boundaries_preserved": true,
+      "continuous_support_bed_required": true,
+      "pre_cue_marker_required": true,
+      "binaural_support": "OPTIONAL_QCTP_SUPPORT_PROFILE_NOT_LOCKED",
+      "advanced_state_claims_authorized": false
+    },
+    "source_contract": {
+      "bullard": "contraction awareness, feeling/release, constructive quality",
+      "heartmath": "heart-area attention, five seconds in/five seconds out or comfortable, appreciation/care/calm/ease, no hold",
+      "dispenza": "body-area-in-space to whole-body and room-scale spatial attention",
+      "qctp": "baseline, source transitions, attention recovery, pure observation, return, debrief",
+      "mossbridge": "DEFERRED"
+    },
+    "verification": {
+      "independent_source_fidelity_review": "PASS",
+      "deterministic_machine_gate": "PASS",
+      "workflow_run_id": 32425246503,
+      "job_id": 96605742534,
+      "artifact_id": 9427163011,
+      "artifact_zip_sha256": "e900187484162946e167e1daacadbba0605486b50d9f9654e7058ec2547d1c08",
+      "script_and_cue_hashes": "PASS",
+      "timing_and_non_overlap": "PASS",
+      "source_ownership": "PASS",
+      "legacy_four_six_absent": "PASS",
+      "day1_breath_count_absent": "PASS",
+      "external_media_reference_absent": "PASS",
+      "unsupported_advanced_claims_absent": "PASS"
+    },
+    "script_lock": "PASS",
+    "render_authority": "TEST_RENDER_AUTHORIZED",
+    "release_authority": "ZERO_RELEASE"
+  },
+  "active_action": {
+    "action_id": "QCTP-D1-AUDIO-A03",
+    "status": "NOMINATED_EXECUTION_AUTHORIZED",
+    "objective": "Render the locked Chill Brian script, generate continuous Ambient/Binaural/Minimal support candidates and HeartMath breath rail, integrate the continuous player and composite fallback, close automated gates, and deliver a five-minute physical iPhone acceptance candidate.",
+    "handoff_ref": "QCTP_DAY1_SOURCE_GROUNDED_AUDIO_IMPLEMENTATION_HANDOFF_REV0_2026-08-20.md",
+    "user_action_required_now": false
   },
   "prior_day1_guidance_rev1": {
-    "status": "HELD_SOURCE_FIDELITY_CORRECTION_REQUIRED",
-    "protocol_ref": "QCTP_DAY1_GUIDANCE_BREATH_AND_SOUND_PROTOCOL_REV1_2026-08-20.md",
-    "handoff_ref": "QCTP_DAY1_GUIDANCE_REV1_IMPLEMENTATION_HANDOFF_2026-08-20.md",
+    "status": "SUPERSEDED_FOR_CONTENT_BY_SOURCE_SCRIPT_LOCK",
     "preserved_engineering": [
       "continuous audio architecture",
       "anti-startle pre-cue marker and fades",
@@ -179,17 +184,16 @@
       "voice-first debrief and adaptation",
       "capability credit separate from timer completion"
     ],
-    "held_content": [
-      "prior exact spoken sequence",
-      "QCTP-B1 as assumed Day 1 baseline",
-      "fixed binaural trajectory",
-      "voice and sound-bed rendering"
+    "prohibited_regressions": [
+      "Do not restore QCTP-B1 four-in/six-out as Day 1 source breathing",
+      "Do not restore one-to-ten breath counting to Day 1",
+      "Do not render the prior unsourced script",
+      "Do not attribute QCTP binaural support to a teacher"
     ]
   },
   "open_implementation_packages": [
-    "Day 1 source-faithful baseline and segment-by-segment QCTP enhancement delta",
-    "Day 1 source-labeled script candidate and independent fidelity review",
-    "Day 1 voice render, support-bed production, continuous player, and physical acceptance",
+    "QCTP-D1-AUDIO-A03 source-grounded voice, support audio, continuous player, automated gates, and five-minute acceptance",
+    "Day 1 natural-duration physical acceptance after five-minute pass",
     "Breath Director and seven-session Breath Foundations",
     "Protocol-hardening runtime schemas and State Map",
     "Source-track MVPs and crosswalks",
@@ -197,12 +201,12 @@
     "Foundation Days 2-112 authored under the source-first production method"
   ],
   "release_acceptance_holds": [
-    "Author and review the source-faithful Day 1 spoken baseline",
-    "Separate every QCTP enhancement from source wording",
-    "Generate the source-labeled script candidate",
-    "Obtain independent source-fidelity review before script lock",
-    "Do not render new voice or support audio before script-lock authority",
-    "Complete five-minute and natural-duration physical acceptance after implementation",
+    "Render exact locked script with transcript/audio verification",
+    "Generate and measure continuous Ambient, Binaural Low A, and Minimal Continuity support candidates",
+    "Integrate continuous dual-stem player and composite fallback",
+    "Pass automated acoustic, timing, local/offline, WebKit, synchronization, and fail-closed gates",
+    "Pass five-minute physical iPhone acceptance",
+    "Pass later natural-duration source-grounded Day 1 acceptance",
     "Complete remaining physical-iPhone lifecycle, migration, and export checks",
     "Do not merge or release Rev2 without explicit authority"
   ],
@@ -211,10 +215,11 @@
     "rev2_candidate": "ZERO_RELEASE",
     "current_day1_guidance": "CONTENT_ACCEPTANCE_FAIL",
     "source_map_a01": "COMPLETE",
-    "source_faithful_baseline_a02": "CONTENT_DEVELOPMENT_AUTHORIZED",
-    "voice_and_support_audio": "HELD_NO_RENDER",
+    "source_script_a02": "COMPLETE_SCRIPT_LOCK_PASS",
+    "voice_and_support_audio": "TEST_RENDER_AUTHORIZED",
+    "physical_content_acceptance": "OPEN",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "controlled_interpretation": "QCTP-D1-SOURCE-A01 is complete. Day 1 now has a fully source-labeled 1500-second architecture: Bullard for contraction awareness, HeartMath for coherence, Dispenza for narrow-to-broad spatial attention, and explicit QCTP support for baseline, transition, observation, return, and recording. Mossbridge psi/OBE content is correctly deferred. The source map removes the unsupported four/six breath and Day 1 breath count while preserving the valid continuous-audio and anti-startle engineering. Script writing is next; rendering remains held.",
-  "next_controlled_action": "Execute QCTP-D1-SOURCE-A02: author the source-faithful Day 1 baseline and separate QCTP enhancement delta, generate the source-labeled script candidate, and obtain independent source-fidelity review before script lock."
+  "controlled_interpretation": "QCTP-D1-SOURCE-A02 is complete. Day 1 now has a source-faithful baseline, separately controlled QCTP enhancement delta, exact 35-cue source-labeled script, independent fidelity PASS, machine PASS, and locked script hash. The selected source methods are Bullard contraction awareness, HeartMath Quick Coherence, and Dispenza spatial attention, with explicit QCTP support. Test rendering is authorized; public release and physical content acceptance are not.",
+  "next_controlled_action": "Execute QCTP-D1-AUDIO-A03: render and integrate the locked source-grounded script with continuous anti-startle support, close automated gates, and deliver the five-minute physical iPhone acceptance candidate before asking Ryan to repeat the full 25-minute practice."
 }
