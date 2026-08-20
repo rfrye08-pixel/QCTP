@@ -4,12 +4,13 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import express from "express";
+import express, { type Express } from "express";
 import request from "supertest";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { mountPreviewPwa } from "./index";
 
+const createExpressApp = express as unknown as () => Express;
 let distributionDirectory: string;
 
 beforeEach(async () => {
@@ -33,7 +34,7 @@ afterEach(async () => {
 
 describe("private PWA gateway", () => {
   it("blocks live third-party media and permits same-origin media", async () => {
-    const app = express();
+    const app = createExpressApp();
     mountPreviewPwa(app, distributionDirectory);
 
     const response = await request(app).get("/").expect(200);
@@ -45,7 +46,7 @@ describe("private PWA gateway", () => {
   });
 
   it("serves packaged MP3 cues with the correct media type", async () => {
-    const app = express();
+    const app = createExpressApp();
     mountPreviewPwa(app, distributionDirectory);
 
     const response = await request(app)
