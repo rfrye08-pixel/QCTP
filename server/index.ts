@@ -195,7 +195,7 @@ export const mountPreviewPwa = (
     );
     response.setHeader(
       "Content-Security-Policy",
-      "default-src 'self'; connect-src 'self' https://resource2.heygen.ai; img-src 'self' data: blob:; media-src 'self' blob: https://resource2.heygen.ai; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'",
+      "default-src 'self'; connect-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'",
     );
     next();
   });
