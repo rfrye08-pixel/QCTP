@@ -1,9 +1,9 @@
 {
-  "schema": "qctp-current-state-v12",
+  "schema": "qctp-current-state-v13",
   "project": "QCTP",
-  "updated_at": "2026-08-19T20:56:00-05:00",
+  "updated_at": "2026-08-20T09:30:00-05:00",
   "status": "ACTIVE",
-  "supersedes": "qctp-current-state-v11",
+  "supersedes": "qctp-current-state-v12",
   "product_identity": {
     "name": "QCTP",
     "expanded_name": "Quantum Consciousness Training Platform",
@@ -12,7 +12,7 @@
     "experience_goal": "Serious, precise, exploratory, user-friendly, visually compelling, and capability-driven rather than timer- or streak-driven."
   },
   "authority_refs": {
-    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV5.json",
+    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV6.json",
     "protocol_hardening": "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
     "state_atlas": "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md",
     "meditation_audio_qa": "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
@@ -23,16 +23,21 @@
     "voice_capture_spec": "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
     "zero_recurring_cost_runtime": "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
     "local_ai_mirror_requirement": "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
-    "day1_audio_regression": "QCTP_DAY1_IPHONE_AUDIO_REGRESSION_REV0_2026-08-18.md",
-    "day1_audio_focused_acceptance": "QCTP_DAY1_AUDIO_PHYSICAL_IPHONE_ACCEPTANCE_REV0_2026-08-18.md",
-    "private_rev9_deployment_and_origin_mismatch": "QCTP_PRIVATE_RUNTIME_REV9_PX13_DEPLOYMENT_PASS_AND_WRONG_ORIGIN_REV0_2026-08-19.md",
+    "day1_natural_session_guidance_audit": "QCTP_DAY1_FIRST_NATURAL_SESSION_GUIDANCE_AUDIT_REV0_2026-08-20.md",
+    "day1_guidance_rev1": "QCTP_DAY1_GUIDANCE_BREATH_AND_SOUND_PROTOCOL_REV1_2026-08-20.md",
+    "day1_guidance_rev1_handoff": "QCTP_DAY1_GUIDANCE_REV1_IMPLEMENTATION_HANDOFF_2026-08-20.md",
     "private_correct_origin_failure_and_rev10_recovery": "QCTP_DAY1_PRIVATE_IPHONE_EXTERNAL_AUDIO_FAILURE_AND_SAME_ORIGIN_REV10_RECOVERY_REV0_2026-08-19.md",
-    "candidate_rev10_verification": "tools/QCTP_DAY1_SAME_ORIGIN_AUDIO_REV10_VERIFICATION_REV0_2026-08-19.md on qctp-platform-rev2-codex",
     "candidate_branch_state": "QCTP_REV2_CODEX_BRANCH_STATE.json on qctp-platform-rev2-codex",
-    "candidate_deployment_script": "tools/Deploy-QctpAudioPatch.ps1 REV10 on qctp-platform-rev2-codex",
-    "windows_updater_gate": ".github/workflows/qctp-windows-updater-gate.yml on main",
     "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2"
   },
+  "superseded_for_day1_guidance_audio": [
+    {
+      "ref": "QCTP_DAY1_HARDENING_DELTA_AND_CANDIDATE_SCRIPT_REV0_2026-08-18.md",
+      "replacement": "QCTP_DAY1_GUIDANCE_BREATH_AND_SOUND_PROTOCOL_REV1_2026-08-20.md",
+      "scope": "Day 1 spoken guidance, sound-bed architecture, anti-startle behavior, breath-coaching script, and physical content acceptance",
+      "preserved": "25-minute phase allocation, target capabilities, capability-credit separation, local audio requirement, and valid prior analysis"
+    }
+  ],
   "controlled_training_model": {
     "loop": "PREPARE -> INDUCE -> RECOGNIZE -> STABILIZE -> USE -> EXIT -> RECORD -> ADAPT",
     "reliability_levels": [
@@ -43,6 +48,7 @@
       "TRANSFERABLE"
     ],
     "timer_completion_equals_state_attainment": false,
+    "technical_audio_continuity_equals_content_acceptance": false,
     "source_terms_preserved": true,
     "raw_observation_separate_from_interpretation": true,
     "silent_failure_allowed": false
@@ -59,153 +65,109 @@
     "origin": "https://reos.tail6ed282.ts.net/",
     "transport": "Tailscale Serve private HTTPS",
     "loopback_gateway": "http://127.0.0.1:8787",
-    "currently_installed_candidate": "1d437232cc4ff696ac495f2253347a485c231f2e",
-    "currently_installed_audio_mode": "LIVE_THIRD_PARTY_HEYGEN_URLS",
-    "latest_install_result": "REV9_STATIC_DEPLOYMENT_PASS",
-    "rev10_installed": false
+    "last_proven_installed_candidate": "1d437232cc4ff696ac495f2253347a485c231f2e",
+    "latest_user_session_candidate_identity": "NOT_REATTESTED",
+    "latest_user_session_script_family": "PROTECTED_REV1_1_4_DAY1_GUIDANCE",
+    "guidance_rev1_installed": false
   },
   "rev2_candidate": {
     "branch": "qctp-platform-rev2-codex",
-    "head_sha": "86de3a1a4dad034615afb198f7fd90a7e2056e49",
-    "verified_implementation_head": "05a4b81158ca389305b2aa13854cf41ce8ce2ae5",
+    "observed_head_sha": "b87c402c4780ec8c21e24c877d7c04007985b8fb",
     "version": "2.0.0-alpha.1",
     "pull_request": 2,
     "pull_request_state": "OPEN_DRAFT_UNMERGED",
     "implementation_disposition": "NON_BREATH_PLATFORM_COMPLETE_CANDIDATE",
-    "audio_deployment_disposition": "REV10_ALL_EXACT_HEAD_MACHINE_GATES_PASS_PX13_INSTALL_OPEN",
+    "audio_delivery_disposition": "SAME_ORIGIN_TECHNICAL_FOUNDATION_PRESERVED",
+    "guidance_disposition": "CURRENT_DAY1_GUIDANCE_REJECTED_REV1_DESIGN_COMPLETE_IMPLEMENTATION_OPEN",
     "production_deployed": false,
     "release_authority": "ZERO_RELEASE"
   },
-  "implemented_candidate_capabilities": [
-    "React and TypeScript installable mobile PWA",
-    "IndexedDB v3 local-first records and Rev1 migration",
-    "Paths, Practice, Studio, Lab, Codex, Mirror, Insights, and Settings",
-    "exact 1500-second Day 1 with 21 controlled cues and Chill Brian",
-    "checksum-verified same-origin Day 1 lesson and cue pack",
-    "global and field voice capture plus timed auto-dictation",
-    "PX13 local Whisper transcription",
-    "Free Local Mode with no required API key",
-    "deterministic Mirror Core and iPhone Local AI Mirror client",
-    "PX13 qwen3:8b grounded local-model path",
-    "private Tailscale HTTPS architecture",
-    "Robert Edward Grant REG-01 MVP"
-  ],
-  "day1_audio_regression": {
-    "initial_private_failure": "The earlier Rev2 player could advance without audible narration until fail-closed behavior was added.",
-    "focused_device_mechanism_acceptance": {
-      "endpoint": "https://rfrye08-pixel.github.io/QCTP/device-preview/",
-      "opening_cue": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
-      "automatic_45_second_cue": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
-      "scope": "Persistent iPhone audio element only; did not prove the full private app or remove the external media dependency."
-    },
-    "rev9_private_install": {
-      "candidate_sha": "1d437232cc4ff696ac495f2253347a485c231f2e",
-      "px13_static_install": "PASS",
-      "exact_served_identity": "PASS",
-      "private_origin": "https://reos.tail6ed282.ts.net/"
-    },
-    "correct_private_origin_failure": {
-      "status": "CONFIRMED",
-      "origin": "https://reos.tail6ed282.ts.net/",
-      "navigation": "Today / Paths / Practice / Studio / More",
-      "timer_state": "PAUSED_AT_24_49",
-      "displayed_failure": "Guide audio is still blocked",
-      "completion_credit": false,
-      "evidence_class": "USER_PROVIDED_DIRECT_PHYSICAL_IPHONE_SCREENSHOT_AND_REPORT",
-      "file_id": "file_000000004eac81fd88a5ee03c67f709d",
-      "sha256": "784b64f1e6efa3066ccb71092796bc31c6ed1cc7c7399f8287cd7c284189dffd",
-      "pixel_dimensions": "1125x2436",
-      "bytes": 635656
-    },
-    "root_cause": "The lesson and practice player still used protected resource2.heygen.ai source references as live runtime media URLs.",
-    "rev10_same_origin_correction": {
-      "status": "IMPLEMENTED_AND_ALL_MACHINE_GATES_PASS",
-      "candidate_head": "86de3a1a4dad034615afb198f7fd90a7e2056e49",
-      "runtime_dependency_removed": "Live third-party audio is no longer required for Day 1 playback.",
-      "pack_schema": "qctp-day1-local-audio-pack-v2",
-      "media_type": "audio/mpeg",
-      "file_count": 23,
-      "total_bytes": 13340411,
-      "manifest_sha256": "63294f74eb4f5426eae3c8b42cdf89a2adb09ccae54e06c41264a528b2db40a5",
-      "runtime_root": "same-origin /audio/day1/",
-      "lesson_and_all_21_cues_local": true,
-      "source_lineage_preserved": true,
-      "persistent_audio_element_preserved": true,
-      "fail_closed_timer_preserved": true,
-      "build_time_pack_verification": true,
-      "service_worker_precache": "38 entries / 14130.74 KiB including local audio",
-      "gateway_csp": "same-origin media only",
-      "deployment_identity_schema": "qctp-private-runtime-build-v6",
-      "rollback_on_failed_identity_or_audio_hash": true
-    },
-    "exact_head_verification": {
-      "full_candidate": {
-        "workflow_run_id": 32322451181,
-        "job_id": 96287184044,
-        "result": "PASS",
-        "node_test_files": 43,
-        "node_tests": 238,
-        "browser_passed": 16,
-        "browser_controlled_skips": 6,
-        "browser_failed": 0,
-        "python_tests": 44,
-        "dependency_vulnerabilities": 0,
-        "production_build": "PASS",
-        "local_audio_artifact_id": 9390224954,
-        "local_audio_artifact_sha256": "c37161efa3f238073b2a063e477c3fa5014d0ea78fa2dd8f8594dd2540a2c9a1",
-        "dist_artifact_id": 9390273418,
-        "dist_artifact_sha256": "6b5f7200d02b5902007b7739f905ca98d9db7232e5f96dbbdcb7cda3e174a24a"
-      },
-      "audio_smoke": {
-        "workflow_run_id": 32322451214,
-        "job_id": 96287156046,
-        "result": "PASS"
-      },
-      "windows_updater": {
-        "workflow_run_id": 32322451183,
-        "job_id": 96287155892,
-        "result": "PASS",
-        "active_esbuild_locked": true,
-        "gateway_static_root_outside_repository": true,
-        "isolated_build": "PASS",
-        "live_root_discovery": "PASS",
-        "served_identity": "PASS",
-        "served_manifest_and_audio_hashes": "PASS",
-        "rollback_contract": "PASS"
-      }
-    },
-    "rev10_px13_install": "OPEN",
-    "rev10_private_iphone_opening_cue": "OPEN",
-    "rev10_private_iphone_24_15_cue": "OPEN",
-    "natural_1500_second_day1": "OPEN"
+  "day1_first_natural_session": {
+    "date": "2026-08-20",
+    "evidence_class": "USER_REPORTED_FULL_NATURAL_DURATION_PHYSICAL_IPHONE_EXPERIENCE",
+    "duration_seconds": 1500,
+    "practice_completion": "PASS_USER_REPORTED",
+    "guide_audio_continuity": "LIMITED_PASS_USER_REPORTED",
+    "breath_coaching": "FAIL",
+    "cue_entry_startle": "FAIL",
+    "guidance_quality": "FAIL",
+    "binaural_or_continuous_support_requested": true,
+    "state_access_credit": "NOT_PROMOTED_FROM_COMPLETION",
+    "content_release_effect": "CURRENT_DAY1_GUIDANCE_REJECTED"
+  },
+  "day1_measured_guidance_audit": {
+    "cue_count": 21,
+    "mean_intercue_silence_seconds": 65.0,
+    "median_intercue_silence_seconds": 65.8,
+    "maximum_intercue_silence_seconds": 112.6,
+    "intercue_gaps_over_45_seconds": 17,
+    "intercue_gaps_over_60_seconds": 11,
+    "intercue_gaps_over_90_seconds": 2,
+    "mean_clip_normalized_wpm": 143.1,
+    "median_clip_normalized_wpm": 144.8,
+    "cues_over_130_wpm": 14,
+    "cues_over_145_wpm": 10,
+    "coherence_entry_wpm": 176,
+    "return_wpm": 203,
+    "integrated_loudness_range_lufs": "-20.7_TO_-17.4",
+    "true_peak_range_dbfs": "-1.9_TO_-0.5",
+    "continuous_support_bed": false,
+    "active_non_test_precue_marker": false,
+    "disposition": "MEASURED_RESULTS_SUPPORT_USER_STARTLE_AND_PACING_REPORT"
+  },
+  "day1_guidance_rev1": {
+    "status": "CONTROLLED_DESIGN_COMPLETE_IMPLEMENTATION_OPEN",
+    "protocol_ref": "QCTP_DAY1_GUIDANCE_BREATH_AND_SOUND_PROTOCOL_REV1_2026-08-20.md",
+    "handoff_ref": "QCTP_DAY1_GUIDANCE_REV1_IMPLEMENTATION_HANDOFF_2026-08-20.md",
+    "phase_allocation_preserved": true,
+    "selected_breath_protocol": "QCTP-B1_4_IN_6_OUT_NO_HOLD",
+    "teach_first": true,
+    "continuous_voice_stem": true,
+    "continuous_support_bed": true,
+    "support_modes": [
+      "OFF",
+      "AMBIENT",
+      "BINAURAL_LOW",
+      "BINAURAL_MEDIUM"
+    ],
+    "default_ryan_candidate": "BINAURAL_LOW",
+    "soft_precue_marker": true,
+    "bed_ducking_and_voice_fades": true,
+    "phase_specific_wpm_limits": true,
+    "return_begins_by": "24:20",
+    "adaptive_post_session_feedback": true,
+    "continuous_media_timer": true,
+    "live_third_party_audio_required": false,
+    "physical_acceptance": "OPEN"
   },
   "open_implementation_packages": [
+    "Day 1 Guidance Rev1 locked script, Chill Brian render, support-bed generation, continuous player, and physical acceptance",
     "Breath Director and seven-session Breath Foundations",
     "Protocol-hardening runtime schemas and State Map",
     "Thomas Campbell source-track MVP",
     "User-experience exploration upgrade",
-    "Hardened Day 1 script integration beyond the completed local audio pack",
-    "Foundation Days 2-112 authored under progression gates"
+    "Foundation Days 2-112 authored under the revised production method"
   ],
   "release_acceptance_holds": [
-    "Install machine-verified REV10 on the PX13 using the existing locator/updater",
-    "Verify the private app visibly reports same-origin checksum-verified narration",
-    "Verify the opening and automatic 24:15 cue in the full private Rev2 PWA",
-    "Run natural full-duration hardened Day 1 acceptance to 0:00 and confirm completion persistence",
-    "Repair or replace the active untracked node_modules before later gateway-restart or laptop-reboot acceptance",
-    "Complete remaining physical-iPhone microphone, offline, reconnect, notification, lifecycle, deletion, and export checks",
-    "Run actual-origin Rev1 migration comparison",
-    "Provision the verified CTranslate2 small high-accuracy model directory on the PX13",
+    "Lock and render Day 1 Guidance Rev1 spoken copy",
+    "Generate deterministic Ambient and Binaural support beds plus breath rail",
+    "Integrate continuous voice/support stems and fallback composite mix",
+    "Complete automated content, timing, loudness, offline, drift, and fail-closed regression",
+    "Complete five-minute physical-iPhone guidance-quality acceptance without another full-duration test",
+    "Complete natural full-duration Guidance Rev1 acceptance after the five-minute gate passes",
+    "Complete remaining physical-iPhone microphone, lifecycle, migration, and export checks",
     "Do not merge or release Rev2 without explicit authority"
   ],
   "release_authority": {
     "released_rev1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
     "rev2_candidate": "ZERO_RELEASE",
-    "rev10_same_origin_audio": "WINDOWS_VERIFIED_DEVICE_TEST_CANDIDATE_PX13_INSTALL_OPEN",
+    "current_day1_guidance": "CONTENT_ACCEPTANCE_FAIL",
+    "day1_guidance_rev1": "DESIGN_AUTHORIZED_IMPLEMENTATION_AND_DEVICE_TEST_ONLY",
+    "binaural_support_profile": "ENGINEERING_CANDIDATE_A_B_ACCEPTANCE_REQUIRED",
     "breathwork": "ZERO_RELEASE",
     "hardening_package": "ZERO_RELEASE",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "controlled_interpretation": "The correct private Rev2 origin genuinely failed because the deployed Rev9 package still dereferenced live third-party narration. REV10 removes that dependency and has passed exact-head repository, browser, local-Whisper, audio-smoke, and Windows live-root deployment gates. The immediate remaining work is installation on REOS and one physical-iPhone opening-plus-24:15 cue check; no REV10 physical PASS is claimed yet.",
-  "next_controlled_action": "Rerun RUN_QCTP_AUDIO_PATCH_UPDATE.cmd from the already extracted REV3 folder, require the REV10 heading and both PASS markers, then reopen https://reos.tail6ed282.ts.net/ and verify the opening plus automatic 24:15 cues."
+  "controlled_interpretation": "Ryan's first complete natural Day 1 run proves the current app can carry a session through the full duration, but it rejects the guidance as a training instrument. Measured audio confirms long digital silences, abrupt unannounced voice entries, fast induction and return cues, no exact breath coaching, and inadequate first-session guidance density. Day 1 Guidance Rev1 now controls the corrective design: exact QCTP-B1 coaching, Teach-first density, continuous Ambient/Binaural sound support, soft predictive cue markers, slower mastered narration, continuous media stems, a complete return, and adaptive debrief.",
+  "next_controlled_action": "Execute QCTP-D1-G1-A01: lock the spoken Rev1 script, render Chill Brian cues and continuous voice stems, generate Ambient/Binaural support beds, integrate the five-minute acceptance build, and close automated regression before asking Ryan to test again."
 }
