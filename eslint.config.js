@@ -12,6 +12,7 @@ export default tseslint.config(
       "test-results",
       "node_modules",
       "local-whisper-companion/**",
+      "tools/**/*.mjs",
       "eslint.config.js",
       "app.js",
       "hotfix-*.js",
