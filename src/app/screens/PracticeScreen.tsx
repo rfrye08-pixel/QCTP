@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
+  DAY1_LOCAL_AUDIO,
+  getDay1LocalCueUrl,
   getSequencerProgress,
   getSequencerRemainingSeconds,
   reduceSequencer,
   type SequencerEvent,
 } from "../../audio-player";
 import {
-  CHILL_BRIAN_AUDIO,
   createDay1SequencerState,
   DAY1_LESSON_PARAGRAPHS,
   type Day1Cue,
@@ -183,7 +184,7 @@ export function PracticeScreen({
       audio.pause();
       audio.preload = "auto";
       audio.volume = 1;
-      audio.src = cue.audioUrl;
+      audio.src = getDay1LocalCueUrl(cue.at);
       audio.currentTime = 0;
       audio.load();
       setAudioIssue(null);
@@ -194,7 +195,7 @@ export function PracticeScreen({
         })
         .catch(() => {
           setAudioIssue(
-            "Guide audio could not start, so the timer was paused. Check the iPhone media volume and connection, then tap Resume to retry.",
+            "Local guide audio could not start, so the timer was paused. End this practice, reload QCTP, and try once more. If it repeats, the Day 1 audio pack needs repair.",
           );
           if (sequencerRef.current.status === "running") {
             dispatchRef.current({
@@ -314,7 +315,7 @@ export function PracticeScreen({
           .then(() => setAudioIssue(null))
           .catch(() =>
             setAudioIssue(
-              "Guide audio is still blocked. Keep the screen open, check media volume and connection, then tap Pause and Resume once more.",
+              "Local guide audio is still blocked. End this practice, reload QCTP, and try once more. If it repeats, the Day 1 audio pack needs repair.",
             ),
           );
       }
@@ -367,7 +368,8 @@ export function PracticeScreen({
           ref={lessonRef}
           controls
           preload="metadata"
-          src={CHILL_BRIAN_AUDIO.lesson}
+          src={DAY1_LOCAL_AUDIO.lesson}
+          data-testid="day1-lesson-audio"
           onPointerDown={primeCueAudio}
           onPlay={() => {
             setLessonPlaying(true);
@@ -377,7 +379,7 @@ export function PracticeScreen({
           onEnded={startPractice}
           onError={() =>
             setAudioIssue(
-              "The lesson narration could not load. The exact written lesson remains available.",
+              "The local lesson narration could not load. The exact written lesson remains available.",
             )
           }
         >
@@ -386,7 +388,7 @@ export function PracticeScreen({
         <p className="fine-print">
           {lessonPlaying
             ? "Chill Brian narration is playing. The practice begins when the lesson ends."
-            : "Static pre-rendered narration; no metered text-to-speech call is made."}
+            : "Same-origin, checksum-verified narration; no live text-to-speech or third-party media request is made."}
         </p>
       </section>
 
@@ -471,8 +473,8 @@ export function PracticeScreen({
         </p>
         {testMode ? (
           <p className="notice-inline">
-            Verification mode uses local tone markers and can never earn morning
-            completion.
+            Verification mode can never earn morning completion. It uses local
+            tone markers instead of narration.
           </p>
         ) : null}
         {audioIssue ? (
