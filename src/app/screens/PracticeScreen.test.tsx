@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { DAY1_LOCAL_AUDIO } from "../../audio-player";
 import { PracticeScreen } from "./PracticeScreen";
 
 interface FakeAudioElement {
@@ -72,7 +73,7 @@ afterEach(() => {
 });
 
 describe("PracticeScreen guide audio", () => {
-  it("reuses one authorized audio element across delayed cues", async () => {
+  it("uses same-origin MP3 lesson and cue assets and reuses one audio element", async () => {
     const audio = fakeAudio();
     const constructor = vi.fn(function AudioMock() {
       return audio;
@@ -80,9 +81,18 @@ describe("PracticeScreen guide audio", () => {
     vi.stubGlobal("Audio", constructor);
 
     render(<PracticeScreen />);
+
+    const lesson = screen.getByTestId("day1-lesson-audio");
+    expect(lesson).toHaveAttribute("src", DAY1_LOCAL_AUDIO.lesson);
+    expect(DAY1_LOCAL_AUDIO.lesson).toMatch(/audio\/day1\/lesson\.mp3$/);
+    expect(DAY1_LOCAL_AUDIO.lesson).not.toContain("heygen.ai");
+
     fireEvent.click(screen.getByRole("button", { name: "Begin practice" }));
 
     expect(audio.play).toHaveBeenCalledTimes(1);
+    expect(audio.src).toBe(DAY1_LOCAL_AUDIO.cues[0]);
+    expect(audio.src).toMatch(/audio\/day1\/cue-0000\.mp3$/);
+    expect(audio.src).not.toContain("heygen.ai");
     expect(constructor).toHaveBeenCalledTimes(1);
 
     await act(async () => {
@@ -91,10 +101,13 @@ describe("PracticeScreen guide audio", () => {
     });
 
     expect(audio.play).toHaveBeenCalledTimes(2);
+    expect(audio.src).toBe(DAY1_LOCAL_AUDIO.cues[45]);
+    expect(audio.src).toMatch(/audio\/day1\/cue-0045\.mp3$/);
+    expect(audio.src).not.toContain("heygen.ai");
     expect(constructor).toHaveBeenCalledTimes(1);
   });
 
-  it("pauses the authoritative timer when guide audio is blocked", async () => {
+  it("pauses the authoritative timer when local guide audio is blocked", async () => {
     const audio = fakeAudio("reject");
     const constructor = vi.fn(function AudioMock() {
       return audio;
@@ -111,11 +124,11 @@ describe("PracticeScreen guide audio", () => {
 
     expect(screen.getByRole("button", { name: "Resume" })).toBeVisible();
     expect(
-      screen.getByText(/Guide audio could not start, so the timer was paused/),
+      screen.getByText(/Local guide audio could not start, so the timer was paused/),
     ).toBeVisible();
   });
 
-  it("keeps accelerated verification independent of neural audio", () => {
+  it("keeps accelerated verification independent of narration", () => {
     const constructor = vi.fn();
     vi.stubGlobal("Audio", constructor);
 
@@ -125,7 +138,7 @@ describe("PracticeScreen guide audio", () => {
     expect(constructor).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "Pause" })).toBeVisible();
     expect(
-      screen.getByText(/Verification mode uses local tone markers/),
+      screen.getByText(/Verification mode can never earn morning completion/),
     ).toBeVisible();
   });
 
