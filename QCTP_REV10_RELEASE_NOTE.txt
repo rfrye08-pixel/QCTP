@@ -1,0 +1,3 @@
+QCTP REV10 same-origin Day 1 audio is machine-verified at candidate head 86de3a1a4dad034615afb198f7fd90a7e2056e49.
+PX13 installation and physical-iPhone opening/24:15 cue acceptance remain open.
+Release authority: ZERO_RELEASE.
