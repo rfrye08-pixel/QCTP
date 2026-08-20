@@ -1,0 +1,154 @@
+{
+  "schema": "qctp-macro-deliverable-manifest-v8",
+  "manifest_id": "QCTP-PLATFORM-REV8-DAY1-SOURCE-MAP-CLOSED",
+  "title": "Quantum Consciousness Training Platform — Source-Grounded Training and Enhanced Delivery",
+  "updated_at": "2026-08-20T17:10:00-05:00",
+  "status": "ACTIVE",
+  "supersedes": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV7.json",
+  "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness training platform that teaches the selected teachers' and practitioner lineages' actual methods, improves clarity and delivery without silently replacing them, verifies repeatable capability, and preserves raw experience and source fidelity.",
+  "controlled_baseline": {
+    "released_runtime": "1.1.4",
+    "released_branch": "main",
+    "private_runtime_origin": "https://reos.tail6ed282.ts.net/",
+    "rev2_candidate_branch": "qctp-platform-rev2-codex",
+    "rev2_candidate_head_observed_before_source_trigger": "b87c402c4780ec8c21e24c877d7c04007985b8fb",
+    "source_research_trigger_commit": "9c32d7df567d2eea6f9ed2181604c997cfd92cde",
+    "candidate_pr": 2,
+    "runtime_cost_mode": "FREE_LOCAL",
+    "foundation_days": 112,
+    "release_authority": "ZERO_RELEASE"
+  },
+  "source_authority": {
+    "standard": "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
+    "rule": "Teacher/source guidance is the content baseline; QCTP improvements are a separately labeled enhancement layer.",
+    "practice_classes": [
+      "SOURCE_FAITHFUL",
+      "SOURCE_ENHANCED",
+      "QCTP_SYNTHESIS",
+      "QCTP_ORIGINAL"
+    ]
+  },
+  "deliverables": [
+    {
+      "id": "QCTP-R8-D01",
+      "name": "Maintainable Rev2 platform candidate",
+      "status": "COMPLETE_CANDIDATE",
+      "evidence": [
+        "React and TypeScript PWA",
+        "IndexedDB local-first storage and migration",
+        "voice capture and PX13 local transcription",
+        "Mirror Core and Local AI Mirror",
+        "source tracks, Studio, Lab, Codex, and Insights architecture",
+        "private Tailscale HTTPS origin",
+        "draft PR #2"
+      ]
+    },
+    {
+      "id": "QCTP-R8-D02",
+      "name": "Day 1 natural-duration physical session and guidance audit",
+      "status": "PRACTICE_COMPLETION_PASS_GUIDANCE_ACCEPTANCE_FAIL",
+      "authority_ref": "QCTP_DAY1_FIRST_NATURAL_SESSION_GUIDANCE_AUDIT_REV0_2026-08-20.md"
+    },
+    {
+      "id": "QCTP-R8-D03",
+      "name": "Source fidelity and enhancement authority",
+      "status": "DELIVERED_CONTROLLED",
+      "authority_ref": "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md"
+    },
+    {
+      "id": "QCTP-R8-D04",
+      "name": "Day 1 primary-source evidence and source-practice crosswalk",
+      "status": "COMPLETE",
+      "action_id": "QCTP-D1-SOURCE-A01",
+      "authority_refs": [
+        "QCTP_DAY1_PRIMARY_SOURCE_EVIDENCE_PACKET_REV0.md",
+        "QCTP_DAY1_SOURCE_PRACTICE_CROSSWALK_REV0.csv",
+        "QCTP_DAY1_SOURCE_FIDELITY_REVIEW_REV0.md"
+      ],
+      "source_research_evidence": {
+        "workflow_run_id": 32421663051,
+        "job_id": 96594801940,
+        "artifact_id": 9425906327,
+        "artifact_zip_sha256": "fb17448afd46858e9aae0dbb78af22c6a443e1cebfa4cbf897d49f36337e3e58",
+        "theresa_anchor_transcript_sha256": "cd6d7ef3bf75cec7b78aa59696c248cc811578424b55102d61a1b2262ed0d70e",
+        "mossbridge_anchor_transcript_sha256": "448620af35d88134930352d88372a9daeb06f73edc00e1695c456e31cd22de94"
+      },
+      "controlled_source_map": {
+        "physical_settling": "Dr. Theresa Bullard-Whyke public interview operation plus QCTP baseline support",
+        "coherence": "HeartMath Quick Coherence",
+        "attention_contrast_and_open_space": "Dr. Joe Dispenza spatial-attention induction",
+        "pure_observation_return_record": "QCTP support scaffolding",
+        "mossbridge_anchor": "deferred to later embodied-psi, remote-viewing, precognition, and OBE tracks"
+      },
+      "verified": [
+        "25-minute timed crosswalk is contiguous from 0 to 1500 seconds",
+        "zero gaps",
+        "zero overlaps",
+        "zero unresolved timed source rows",
+        "unsupported four-in/six-out removed from Day 1",
+        "unsupported one-to-ten breath counting deferred to Day 2",
+        "paid Bullard Gap scripts not copied",
+        "Mossbridge material not prematurely inserted"
+      ]
+    },
+    {
+      "id": "QCTP-R8-D05",
+      "name": "Day 1 source-faithful baseline and QCTP enhancement delta",
+      "status": "OPEN",
+      "required": [
+        "source-faithful spoken baseline",
+        "separate segment-by-segment QCTP enhancement delta",
+        "source-labeled script candidate",
+        "independent source-fidelity review",
+        "explicit script-lock authority"
+      ]
+    },
+    {
+      "id": "QCTP-R8-D06",
+      "name": "Day 1 audio and experience enhancement layer",
+      "status": "ENGINEERING_DESIGN_PRESERVED_CONTENT_INTEGRATION_HELD",
+      "preserved": [
+        "continuous media architecture",
+        "anti-startle marker and fades",
+        "Ambient/Binaural support options",
+        "local/offline packaging",
+        "slower mastered narration",
+        "readiness and fail-closed behavior",
+        "improved return",
+        "voice-first debrief and adaptation"
+      ],
+      "held_until": "QCTP-R8-D05 passes and grants script-lock authority"
+    },
+    {
+      "id": "QCTP-R8-D07",
+      "name": "Breath Director and Breath Foundations",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "guard": "Breath Director methods may support source practices but may not silently replace source-specific breathing."
+    },
+    {
+      "id": "QCTP-R8-D08",
+      "name": "Training protocol hardening and source tracks",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "QCTP-R8-D09",
+      "name": "Foundation Days 2-112 source-grounded curriculum",
+      "status": "OPEN",
+      "guard": "No future day may be authored from generic synthesis before its approved source baseline and enhancement delta exist."
+    },
+    {
+      "id": "QCTP-R8-D10",
+      "name": "Hardened release package and acceptance",
+      "status": "OPEN",
+      "required": [
+        "source fidelity for every released practice",
+        "Day 1 source-grounded guidance implementation and physical acceptance",
+        "remaining device and data lifecycle checks",
+        "explicit merge and deployment authority"
+      ]
+    }
+  ],
+  "current_macro_delta": "QCTP-D1-SOURCE-A01 is complete. The two original video anchors were identified and captured, official HeartMath and Dr. Joe method descriptions were added, and a contiguous 25-minute crosswalk now maps every Day 1 segment to Bullard, HeartMath, Dispenza, or explicit QCTP support. The source map removes the unsourced four/six breath and Day 1 breath count, defers Mossbridge psi/OBE material, and preserves the valid audio/UX engineering layer. Script writing and rendering remain held.",
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "Execute QCTP-D1-SOURCE-A02: author the source-faithful Day 1 baseline and separate QCTP enhancement delta, generate the source-labeled script candidate, and obtain independent source-fidelity review before script lock."
+}
