@@ -1,0 +1,154 @@
+{
+  "schema": "qctp-macro-deliverable-manifest-v5",
+  "manifest_id": "QCTP-PLATFORM-REV5-SAME-ORIGIN-AUDIO",
+  "title": "Quantum Consciousness Training Platform — Hardened Protocol and Experience",
+  "updated_at": "2026-08-19T20:56:00-05:00",
+  "status": "ACTIVE",
+  "supersedes": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV4.json",
+  "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness training platform that teaches exact state-entry mechanics, verifies repeatable capability, supports serious personal experiments, preserves source lineage and raw evidence, and remains compelling and effortless to use on iPhone.",
+  "controlled_baseline": {
+    "released_runtime": "1.1.4",
+    "released_branch": "main",
+    "private_runtime_origin": "https://reos.tail6ed282.ts.net/",
+    "rev2_candidate_branch": "qctp-platform-rev2-codex",
+    "rev2_candidate_head": "86de3a1a4dad034615afb198f7fd90a7e2056e49",
+    "candidate_pr": 2,
+    "runtime_cost_mode": "FREE_LOCAL",
+    "controlled_voice": "Chill Brian",
+    "foundation_days": 112,
+    "authored_released_days": [1],
+    "release_authority": "ZERO_RELEASE"
+  },
+  "deliverables": [
+    {
+      "id": "QCTP-R5-D01",
+      "name": "Maintainable Rev2 platform candidate",
+      "status": "COMPLETE_CANDIDATE",
+      "evidence": [
+        "React and TypeScript PWA",
+        "IndexedDB v3 local-first storage and migration",
+        "voice capture and PX13 local transcription",
+        "Mirror Core and Local AI Mirror",
+        "Robert Edward Grant REG-01",
+        "43 files / 238 Node tests PASS",
+        "16 browser tests PASS / 6 controlled skips / 0 failed",
+        "44 local Whisper tests PASS",
+        "production PWA build PASS",
+        "draft PR #2"
+      ]
+    },
+    {
+      "id": "QCTP-R5-D02",
+      "name": "Day 1 iPhone audio recovery",
+      "status": "REV10_ALL_MACHINE_GATES_PASS_PX13_INSTALL_OPEN",
+      "failure_evidence": {
+        "correct_private_origin": true,
+        "origin": "https://reos.tail6ed282.ts.net/",
+        "observed_timer": "24:49 paused",
+        "evidence_sha256": "784b64f1e6efa3066ccb71092796bc31c6ed1cc7c7399f8287cd7c284189dffd",
+        "disposition": "LIVE_THIRD_PARTY_AUDIO_DEPENDENCY_FAILED"
+      },
+      "implemented": [
+        "persistent reusable audio element",
+        "user-interaction media authorization",
+        "timer fail-closed pause on playback rejection",
+        "lesson and all 21 cues mapped to same-origin MP3 files",
+        "23-file checksum manifest",
+        "build-time local-audio verification",
+        "service-worker precache of complete Day 1 audio pack",
+        "same-origin-only media CSP",
+        "isolated staging build",
+        "proof-based live static-root discovery",
+        "exact served identity and audio-byte verification",
+        "rollback on failed identity or media verification"
+      ],
+      "local_audio_pack": {
+        "schema": "qctp-day1-local-audio-pack-v2",
+        "media_type": "audio/mpeg",
+        "file_count": 23,
+        "total_bytes": 13340411,
+        "manifest_sha256": "63294f74eb4f5426eae3c8b42cdf89a2adb09ccae54e06c41264a528b2db40a5"
+      },
+      "exact_head_evidence": {
+        "candidate_head": "86de3a1a4dad034615afb198f7fd90a7e2056e49",
+        "full_candidate_run": 32322451181,
+        "full_candidate_job": 96287184044,
+        "full_candidate_result": "PASS",
+        "audio_smoke_run": 32322451214,
+        "audio_smoke_job": 96287156046,
+        "audio_smoke_result": "PASS",
+        "windows_updater_run": 32322451183,
+        "windows_updater_job": 96287155892,
+        "windows_updater_result": "PASS",
+        "local_audio_artifact_id": 9390224954,
+        "local_audio_artifact_sha256": "c37161efa3f238073b2a063e477c3fa5014d0ea78fa2dd8f8594dd2540a2c9a1",
+        "dist_artifact_id": 9390273418,
+        "dist_artifact_sha256": "6b5f7200d02b5902007b7739f905ca98d9db7232e5f96dbbdcb7cda3e174a24a"
+      },
+      "remaining": [
+        "install REV10 on the PX13 using the existing locator/updater",
+        "verify opening and automatic 24:15 cue in the full private PWA",
+        "complete natural 1500-second Day 1 acceptance"
+      ]
+    },
+    {
+      "id": "QCTP-R5-D03",
+      "name": "Breath Director and Breath Foundations",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md"
+    },
+    {
+      "id": "QCTP-R5-D04",
+      "name": "Training protocol hardening and State Atlas",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_refs": [
+        "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
+        "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md"
+      ]
+    },
+    {
+      "id": "QCTP-R5-D05",
+      "name": "User-friendly exploration experience",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md"
+    },
+    {
+      "id": "QCTP-R5-D06",
+      "name": "Thomas Campbell source track",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_THOMAS_CAMPBELL_INTEGRATION_REV0_2026-08-18.md",
+      "modules": 10
+    },
+    {
+      "id": "QCTP-R5-D07",
+      "name": "Hardened Day 1 and local audio pack",
+      "status": "LOCAL_AUDIO_PACK_IMPLEMENTED_MACHINE_VERIFIED_HARDENED_CONTENT_IMPLEMENTATION_OPEN",
+      "authority_refs": [
+        "QCTP_DAY1_HARDENING_DELTA_AND_CANDIDATE_SCRIPT_REV0_2026-08-18.md",
+        "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
+        "QCTP_DAY1_PRIVATE_IPHONE_EXTERNAL_AUDIO_FAILURE_AND_SAME_ORIGIN_REV10_RECOVERY_REV0_2026-08-19.md"
+      ]
+    },
+    {
+      "id": "QCTP-R5-D08",
+      "name": "Foundation Days 2-112 hardened curriculum",
+      "status": "OPEN",
+      "guard": "Do not fabricate or release future days until each day passes protocol, State Atlas, audio, progression, and device acceptance."
+    },
+    {
+      "id": "QCTP-R5-D09",
+      "name": "Hardened release package and acceptance",
+      "status": "OPEN",
+      "required": [
+        "REV10 private PX13 install and physical iPhone two-cue retest",
+        "remaining microphone, offline, reconnect, notification, lifecycle, and export checks",
+        "actual-origin Rev1 migration comparison",
+        "natural full-duration Day 1 acceptance",
+        "explicit merge and deployment authority"
+      ]
+    }
+  ],
+  "current_macro_delta": "The correct private Rev2 origin failed because Day 1 still depended on live third-party media. REV10 removes that dependency, packages and precaches all 23 exact MP3 assets, and passes exact-head repository, browser, local-Whisper, audio-smoke, and Windows live-root deployment gates. Only PX13 installation and the physical private-iPhone two-cue check remain for the immediate audio recovery.",
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "Rerun the existing RUN_QCTP_AUDIO_PATCH_UPDATE.cmd on the PX13, require the REV10 and both PASS markers, then verify the opening and automatic 24:15 cues at https://reos.tail6ed282.ts.net/."
+}
