@@ -1,0 +1,153 @@
+{
+  "schema": "qctp-macro-deliverable-manifest-v9",
+  "manifest_id": "QCTP-PLATFORM-REV9-DAY1-SOURCE-SCRIPT-LOCKED",
+  "title": "Quantum Consciousness Training Platform — Source-Grounded Training and Enhanced Delivery",
+  "updated_at": "2026-08-20T18:05:00-05:00",
+  "status": "ACTIVE",
+  "supersedes": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV8.json",
+  "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness training platform that teaches selected teachers' and practitioner lineages' actual methods, improves clarity and delivery without silently replacing them, verifies repeatable capability, and preserves raw experience and source fidelity.",
+  "controlled_baseline": {
+    "released_runtime": "1.1.4",
+    "released_branch": "main",
+    "private_runtime_origin": "https://reos.tail6ed282.ts.net/",
+    "rev2_candidate_branch": "qctp-platform-rev2-codex",
+    "candidate_pr": 2,
+    "runtime_cost_mode": "FREE_LOCAL",
+    "foundation_days": 112,
+    "release_authority": "ZERO_RELEASE"
+  },
+  "source_authority": {
+    "standard": "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
+    "production_loop": "PRIMARY SOURCE METHOD -> SOURCE-FAITHFUL BASELINE -> QCTP ENHANCEMENT DELTA -> AUDIO/APP IMPLEMENTATION -> VERIFICATION -> USER ACCEPTANCE",
+    "rule": "Teacher/source guidance is the content baseline; QCTP improvements remain separately labeled."
+  },
+  "deliverables": [
+    {
+      "id": "QCTP-R9-D01",
+      "name": "Maintainable Rev2 platform candidate",
+      "status": "COMPLETE_CANDIDATE"
+    },
+    {
+      "id": "QCTP-R9-D02",
+      "name": "Day 1 natural-duration physical session and guidance audit",
+      "status": "PRACTICE_COMPLETION_PASS_GUIDANCE_ACCEPTANCE_FAIL",
+      "authority_ref": "QCTP_DAY1_FIRST_NATURAL_SESSION_GUIDANCE_AUDIT_REV0_2026-08-20.md"
+    },
+    {
+      "id": "QCTP-R9-D03",
+      "name": "Source fidelity and enhancement authority",
+      "status": "DELIVERED_CONTROLLED",
+      "authority_ref": "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md"
+    },
+    {
+      "id": "QCTP-R9-D04",
+      "name": "Day 1 primary-source evidence and source-practice crosswalk",
+      "status": "COMPLETE",
+      "action_id": "QCTP-D1-SOURCE-A01",
+      "authority_refs": [
+        "QCTP_DAY1_PRIMARY_SOURCE_EVIDENCE_PACKET_REV0.md",
+        "QCTP_DAY1_SOURCE_PRACTICE_CROSSWALK_REV0.csv",
+        "QCTP_DAY1_SOURCE_FIDELITY_REVIEW_REV0.md"
+      ],
+      "source_map": {
+        "00_00_to_03_00": "Bullard contraction awareness plus QCTP baseline support",
+        "03_00_to_08_00": "HeartMath Quick Coherence",
+        "08_00_to_23_00": "Dispenza body-area-to-broad-space induction",
+        "23_00_to_25_00": "QCTP observation and return",
+        "mossbridge": "deferred to later embodied-psi, precognition, remote-viewing, and OBE tracks"
+      }
+    },
+    {
+      "id": "QCTP-R9-D05",
+      "name": "Day 1 source-faithful baseline, enhancement delta, and locked source-labeled script",
+      "status": "COMPLETE_SCRIPT_LOCKED_FOR_TEST_RENDER",
+      "action_id": "QCTP-D1-SOURCE-A02",
+      "authority_refs": [
+        "QCTP_DAY1_SOURCE_FAITHFUL_BASELINE_REV0.md",
+        "QCTP_DAY1_QCTP_ENHANCEMENT_DELTA_REV0.md",
+        "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0.json",
+        "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART1.json",
+        "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART2.json",
+        "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART3.json",
+        "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART4.json",
+        "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART5.json",
+        "QCTP_DAY1_INDEPENDENT_SOURCE_FIDELITY_REVIEW_REV0.md",
+        "QCTP_DAY1_SOURCE_SCRIPT_MACHINE_VERIFICATION_REV0.json",
+        "QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json"
+      ],
+      "script": {
+        "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+        "script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+        "duration_seconds": 1500,
+        "cue_count": 35,
+        "total_word_count": 774,
+        "guidance_tier": "TEACH",
+        "breath_baseline": "HeartMath five seconds in / five seconds out or comfortable; no hold; no nasal-only requirement",
+        "binaural_disposition": "optional QCTP support; final difference-frequency profile not locked"
+      },
+      "verification": {
+        "independent_source_fidelity_review": "PASS",
+        "machine_gate": "PASS",
+        "workflow_run_id": 32425246503,
+        "job_id": 96605742534,
+        "artifact_id": 9427163011,
+        "artifact_zip_sha256": "e900187484162946e167e1daacadbba0605486b50d9f9654e7058ec2547d1c08",
+        "timing_and_non_overlap": "PASS",
+        "source_ownership": "PASS",
+        "legacy_four_six_absent": "PASS",
+        "day1_breath_count_absent": "PASS",
+        "advanced_state_claims_absent": "PASS",
+        "continuous_support_and_precue_contract": "PASS"
+      },
+      "authority": "TEST_RENDER_AUTHORIZED_ZERO_RELEASE"
+    },
+    {
+      "id": "QCTP-R9-D06",
+      "name": "Day 1 source-grounded voice, support audio, continuous player, and five-minute acceptance",
+      "status": "OPEN",
+      "action_id": "QCTP-D1-AUDIO-A03",
+      "handoff_ref": "QCTP_DAY1_SOURCE_GROUNDED_AUDIO_IMPLEMENTATION_HANDOFF_REV0_2026-08-20.md",
+      "required": [
+        "locked Chill Brian voice stem",
+        "Ambient, Binaural Low A, and Minimal Continuity support candidates",
+        "HeartMath five/five breath rail",
+        "predictive marker, bed ducking, and fades",
+        "continuous dual-stem player and composite fallback",
+        "local/offline checksum package",
+        "automated acoustic and iPhone-profile gates",
+        "five-minute physical iPhone acceptance"
+      ]
+    },
+    {
+      "id": "QCTP-R9-D07",
+      "name": "Breath Director and Breath Foundations",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "guard": "Breath Director methods may support source practices but may not silently replace source-specific breathing."
+    },
+    {
+      "id": "QCTP-R9-D08",
+      "name": "Training protocol hardening and source tracks",
+      "status": "PARTIAL"
+    },
+    {
+      "id": "QCTP-R9-D09",
+      "name": "Foundation Days 2-112 source-grounded curriculum",
+      "status": "OPEN",
+      "guard": "No future day may be authored from generic synthesis before its approved source baseline and enhancement delta exist."
+    },
+    {
+      "id": "QCTP-R9-D10",
+      "name": "Hardened release package and acceptance",
+      "status": "OPEN",
+      "required": [
+        "Day 1 five-minute and natural-duration physical acceptance",
+        "source fidelity for every released practice",
+        "remaining device and data lifecycle checks",
+        "explicit merge and deployment authority"
+      ]
+    }
+  ],
+  "current_macro_delta": "QCTP-D1-SOURCE-A02 is complete. Day 1 now has a separate source-faithful baseline, explicit QCTP enhancement delta, 35-cue/774-word/1500-second source-labeled Teach script, independent fidelity PASS, deterministic machine PASS, and a locked script hash. Test rendering is authorized. Public release and physical content acceptance remain withheld.",
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "Execute QCTP-D1-AUDIO-A03: render the locked Chill Brian script, generate and integrate continuous support candidates and anti-startle audio, close automated acoustic/runtime gates, and deliver the five-minute physical iPhone acceptance candidate before a full 25-minute retest."
+}
