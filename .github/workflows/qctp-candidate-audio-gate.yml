@@ -41,6 +41,18 @@ jobs:
       - name: Normalize repository formatting
         run: npm run format
 
+      - name: Persist deterministic audio and formatting inputs
+        run: |
+          if git diff --quiet; then
+            echo "Candidate audio pack and formatting already persisted."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "Normalize same-origin audio candidate"
+          git push origin HEAD:qctp-platform-rev2-codex
+
       - name: Run formatting, lint, types, coverage, and production build
         run: npm run check
 
@@ -69,18 +81,6 @@ jobs:
           uv run ruff check .
           uv run basedpyright
           uv run ty check
-
-      - name: Persist the verified local audio pack and normalization
-        run: |
-          if git diff --quiet; then
-            echo "Candidate audio pack and formatting already persisted."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add --all
-          git commit -m "Persist verified local Day 1 audio pack"
-          git push origin HEAD:qctp-platform-rev2-codex
 
       - name: Upload verified PWA distribution
         uses: actions/upload-artifact@v4
