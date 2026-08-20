@@ -12,6 +12,9 @@ $ProgressPreference = 'SilentlyContinue'
 
 $RequiredBranch = 'qctp-platform-rev2-codex'
 $RequiredAudioFixCommit = '80801cdf34a4856c95a4d9349aa8a019fdf6fa38'
+$RequiredLocalAudioSchema = 'qctp-day1-local-audio-pack-v2'
+$RequiredLocalAudioFileCount = 23
+$RequiredLocalAudioBytes = 13340411
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $StageRoot = $null
 $StageRepo = $null
@@ -101,6 +104,88 @@ function Test-RequiredAudioFix {
     return ($LASTEXITCODE -eq 0)
 }
 
+function Test-Mp3File {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $buffer = New-Object byte[] 3
+    $stream = [IO.File]::Open(
+        $Path,
+        [IO.FileMode]::Open,
+        [IO.FileAccess]::Read,
+        [IO.FileShare]::Read
+    )
+    try {
+        $read = $stream.Read($buffer, 0, $buffer.Length)
+    }
+    finally {
+        $stream.Dispose()
+    }
+
+    if ($read -lt 2) { return $false }
+    $hasId3 = $read -ge 3 -and $buffer[0] -eq 0x49 -and $buffer[1] -eq 0x44 -and $buffer[2] -eq 0x33
+    $hasFrameSync = $buffer[0] -eq 0xff -and (($buffer[1] -band 0xe0) -eq 0xe0)
+    return ($hasId3 -or $hasFrameSync)
+}
+
+function Assert-LocalAudioPack {
+    param([Parameter(Mandatory = $true)][string]$AudioDirectory)
+
+    $manifestPath = Join-Path $AudioDirectory 'manifest.json'
+    if (-not (Test-Path -LiteralPath $manifestPath)) {
+        throw "The Day 1 local audio manifest is missing: $manifestPath"
+    }
+
+    $manifest = Get-Content -Raw -LiteralPath $manifestPath | ConvertFrom-Json
+    $records = @($manifest.files)
+    if ([string]$manifest.schema -ne $RequiredLocalAudioSchema) {
+        throw "Unexpected Day 1 audio schema: $($manifest.schema)"
+    }
+    if ([int]$manifest.fileCount -ne $RequiredLocalAudioFileCount -or $records.Count -ne $RequiredLocalAudioFileCount) {
+        throw "Expected $RequiredLocalAudioFileCount Day 1 audio records; manifest reports $($manifest.fileCount) and contains $($records.Count)."
+    }
+    if ([int64]$manifest.totalBytes -ne $RequiredLocalAudioBytes) {
+        throw "Expected $RequiredLocalAudioBytes Day 1 audio bytes; manifest reports $($manifest.totalBytes)."
+    }
+    if ([string]$manifest.mediaType -ne 'audio/mpeg') {
+        throw "Expected Day 1 media type audio/mpeg; manifest reports $($manifest.mediaType)."
+    }
+
+    foreach ($record in $records) {
+        $relativePath = [string]$record.relativePath
+        if (-not $relativePath.EndsWith('.mp3', [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Day 1 audio record $($record.id) is not stored as MP3: $relativePath"
+        }
+        if ([string]$record.mediaType -ne 'audio/mpeg') {
+            throw "Day 1 audio record $($record.id) has media type $($record.mediaType)."
+        }
+
+        $audioPath = Join-Path $AudioDirectory $relativePath
+        if (-not (Test-Path -LiteralPath $audioPath)) {
+            throw "Day 1 audio file is missing: $audioPath"
+        }
+        $actualBytes = (Get-Item -LiteralPath $audioPath).Length
+        if ($actualBytes -ne [int64]$record.bytes) {
+            throw "Day 1 audio size mismatch for $relativePath. Expected $($record.bytes), found $actualBytes."
+        }
+        $actualHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $audioPath).Hash.ToLowerInvariant()
+        $expectedHash = ([string]$record.sha256).ToLowerInvariant()
+        if ($actualHash -ne $expectedHash) {
+            throw "Day 1 audio SHA-256 mismatch for $relativePath."
+        }
+        if (-not (Test-Mp3File -Path $audioPath)) {
+            throw "Day 1 audio file is not valid MP3-framed data: $relativePath"
+        }
+    }
+
+    $manifestHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $manifestPath).Hash.ToLowerInvariant()
+    Write-Host "Verified local Day 1 audio pack: $($records.Count) MP3 files, $($manifest.totalBytes) bytes, manifest SHA-256 $manifestHash" -ForegroundColor Green
+    return [PSCustomObject]@{
+        Manifest = $manifest
+        ManifestPath = $manifestPath
+        ManifestSha256 = $manifestHash
+    }
+}
+
 function New-IsolatedClone {
     param([Parameter(Mandatory = $true)][string]$Head)
 
@@ -126,14 +211,21 @@ function New-IsolatedClone {
 function Write-RuntimeIdentity {
     param(
         [Parameter(Mandatory = $true)][string]$Head,
-        [Parameter(Mandatory = $true)][string]$DistDirectory
+        [Parameter(Mandatory = $true)][string]$DistDirectory,
+        [Parameter(Mandatory = $true)][string]$LocalAudioManifestSha256
     )
 
     $identity = [ordered]@{
-        schema = 'qctp-private-runtime-build-v5'
+        schema = 'qctp-private-runtime-build-v6'
         candidate_sha = $Head
         source_branch = $RequiredBranch
         audio_fix_present = $true
+        local_day1_audio_pack = $true
+        local_day1_audio_schema = $RequiredLocalAudioSchema
+        local_day1_audio_file_count = $RequiredLocalAudioFileCount
+        local_day1_audio_total_bytes = $RequiredLocalAudioBytes
+        local_day1_audio_manifest_sha256 = $LocalAudioManifestSha256
+        live_third_party_audio_required = $false
         isolated_staging_build = $true
         live_static_root_probed = $true
         in_place_static_mirror = $true
@@ -286,6 +378,7 @@ function Resolve-LiveStaticRoot {
 function Test-ServedIdentity {
     param(
         [Parameter(Mandatory = $true)][string]$ExpectedHead,
+        [Parameter(Mandatory = $true)][string]$ExpectedManifestSha256,
         [int]$Attempts = 12
     )
 
@@ -298,7 +391,13 @@ function Test-ServedIdentity {
                 -TimeoutSec 8
             if (
                 [string]$identity.candidate_sha -eq $ExpectedHead -and
-                [bool]$identity.audio_fix_present
+                [bool]$identity.audio_fix_present -and
+                [bool]$identity.local_day1_audio_pack -and
+                [string]$identity.local_day1_audio_schema -eq $RequiredLocalAudioSchema -and
+                [int]$identity.local_day1_audio_file_count -eq $RequiredLocalAudioFileCount -and
+                [int64]$identity.local_day1_audio_total_bytes -eq $RequiredLocalAudioBytes -and
+                [string]$identity.local_day1_audio_manifest_sha256 -eq $ExpectedManifestSha256 -and
+                -not [bool]$identity.live_third_party_audio_required
             ) {
                 return $true
             }
@@ -309,8 +408,68 @@ function Test-ServedIdentity {
     return $false
 }
 
+function Test-ServedLocalAudioPack {
+    param([Parameter(Mandatory = $true)][string]$ExpectedManifestSha256)
+
+    try {
+        $manifestTemp = Join-Path ([IO.Path]::GetTempPath()) ("qctp-day1-manifest-{0}.json" -f [Guid]::NewGuid().ToString('N'))
+        try {
+            $manifestUri = "http://127.0.0.1:8787/audio/day1/manifest.json?nonce=$([Guid]::NewGuid().ToString('N'))"
+            Invoke-WebRequest `
+                -UseBasicParsing `
+                -Uri $manifestUri `
+                -Headers @{ 'Cache-Control' = 'no-cache'; Pragma = 'no-cache' } `
+                -OutFile $manifestTemp `
+                -TimeoutSec 15
+            $manifestHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $manifestTemp).Hash.ToLowerInvariant()
+            if ($manifestHash -ne $ExpectedManifestSha256) { return $false }
+            $manifest = Get-Content -Raw -LiteralPath $manifestTemp | ConvertFrom-Json
+        }
+        finally {
+            Remove-Item -LiteralPath $manifestTemp -Force -ErrorAction SilentlyContinue
+        }
+
+        if (
+            [string]$manifest.schema -ne $RequiredLocalAudioSchema -or
+            [int]$manifest.fileCount -ne $RequiredLocalAudioFileCount -or
+            [int64]$manifest.totalBytes -ne $RequiredLocalAudioBytes -or
+            [string]$manifest.mediaType -ne 'audio/mpeg'
+        ) {
+            return $false
+        }
+
+        foreach ($probeId in @('cue-0000', 'cue-0045')) {
+            $record = @($manifest.files | Where-Object { [string]$_.id -eq $probeId } | Select-Object -First 1)
+            if ($record.Count -ne 1) { return $false }
+            $audioTemp = Join-Path ([IO.Path]::GetTempPath()) ("qctp-$probeId-{0}.mp3" -f [Guid]::NewGuid().ToString('N'))
+            try {
+                $audioUri = "http://127.0.0.1:8787/audio/day1/$([string]$record[0].relativePath)?nonce=$([Guid]::NewGuid().ToString('N'))"
+                Invoke-WebRequest `
+                    -UseBasicParsing `
+                    -Uri $audioUri `
+                    -Headers @{ 'Cache-Control' = 'no-cache'; Pragma = 'no-cache' } `
+                    -OutFile $audioTemp `
+                    -TimeoutSec 30
+                if ((Get-Item -LiteralPath $audioTemp).Length -ne [int64]$record[0].bytes) { return $false }
+                $actualHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $audioTemp).Hash.ToLowerInvariant()
+                if ($actualHash -ne ([string]$record[0].sha256).ToLowerInvariant()) { return $false }
+                if (-not (Test-Mp3File -Path $audioTemp)) { return $false }
+            }
+            finally {
+                Remove-Item -LiteralPath $audioTemp -Force -ErrorAction SilentlyContinue
+            }
+        }
+
+        return $true
+    }
+    catch {
+        Write-Host "Served local-audio verification error: $($_.Exception.Message)" -ForegroundColor DarkGray
+        return $false
+    }
+}
+
 try {
-    Write-Stage 'QCTP audio-patch deployment preflight REV9'
+    Write-Stage 'QCTP same-origin audio deployment preflight REV10'
     Set-Location $RepoRoot
 
     if (-not (Test-Path -LiteralPath (Join-Path $RepoRoot '.git'))) {
@@ -341,17 +500,17 @@ try {
     $StageRepo = $stage.Repository
     Write-Host "Staging repository: $StageRepo" -ForegroundColor Green
 
-    Write-Stage 'Verifying controlled Day 1 audio inventory'
+    Write-Stage 'Verifying protected source references and committed same-origin audio'
     $day1Source = Get-Content -Raw -LiteralPath (Join-Path $StageRepo 'src\foundation\day1.ts')
     $audioUrls = @(
         [regex]::Matches($day1Source, 'https://resource2\.heygen\.ai/[^"\s]+\.wav') |
             ForEach-Object { $_.Value } |
             Sort-Object -Unique
     )
-    if ($audioUrls.Count -lt 22) {
-        throw "Expected at least 22 controlled audio references, found $($audioUrls.Count)."
+    if ($audioUrls.Count -ne 23) {
+        throw "Expected 23 protected source audio references, found $($audioUrls.Count)."
     }
-    Write-Host "Verified $($audioUrls.Count) controlled audio references." -ForegroundColor Green
+    $sourceAudioPack = Assert-LocalAudioPack -AudioDirectory (Join-Path $StageRepo 'public\audio\day1')
 
     Push-Location $StageRepo
     try {
@@ -364,8 +523,8 @@ try {
         Invoke-Checked -Command npm -Arguments @('run', 'test:coverage')
         Invoke-Checked -Command npm -Arguments @('run', 'build')
 
-        Write-Stage 'Running dedicated iPhone audio regression tests'
-        Invoke-Checked -Command npx -Arguments @('vitest', 'run', 'src/app/screens/PracticeScreen.test.tsx')
+        Write-Stage 'Running dedicated same-origin iPhone audio regression tests'
+        Invoke-Checked -Command npx -Arguments @('vitest', 'run', 'src/audio-player/day1-local-audio.test.ts', 'src/app/screens/PracticeScreen.test.tsx', 'server/index.test.ts')
 
         if ($RunBrowserTests -and -not $SkipBrowserTests) {
             Invoke-Checked -Command npx -Arguments @('playwright', 'install', 'chromium')
@@ -380,12 +539,20 @@ try {
     if (-not (Test-Path -LiteralPath (Join-Path $stageDist 'index.html'))) {
         throw 'The isolated build did not create dist\index.html.'
     }
-    $identityPath = Write-RuntimeIdentity -Head $head -DistDirectory $stageDist
+    $distAudioPack = Assert-LocalAudioPack -AudioDirectory (Join-Path $stageDist 'audio\day1')
+    if ($distAudioPack.ManifestSha256 -ne $sourceAudioPack.ManifestSha256) {
+        throw 'The built Day 1 audio manifest does not match the committed source pack.'
+    }
+    $identityPath = Write-RuntimeIdentity `
+        -Head $head `
+        -DistDirectory $stageDist `
+        -LocalAudioManifestSha256 $distAudioPack.ManifestSha256
     Write-Host "Wrote staged runtime identity: $identityPath" -ForegroundColor Green
 
     if ($VerifyBuildOnly) {
-        Write-Host "`nQCTP AUDIO PATCH BUILD VERIFICATION: PASS" -ForegroundColor Green
+        Write-Host "`nQCTP SAME-ORIGIN AUDIO BUILD VERIFICATION: PASS" -ForegroundColor Green
         Write-Host "Candidate: $head"
+        Write-Host "Local audio manifest SHA-256: $($distAudioPack.ManifestSha256)"
     }
     else {
         Write-Stage 'Confirming the existing private gateway is healthy'
@@ -398,27 +565,33 @@ try {
         $BackupDist = Join-Path $StageRoot 'live-dist-backup'
         Invoke-RobocopyMirror -Source $LiveStaticRoot -Destination $BackupDist
 
-        Write-Stage 'Mirroring the verified PWA into the confirmed live static root'
+        Write-Stage 'Mirroring the verified PWA and local audio into the confirmed live static root'
         Write-Host "Live static root: $LiveStaticRoot" -ForegroundColor Green
         Invoke-RobocopyMirror -Source $stageDist -Destination $LiveStaticRoot
 
-        Write-Stage 'Verifying exact served build identity'
-        if (-not (Test-ServedIdentity -ExpectedHead $head)) {
-            Write-Host 'Served identity did not match; restoring the previous static package.' -ForegroundColor Yellow
+        Write-Stage 'Verifying exact served build identity and local audio bytes'
+        $identityPassed = Test-ServedIdentity `
+            -ExpectedHead $head `
+            -ExpectedManifestSha256 $distAudioPack.ManifestSha256
+        $audioPassed = Test-ServedLocalAudioPack `
+            -ExpectedManifestSha256 $distAudioPack.ManifestSha256
+        if (-not $identityPassed -or -not $audioPassed) {
+            Write-Host 'Served build or local audio did not verify; restoring the previous static package.' -ForegroundColor Yellow
             Invoke-RobocopyMirror -Source $BackupDist -Destination $LiveStaticRoot
-            throw "The gateway did not prove it was serving candidate $head. The previous static package was restored."
+            throw "The gateway did not prove it was serving candidate $head with the exact local Day 1 audio pack. The previous static package was restored."
         }
 
-        Write-Host "`nQCTP AUDIO PATCH DEPLOYMENT: PASS" -ForegroundColor Green
+        Write-Host "`nQCTP SAME-ORIGIN AUDIO DEPLOYMENT: PASS" -ForegroundColor Green
         Write-Host "Candidate: $head"
         Write-Host "Verified live static root: $LiveStaticRoot"
-        Write-Host 'The private gateway is serving the audio-patched candidate.'
+        Write-Host "Verified local audio manifest SHA-256: $($distAudioPack.ManifestSha256)"
+        Write-Host 'The private gateway is serving the same-origin, checksum-verified Day 1 audio pack.'
         Write-Host 'Close the iPhone Home Screen app, reopen it, and verify the opening cue plus the automatic cue at 24:15.'
     }
 }
 catch {
     $ExitCode = 1
-    Write-Host "`nQCTP AUDIO PATCH DEPLOYMENT: FAILED" -ForegroundColor Red
+    Write-Host "`nQCTP SAME-ORIGIN AUDIO DEPLOYMENT: FAILED" -ForegroundColor Red
     Write-Host $_.Exception.Message -ForegroundColor Red
 }
 finally {
