@@ -1,0 +1,77 @@
+name: QCTP Day 1 source script gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "QCTP_DAY1_SOURCE_FAITHFUL_BASELINE_REV0.md"
+      - "QCTP_DAY1_QCTP_ENHANCEMENT_DELTA_REV0.md"
+      - "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0*.json"
+      - "tools/validate_day1_source_script.py"
+      - ".github/workflows/qctp-day1-source-script-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-source-script:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout controlled main
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate source-labeled Day 1 script
+        run: python tools/validate_day1_source_script.py .
+
+      - name: Verify source and enhancement documents exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s QCTP_DAY1_SOURCE_FAITHFUL_BASELINE_REV0.md
+          test -s QCTP_DAY1_QCTP_ENHANCEMENT_DELTA_REV0.md
+          test -s QCTP_DAY1_PRIMARY_SOURCE_EVIDENCE_PACKET_REV0.md
+          test -s QCTP_DAY1_SOURCE_PRACTICE_CROSSWALK_REV0.csv
+
+      - name: Emit controlled machine-verification record
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib
+          root=pathlib.Path('.')
+          manifest=json.loads((root/'QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0.json').read_text())
+          parts=[]
+          cues=[]
+          for ref in manifest['cue_part_refs']:
+              p=json.loads((root/ref).read_text())
+              parts.append(ref)
+              cues.extend(p['cues'])
+          record={
+              'schema':'qctp-day1-source-script-machine-verification-v1',
+              'result':'PASS',
+              'script_id':manifest['script_id'],
+              'script_sha256':manifest['script_sha256'],
+              'cue_parts':parts,
+              'cue_count':len(cues),
+              'total_word_count':sum(c['word_count'] for c in cues),
+              'duration_seconds':manifest['duration_seconds'],
+              'release_authority':'ZERO_RELEASE',
+              'commit_sha':'${{ github.sha }}',
+          }
+          pathlib.Path('QCTP_DAY1_SOURCE_SCRIPT_MACHINE_VERIFICATION_REV0.json').write_text(json.dumps(record,indent=2)+'\n')
+          print(json.dumps(record,indent=2))
+          PY
+
+      - name: Upload verification record
+        uses: actions/upload-artifact@v4
+        with:
+          name: qctp-day1-source-script-verification-${{ github.sha }}
+          path: QCTP_DAY1_SOURCE_SCRIPT_MACHINE_VERIFICATION_REV0.json
+          if-no-files-found: error
+          retention-days: 30
