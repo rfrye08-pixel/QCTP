@@ -1,16 +1,18 @@
 {
-  "schema": "qctp-rev2-codex-branch-state-v1",
+  "schema": "qctp-rev2-codex-branch-state-v2",
   "branch": "qctp-platform-rev2-codex",
-  "updated_at": "2026-08-17T20:36:44-05:00",
+  "updated_at": "2026-08-19T20:44:00-05:00",
   "version": "2.0.0-alpha.1",
   "base_commit": "cec7f3dad3fb761c6883fbe2051fe76c9b45eb83",
+  "verified_implementation_head": "05a4b81158ca389305b2aa13854cf41ce8ce2ae5",
   "target_branch": "main",
-  "status": "AUTOMATED_GATES_PASS_ZERO_RELEASE_HARDWARE_HOLDS",
+  "status": "SAME_ORIGIN_AUDIO_REV10_ALL_MACHINE_GATES_PASS_PX13_INSTALL_OPEN",
   "release_authority": "ZERO_RELEASE",
-  "branch_truth": "This ledger supersedes the preserved pre-implementation QCTP_CURRENT_STATE.json snapshot for this Rev2 branch only.",
+  "branch_truth": "This ledger is authoritative for the Rev2 candidate branch. The same-origin Day 1 audio implementation is machine-verified; the PX13 still serves the prior external-audio build until the controlled updater is rerun.",
   "controlled_authorities": [
     "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
-    "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md"
+    "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
+    "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md"
   ],
   "runtime_baseline": {
     "mode": "Free Local",
@@ -25,7 +27,7 @@
       "versioned Zod domain schemas",
       "IndexedDB repository and search-ready indexes",
       "JSON and binary ZIP export/import",
-      "unit, integration, migration, and browser test suites"
+      "unit, integration, migration, browser, and Windows deployment suites"
     ],
     "foundation": {
       "released_authored_days": [1],
@@ -51,55 +53,15 @@
       "source_layers_separate": true,
       "default_transcription_route": "PX13 local Whisper companion"
     },
-    "reg_01_a": {
-      "status": "IMPLEMENTED_CANDIDATE",
-      "controlled_steps": 9,
-      "five_minute_accepted_audio_gate": true,
-      "observation_interpretation_separate": true,
-      "photo_or_drawing_gate": true,
-      "atomic_outputs": ["Studio", "Codex", "Mirror", "source path advancement"]
-    },
     "mirror": {
-      "controlled_layers": {
-        "mirror_core": "deterministic, always local, always available, not model-generated",
-        "local_ai_mirror": "optional generative inference on user-owned PX13 with no per-use API fee",
-        "cloud_ai_mirror": "optional future adapter only; absent and disabled in the controlled candidate"
-      },
+      "mirror_core": "deterministic, always local, always available, not model-generated",
+      "local_ai_mirror": "optional generative inference on user-owned PX13 with no per-use API fee",
+      "cloud_ai_mirror": "optional future adapter only; disabled",
       "iphone_pwa_is_complete_client": true,
       "offline_request_persistence": true,
-      "job_status_and_retry": true,
-      "result_synchronization": true,
-      "claim_level_source_record_citations": true,
-      "notification_or_later_retrieval": true,
-      "structured_journal": true,
-      "deterministic_offline_insights": true,
-      "provider_interface": "MirrorInferenceProvider",
-      "no_network_provider_test_seam": "MockMirrorProvider; never selected by production runtime",
-      "inference_host": "PX13 loopback Ollama-compatible service",
+      "grounded_source_record_citations": true,
       "verified_release_candidate_model": "qwen3:8b",
-      "device_session": "64-hex bearer pairing to signed expiring HttpOnly SameSite=Strict Path=/api cookie; bearer not retained; same-origin relaunch auto-reattests",
-      "authenticated_policy_route": "GET /api/mirror/policy; strict free-local, paidCloudEnabled=false, recurringApiCostUsd=0",
-      "authenticated_job_delete_routes": "DELETE /api/mirror/jobs/:jobId and DELETE /api/mirror/jobs/by-request/:requestId; strict proof precedes local deletion",
-      "generated_reflection_lifecycle": {
-        "provider_types": ["deterministic", "local_model", "cloud_model"],
-        "dispositions": ["unreviewed", "accepted", "revised", "rejected"],
-        "revision_actions": [
-          "generated",
-          "accepted",
-          "revised",
-          "rejected",
-          "annotated",
-          "deleted",
-          "restored"
-        ],
-        "query_source_ids_and_citations_preserved": true,
-        "proposed_question_and_action_preserved": true,
-        "source_records_mutated_by_review": false,
-        "local_deletion": "typed paired tombstone/restore plus separately typed-confirmed permanent purge; deterministic feedback has parallel lifecycle controls",
-        "lifecycle_in_export_import": true
-      },
       "private_remote_architecture": "private HTTPS reverse proxy over Tailscale/WireGuard",
-      "manual_file_export_required_for_normal_use": false,
       "paid_cloud_required": false
     },
     "migration": {
@@ -107,53 +69,111 @@
       "target": "IndexedDB:qctp-rev2-v3",
       "idempotent_fingerprint_ledger": true,
       "exact_source_snapshot_preserved": true,
-      "source_deleted": false,
-      "mirror_store_upgrade": "v1-to-v3"
+      "source_deleted": false
+    },
+    "day1_same_origin_audio": {
+      "failure_observed_on_correct_private_origin": true,
+      "failure_origin": "https://reos.tail6ed282.ts.net/",
+      "failure_boundary": "The fail-closed timer paused at 24:49 after the external Chill Brian cue could not start.",
+      "root_cause": "Practice and lesson playback still dereferenced live resource2.heygen.ai media URLs at runtime.",
+      "runtime_dependency_removed": "Live third-party audio is no longer required for Day 1 playback.",
+      "pack_schema": "qctp-day1-local-audio-pack-v2",
+      "media_type": "audio/mpeg",
+      "file_count": 23,
+      "total_bytes": 13340411,
+      "manifest_sha256": "63294f74eb4f5426eae3c8b42cdf89a2adb09ccae54e06c41264a528b2db40a5",
+      "runtime_paths": "same-origin /audio/day1/*.mp3",
+      "lesson_and_all_21_cues_local": true,
+      "source_sha256_verified": true,
+      "build_time_pack_verification": true,
+      "service_worker_precache": "38 entries / 14130.74 KiB including Day 1 audio",
+      "gateway_csp": "connect-src self; media-src self blob; resource2.heygen.ai removed",
+      "fail_closed_timer_preserved": true,
+      "persistent_audio_element_preserved": true,
+      "deployment_tool": "tools/Deploy-QctpAudioPatch.ps1 REV10",
+      "deployment_identity": "qctp-private-runtime-build-v6",
+      "rollback_on_identity_or_audio_mismatch": true,
+      "px13_installed": false,
+      "physical_private_pwa_audio_retest": "OPEN"
     }
   },
   "verification": {
-    "authority_update_status": "FINAL_AUTOMATED_CONSOLIDATION_PASS",
-    "counts_are_final": true,
-    "component_suites": "PASS_SCOPED",
-    "final_repository_suite": {
+    "evidence_class": "AUTOMATED_REPOSITORY_BROWSER_PYTHON_AND_WINDOWS_DEPLOYMENT_SIMULATION; PHYSICAL_INSTALL_RETEST_OPEN",
+    "full_candidate": {
+      "workflow_run_id": 32321602244,
+      "job_id": 96284750895,
       "status": "PASS",
-      "node_test_files": 40,
-      "node_tests": 229,
+      "node_test_files": 43,
+      "node_tests": 238,
       "coverage_percent": {
-        "statements": 88.68,
-        "branches": 79.23,
-        "functions": 93.42,
-        "lines": 90.32
+        "statements": 88.72,
+        "branches": 79.22,
+        "functions": 93.6,
+        "lines": 90.38
       },
-      "browser_passed": 14,
+      "browser_passed": 16,
       "browser_intentional_skips": 6,
       "browser_failed": 0,
       "python_tests": 44,
       "python_coverage_percent": 99.17,
       "dependency_vulnerabilities": 0,
-      "integrated_preview_smoke": "PASS; loopback 18787; shell/manifest/service worker/CSP, 401 boundary, HttpOnly pairing, transcription and Mirror Free Local policies"
+      "production_build": "PASS",
+      "pwa_local_audio_precache": "PASS",
+      "local_audio_artifact_id": 9389942037,
+      "local_audio_artifact_sha256": "7b91b22bdb8589f5ac49bc7e89212735200728393a55a1707747442792ec9e65",
+      "dist_artifact_id": 9389998822,
+      "dist_artifact_sha256": "88f7e9e3ccebb1a6f253ecdc401665b9b0f0dee830be892726566cfeacfe50cb"
     },
-    "physical_iphone": "PARTIAL_PASS; private Tailscale HTTPS PWA boot, signed pairing, journal persistence, source selection, dictation, durable queue, PX13 qwen3:8b processing, grounded citation, result synchronization, and later retrieval verified; microphone duration/background/notification/full lifecycle protocol remains held",
-    "px13_automatic_startup": "PASS; current-user scheduled task restores gateway, Whisper companion, and Ollama; DPAPI-protected credential outside repository; controlled stop/start restored all three ports and private HTTPS returned 200",
-    "real_whisper_model": "BASE_OFFICIAL_REVISION_HASH_LOAD_AND_REAL_LOCAL_TRANSCRIPTION_VERIFIED; SMALL_NOT_YET_PROVISIONED",
-    "real_mirror_model": "QWEN3_8B_PROVISIONED_AND_STRUCTURED_GROUNDED_CONTRACT_VERIFIED_CPU_ONLY",
-    "representative_mirror_benchmark_on_actual_px13": "PASS; 107.1 seconds wall time; 3 grounded claims; 6 valid source references; proposed question and action valid; qwen3.5:9b rejected after no response within 5 minutes; qwen3:14b excluded after prior unsafe system behavior",
+    "audio_smoke": {
+      "workflow_run_id": 32321602227,
+      "job_id": 96284750709,
+      "status": "PASS"
+    },
+    "windows_rev10": {
+      "workflow_run_id": 32321602180,
+      "job_id": 96284797112,
+      "status": "PASS",
+      "os": "Windows Server 2025 / Windows PowerShell 5.1",
+      "active_esbuild_exclusively_locked": true,
+      "gateway_static_root_outside_repository": true,
+      "isolated_build": "PASS",
+      "node_test_files": 43,
+      "node_tests": 238,
+      "dedicated_same_origin_tests": 9,
+      "live_root_discovery": "PASS",
+      "local_manifest_and_mp3_hash_verification": "PASS",
+      "exact_served_identity": "PASS",
+      "rollback_contract": "PASS",
+      "final_result": "FULL_WINDOWS_SAME_ORIGIN_LIVE_ROOT_DEPLOYMENT_SIMULATION_PASS"
+    },
+    "physical_iphone_failure_evidence": {
+      "classification": "USER_PROVIDED_DIRECT_PHYSICAL_IPHONE_SCREENSHOT",
+      "file_id": "file_000000004eac81fd88a5ee03c67f709d",
+      "sha256": "784b64f1e6efa3066ccb71092796bc31c6ed1cc7c7399f8287cd7c284189dffd",
+      "pixel_dimensions": "1125x2436",
+      "bytes": 635656
+    },
     "natural_1500_second_day_1": "NOT_YET_VERIFIED",
     "actual_rev1_browser_origin_migration": "NOT_YET_VERIFIED",
-    "details": "REV2_VERIFICATION.md"
+    "details": [
+      "REV2_VERIFICATION.md",
+      "tools/QCTP_DAY1_SAME_ORIGIN_AUDIO_REV10_VERIFICATION_REV0_2026-08-19.md"
+    ]
   },
   "preview": {
     "production_deployment": false,
     "github_pages_source_changed": false,
-    "local_preview": "dist; integrated loopback smoke-tested at http://127.0.0.1:18787 and then stopped; standard operator port remains 8787",
+    "private_origin": "https://reos.tail6ed282.ts.net/",
     "draft_pull_request": "https://github.com/rfrye08-pixel/QCTP/pull/2"
   },
   "holds": [
-    "Provision the verified CTranslate2 small high-accuracy model directory on the PX13",
-    "Run physical iPhone microphone, signed-session close/reopen, PWA/Mirror Core offline, queue/reconnect, notification/later retrieval, claim citation, lifecycle, deletion/restore/purge, export, and result-synchronization acceptance",
+    "Rerun the existing PX13 locator/updater so it fetches and installs REV10",
+    "Confirm the private iPhone app serves the local Day 1 manifest and hears the opening plus automatic 24:15 cues",
+    "Run a genuine natural-duration Day 1 session to 0:00 and verify completion persistence",
+    "Complete remaining physical-iPhone microphone, offline/reconnect, notification, lifecycle, deletion, and export checks",
     "Run an actual Rev1-origin migration comparison without deleting the Rev1 source",
-    "Confirm a genuine natural-duration Day 1 reaches 0:00, saves completion, and preserves Chill Brian behavior",
-    "Do not merge or deploy without separate explicit release authority"
+    "Provision the verified CTranslate2 small high-accuracy model directory on the PX13",
+    "Do not merge or deploy publicly without separate explicit release authority"
   ],
-  "next_controlled_action": "Continue the physical-iPhone protocol with real microphone duration/background, offline/reconnect, notification, review, deletion/restore/purge, and export checks."
+  "next_controlled_action": "Run the existing RUN_QCTP_AUDIO_PATCH_UPDATE.cmd on the PX13, require the REV10 heading and both final PASS lines, then verify the opening and automatic 24:15 cues in the private iPhone PWA."
 }
