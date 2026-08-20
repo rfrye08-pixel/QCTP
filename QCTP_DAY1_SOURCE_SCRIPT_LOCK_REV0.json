@@ -1,0 +1,72 @@
+{
+  "schema": "qctp-day1-source-script-lock-v1",
+  "lock_id": "QCTP-D1-SOURCE-SCRIPT-LOCK-REV0",
+  "locked_at": "2026-08-20T17:58:00-05:00",
+  "status": "LOCKED_FOR_TEST_RENDERING",
+  "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+  "script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+  "duration_seconds": 1500,
+  "cue_count": 35,
+  "total_word_count": 774,
+  "locked_artifacts": [
+    "QCTP_DAY1_SOURCE_FAITHFUL_BASELINE_REV0.md",
+    "QCTP_DAY1_QCTP_ENHANCEMENT_DELTA_REV0.md",
+    "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0.json",
+    "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART1.json",
+    "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART2.json",
+    "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART3.json",
+    "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART4.json",
+    "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART5.json"
+  ],
+  "source_authorities": {
+    "00_00_to_03_00": "QCTP baseline support and Dr. Theresa Bullard-Whyke contraction-awareness operation",
+    "03_00_to_08_00": "HeartMath Quick Coherence",
+    "08_00_to_23_00": "Dr. Joe Dispenza body-area-to-broad-space induction",
+    "23_00_to_25_00": "QCTP pure-observation and return support"
+  },
+  "verification_refs": [
+    "QCTP_DAY1_PRIMARY_SOURCE_EVIDENCE_PACKET_REV0.md",
+    "QCTP_DAY1_SOURCE_PRACTICE_CROSSWALK_REV0.csv",
+    "QCTP_DAY1_INDEPENDENT_SOURCE_FIDELITY_REVIEW_REV0.md",
+    "QCTP_DAY1_SOURCE_SCRIPT_MACHINE_VERIFICATION_REV0.json"
+  ],
+  "verification": {
+    "independent_fidelity_review": "PASS",
+    "deterministic_machine_gate": "PASS",
+    "workflow_run_id": 32425246503,
+    "job_id": 96605742534,
+    "artifact_id": 9427163011,
+    "artifact_zip_sha256": "e900187484162946e167e1daacadbba0605486b50d9f9654e7058ec2547d1c08"
+  },
+  "authorized_next_use": [
+    "Render Chill Brian test voice from the exact cue text and hashes",
+    "Generate continuous ambient support and optional binaural A/B candidates",
+    "Generate the required pre-cue marker, fades, and ducking",
+    "Build continuous voice/support stems and a composite fallback",
+    "Integrate a five-minute physical-device acceptance candidate",
+    "Perform automated timing, source-map, local-media, and fail-closed tests"
+  ],
+  "not_authorized": [
+    "Change spoken wording without a new script hash and renewed source-fidelity review",
+    "Change source order or major phase boundaries",
+    "Replace HeartMath five/five-or-comfortable breathing",
+    "Insert Day 1 one-to-ten breath counting",
+    "Attribute QCTP binaural support to a teacher",
+    "Claim advanced state attainment",
+    "Merge to the released branch",
+    "Deploy publicly",
+    "Award content acceptance before physical testing"
+  ],
+  "allowed_non_content_adjustments": [
+    "Delivery speed within the cue target and hard maximum",
+    "Internal pauses that preserve wording and meaning",
+    "Marker, bed, and voice gain within controlled bounds",
+    "Breath-rail gain",
+    "Ambient versus binaural A/B support selection",
+    "File format, encoding, and packaging changes that preserve audible content and timing"
+  ],
+  "change_control": "Any change to words, source operation, attribution, order, phase boundary, or intended state requires a new candidate revision, new script SHA-256, machine gate, and independent fidelity review.",
+  "render_authority": "TEST_RENDER_AUTHORIZED",
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "QCTP-D1-AUDIO-A03 — render and integrate the locked source-grounded script with anti-startle continuous support, then close the five-minute automated and physical-device acceptance gate before a full 25-minute retest."
+}
