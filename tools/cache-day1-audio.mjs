@@ -80,7 +80,10 @@ async function verifyExistingPack(entries) {
   }
 
   if (manifest?.schema !== "qctp-day1-local-audio-pack-v2") return false;
-  if (!Array.isArray(manifest.files) || manifest.files.length !== entries.length) {
+  if (
+    !Array.isArray(manifest.files) ||
+    manifest.files.length !== entries.length
+  ) {
     return false;
   }
 
@@ -129,7 +132,11 @@ function assertAudioResponse({ response, body, sourceUrl }) {
       `Audio response was too small (${body.length} bytes) for ${sourceUrl}.`,
     );
   }
-  if (looksLikeMarkup || contentType.startsWith("text/") || contentType.includes("json")) {
+  if (
+    looksLikeMarkup ||
+    contentType.startsWith("text/") ||
+    contentType.includes("json")
+  ) {
     throw new Error(
       `Non-audio response for ${sourceUrl}: content-type=${contentType || "unknown"}, first12=${first12Hex}.`,
     );
@@ -208,7 +215,9 @@ async function main() {
         first12Hex: inspection.first12Hex,
       };
       files.push(record);
-      console.log(`${body.length} bytes, sha256=${record.sha256.slice(0, 12)}…`);
+      console.log(
+        `${body.length} bytes, sha256=${record.sha256.slice(0, 12)}…`,
+      );
     }
 
     const manifest = {

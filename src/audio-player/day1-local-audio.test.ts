@@ -10,9 +10,7 @@ describe("Day 1 local audio map", () => {
     expect(DAY1_LOCAL_AUDIO.voice).toBe("Chill Brian");
     expect(DAY1_LOCAL_AUDIO.lesson).toMatch(/audio\/day1\/lesson\.mp3$/);
     expect(DAY1_LOCAL_AUDIO.preview).toMatch(/audio\/day1\/preview\.mp3$/);
-    expect(DAY1_LOCAL_AUDIO.manifest).toMatch(
-      /audio\/day1\/manifest\.json$/,
-    );
+    expect(DAY1_LOCAL_AUDIO.manifest).toMatch(/audio\/day1\/manifest\.json$/);
 
     const timestamps = Object.keys(DAY1_LOCAL_AUDIO.cues).map(Number);
     expect(timestamps).toEqual(DAY1_CUES.map((cue) => cue.at));

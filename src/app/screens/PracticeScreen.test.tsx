@@ -124,7 +124,9 @@ describe("PracticeScreen guide audio", () => {
 
     expect(screen.getByRole("button", { name: "Resume" })).toBeVisible();
     expect(
-      screen.getByText(/Local guide audio could not start, so the timer was paused/),
+      screen.getByText(
+        /Local guide audio could not start, so the timer was paused/,
+      ),
     ).toBeVisible();
   });
 
