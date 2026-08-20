@@ -1,0 +1,2 @@
+QCTP local Day 1 audio packaging gate.
+Purpose: materialize the protected Chill Brian cue set into a checksum-manifested same-origin PWA audio pack, eliminating live third-party playback during meditation.
