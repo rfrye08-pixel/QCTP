@@ -1,0 +1,170 @@
+name: QCTP Day 1 source research
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/qctp-day1-source-research.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  collect-source-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install retrieval tools
+        run: python -m pip install --disable-pip-version-check --quiet requests yt-dlp youtube-transcript-api
+
+      - name: Collect public metadata and captions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p source-research
+          python - <<'PY'
+          import json
+          import pathlib
+          import traceback
+          from datetime import datetime, timezone
+
+          import requests
+
+          VIDEOS = [
+              {"id": "4f9GOGTaXuc", "role": "original_qctp_anchor"},
+              {"id": "-qt2FYdP_EA", "role": "obe_psionics_remote_viewing_anchor"},
+          ]
+          OUT = pathlib.Path("source-research")
+          UA = "Mozilla/5.0 (compatible; QCTPSourceResearch/1.0; +https://github.com/rfrye08-pixel/QCTP)"
+          session = requests.Session()
+          session.headers.update({"User-Agent": UA})
+
+          def write_json(path, value):
+              path.write_text(json.dumps(value, indent=2, ensure_ascii=False), encoding="utf-8")
+
+          index = {
+              "schema": "qctp-day1-source-research-v1",
+              "generated_at": datetime.now(timezone.utc).isoformat(),
+              "videos": [],
+          }
+
+          for item in VIDEOS:
+              vid = item["id"]
+              folder = OUT / vid
+              folder.mkdir(parents=True, exist_ok=True)
+              record = {**item, "youtube_url": f"https://www.youtube.com/watch?v={vid}", "attempts": []}
+
+              # YouTube public oEmbed metadata.
+              try:
+                  r = session.get(
+                      "https://www.youtube.com/oembed",
+                      params={"url": record["youtube_url"], "format": "json"},
+                      timeout=30,
+                  )
+                  record["attempts"].append({"route": "youtube_oembed", "status": r.status_code})
+                  (folder / "youtube-oembed-response.txt").write_text(r.text, encoding="utf-8")
+                  if r.ok:
+                      data = r.json()
+                      write_json(folder / "youtube-oembed.json", data)
+                      record["oembed"] = data
+              except Exception as exc:
+                  record["attempts"].append({"route": "youtube_oembed", "error": repr(exc)})
+
+              # SumMyNews caption proxy; public, no-auth API.
+              try:
+                  r = session.get(
+                      "https://www.summynews.com/api.php",
+                      params={"v": vid, "format": "json"},
+                      timeout=90,
+                  )
+                  record["attempts"].append({"route": "summynews", "status": r.status_code})
+                  (folder / "summynews-response.txt").write_text(r.text, encoding="utf-8")
+                  if r.ok:
+                      data = r.json()
+                      write_json(folder / "summynews-transcript.json", data)
+                      record["summynews"] = {
+                          "language": data.get("language"),
+                          "language_name": data.get("language_name"),
+                          "is_auto_generated": data.get("is_auto_generated"),
+                          "segment_count": len(data.get("transcript") or []),
+                          "attribution": data.get("attribution"),
+                      }
+              except Exception as exc:
+                  record["attempts"].append({"route": "summynews", "error": repr(exc)})
+
+              # youtube-transcript-api fallback.
+              try:
+                  from youtube_transcript_api import YouTubeTranscriptApi
+                  api = YouTubeTranscriptApi()
+                  fetched = api.fetch(vid, languages=["en", "en-US", "en-GB"])
+                  segments = [
+                      {"text": s.text, "start": s.start, "duration": s.duration}
+                      for s in fetched
+                  ]
+                  write_json(folder / "youtube-transcript-api.json", {
+                      "video_id": vid,
+                      "language": getattr(fetched, "language", None),
+                      "language_code": getattr(fetched, "language_code", None),
+                      "is_generated": getattr(fetched, "is_generated", None),
+                      "transcript": segments,
+                  })
+                  record["attempts"].append({"route": "youtube_transcript_api", "status": 200, "segment_count": len(segments)})
+              except Exception as exc:
+                  record["attempts"].append({"route": "youtube_transcript_api", "error": repr(exc)})
+                  (folder / "youtube-transcript-api-error.txt").write_text(traceback.format_exc(), encoding="utf-8")
+
+              # yt-dlp metadata and caption URL inventory fallback.
+              try:
+                  import yt_dlp
+                  opts = {
+                      "quiet": True,
+                      "no_warnings": True,
+                      "skip_download": True,
+                      "writesubtitles": False,
+                      "writeautomaticsub": False,
+                      "socket_timeout": 45,
+                  }
+                  with yt_dlp.YoutubeDL(opts) as ydl:
+                      info = ydl.extract_info(record["youtube_url"], download=False)
+                  selected = {
+                      key: info.get(key)
+                      for key in [
+                          "id", "title", "description", "channel", "channel_id", "uploader",
+                          "uploader_id", "upload_date", "timestamp", "duration", "webpage_url",
+                          "availability", "live_status", "categories", "tags"
+                      ]
+                  }
+                  selected["subtitles"] = info.get("subtitles") or {}
+                  selected["automatic_captions"] = info.get("automatic_captions") or {}
+                  write_json(folder / "yt-dlp-metadata.json", selected)
+                  record["attempts"].append({"route": "yt_dlp", "status": 200, "title": selected.get("title")})
+                  record["yt_dlp"] = {k: selected.get(k) for k in ["title", "channel", "uploader", "duration", "upload_date"]}
+              except Exception as exc:
+                  record["attempts"].append({"route": "yt_dlp", "error": repr(exc)})
+                  (folder / "yt-dlp-error.txt").write_text(traceback.format_exc(), encoding="utf-8")
+
+              write_json(folder / "retrieval-record.json", record)
+              index["videos"].append(record)
+
+          write_json(OUT / "index.json", index)
+          PY
+
+      - name: Print retrieval summary
+        run: cat source-research/index.json
+
+      - name: Upload source evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: qctp-day1-source-research
+          path: source-research/
+          if-no-files-found: error
+          retention-days: 14
