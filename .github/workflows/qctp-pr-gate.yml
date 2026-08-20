@@ -21,7 +21,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: qctp-pr-${{ github.event.pull_request.number || github.ref }}
@@ -38,6 +38,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
 
       - name: Set up Node 24
         uses: actions/setup-node@v4
@@ -55,6 +56,19 @@ jobs:
           path: public/audio/day1/
           if-no-files-found: error
           retention-days: 14
+
+      - name: Persist the checksum-verified local audio pack
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/audio/day1
+          if git diff --cached --quiet; then
+            echo "The local Day 1 audio pack is already committed."
+          else
+            git commit -m "Package Day 1 narration as verified local audio"
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          fi
 
       - name: Install Node dependencies
         run: npm ci
