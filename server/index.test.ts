@@ -8,7 +8,7 @@ import express, { type Express } from "express";
 import request from "supertest";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { mountPreviewPwa } from "./index";
+import { mountPreviewPwa } from "./index.js";
 
 const createExpressApp = express as unknown as () => Express;
 let distributionDirectory: string;
