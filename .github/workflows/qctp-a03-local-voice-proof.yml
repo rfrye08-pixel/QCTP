@@ -1,0 +1,98 @@
+name: QCTP A03 local voice proof
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/qctp-a03-local-voice-proof-trigger"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render-local-voice-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout candidate merge
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Chatterbox Nano and audio tools
+        run: |
+          python -m pip install --disable-pip-version-check --upgrade pip
+          python -m pip install --disable-pip-version-check chatterbox-tts soundfile
+
+      - name: Download authorized Chill Brian reference clip
+        run: |
+          curl --fail --location --retry 3 \
+            "https://resource2.heygen.ai/text_to_speech/a0071e4bb842413bbeb2819c6b1de7c8/d2f4f24783d04e22ab49ee8fdc3715e0/id=43407896-acc6-4a02-875c-03185165250e.wav" \
+            --output chill-brian-reference.wav
+          ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 chill-brian-reference.wav
+
+      - name: Render one locked cue with the local zero-cost clone
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import pathlib
+          import time
+
+          import soundfile as sf
+          import torch
+          from chatterbox.tts_turbo import ChatterboxTurboTTS
+
+          text = "If the body is ready, allow a small amount of the holding to release. If nothing changes, remain accurate and accepting. Do not force a deeper process."
+          expected_text_sha = "006daa3eee2548de2bc01be0709ecd190da2fa47d83a79e2d2932f1729fee4c6"
+          actual_text_sha = hashlib.sha256(text.encode("utf-8")).hexdigest()
+          if actual_text_sha != expected_text_sha:
+              raise SystemExit(f"locked text hash mismatch: {actual_text_sha}")
+
+          started = time.time()
+          model = ChatterboxTurboTTS.from_pretrained(device="cpu", nano=True)
+          loaded = time.time()
+          wav = model.generate(text, audio_prompt_path="chill-brian-reference.wav")
+          generated = time.time()
+
+          array = wav.squeeze().detach().cpu().numpy()
+          sf.write("D1-A02-108-local-clone-proof.wav", array, model.sr, subtype="PCM_16")
+          duration = len(array) / model.sr
+          record = {
+              "schema": "qctp-a03-local-voice-proof-v1",
+              "cue_id": "D1-A02-108",
+              "text_sha256": actual_text_sha,
+              "reference": "authorized Chill Brian A03 cue D1-A02-000",
+              "engine": "resemble-ai/chatterbox Nano",
+              "engine_license": "MIT",
+              "device": "cpu",
+              "sample_rate": model.sr,
+              "duration_seconds": duration,
+              "model_load_seconds": loaded - started,
+              "generation_seconds": generated - loaded,
+              "real_time_factor": (generated - loaded) / duration,
+              "torch_version": torch.__version__,
+              "release_authority": "ZERO_RELEASE_PROOF_ONLY"
+          }
+          pathlib.Path("QCTP_A03_LOCAL_VOICE_PROOF.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+          print(json.dumps(record, indent=2))
+          PY
+
+      - name: Inspect rendered proof
+        run: |
+          ffprobe -v error -show_entries stream=codec_name,sample_rate,channels,duration -of json D1-A02-108-local-clone-proof.wav
+          sha256sum chill-brian-reference.wav D1-A02-108-local-clone-proof.wav QCTP_A03_LOCAL_VOICE_PROOF.json
+
+      - name: Upload local voice proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: qctp-a03-local-voice-proof-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            D1-A02-108-local-clone-proof.wav
+            QCTP_A03_LOCAL_VOICE_PROOF.json
+          if-no-files-found: error
+          retention-days: 14
