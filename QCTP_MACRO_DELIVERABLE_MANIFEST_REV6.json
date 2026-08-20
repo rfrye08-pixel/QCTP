@@ -1,0 +1,148 @@
+{
+  "schema": "qctp-macro-deliverable-manifest-v6",
+  "manifest_id": "QCTP-PLATFORM-REV6-DAY1-GUIDANCE-REDESIGN",
+  "title": "Quantum Consciousness Training Platform — Hardened Protocol and Experience",
+  "updated_at": "2026-08-20T09:30:00-05:00",
+  "status": "ACTIVE",
+  "supersedes": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV5.json",
+  "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness training platform that teaches exact state-entry mechanics, verifies repeatable capability, supports serious personal experiments, preserves source lineage and raw evidence, and remains compelling and effortless to use on iPhone.",
+  "controlled_baseline": {
+    "released_runtime": "1.1.4",
+    "released_branch": "main",
+    "private_runtime_origin": "https://reos.tail6ed282.ts.net/",
+    "rev2_candidate_branch": "qctp-platform-rev2-codex",
+    "rev2_candidate_head_observed": "b87c402c4780ec8c21e24c877d7c04007985b8fb",
+    "candidate_pr": 2,
+    "runtime_cost_mode": "FREE_LOCAL",
+    "controlled_voice": "Chill Brian",
+    "foundation_days": 112,
+    "authored_released_days": [1],
+    "release_authority": "ZERO_RELEASE"
+  },
+  "deliverables": [
+    {
+      "id": "QCTP-R6-D01",
+      "name": "Maintainable Rev2 platform candidate",
+      "status": "COMPLETE_CANDIDATE",
+      "evidence": [
+        "React and TypeScript PWA",
+        "IndexedDB local-first storage and migration",
+        "voice capture and PX13 local transcription",
+        "Mirror Core and Local AI Mirror",
+        "Robert Edward Grant REG-01",
+        "private Tailscale HTTPS origin",
+        "draft PR #2"
+      ]
+    },
+    {
+      "id": "QCTP-R6-D02",
+      "name": "Day 1 technical audio delivery",
+      "status": "LOCAL_SAME_ORIGIN_CANDIDATE_MACHINE_VERIFIED_PHYSICAL_CONFIGURATION_IDENTITY_OPEN",
+      "implemented": [
+        "persistent reusable audio element",
+        "timer fail-closed pause on playback rejection",
+        "same-origin local MP3 pack",
+        "checksum manifest",
+        "isolated staging and live-root deployment route"
+      ],
+      "remaining": [
+        "retain technical delivery as a foundation for Guidance Rev1 continuous stems",
+        "verify exact physical installed candidate identity when the revised guidance package is deployed",
+        "do not grant content acceptance from technical continuity alone"
+      ]
+    },
+    {
+      "id": "QCTP-R6-D03",
+      "name": "Day 1 natural-duration physical session",
+      "status": "PRACTICE_COMPLETION_PASS_GUIDANCE_ACCEPTANCE_FAIL",
+      "evidence": {
+        "source": "Ryan direct report on 2026-08-20",
+        "evidence_class": "USER_REPORTED_FULL_NATURAL_DURATION_PHYSICAL_IPHONE_EXPERIENCE",
+        "duration": "1500_SECONDS_COMPLETED",
+        "guide_continuity": "LIMITED_PASS",
+        "breath_coaching": "FAIL",
+        "anti_startle_cue_entry": "FAIL",
+        "overall_guidance_quality": "FAIL",
+        "state_access": "NOT_PROMOTED_FROM_TIMER_COMPLETION"
+      },
+      "authority_ref": "QCTP_DAY1_FIRST_NATURAL_SESSION_GUIDANCE_AUDIT_REV0_2026-08-20.md"
+    },
+    {
+      "id": "QCTP-R6-D04",
+      "name": "Day 1 Guidance Rev1 content and sound architecture",
+      "status": "CONTROLLED_DESIGN_COMPLETE_IMPLEMENTATION_OPEN",
+      "authority_refs": [
+        "QCTP_DAY1_GUIDANCE_BREATH_AND_SOUND_PROTOCOL_REV1_2026-08-20.md",
+        "QCTP_DAY1_GUIDANCE_REV1_IMPLEMENTATION_HANDOFF_2026-08-20.md"
+      ],
+      "delivered_design": [
+        "exact QCTP-B1 4-in/6-out breath coaching",
+        "Teach-first cue density with tapered silence",
+        "continuous 25-minute voice stem",
+        "continuous Ambient/Binaural support bed",
+        "soft learned pre-cue marker and bed ducking",
+        "phase-specific narration-rate limits",
+        "earlier complete return",
+        "post-session startle/breath/sound adaptation",
+        "capability scoring separate from completion"
+      ],
+      "remaining": [
+        "lock exact spoken copy",
+        "render Chill Brian cues and stems",
+        "generate deterministic Ambient/Binaural beds",
+        "integrate continuous player and readiness controls",
+        "complete five-minute physical quality acceptance",
+        "complete natural 25-minute acceptance"
+      ]
+    },
+    {
+      "id": "QCTP-R6-D05",
+      "name": "Breath Director and Breath Foundations",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md"
+    },
+    {
+      "id": "QCTP-R6-D06",
+      "name": "Training protocol hardening and State Atlas",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_refs": [
+        "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
+        "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md"
+      ]
+    },
+    {
+      "id": "QCTP-R6-D07",
+      "name": "User-friendly exploration experience",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md"
+    },
+    {
+      "id": "QCTP-R6-D08",
+      "name": "Thomas Campbell source track",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_THOMAS_CAMPBELL_INTEGRATION_REV0_2026-08-18.md",
+      "modules": 10
+    },
+    {
+      "id": "QCTP-R6-D09",
+      "name": "Foundation Days 2-112 hardened curriculum",
+      "status": "OPEN",
+      "guard": "Do not fabricate or release future days until the revised Day 1 production method passes content, breath, startle, audio, progression, and device acceptance."
+    },
+    {
+      "id": "QCTP-R6-D10",
+      "name": "Hardened release package and acceptance",
+      "status": "OPEN",
+      "required": [
+        "Day 1 Guidance Rev1 implementation and physical acceptance",
+        "Breath Director implementation",
+        "remaining microphone, offline, reconnect, notification, lifecycle, and export checks",
+        "actual-origin Rev1 migration comparison",
+        "explicit merge and deployment authority"
+      ]
+    }
+  ],
+  "current_macro_delta": "Ryan completed the complete natural Day 1 session, establishing runtime continuity but rejecting the guidance experience. A measured audit found long digital silences, overly fast cues, no exact breath instruction, no predictive cue marker, and an inadequate return. Day 1 Guidance Rev1 now defines a Teach-first script, exact 4/6 breath coaching, a continuous Ambient/Binaural sound bed, anti-startle cue grammar, slower narration, continuous media stems, and adaptive debrief. Design authority is complete; rendering, integration, and physical acceptance are open.",
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "Execute QCTP-D1-G1-A01: lock and render the Day 1 Guidance Rev1 voice, generate the Ambient/Binaural support beds, integrate the continuous five-minute acceptance build, and close automated regression before involving Ryan again."
+}
