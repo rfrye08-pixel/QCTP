@@ -1,0 +1,160 @@
+{
+  "schema": "qctp-macro-deliverable-manifest-v7",
+  "manifest_id": "QCTP-PLATFORM-REV7-SOURCE-FIRST-GUIDANCE",
+  "title": "Quantum Consciousness Training Platform — Source-Grounded Training and Enhanced Delivery",
+  "updated_at": "2026-08-20T11:15:00-05:00",
+  "status": "ACTIVE",
+  "supersedes": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV6.json",
+  "north_star": "A mobile-first, zero-recurring-cost-by-default consciousness training platform that teaches the selected teachers' and practitioner lineages' actual methods, improves their clarity and delivery without silently replacing them, verifies repeatable capability, and preserves raw experience and source fidelity.",
+  "controlled_baseline": {
+    "released_runtime": "1.1.4",
+    "released_branch": "main",
+    "private_runtime_origin": "https://reos.tail6ed282.ts.net/",
+    "rev2_candidate_branch": "qctp-platform-rev2-codex",
+    "rev2_candidate_head_observed": "b87c402c4780ec8c21e24c877d7c04007985b8fb",
+    "candidate_pr": 2,
+    "runtime_cost_mode": "FREE_LOCAL",
+    "foundation_days": 112,
+    "release_authority": "ZERO_RELEASE"
+  },
+  "source_authority": {
+    "standard": "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
+    "rule": "Teacher/source guidance is the content baseline; QCTP improvements are a separately labeled enhancement layer.",
+    "practice_classes": [
+      "SOURCE_FAITHFUL",
+      "SOURCE_ENHANCED",
+      "QCTP_SYNTHESIS",
+      "QCTP_ORIGINAL"
+    ]
+  },
+  "deliverables": [
+    {
+      "id": "QCTP-R7-D01",
+      "name": "Maintainable Rev2 platform candidate",
+      "status": "COMPLETE_CANDIDATE",
+      "evidence": [
+        "React and TypeScript PWA",
+        "IndexedDB local-first storage and migration",
+        "voice capture and PX13 local transcription",
+        "Mirror Core and Local AI Mirror",
+        "source tracks, Studio, Lab, Codex, and Insights architecture",
+        "private Tailscale HTTPS origin",
+        "draft PR #2"
+      ]
+    },
+    {
+      "id": "QCTP-R7-D02",
+      "name": "Day 1 natural-duration physical session and guidance audit",
+      "status": "PRACTICE_COMPLETION_PASS_GUIDANCE_ACCEPTANCE_FAIL",
+      "evidence": {
+        "source": "Ryan direct full-session report on 2026-08-20",
+        "duration": "1500_SECONDS_COMPLETED",
+        "breath_coaching": "FAIL",
+        "anti_startle_entry": "FAIL",
+        "overall_guidance": "FAIL",
+        "measured_audio_audit": "PASS"
+      },
+      "authority_ref": "QCTP_DAY1_FIRST_NATURAL_SESSION_GUIDANCE_AUDIT_REV0_2026-08-20.md"
+    },
+    {
+      "id": "QCTP-R7-D03",
+      "name": "Source fidelity and enhancement authority",
+      "status": "DELIVERED_CONTROLLED",
+      "authority_ref": "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
+      "acceptance": [
+        "source method controls practice content",
+        "QCTP enhancement remains separately identified",
+        "segment-level source crosswalk required",
+        "source-specific breath and terminology preserved",
+        "paid scripts not copied",
+        "unresolved source segments cannot be rendered"
+      ]
+    },
+    {
+      "id": "QCTP-R7-D04",
+      "name": "Day 1 primary-source baseline reconstruction",
+      "status": "OPEN",
+      "handoff_ref": "QCTP_DAY1_SOURCE_BASELINE_RECONSTRUCTION_HANDOFF_REV0_2026-08-20.md",
+      "required_artifacts": [
+        "primary-source evidence packet",
+        "segment-level source-practice crosswalk",
+        "source-faithful baseline",
+        "QCTP enhancement delta",
+        "source-labeled script candidate",
+        "source-fidelity review"
+      ],
+      "blocker": "The exact teacher/source mapping for each Day 1 segment is not yet controlled."
+    },
+    {
+      "id": "QCTP-R7-D05",
+      "name": "Day 1 audio and experience enhancement layer",
+      "status": "ENGINEERING_DESIGN_PRESERVED_CONTENT_INTEGRATION_HELD",
+      "preserved": [
+        "continuous media architecture",
+        "anti-startle marker and fades",
+        "Ambient/Binaural support options",
+        "local/offline packaging",
+        "slower mastered narration",
+        "readiness and fail-closed behavior",
+        "improved return",
+        "voice-first debrief and adaptation"
+      ],
+      "held": [
+        "exact spoken sequence",
+        "QCTP-B1 as assumed Day 1 baseline",
+        "fixed binaural trajectory",
+        "teacher attribution",
+        "voice rendering and sound-bed production"
+      ]
+    },
+    {
+      "id": "QCTP-R7-D06",
+      "name": "Breath Director and Breath Foundations",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "authority_ref": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
+      "guard": "Breath Director methods may support source practices but may not silently replace source-specific breathing."
+    },
+    {
+      "id": "QCTP-R7-D07",
+      "name": "Training protocol hardening and State Atlas",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN"
+    },
+    {
+      "id": "QCTP-R7-D08",
+      "name": "Source tracks",
+      "status": "PARTIAL",
+      "controlled_tracks": [
+        "Theresa Bullard",
+        "Joe Dispenza",
+        "HeartMath",
+        "Lynne McTaggart",
+        "Monroe Institute / William Buhlman",
+        "Thomas Campbell",
+        "Controlled Remote Viewing",
+        "psionics practitioner methods",
+        "Robert Edward Grant"
+      ],
+      "remaining": "Complete source records, extracted practices, and fidelity crosswalks for delivered lessons."
+    },
+    {
+      "id": "QCTP-R7-D09",
+      "name": "Foundation Days 2-112 source-grounded curriculum",
+      "status": "OPEN",
+      "guard": "No future day may be authored from generic synthesis before its approved source baseline and enhancement delta exist."
+    },
+    {
+      "id": "QCTP-R7-D10",
+      "name": "Hardened release package and acceptance",
+      "status": "OPEN",
+      "required": [
+        "source fidelity for every released practice",
+        "Day 1 source-grounded guidance implementation and physical acceptance",
+        "remaining device and data lifecycle checks",
+        "explicit merge and deployment authority"
+      ]
+    }
+  ],
+  "current_macro_delta": "Ryan corrected the content authority: QCTP must start from the actual meditation guidance of the selected course teachers and improve that baseline. The prior Day 1 redesign is therefore held from rendering. Its valid audio and UX engineering is preserved, while the exact script, breath baseline, source attribution, and binaural profile must be rebuilt from a segment-level source crosswalk.",
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "Execute QCTP-D1-SOURCE-A01 by producing the Day 1 primary-source evidence packet and complete segment-level source-practice crosswalk before any new voice or sound-bed rendering."
+}
