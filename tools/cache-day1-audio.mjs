@@ -10,6 +10,7 @@ const manifestPath = join(outputRoot, "manifest.json");
 const refresh = process.argv.includes("--refresh");
 
 const sha256 = (buffer) => createHash("sha256").update(buffer).digest("hex");
+const cueFileName = (at) => `cue-${String(at).padStart(4, "0")}.mp3`;
 
 function parseSources(source) {
   const cueBlock = source.match(
@@ -29,7 +30,7 @@ function parseSources(source) {
       id: `cue-${String(at).padStart(4, "0")}`,
       at,
       sourceUrl,
-      relativePath: `cue-${String(at).padStart(4, "0")}.wav`,
+      relativePath: cueFileName(at),
     });
   }
 
@@ -47,8 +48,8 @@ function parseSources(source) {
   }
 
   return [
-    { id: "preview", sourceUrl: preview, relativePath: "preview.wav" },
-    { id: "lesson", sourceUrl: lesson, relativePath: "lesson.wav" },
+    { id: "preview", sourceUrl: preview, relativePath: "preview.mp3" },
+    { id: "lesson", sourceUrl: lesson, relativePath: "lesson.mp3" },
     ...cues.sort((left, right) => left.at - right.at),
   ];
 }
@@ -62,6 +63,12 @@ async function fileExists(path) {
   }
 }
 
+function isMp3(body) {
+  if (body.subarray(0, 3).toString("ascii") === "ID3") return true;
+  if (body.length < 2) return false;
+  return body[0] === 0xff && (body[1] & 0xe0) === 0xe0;
+}
+
 async function verifyExistingPack(entries) {
   if (refresh || !(await fileExists(manifestPath))) return false;
 
@@ -72,7 +79,7 @@ async function verifyExistingPack(entries) {
     return false;
   }
 
-  if (manifest?.schema !== "qctp-day1-local-audio-pack-v1") return false;
+  if (manifest?.schema !== "qctp-day1-local-audio-pack-v2") return false;
   if (!Array.isArray(manifest.files) || manifest.files.length !== entries.length) {
     return false;
   }
@@ -82,31 +89,32 @@ async function verifyExistingPack(entries) {
     if (
       !record ||
       record.sourceUrl !== expected.sourceUrl ||
-      record.relativePath !== expected.relativePath
+      record.relativePath !== expected.relativePath ||
+      record.mediaType !== "audio/mpeg"
     ) {
       return false;
     }
     const path = join(outputRoot, expected.relativePath);
     if (!(await fileExists(path))) return false;
     const body = await readFile(path);
-    if (body.length !== record.bytes || sha256(body) !== record.sha256) {
+    if (
+      body.length !== record.bytes ||
+      sha256(body) !== record.sha256 ||
+      !isMp3(body)
+    ) {
       return false;
     }
   }
 
   console.log(
-    `Verified existing local Day 1 audio pack: ${entries.length} files, ${manifest.totalBytes} bytes.`,
+    `Verified existing local Day 1 audio pack: ${entries.length} MP3 files, ${manifest.totalBytes} bytes.`,
   );
   return true;
 }
 
 function assertAudioResponse({ response, body, sourceUrl }) {
   const contentType = response.headers.get("content-type") ?? "";
-  const first12 = body.subarray(0, 12);
-  const first12Hex = first12.toString("hex");
-  const isRiffWave =
-    first12.subarray(0, 4).toString("ascii") === "RIFF" &&
-    first12.subarray(8, 12).toString("ascii") === "WAVE";
+  const first12Hex = body.subarray(0, 12).toString("hex");
   const bodyStart = body.subarray(0, 80).toString("utf8").trim().toLowerCase();
   const looksLikeMarkup =
     bodyStart.startsWith("<") ||
@@ -126,13 +134,13 @@ function assertAudioResponse({ response, body, sourceUrl }) {
       `Non-audio response for ${sourceUrl}: content-type=${contentType || "unknown"}, first12=${first12Hex}.`,
     );
   }
-  if (!isRiffWave && !contentType.startsWith("audio/")) {
+  if (!isMp3(body)) {
     throw new Error(
-      `Unrecognized audio response for ${sourceUrl}: content-type=${contentType || "unknown"}, first12=${first12Hex}.`,
+      `Protected Chill Brian asset is not MP3 data: ${sourceUrl}; content-type=${contentType || "unknown"}; first12=${first12Hex}.`,
     );
   }
 
-  return { contentType, first12Hex, isRiffWave };
+  return { contentType, first12Hex };
 }
 
 async function download(entry) {
@@ -142,9 +150,9 @@ async function download(entry) {
       const response = await fetch(entry.sourceUrl, {
         redirect: "follow",
         headers: {
-          accept: "audio/wav,audio/*;q=0.9,*/*;q=0.5",
+          accept: "audio/mpeg,audio/*;q=0.9,*/*;q=0.5",
           "user-agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 QCTP-Audio-Pack/1.0",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 QCTP-Audio-Pack/2.0",
         },
       });
       const body = Buffer.from(await response.arrayBuffer());
@@ -171,8 +179,9 @@ async function main() {
   const entries = parseSources(source);
   if (await verifyExistingPack(entries)) return;
 
-  await mkdir(outputRoot, { recursive: true });
-  const stagingRoot = join(outputRoot, `.staging-${process.pid}`);
+  const audioParent = dirname(outputRoot);
+  await mkdir(audioParent, { recursive: true });
+  const stagingRoot = join(audioParent, `.day1-staging-${process.pid}`);
   await rm(stagingRoot, { recursive: true, force: true });
   await mkdir(stagingRoot, { recursive: true });
 
@@ -192,37 +201,35 @@ async function main() {
         relativePath: entry.relativePath,
         runtimeUrl: `/audio/day1/${entry.relativePath}`,
         sourceUrl: entry.sourceUrl,
+        mediaType: "audio/mpeg",
         bytes: body.length,
         sha256: sha256(body),
-        contentType: inspection.contentType,
+        sourceContentType: inspection.contentType,
         first12Hex: inspection.first12Hex,
-        riffWave: inspection.isRiffWave,
       };
       files.push(record);
       console.log(`${body.length} bytes, sha256=${record.sha256.slice(0, 12)}…`);
     }
 
-    for (const record of files) {
-      const destination = join(outputRoot, record.relativePath);
-      await rm(destination, { force: true });
-      await rename(join(stagingRoot, record.relativePath), destination);
-    }
-
     const manifest = {
-      schema: "qctp-day1-local-audio-pack-v1",
+      schema: "qctp-day1-local-audio-pack-v2",
       generatedAt: new Date().toISOString(),
       source: "protected Chill Brian Rev1.1.4 remote references",
       fileCount: files.length,
       totalBytes: files.reduce((sum, file) => sum + file.bytes, 0),
+      mediaType: "audio/mpeg",
       files,
     };
     await writeFile(
-      manifestPath,
+      join(stagingRoot, "manifest.json"),
       `${JSON.stringify(manifest, null, 2)}\n`,
       "utf8",
     );
+
+    await rm(outputRoot, { recursive: true, force: true });
+    await rename(stagingRoot, outputRoot);
     console.log(
-      `Created local Day 1 audio pack: ${manifest.fileCount} files, ${manifest.totalBytes} bytes.`,
+      `Created local Day 1 audio pack: ${manifest.fileCount} MP3 files, ${manifest.totalBytes} bytes.`,
     );
   } finally {
     await rm(stagingRoot, { recursive: true, force: true });
