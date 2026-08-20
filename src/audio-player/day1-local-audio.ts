@@ -1,6 +1,13 @@
 import { DAY1_CUES } from "../foundation";
 
-const DAY1_LOCAL_AUDIO_ROOT = "/audio/day1" as const;
+const qctpBaseUrl = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const DAY1_LOCAL_AUDIO_ROOT = `${qctpBaseUrl}audio/day1`;
+
+function audioAsset(fileName: string): string {
+  return `${DAY1_LOCAL_AUDIO_ROOT}/${fileName}`;
+}
 
 function cueFileName(at: number): string {
   return `cue-${String(at).padStart(4, "0")}.mp3`;
@@ -8,15 +15,12 @@ function cueFileName(at: number): string {
 
 export const DAY1_LOCAL_AUDIO = Object.freeze({
   voice: "Chill Brian",
-  preview: `${DAY1_LOCAL_AUDIO_ROOT}/preview.mp3`,
-  lesson: `${DAY1_LOCAL_AUDIO_ROOT}/lesson.mp3`,
-  manifest: `${DAY1_LOCAL_AUDIO_ROOT}/manifest.json`,
+  preview: audioAsset("preview.mp3"),
+  lesson: audioAsset("lesson.mp3"),
+  manifest: audioAsset("manifest.json"),
   cues: Object.freeze(
     Object.fromEntries(
-      DAY1_CUES.map((cue) => [
-        cue.at,
-        `${DAY1_LOCAL_AUDIO_ROOT}/${cueFileName(cue.at)}`,
-      ]),
+      DAY1_CUES.map((cue) => [cue.at, audioAsset(cueFileName(cue.at))]),
     ) as Readonly<Record<number, string>>,
   ),
 });
