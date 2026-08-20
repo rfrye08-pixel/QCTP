@@ -6,6 +6,14 @@ on:
       - main
     paths:
       - "tools/**"
+      - "public/audio/**"
+      - "src/audio-player/**"
+      - "src/app/screens/PracticeScreen.tsx"
+      - "src/app/screens/PracticeScreen.test.tsx"
+      - "server/index.ts"
+      - "server/index.test.ts"
+      - "package.json"
+      - "vite.config.ts"
       - ".github/workflows/qctp-windows-updater-gate.yml"
   workflow_dispatch:
 
@@ -59,7 +67,7 @@ jobs:
         shell: cmd
         run: npm ci
 
-      - name: Prove live-root deployment while active esbuild is locked
+      - name: Prove same-origin live-root deployment while active esbuild is locked
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
@@ -75,7 +83,7 @@ jobs:
           )
           [IO.File]::WriteAllText(
             (Join-Path $dist 'QCTP_PRIVATE_RUNTIME_BUILD.json'),
-            '{"candidate_sha":"old-runtime","audio_fix_present":false}',
+            '{"candidate_sha":"old-runtime","audio_fix_present":false,"local_day1_audio_pack":false}',
             $utf8NoBom
           )
 
@@ -91,6 +99,7 @@ jobs:
             ".json": "application/json; charset=utf-8",
             ".js": "text/javascript; charset=utf-8",
             ".css": "text/css; charset=utf-8",
+            ".mp3": "audio/mpeg",
             ".png": "image/png",
             ".svg": "image/svg+xml",
             ".webmanifest": "application/manifest+json",
@@ -184,7 +193,60 @@ jobs:
             if (-not [bool]$identity.audio_fix_present) {
               throw 'The served identity does not attest the Day 1 audio fix.'
             }
-            Write-Host 'Full Windows live-root deployment simulation: PASS'
+            if (-not [bool]$identity.local_day1_audio_pack) {
+              throw 'The served identity does not attest the local Day 1 audio pack.'
+            }
+            if ([string]$identity.local_day1_audio_schema -ne 'qctp-day1-local-audio-pack-v2') {
+              throw "Unexpected served local-audio schema: $($identity.local_day1_audio_schema)"
+            }
+            if ([int]$identity.local_day1_audio_file_count -ne 23) {
+              throw "Unexpected served local-audio file count: $($identity.local_day1_audio_file_count)"
+            }
+            if ([int64]$identity.local_day1_audio_total_bytes -ne 13340411) {
+              throw "Unexpected served local-audio byte count: $($identity.local_day1_audio_total_bytes)"
+            }
+            if ([bool]$identity.live_third_party_audio_required) {
+              throw 'The served identity still requires live third-party audio.'
+            }
+
+            $manifestUri = "http://127.0.0.1:8787/audio/day1/manifest.json?nonce=$([Guid]::NewGuid().ToString('N'))"
+            $manifest = Invoke-RestMethod -Uri $manifestUri -TimeoutSec 8
+            if ([string]$manifest.schema -ne 'qctp-day1-local-audio-pack-v2') {
+              throw "Unexpected served manifest schema: $($manifest.schema)"
+            }
+            if ([int]$manifest.fileCount -ne 23 -or @($manifest.files).Count -ne 23) {
+              throw 'The served Day 1 manifest does not contain all 23 audio records.'
+            }
+            if ([int64]$manifest.totalBytes -ne 13340411 -or [string]$manifest.mediaType -ne 'audio/mpeg') {
+              throw 'The served Day 1 manifest has the wrong byte count or media type.'
+            }
+
+            foreach ($probeId in @('cue-0000', 'cue-0045')) {
+              $record = @($manifest.files | Where-Object { [string]$_.id -eq $probeId } | Select-Object -First 1)
+              if ($record.Count -ne 1) {
+                throw "The served manifest is missing $probeId."
+              }
+              $probeFile = Join-Path $env:RUNNER_TEMP ("$probeId-" + [Guid]::NewGuid().ToString('N') + '.mp3')
+              try {
+                $audioUri = "http://127.0.0.1:8787/audio/day1/$([string]$record[0].relativePath)?nonce=$([Guid]::NewGuid().ToString('N'))"
+                $response = Invoke-WebRequest -UseBasicParsing -Uri $audioUri -OutFile $probeFile -PassThru -TimeoutSec 30
+                if ([string]$response.Headers['Content-Type'] -notmatch '^audio/mpeg') {
+                  throw "$probeId was not served as audio/mpeg."
+                }
+                if ((Get-Item $probeFile).Length -ne [int64]$record[0].bytes) {
+                  throw "$probeId served the wrong number of bytes."
+                }
+                $actualHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $probeFile).Hash.ToLowerInvariant()
+                if ($actualHash -ne ([string]$record[0].sha256).ToLowerInvariant()) {
+                  throw "$probeId failed SHA-256 verification."
+                }
+              }
+              finally {
+                Remove-Item -LiteralPath $probeFile -Force -ErrorAction SilentlyContinue
+              }
+            }
+
+            Write-Host 'Full Windows same-origin live-root deployment simulation: PASS'
           }
           finally {
             if ($null -ne $stream) { $stream.Dispose() }
