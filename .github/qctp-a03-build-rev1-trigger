@@ -1,5 +1,6 @@
-QCTP-D1-AUDIO-A03
-triggered_at=2026-08-20T21:20:00-05:00
-correction=rerun the current corrected workflow after local Chatterbox Turbo proof PASS; verify voice render, continuous support stems, five-minute acceptance package, runtime integration, and private publish before any delivery claim
+QCTP-D1-AUDIO-A03R
+triggered_at=2026-08-20T20:51:00-05:00
+correction=use normalized small.en critical-cue evidence, hardened acoustic and anti-startle verification, retain diagnostics before fail-closed termination, and publish only after Chromium and WebKit gates pass
 locked_script_sha256=2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555
 release_authority=ZERO_RELEASE
+physical_iphone_acceptance=OPEN
