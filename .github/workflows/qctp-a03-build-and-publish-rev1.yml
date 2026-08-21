@@ -1,4 +1,4 @@
-name: QCTP A03 build and publish Rev1
+name: QCTP A03R build, verify, retain, and publish
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: qctp-a03-build-publish
+  group: qctp-a03r-build-publish
   cancel-in-progress: true
 
 jobs:
@@ -25,19 +25,6 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Correct non-audio manifest-record handling before execution
-        run: |
-          python - <<'PY'
-          import pathlib
-          path=pathlib.Path('tools/build_qctp_a03_audio.py')
-          text=path.read_text(encoding='utf-8')
-          old='        file_record(output / "index.html"),\n'
-          if old not in text:
-              raise SystemExit('Expected builder correction target is missing.')
-          path.write_text(text.replace(old,''),encoding='utf-8')
-          print('Builder correction applied: HTML is verified separately and no longer sent to ffprobe.')
-          PY
-
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
@@ -49,13 +36,10 @@ jobs:
           node-version: 24.15.0
           cache: npm
 
-      - name: Install system audio tools
+      - name: Install system and Python dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg
-
-      - name: Install pinned local voice engine and verification dependencies
-        run: |
+          sudo apt-get install -y ffmpeg libsndfile1
           python -m pip install --disable-pip-version-check --upgrade pip
           python -m pip install --disable-pip-version-check \
             "git+https://github.com/resemble-ai/chatterbox.git@5de7a54aa4e5e2baadb0182dde554908b48b85c2" \
@@ -63,11 +47,18 @@ jobs:
           python - <<'PY'
           import inspect
           from chatterbox.tts_turbo import ChatterboxTurboTTS
-          signature=inspect.signature(ChatterboxTurboTTS.from_pretrained)
-          print(f'from_pretrained{signature}')
-          if 'nano' not in signature.parameters:
-              raise SystemExit('Pinned source does not expose Chatterbox Nano.')
+          signature = inspect.signature(ChatterboxTurboTTS.from_pretrained)
+          print(f"from_pretrained{signature}")
+          if "nano" not in signature.parameters:
+              raise SystemExit("Pinned source does not expose Chatterbox Nano.")
           PY
+
+      - name: Apply and attest builder correction
+        run: |
+          mkdir -p a03-diagnostics
+          python tools/patch_qctp_a03_builder.py \
+            --builder tools/build_qctp_a03_audio.py \
+            --attestation a03-diagnostics/builder-correction.json
 
       - name: Download and attest authorized Chill Brian reference
         run: |
@@ -75,85 +66,153 @@ jobs:
             "https://resource2.heygen.ai/text_to_speech/a0071e4bb842413bbeb2819c6b1de7c8/d2f4f24783d04e22ab49ee8fdc3715e0/id=43407896-acc6-4a02-875c-03185165250e.wav" \
             --output chill-brian-reference.wav
           python - <<'PY'
-          import hashlib,json,pathlib,soundfile as sf
-          path=pathlib.Path('chill-brian-reference.wav'); info=sf.info(path)
-          record={'bytes':path.stat().st_size,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'format':info.format,'subtype':info.subtype,'sample_rate':info.samplerate,'channels':info.channels,'duration_seconds':info.duration}
-          pathlib.Path('reference-attestation.json').write_text(json.dumps(record,indent=2)+'\n')
-          print(json.dumps(record,indent=2))
-          if info.frames<=0 or info.duration<5: raise SystemExit('Reference audio is invalid.')
+          import hashlib, json, pathlib, soundfile as sf
+          path = pathlib.Path("chill-brian-reference.wav")
+          info = sf.info(path)
+          record = {
+              "bytes": path.stat().st_size,
+              "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+              "format": info.format,
+              "subtype": info.subtype,
+              "sample_rate": info.samplerate,
+              "channels": info.channels,
+              "duration_seconds": info.duration,
+          }
+          pathlib.Path("reference-attestation.json").write_text(
+              json.dumps(record, indent=2) + "\n", encoding="utf-8"
+          )
+          print(json.dumps(record, indent=2))
+          if info.frames <= 0 or info.duration < 5:
+              raise SystemExit("Reference audio is invalid.")
           PY
 
-      - name: Build locked 25-minute assets and five-minute A/B candidates
+      - name: Build locked 25-minute assets and five-minute candidates
+        id: build
+        continue-on-error: true
         env:
           TOKENIZERS_PARALLELISM: "false"
+        shell: bash
         run: |
-          python tools/build_qctp_a03_audio.py --repo . --reference chill-brian-reference.wav --output a03-output
+          set -o pipefail
+          python tools/build_qctp_a03_audio.py \
+            --repo . \
+            --reference chill-brian-reference.wav \
+            --output a03-output \
+            2>&1 | tee a03-diagnostics/build.log
 
-      - name: Transcribe critical rendered cues as an audible-wording proxy
+      - name: Produce critical-cue ASR evidence
+        id: asr
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
         env:
           HF_HUB_DISABLE_TELEMETRY: "1"
+        shell: bash
         run: |
-          python - <<'PY'
-          import json,pathlib
-          from faster_whisper import WhisperModel
-          root=pathlib.Path('a03-output/_work/cues'); cues=['D1-A02-108','D1-A02-210','D1-A02-480','D1-A02-1440']
-          model=WhisperModel('tiny.en',device='cpu',compute_type='int8'); result={}
-          for cue in cues:
-              segments,info=model.transcribe(str(root/f'{cue}.wav'),beam_size=5,vad_filter=False,language='en')
-              transcript=' '.join(segment.text.strip() for segment in segments).strip()
-              result[cue]={'transcript':transcript,'language':info.language,'language_probability':info.language_probability}
-              print(cue,transcript)
-          pathlib.Path('a03-output/critical-asr.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
-          PY
+          set -o pipefail
+          python tools/transcribe_qctp_a03_critical.py \
+            --repo . --output a03-output --model small.en \
+            2>&1 | tee a03-diagnostics/asr.log
 
-      - name: Run deterministic acoustic and package verification
-        run: python tools/verify_qctp_a03_audio.py --output a03-output
-
-      - name: Install browser test dependencies
+      - name: Run acoustic, wording, timing, and package verification
+        id: machine
+        if: steps.build.outcome == 'success' && steps.asr.outcome == 'success'
+        continue-on-error: true
+        shell: bash
         run: |
-          npm ci
-          npx playwright install --with-deps chromium webkit
+          set -o pipefail
+          python tools/verify_qctp_a03_audio.py --output a03-output \
+            2>&1 | tee a03-diagnostics/machine-verification.log
 
-      - name: Verify the five-minute page in Chromium and WebKit
+      - name: Install Chromium and WebKit
+        id: browser_setup
+        if: steps.machine.outcome == 'success'
+        continue-on-error: true
+        shell: bash
         run: |
-          python -m http.server 4178 --directory a03-output >/tmp/qctp-a03-http.log 2>&1 &
-          echo $! >/tmp/qctp-a03-http.pid
-          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4178/ >/dev/null && break; sleep 1; done
-          node - <<'NODE'
-          const { chromium,webkit,devices }=require('@playwright/test');
-          (async()=>{for(const [name,type,options] of [['chromium',chromium,{}],['webkit-iphone',webkit,{...devices['iPhone 14']}]] ){
-            const browser=await type.launch({headless:true}); const context=await browser.newContext(options); const page=await context.newPage(); const errors=[];
-            page.on('console',msg=>{if(msg.type()==='error')errors.push(msg.text())});
-            await page.goto('http://127.0.0.1:4178/',{waitUntil:'networkidle'}); const body=await page.textContent('body');
-            if(!body.includes('TEST — NO COMPLETION CREDIT'))throw new Error(name+': completion guard missing');
-            if(!body.includes('Bullard')||!body.includes('HeartMath')||!body.includes('Dispenza'))throw new Error(name+': source map missing');
-            for(const file of ['acceptance-ambient.mp3','acceptance-binaural-low-a.mp3','acceptance-minimal.mp3','manifest.json','machine-verification.json']){const response=await page.request.get('http://127.0.0.1:4178/'+file);if(!response.ok())throw new Error(name+': '+file+' HTTP '+response.status())}
-            await page.getByText('Binaural Low A').click(); await page.getByRole('button',{name:'Begin five-minute test'}).click(); await page.waitForTimeout(1000);
-            const src=await page.locator('#player').getAttribute('src'); if(!src.includes('acceptance-binaural-low-a.mp3'))throw new Error(name+': selected source not loaded');
-            if(errors.length)throw new Error(name+': console errors '+errors.join(' | ')); await browser.close(); console.log(name+': PASS');
-          }})().catch(error=>{console.error(error);process.exit(1)});
-          NODE
-          kill $(cat /tmp/qctp-a03-http.pid) || true
+          set -o pipefail
+          npm ci 2>&1 | tee a03-diagnostics/npm-ci.log
+          npx playwright install --with-deps chromium webkit \
+            2>&1 | tee a03-diagnostics/playwright-install.log
 
-      - name: Add browser result to machine record
+      - name: Verify acceptance page in Chromium and WebKit iPhone profile
+        id: browser
+        if: steps.machine.outcome == 'success' && steps.browser_setup.outcome == 'success'
+        continue-on-error: true
+        shell: bash
         run: |
-          python - <<'PY'
-          import json,pathlib
-          path=pathlib.Path('a03-output/machine-verification.json'); record=json.loads(path.read_text())
-          record['browser_gate']={'chromium':'PASS','webkit_iphone_profile':'PASS','candidate_page_http_assets':'PASS'}
-          path.write_text(json.dumps(record,indent=2)+'\n')
-          PY
+          set -o pipefail
+          python -m http.server 4178 --directory a03-output >a03-diagnostics/http-server.log 2>&1 &
+          echo $! >a03-diagnostics/http-server.pid
+          cleanup() { kill "$(cat a03-diagnostics/http-server.pid)" 2>/dev/null || true; }
+          trap cleanup EXIT
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:4178/ >/dev/null && break
+            sleep 1
+          done
+          A03_URL=http://127.0.0.1:4178/ node tools/verify_qctp_a03_page.js \
+            2>&1 | tee a03-diagnostics/browser.log
 
-      - name: Upload complete machine-verified A03 package
+      - name: Record integrated gate outcomes
+        if: always()
+        run: |
+          python tools/finalize_qctp_a03_gates.py \
+            --output a03-output \
+            --diagnostics a03-diagnostics \
+            --github-sha "${{ github.sha }}" \
+            --head-sha "${{ github.event.pull_request.head.sha || github.sha }}" \
+            --build "${{ steps.build.outcome }}" \
+            --asr "${{ steps.asr.outcome }}" \
+            --machine "${{ steps.machine.outcome }}" \
+            --browser-setup "${{ steps.browser_setup.outcome }}" \
+            --browser "${{ steps.browser.outcome }}"
+
+      - name: Retain diagnostics and partial outputs on every result
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: qctp-a03-source-grounded-audio-${{ github.event.pull_request.head.sha || github.sha }}
+          name: qctp-a03r-diagnostics-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            a03-diagnostics/
+            reference-attestation.json
+            a03-output/*.mp3
+            a03-output/index.html
+            a03-output/manifest.json
+            a03-output/machine-verification.json
+            a03-output/critical-asr.json
+            a03-output/_work/cues/D1-A02-108.wav
+            a03-output/_work/cues/D1-A02-210.wav
+            a03-output/_work/cues/D1-A02-480.wav
+            a03-output/_work/cues/D1-A02-1440.wav
+          if-no-files-found: warn
+          retention-days: 30
+          compression-level: 6
+
+      - name: Enforce fail-closed publication gate after evidence retention
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          path = pathlib.Path("a03-diagnostics/gate-summary.json")
+          if not path.exists():
+              raise SystemExit("Gate summary missing after diagnostic retention.")
+          record = json.loads(path.read_text(encoding="utf-8"))
+          if record.get("result") != "PASS":
+              raise SystemExit("A03R gate failed; publication blocked. Diagnostics were retained.")
+          print("A03R integrated gate: PASS")
+          PY
+
+      - name: Upload complete verified A03R package
+        uses: actions/upload-artifact@v4
+        with:
+          name: qctp-a03r-source-grounded-audio-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             a03-output/*.mp3
             a03-output/index.html
             a03-output/manifest.json
             a03-output/machine-verification.json
             a03-output/critical-asr.json
+            a03-diagnostics/gate-summary.json
+            a03-diagnostics/builder-correction.json
             reference-attestation.json
           if-no-files-found: error
           retention-days: 30
@@ -163,10 +222,12 @@ jobs:
         run: |
           rm -rf /tmp/qctp-a03-package
           mkdir -p /tmp/qctp-a03-package
-          cp a03-output/*.mp3 a03-output/index.html a03-output/manifest.json a03-output/machine-verification.json a03-output/critical-asr.json /tmp/qctp-a03-package/
+          cp a03-output/*.mp3 a03-output/index.html a03-output/manifest.json \
+            a03-output/machine-verification.json a03-output/critical-asr.json \
+            a03-diagnostics/gate-summary.json /tmp/qctp-a03-package/
           cp tools/build_qctp_a03_audio.py /tmp/qctp-a03-package/build_qctp_a03_audio.py
 
-      - name: Publish full package to the controlled candidate branch
+      - name: Publish full package to controlled candidate branch
         env:
           CANDIDATE_BRANCH: qctp-platform-rev2-codex
         run: |
@@ -176,15 +237,27 @@ jobs:
           git worktree add /tmp/qctp-a03-candidate "origin/$CANDIDATE_BRANCH"
           cd /tmp/qctp-a03-candidate
           git switch -C "$CANDIDATE_BRANCH"
-          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"; git config http.postBuffer 524288000
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config http.postBuffer 524288000
           rm -rf public/audio/day1-source-rev0 public/a03-acceptance
           mkdir -p public/audio/day1-source-rev0 public/a03-acceptance
-          cp /tmp/qctp-a03-package/voice-1500.mp3 /tmp/qctp-a03-package/support-ambient-1500.mp3 /tmp/qctp-a03-package/support-binaural-low-a-1500.mp3 /tmp/qctp-a03-package/support-minimal-1500.mp3 /tmp/qctp-a03-package/composite-ambient-low-1500.mp3 /tmp/qctp-a03-package/manifest.json /tmp/qctp-a03-package/machine-verification.json /tmp/qctp-a03-package/critical-asr.json public/audio/day1-source-rev0/
-          cp /tmp/qctp-a03-package/acceptance-ambient.mp3 /tmp/qctp-a03-package/acceptance-binaural-low-a.mp3 /tmp/qctp-a03-package/acceptance-minimal.mp3 /tmp/qctp-a03-package/index.html /tmp/qctp-a03-package/manifest.json /tmp/qctp-a03-package/machine-verification.json /tmp/qctp-a03-package/critical-asr.json public/a03-acceptance/
+          cp /tmp/qctp-a03-package/{voice-1500,support-ambient-1500,support-binaural-low-a-1500,support-minimal-1500,composite-ambient-low-1500}.mp3 \
+            /tmp/qctp-a03-package/{manifest,machine-verification,critical-asr,gate-summary}.json \
+            public/audio/day1-source-rev0/
+          cp /tmp/qctp-a03-package/{acceptance-ambient,acceptance-binaural-low-a,acceptance-minimal}.mp3 \
+            /tmp/qctp-a03-package/index.html \
+            /tmp/qctp-a03-package/{manifest,machine-verification,critical-asr,gate-summary}.json \
+            public/a03-acceptance/
           git add public/audio/day1-source-rev0 public/a03-acceptance
-          if git diff --cached --quiet; then echo 'Candidate already contains this exact A03 package.'; else git commit -m 'Package machine-verified source-grounded Day 1 audio'; git push origin HEAD:"$CANDIDATE_BRANCH"; fi
+          if git diff --cached --quiet; then
+            echo "Candidate already contains this exact A03R package."
+          else
+            git commit -m "Package machine-verified source-grounded Day 1 audio"
+            git push origin HEAD:"$CANDIDATE_BRANCH"
+          fi
 
-      - name: Publish the non-credit five-minute acceptance page to GitHub Pages
+      - name: Publish non-credit five-minute candidate to GitHub Pages
         run: |
           set -euo pipefail
           rm -rf /tmp/qctp-a03-main
@@ -192,17 +265,29 @@ jobs:
           git worktree add /tmp/qctp-a03-main origin/main
           cd /tmp/qctp-a03-main
           git switch -C qctp-a03-main-publish
-          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"; git config http.postBuffer 524288000
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config http.postBuffer 524288000
           rm -rf device-preview/a03
           mkdir -p device-preview/a03
-          cp /tmp/qctp-a03-package/acceptance-ambient.mp3 /tmp/qctp-a03-package/acceptance-binaural-low-a.mp3 /tmp/qctp-a03-package/acceptance-minimal.mp3 /tmp/qctp-a03-package/index.html /tmp/qctp-a03-package/manifest.json /tmp/qctp-a03-package/machine-verification.json /tmp/qctp-a03-package/critical-asr.json device-preview/a03/
+          cp /tmp/qctp-a03-package/{acceptance-ambient,acceptance-binaural-low-a,acceptance-minimal}.mp3 \
+            /tmp/qctp-a03-package/index.html \
+            /tmp/qctp-a03-package/{manifest,machine-verification,critical-asr,gate-summary}.json \
+            device-preview/a03/
           cp /tmp/qctp-a03-package/build_qctp_a03_audio.py tools/build_qctp_a03_audio.py
           git add device-preview/a03 tools/build_qctp_a03_audio.py
-          if git diff --cached --quiet; then echo 'Main already contains this exact A03 acceptance candidate.'; else git commit -m 'Publish QCTP A03 five-minute device candidate'; git push origin HEAD:main; fi
+          if git diff --cached --quiet; then
+            echo "Main already contains this exact A03R candidate."
+          else
+            git commit -m "Publish QCTP A03R five-minute device candidate"
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
+          fi
 
       - name: Emit final publication summary
         run: |
-          echo 'QCTP A03 MACHINE PACKAGE: PASS'
-          echo 'Five-minute candidate: https://rfrye08-pixel.github.io/QCTP/device-preview/a03/'
-          echo 'Physical iPhone acceptance: OPEN'
-          echo 'Release authority: ZERO_RELEASE'
+          echo "QCTP A03R MACHINE PACKAGE: PASS"
+          echo "Five-minute candidate: https://rfrye08-pixel.github.io/QCTP/device-preview/a03/"
+          echo "Physical iPhone acceptance: OPEN"
+          echo "Release authority: ZERO_RELEASE"
