@@ -1,0 +1,79 @@
+{
+  "schema": "qctp-a03r-gate-summary-v1",
+  "result": "PASS",
+  "github_sha": "ebb7c427c2128b81ed6d487353847cc70c62fee9",
+  "pull_request_head_sha": "c6118498553b7d4618d133a07b964d02eefd30de",
+  "outcomes": {
+    "build": "success",
+    "critical_asr": "success",
+    "machine_verification": "success",
+    "browser_setup": "success",
+    "chromium_and_webkit": "success"
+  },
+  "top_level_output_inventory": [
+    {
+      "path": "acceptance-ambient.mp3",
+      "bytes": 3600909,
+      "sha256": "cc75cb78aea097fbe2441e4db9a1319f9996884e5cbab1bca39d0386db24c7e0"
+    },
+    {
+      "path": "acceptance-binaural-low-a.mp3",
+      "bytes": 3600909,
+      "sha256": "9e4367fdf6dccba1cb7704930a36a26bb11bb9c12346920b2cb5f2a423bec3ce"
+    },
+    {
+      "path": "acceptance-minimal.mp3",
+      "bytes": 3600909,
+      "sha256": "b2d51b9215fc7332477490222556a8e77d3510482f9888477fd5101d8c0c5011"
+    },
+    {
+      "path": "composite-ambient-low-1500.mp3",
+      "bytes": 18000909,
+      "sha256": "41a404ad01b3d6c9c7fac2d1e6ae0a27f945f106e2702f6a2ebd30e97ea743d3"
+    },
+    {
+      "path": "critical-asr.json",
+      "bytes": 4977,
+      "sha256": "38ac81e35703abafc6c7c788246d1faf4d544f951a0f7609f07c3abc0aff8bb4"
+    },
+    {
+      "path": "index.html",
+      "bytes": 5347,
+      "sha256": "742052b67f23ae73265f48d6098a61cf57b0d1313e43eeead6cf1acb23116ea9"
+    },
+    {
+      "path": "machine-verification.json",
+      "bytes": 18586,
+      "sha256": "bfd1dc6c58e9e8376b8ae45b979abacd91cb74c0d5a1b3c94e87856045277e75"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 31860,
+      "sha256": "4add48d038c516bf9ae27c3c5468dd7fa1e4c64c3b7254572ec881e8152aa541"
+    },
+    {
+      "path": "support-ambient-1500.mp3",
+      "bytes": 12000621,
+      "sha256": "3aeb72be1b4fae7dc9a8aa2543e3fdefb75c5a85c8f5142154b6149c43f34d20"
+    },
+    {
+      "path": "support-binaural-low-a-1500.mp3",
+      "bytes": 12000621,
+      "sha256": "2e33b45490a9b64c8dea2843024b4d0ac4d8ef70560e28da35d5e5b6b1216eba"
+    },
+    {
+      "path": "support-minimal-1500.mp3",
+      "bytes": 12000621,
+      "sha256": "d3ea4fbee34c8a4e1f15f2693a75d3fc682bee09956cfe170e554378b1549b50"
+    },
+    {
+      "path": "voice-1500.mp3",
+      "bytes": 9000525,
+      "sha256": "6126445935ff15d059f5fec278617bf943664414072821a2d0340e8b74c6e4c1"
+    }
+  ],
+  "diagnostics_retained_on_failure": true,
+  "publication_permitted": true,
+  "release_authority": "ZERO_RELEASE",
+  "physical_iphone_acceptance": "OPEN"
+}
