@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-'use strict';
 
-const { chromium, webkit, devices } = require('@playwright/test');
+import { chromium, webkit, devices } from '@playwright/test';
 
 const baseUrl = process.env.A03_URL || 'http://127.0.0.1:4178/';
 const cases = [
@@ -62,11 +61,6 @@ async function verifyCase(name, browserType, contextOptions) {
   }
 }
 
-(async () => {
-  for (const [name, browserType, contextOptions] of cases) {
-    await verifyCase(name, browserType, contextOptions);
-  }
-})().catch(error => {
-  console.error(error);
-  process.exit(1);
-});
+for (const [name, browserType, contextOptions] of cases) {
+  await verifyCase(name, browserType, contextOptions);
+}
