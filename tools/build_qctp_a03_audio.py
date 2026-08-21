@@ -476,7 +476,6 @@ def main() -> None:
         preview_records["ambient"],
         preview_records["binaural"],
         preview_records["minimal"],
-        file_record(output / "index.html"),
     ]
     package = {
         "schema": "qctp-day1-a03-audio-package-v1",

@@ -1,0 +1,595 @@
+{
+  "schema": "qctp-day1-a03-machine-verification-v2",
+  "result": "PASS",
+  "script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+  "manifest_sha256": "4add48d038c516bf9ae27c3c5468dd7fa1e4c64c3b7254572ec881e8152aa541",
+  "duration_results": {
+    "voice-1500.mp3": {
+      "duration_seconds": 1500.048,
+      "channels": 1,
+      "sample_rate": 24000,
+      "codec": "mp3"
+    },
+    "support-ambient-1500.mp3": {
+      "duration_seconds": 1500.048,
+      "channels": 2,
+      "sample_rate": 24000,
+      "codec": "mp3"
+    },
+    "support-binaural-low-a-1500.mp3": {
+      "duration_seconds": 1500.048,
+      "channels": 2,
+      "sample_rate": 24000,
+      "codec": "mp3"
+    },
+    "support-minimal-1500.mp3": {
+      "duration_seconds": 1500.048,
+      "channels": 2,
+      "sample_rate": 24000,
+      "codec": "mp3"
+    },
+    "composite-ambient-low-1500.mp3": {
+      "duration_seconds": 1500.048,
+      "channels": 2,
+      "sample_rate": 24000,
+      "codec": "mp3"
+    },
+    "acceptance-ambient.mp3": {
+      "duration_seconds": 300.048,
+      "channels": 2,
+      "sample_rate": 24000,
+      "codec": "mp3"
+    },
+    "acceptance-binaural-low-a.mp3": {
+      "duration_seconds": 300.048,
+      "channels": 2,
+      "sample_rate": 24000,
+      "codec": "mp3"
+    },
+    "acceptance-minimal.mp3": {
+      "duration_seconds": 300.048,
+      "channels": 2,
+      "sample_rate": 24000,
+      "codec": "mp3"
+    }
+  },
+  "continuity_results": {
+    "support-ambient-1500.wav": {
+      "minimum_5s_rms": 0.01799437547493746,
+      "maximum_5s_rms": 0.029585794659665876,
+      "peak": 0.142669677734375
+    },
+    "support-binaural-1500.wav": {
+      "minimum_5s_rms": 0.018002660621037406,
+      "maximum_5s_rms": 0.029604513138808682,
+      "peak": 0.141357421875
+    },
+    "support-minimal-1500.wav": {
+      "minimum_5s_rms": 0.009372594148419873,
+      "maximum_5s_rms": 0.0174388665459038,
+      "peak": 0.081329345703125
+    },
+    "acceptance-ambient.wav": {
+      "minimum_5s_rms": 0.024744519237964526,
+      "maximum_5s_rms": 0.1283387334443091,
+      "peak": 0.737762451171875
+    },
+    "acceptance-binaural.wav": {
+      "minimum_5s_rms": 0.024772730661860896,
+      "maximum_5s_rms": 0.1283326075849712,
+      "peak": 0.738677978515625
+    },
+    "acceptance-minimal.wav": {
+      "minimum_5s_rms": 0.013021112214419884,
+      "maximum_5s_rms": 0.12744715305552054,
+      "peak": 0.71502685546875
+    }
+  },
+  "binaural_result": {
+    "left_216": 47144.34846806463,
+    "left_224": 3064.255056876713,
+    "right_216": 228.4880475025493,
+    "right_224": 40572.00879349114
+  },
+  "cue_onset_results": [
+    {
+      "cue_id": "D1-A02-000",
+      "start_seconds": 0.0,
+      "onset_rms": 0.10569567168927727
+    },
+    {
+      "cue_id": "D1-A02-020",
+      "start_seconds": 20.0,
+      "onset_rms": 0.1348828903074779
+    },
+    {
+      "cue_id": "D1-A02-048",
+      "start_seconds": 48.0,
+      "onset_rms": 0.09617741110327563
+    },
+    {
+      "cue_id": "D1-A02-078",
+      "start_seconds": 78.0,
+      "onset_rms": 0.08159325510401591
+    },
+    {
+      "cue_id": "D1-A02-108",
+      "start_seconds": 108.0,
+      "onset_rms": 0.09885809720771063
+    },
+    {
+      "cue_id": "D1-A02-140",
+      "start_seconds": 140.0,
+      "onset_rms": 0.10157742023258105
+    },
+    {
+      "cue_id": "D1-A02-165",
+      "start_seconds": 165.0,
+      "onset_rms": 0.10159227508070387
+    },
+    {
+      "cue_id": "D1-A02-180",
+      "start_seconds": 180.0,
+      "onset_rms": 0.12856070743965972
+    },
+    {
+      "cue_id": "D1-A02-210",
+      "start_seconds": 210.0,
+      "onset_rms": 0.11391332311342577
+    },
+    {
+      "cue_id": "D1-A02-245",
+      "start_seconds": 245.0,
+      "onset_rms": 0.125884173751411
+    },
+    {
+      "cue_id": "D1-A02-285",
+      "start_seconds": 285.0,
+      "onset_rms": 0.05742758216088082
+    },
+    {
+      "cue_id": "D1-A02-335",
+      "start_seconds": 335.0,
+      "onset_rms": 0.0850479778502797
+    },
+    {
+      "cue_id": "D1-A02-385",
+      "start_seconds": 385.0,
+      "onset_rms": 0.0738436925811026
+    },
+    {
+      "cue_id": "D1-A02-435",
+      "start_seconds": 435.0,
+      "onset_rms": 0.10480021309547732
+    },
+    {
+      "cue_id": "D1-A02-462",
+      "start_seconds": 462.0,
+      "onset_rms": 0.09354178011260772
+    },
+    {
+      "cue_id": "D1-A02-480",
+      "start_seconds": 480.0,
+      "onset_rms": 0.11088852967063198
+    },
+    {
+      "cue_id": "D1-A02-525",
+      "start_seconds": 525.0,
+      "onset_rms": 0.09521211171277057
+    },
+    {
+      "cue_id": "D1-A02-575",
+      "start_seconds": 575.0,
+      "onset_rms": 0.09757231298986112
+    },
+    {
+      "cue_id": "D1-A02-635",
+      "start_seconds": 635.0,
+      "onset_rms": 0.08077069697732922
+    },
+    {
+      "cue_id": "D1-A02-700",
+      "start_seconds": 700.0,
+      "onset_rms": 0.08200203273306783
+    },
+    {
+      "cue_id": "D1-A02-750",
+      "start_seconds": 750.0,
+      "onset_rms": 0.06554120221463092
+    },
+    {
+      "cue_id": "D1-A02-780",
+      "start_seconds": 780.0,
+      "onset_rms": 0.09265136971992141
+    },
+    {
+      "cue_id": "D1-A02-855",
+      "start_seconds": 855.0,
+      "onset_rms": 0.12505133203230845
+    },
+    {
+      "cue_id": "D1-A02-945",
+      "start_seconds": 945.0,
+      "onset_rms": 0.06495506062918954
+    },
+    {
+      "cue_id": "D1-A02-1045",
+      "start_seconds": 1045.0,
+      "onset_rms": 0.07400617865263188
+    },
+    {
+      "cue_id": "D1-A02-1135",
+      "start_seconds": 1135.0,
+      "onset_rms": 0.05878034257591649
+    },
+    {
+      "cue_id": "D1-A02-1225",
+      "start_seconds": 1225.0,
+      "onset_rms": 0.07895044852422609
+    },
+    {
+      "cue_id": "D1-A02-1290",
+      "start_seconds": 1290.0,
+      "onset_rms": 0.05991870391451994
+    },
+    {
+      "cue_id": "D1-A02-1320",
+      "start_seconds": 1320.0,
+      "onset_rms": 0.11974695336720234
+    },
+    {
+      "cue_id": "D1-A02-1380",
+      "start_seconds": 1380.0,
+      "onset_rms": 0.10530220030413087
+    },
+    {
+      "cue_id": "D1-A02-1415",
+      "start_seconds": 1415.0,
+      "onset_rms": 0.09773700756868238
+    },
+    {
+      "cue_id": "D1-A02-1440",
+      "start_seconds": 1440.0,
+      "onset_rms": 0.08824266824317631
+    },
+    {
+      "cue_id": "D1-A02-1460",
+      "start_seconds": 1460.0,
+      "onset_rms": 0.10927189298578119
+    },
+    {
+      "cue_id": "D1-A02-1480",
+      "start_seconds": 1480.0,
+      "onset_rms": 0.08334283482055498
+    },
+    {
+      "cue_id": "D1-A02-1495",
+      "start_seconds": 1495.0,
+      "onset_rms": 0.15838322418244552
+    }
+  ],
+  "predictive_marker_results": [
+    {
+      "cue_id": "D1-A02-020",
+      "marker_start_seconds": 19.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-048",
+      "marker_start_seconds": 47.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-078",
+      "marker_start_seconds": 77.6,
+      "marker_rms": 0.008256526804446978
+    },
+    {
+      "cue_id": "D1-A02-108",
+      "marker_start_seconds": 107.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-140",
+      "marker_start_seconds": 139.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-165",
+      "marker_start_seconds": 164.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-180",
+      "marker_start_seconds": 179.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-210",
+      "marker_start_seconds": 209.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-245",
+      "marker_start_seconds": 244.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-285",
+      "marker_start_seconds": 284.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-335",
+      "marker_start_seconds": 334.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-385",
+      "marker_start_seconds": 384.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-435",
+      "marker_start_seconds": 434.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-462",
+      "marker_start_seconds": 461.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-480",
+      "marker_start_seconds": 479.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-525",
+      "marker_start_seconds": 524.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-575",
+      "marker_start_seconds": 574.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-635",
+      "marker_start_seconds": 634.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-700",
+      "marker_start_seconds": 699.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-750",
+      "marker_start_seconds": 749.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-780",
+      "marker_start_seconds": 779.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-855",
+      "marker_start_seconds": 854.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-945",
+      "marker_start_seconds": 944.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-1045",
+      "marker_start_seconds": 1044.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-1135",
+      "marker_start_seconds": 1134.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-1225",
+      "marker_start_seconds": 1224.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-1290",
+      "marker_start_seconds": 1289.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-1320",
+      "marker_start_seconds": 1319.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-1380",
+      "marker_start_seconds": 1379.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-1415",
+      "marker_start_seconds": 1414.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-1440",
+      "marker_start_seconds": 1439.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-1460",
+      "marker_start_seconds": 1459.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-1480",
+      "marker_start_seconds": 1479.6,
+      "marker_rms": 0.008257188358616899
+    },
+    {
+      "cue_id": "D1-A02-1495",
+      "marker_start_seconds": 1494.6,
+      "marker_rms": 0.008257188358616899
+    }
+  ],
+  "critical_asr": {
+    "D1-A02-108": {
+      "transcript": "if the body is ready allow a small amount of the holding to release if nothing changes remain accurate and accepting do not force a deeper process",
+      "raw_transcript": "If the body is ready, allow a small amount of the holding to release. If nothing changes, remain accurate and accepting. Do not force a deeper process.",
+      "normalized_transcript": "if the body is ready allow a small amount of the holding to release if nothing changes remain accurate and accepting do not force a deeper process",
+      "expected_text": "If the body is ready, allow a small amount of the holding to release. If nothing changes, remain accurate and accepting. Do not force a deeper process.",
+      "expected_normalized": "if the body is ready allow a small amount of the holding to release if nothing changes remain accurate and accepting do not force a deeper process",
+      "wer": 0.0,
+      "model": "small.en",
+      "language": "en",
+      "language_probability": 1,
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 6.16,
+          "text": "If the body is ready, allow a small amount of the holding to release."
+        },
+        {
+          "start": 7.2,
+          "end": 11.92,
+          "text": "If nothing changes, remain accurate and accepting."
+        },
+        {
+          "start": 13.2,
+          "end": 15.9,
+          "text": "Do not force a deeper process."
+        }
+      ]
+    },
+    "D1-A02-210": {
+      "transcript": "begin an easy even breath in for five one two three four five out for five one two three four five",
+      "raw_transcript": "Begin an easy, even breath. In for five. One, two, three, four, five. Out for five. One, two, three, four, five.",
+      "normalized_transcript": "begin an easy even breath in for five one two three four five out for five one two three four five",
+      "expected_text": "Begin an easy, even breath. In for five: one, two, three, four, five. Out for five: one, two, three, four, five.",
+      "expected_normalized": "begin an easy even breath in for five one two three four five out for five one two three four five",
+      "wer": 0.0,
+      "model": "small.en",
+      "language": "en",
+      "language_probability": 1,
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 13.32,
+          "text": "Begin an easy, even breath. In for five. One, two, three, four, five. Out for five. One, two, three, four, five."
+        }
+      ]
+    },
+    "D1-A02-480": {
+      "transcript": "bring awareness to the region between your ears sense the volume this region occupies do not analyze it feel that area as existing within space",
+      "raw_transcript": "Bring awareness to the region between your ears. Sense the volume this region occupies. Do not analyze it. Feel that area as existing within space.",
+      "normalized_transcript": "bring awareness to the region between your ears sense the volume this region occupies do not analyze it feel that area as existing within space",
+      "expected_text": "Bring awareness to the region between your ears. Sense the volume this region occupies. Do not analyze it. Feel that area as existing within space.",
+      "expected_normalized": "bring awareness to the region between your ears sense the volume this region occupies do not analyze it feel that area as existing within space",
+      "wer": 0.0,
+      "model": "small.en",
+      "language": "en",
+      "language_probability": 1,
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 3.58,
+          "text": "Bring awareness to the region between your ears."
+        },
+        {
+          "start": 4.38,
+          "end": 7.86,
+          "text": "Sense the volume this region occupies."
+        },
+        {
+          "start": 8.92,
+          "end": 10.74,
+          "text": "Do not analyze it."
+        },
+        {
+          "start": 11.42,
+          "end": 15.0,
+          "text": "Feel that area as existing within space."
+        }
+      ]
+    },
+    "D1-A02-1440": {
+      "transcript": "begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural",
+      "raw_transcript": "Begin returning. Feel both feet, the chair, and the weight of your hands. Let the next breath be completely natural.",
+      "normalized_transcript": "begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural",
+      "expected_text": "Begin returning. Feel both feet, the chair, and the weight of your hands. Let the next breath be completely natural.",
+      "expected_normalized": "begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural",
+      "wer": 0.0,
+      "model": "small.en",
+      "language": "en",
+      "language_probability": 1,
+      "segments": [
+        {
+          "start": 0.0,
+          "end": 6.78,
+          "text": "Begin returning. Feel both feet, the chair, and the weight of your hands."
+        },
+        {
+          "start": 7.7,
+          "end": 10.76,
+          "text": "Let the next breath be completely natural."
+        }
+      ]
+    }
+  },
+  "critical_asr_gate": {
+    "D1-A02-108": {
+      "raw_transcript": "If the body is ready, allow a small amount of the holding to release. If nothing changes, remain accurate and accepting. Do not force a deeper process.",
+      "normalized_transcript": "if the body is ready allow a small amount of the holding to release if nothing changes remain accurate and accepting do not force a deeper process",
+      "expected_normalized": "if the body is ready allow a small amount of the holding to release if nothing changes remain accurate and accepting do not force a deeper process",
+      "wer": 0.0,
+      "model": "small.en",
+      "semantic_errors": [],
+      "result": "PASS"
+    },
+    "D1-A02-1440": {
+      "raw_transcript": "Begin returning. Feel both feet, the chair, and the weight of your hands. Let the next breath be completely natural.",
+      "normalized_transcript": "begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural",
+      "expected_normalized": "begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural",
+      "wer": 0.0,
+      "model": "small.en",
+      "semantic_errors": [],
+      "result": "PASS"
+    },
+    "D1-A02-210": {
+      "raw_transcript": "Begin an easy, even breath. In for five. One, two, three, four, five. Out for five. One, two, three, four, five.",
+      "normalized_transcript": "begin an easy even breath in for five one two three four five out for five one two three four five",
+      "expected_normalized": "begin an easy even breath in for five one two three four five out for five one two three four five",
+      "wer": 0.0,
+      "model": "small.en",
+      "semantic_errors": [],
+      "result": "PASS"
+    },
+    "D1-A02-480": {
+      "raw_transcript": "Bring awareness to the region between your ears. Sense the volume this region occupies. Do not analyze it. Feel that area as existing within space.",
+      "normalized_transcript": "bring awareness to the region between your ears sense the volume this region occupies do not analyze it feel that area as existing within space",
+      "expected_normalized": "bring awareness to the region between your ears sense the volume this region occupies do not analyze it feel that area as existing within space",
+      "wer": 0.0,
+      "model": "small.en",
+      "semantic_errors": [],
+      "result": "PASS"
+    }
+  },
+  "acceptance_page_sha256": "742052b67f23ae73265f48d6098a61cf57b0d1313e43eeead6cf1acb23116ea9",
+  "errors": [],
+  "release_authority": "ZERO_RELEASE",
+  "physical_iphone_acceptance": "OPEN",
+  "browser_gate": {
+    "chromium": "PASS",
+    "webkit_iphone_profile": "PASS",
+    "candidate_page_http_assets": "PASS"
+  },
+  "integrated_gate_result": "PASS"
+}
