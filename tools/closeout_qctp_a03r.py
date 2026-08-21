@@ -129,7 +129,7 @@ def validate_published_package(root: pathlib.Path) -> tuple[dict[str, Any], dict
     require(browser.get("webkit_iphone_profile") == "PASS", "WebKit iPhone-profile gate is not PASS")
     require(browser.get("candidate_page_http_assets") == "PASS", "Candidate asset HTTP gate is not PASS")
     require(manifest.get("script_sha256") == LOCKED_SCRIPT_SHA, "Locked script hash changed")
-    require(manifest.get("cue_count") == 35, "Cue count changed")
+    require(len(manifest.get("cue_renders", [])) == 35, "Cue count changed")
     require(manifest.get("release_authority") == "ZERO_RELEASE", "Release authority changed")
 
     required = [

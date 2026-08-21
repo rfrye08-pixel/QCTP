@@ -1,0 +1,6 @@
+{
+  "schema": "qctp-a03r-closeout-source-correction-v1",
+  "before_sha256": "44857735c60e2df0b67ae21752590114ffe47649ef466817d2b41e23bc8679c9",
+  "after_sha256": "afd1491a2a4ca669bd42a90c2c35f77864dbb09af2070efb2aacca7ba7e9e329",
+  "correction": "Cue count is derived from manifest cue_renders rather than a nonexistent top-level field."
+}

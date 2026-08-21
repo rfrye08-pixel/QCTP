@@ -1,9 +1,9 @@
 {
-  "schema": "qctp-current-state-v16",
+  "schema": "qctp-current-state-v17",
   "project": "QCTP",
-  "updated_at": "2026-08-20T18:05:00-05:00",
+  "updated_at": "2026-08-20T21:29:20-05:00",
   "status": "ACTIVE",
-  "supersedes": "qctp-current-state-v15",
+  "supersedes": "qctp-current-state-v16",
   "product_identity": {
     "name": "QCTP",
     "expanded_name": "Quantum Consciousness Training Platform",
@@ -12,7 +12,7 @@
     "experience_goal": "Teach selected teachers' and practitioner lineages' actual methods, improve clarity and delivery without silently replacing them, and make the complete system serious, precise, exploratory, user-friendly, and capability-driven."
   },
   "authority_refs": {
-    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV9.json",
+    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV10.json",
     "source_fidelity_standard": "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
     "day1_source_evidence_packet": "QCTP_DAY1_PRIMARY_SOURCE_EVIDENCE_PACKET_REV0.md",
     "day1_source_crosswalk": "QCTP_DAY1_SOURCE_PRACTICE_CROSSWALK_REV0.csv",
@@ -31,7 +31,8 @@
     "ux_engagement": "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
     "breathwork_system": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
     "candidate_branch_state": "QCTP_REV2_CODEX_BRANCH_STATE.json on qctp-platform-rev2-codex",
-    "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2"
+    "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2",
+    "day1_audio_a03r_closeout": "QCTP_DAY1_AUDIO_A03R_MACHINE_PACKAGE_CLOSEOUT_REV0_2026-08-20.md"
   },
   "source_fidelity_control": {
     "status": "CONTROLLED",
@@ -82,13 +83,13 @@
   },
   "rev2_candidate": {
     "branch": "qctp-platform-rev2-codex",
-    "observed_head_sha": "3420743b0ad9d64d4961912c3d7624cbec24b6ed",
+    "observed_head_sha": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
     "version": "2.0.0-alpha.1",
     "pull_request": 2,
     "pull_request_state": "OPEN_DRAFT_UNMERGED",
     "implementation_disposition": "NON_BREATH_PLATFORM_COMPLETE_CANDIDATE",
     "audio_delivery_disposition": "SAME_ORIGIN_TECHNICAL_FOUNDATION_PRESERVED",
-    "guidance_disposition": "SOURCE_GROUNDED_SCRIPT_LOCKED_TEST_RENDER_AUTHORIZED",
+    "guidance_disposition": "SOURCE_GROUNDED_MACHINE_PACKAGE_DELIVERED_PHYSICAL_ACCEPTANCE_OPEN",
     "production_deployed": false,
     "release_authority": "ZERO_RELEASE"
   },
@@ -165,11 +166,12 @@
     "release_authority": "ZERO_RELEASE"
   },
   "active_action": {
-    "action_id": "QCTP-D1-AUDIO-A03",
-    "status": "NOMINATED_EXECUTION_AUTHORIZED",
-    "objective": "Render the locked Chill Brian script, generate continuous Ambient/Binaural/Minimal support candidates and HeartMath breath rail, integrate the continuous player and composite fallback, close automated gates, and deliver a five-minute physical iPhone acceptance candidate.",
-    "handoff_ref": "QCTP_DAY1_SOURCE_GROUNDED_AUDIO_IMPLEMENTATION_HANDOFF_REV0_2026-08-20.md",
-    "user_action_required_now": false
+    "action_id": "QCTP-D1-AUDIO-A04",
+    "status": "USER_LAST_MILE_PHYSICAL_ACCEPTANCE_REQUIRED",
+    "objective": "Run one five-minute Safari acceptance test with stereo headphones, beginning with Binaural Low A, and capture startle, voice, five/five breathing, support, marker, and return observations.",
+    "candidate_url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/",
+    "predecessor": "QCTP-D1-AUDIO-A03R",
+    "user_action_required_now": true
   },
   "prior_day1_guidance_rev1": {
     "status": "SUPERSEDED_FOR_CONTENT_BY_SOURCE_SCRIPT_LOCK",
@@ -192,7 +194,7 @@
     ]
   },
   "open_implementation_packages": [
-    "QCTP-D1-AUDIO-A03 source-grounded voice, support audio, continuous player, automated gates, and five-minute acceptance",
+    "QCTP-D1-AUDIO-A04 five-minute physical iPhone acceptance",
     "Day 1 natural-duration physical acceptance after five-minute pass",
     "Breath Director and seven-session Breath Foundations",
     "Protocol-hardening runtime schemas and State Map",
@@ -201,10 +203,6 @@
     "Foundation Days 2-112 authored under the source-first production method"
   ],
   "release_acceptance_holds": [
-    "Render exact locked script with transcript/audio verification",
-    "Generate and measure continuous Ambient, Binaural Low A, and Minimal Continuity support candidates",
-    "Integrate continuous dual-stem player and composite fallback",
-    "Pass automated acoustic, timing, local/offline, WebKit, synchronization, and fail-closed gates",
     "Pass five-minute physical iPhone acceptance",
     "Pass later natural-duration source-grounded Day 1 acceptance",
     "Complete remaining physical-iPhone lifecycle, migration, and export checks",
@@ -216,10 +214,60 @@
     "current_day1_guidance": "CONTENT_ACCEPTANCE_FAIL",
     "source_map_a01": "COMPLETE",
     "source_script_a02": "COMPLETE_SCRIPT_LOCK_PASS",
-    "voice_and_support_audio": "TEST_RENDER_AUTHORIZED",
-    "physical_content_acceptance": "OPEN",
+    "voice_and_support_audio": "MACHINE_VERIFIED_TEST_PACKAGE_DELIVERED",
+    "physical_content_acceptance": "OPEN_A04_REQUIRED",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "controlled_interpretation": "QCTP-D1-SOURCE-A02 is complete. Day 1 now has a source-faithful baseline, separately controlled QCTP enhancement delta, exact 35-cue source-labeled script, independent fidelity PASS, machine PASS, and locked script hash. The selected source methods are Bullard contraction awareness, HeartMath Quick Coherence, and Dispenza spatial attention, with explicit QCTP support. Test rendering is authorized; public release and physical content acceptance are not.",
-  "next_controlled_action": "Execute QCTP-D1-AUDIO-A03: render and integrate the locked source-grounded script with continuous anti-startle support, close automated gates, and deliver the five-minute physical iPhone acceptance candidate before asking Ryan to repeat the full 25-minute practice."
+  "controlled_interpretation": "QCTP-D1-AUDIO-A03R is machine-complete and delivered as a non-credit five-minute device candidate. The locked 35-cue script hash is unchanged; 25-minute voice/support assets and three five-minute composites exist; four critical cues passed normalized ASR at WER 0.0; acoustic, timing, continuous-support, anti-startle marker, binaural, Chromium, and WebKit iPhone-profile gates passed. This grants test-candidate authority only. Physical iPhone content acceptance, private-runtime installation, Rev2 merge, and public release remain unauthorized.",
+  "next_controlled_action": "Execute QCTP-D1-AUDIO-A04: Ryan opens the delivered five-minute candidate in iPhone Safari with stereo headphones, selects Binaural Low A, completes only that five-minute test, and reports the six controlled observations.",
+  "day1_audio_action_a03r": {
+    "action_id": "QCTP-D1-AUDIO-A03R",
+    "status": "MACHINE_PACKAGE_COMPLETE_PHYSICAL_ACCEPTANCE_OPEN",
+    "result": "SOURCE_GROUNDED_AUDIO_AND_FIVE_MINUTE_DEVICE_CANDIDATE_DELIVERED",
+    "script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+    "duration_seconds": 1500,
+    "cue_count": 35,
+    "support_candidates": [
+      "AMBIENT",
+      "BINAURAL_LOW_A",
+      "MINIMAL_CONTINUITY"
+    ],
+    "public_candidate_url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/",
+    "verification": {
+      "critical_cue_asr": "PASS_4_OF_4_WER_0_0",
+      "machine_gate": "PASS",
+      "chromium": "PASS",
+      "webkit_iphone_profile": "PASS",
+      "diagnostic_retention_on_failure": "PASS",
+      "workflow_run_id": 32438955834,
+      "job_id": 96645641762,
+      "diagnostic_artifact": {
+        "id": 9431976673,
+        "name": "qctp-a03r-diagnostics-c6118498553b7d4618d133a07b964d02eefd30de",
+        "size_in_bytes": 65267457,
+        "digest": "sha256:fa1f390714faba0faacbb1a0a7f0c68184f74617bad8d294a2628306800febc0",
+        "expires_at": "2026-09-20T02:25:03Z"
+      },
+      "verified_package_artifact": {
+        "id": 9431977804,
+        "name": "qctp-a03r-source-grounded-audio-c6118498553b7d4618d133a07b964d02eefd30de",
+        "size_in_bytes": 62983736,
+        "digest": "sha256:66bbde054f659422b13f4b2d80bb119e702f1ce50dfeef9707267d54a025e5ef",
+        "expires_at": "2026-09-20T02:25:07Z"
+      },
+      "published_file_sha256": {
+        "index.html": "742052b67f23ae73265f48d6098a61cf57b0d1313e43eeead6cf1acb23116ea9",
+        "acceptance-ambient.mp3": "cc75cb78aea097fbe2441e4db9a1319f9996884e5cbab1bca39d0386db24c7e0",
+        "acceptance-binaural-low-a.mp3": "9e4367fdf6dccba1cb7704930a36a26bb11bb9c12346920b2cb5f2a423bec3ce",
+        "acceptance-minimal.mp3": "b2d51b9215fc7332477490222556a8e77d3510482f9888477fd5101d8c0c5011",
+        "manifest.json": "4add48d038c516bf9ae27c3c5468dd7fa1e4c64c3b7254572ec881e8152aa541",
+        "machine-verification.json": "4b13d81b10b9615c06082dcffb98eda0bdbd634ced51721729c9b6f7b7a18e52",
+        "critical-asr.json": "38ac81e35703abafc6c7c788246d1faf4d544f951a0f7609f07c3abc0aff8bb4",
+        "gate-summary.json": "08499c79349b9b733cff95bb06198e16b88a4dae5e1b63912764f00b53ac5c56"
+      },
+      "evidence_class": "CALCULATED_AND_MACHINE_VERIFIED"
+    },
+    "physical_iphone_acceptance": "OPEN",
+    "release_authority": "ZERO_RELEASE"
+  }
 }
