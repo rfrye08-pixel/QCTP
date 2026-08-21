@@ -1,0 +1,7 @@
+QCTP-D1-AUDIO-A03R
+triggered_at=2026-08-20T21:35:00-05:00
+base_url=https://rfrye08-pixel.github.io/QCTP/device-preview/a03/
+expected_state_schema=qctp-current-state-v17
+expected_manifest=QCTP_MACRO_DELIVERABLE_MANIFEST_REV10.json
+release_authority=ZERO_RELEASE
+physical_iphone_acceptance=OPEN
