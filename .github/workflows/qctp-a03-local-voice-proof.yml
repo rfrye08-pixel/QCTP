@@ -13,7 +13,7 @@ permissions:
 jobs:
   render-local-voice-proof:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Checkout candidate merge
         uses: actions/checkout@v4
@@ -23,10 +23,20 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Chatterbox Nano and audio tools
+      - name: Install pinned official Chatterbox Nano source and audio tools
         run: |
           python -m pip install --disable-pip-version-check --upgrade pip
-          python -m pip install --disable-pip-version-check chatterbox-tts soundfile
+          python -m pip install --disable-pip-version-check \
+            "git+https://github.com/resemble-ai/chatterbox.git@5de7a54aa4e5e2baadb0182dde554908b48b85c2" \
+            soundfile
+          python - <<'PY'
+          import inspect
+          from chatterbox.tts_turbo import ChatterboxTurboTTS
+          signature = inspect.signature(ChatterboxTurboTTS.from_pretrained)
+          print(f"from_pretrained{signature}")
+          if "nano" not in signature.parameters:
+              raise SystemExit("Pinned source does not expose the required nano model selector.")
+          PY
 
       - name: Download and inspect authorized Chill Brian reference clip
         run: |
@@ -50,6 +60,8 @@ jobs:
           PY
 
       - name: Render one locked cue with the local zero-cost clone
+        env:
+          TOKENIZERS_PARALLELISM: "false"
         run: |
           python - <<'PY'
           import hashlib
@@ -79,11 +91,12 @@ jobs:
           if duration <= 0:
               raise SystemExit("Generated audio is empty.")
           record = {
-              "schema": "qctp-a03-local-voice-proof-v1",
+              "schema": "qctp-a03-local-voice-proof-v2",
               "cue_id": "D1-A02-108",
               "text_sha256": actual_text_sha,
               "reference": "authorized Chill Brian A03 cue D1-A02-000",
               "engine": "resemble-ai/chatterbox Nano",
+              "engine_source_commit": "5de7a54aa4e5e2baadb0182dde554908b48b85c2",
               "engine_license": "MIT",
               "device": "cpu",
               "sample_rate": model.sr,
