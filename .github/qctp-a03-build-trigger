@@ -1,0 +1,7 @@
+QCTP-D1-AUDIO-A03
+triggered_at=2026-08-20T19:40:00-05:00
+locked_script_sha256=2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555
+voice_engine=resemble-ai/chatterbox-nano
+voice_engine_commit=5de7a54aa4e5e2baadb0182dde554908b48b85c2
+purpose=render 35 locked cues, build 25-minute voice/support assets, publish non-credit five-minute physical iPhone candidate
+release_authority=ZERO_RELEASE
