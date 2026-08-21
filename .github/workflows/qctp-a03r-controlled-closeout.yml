@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "device-preview/a03/gate-summary.json"
+      - ".github/qctp-a03r-closeout-trigger"
 
 permissions:
   contents: write
