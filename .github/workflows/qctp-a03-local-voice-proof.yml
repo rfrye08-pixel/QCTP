@@ -28,12 +28,26 @@ jobs:
           python -m pip install --disable-pip-version-check --upgrade pip
           python -m pip install --disable-pip-version-check chatterbox-tts soundfile
 
-      - name: Download authorized Chill Brian reference clip
+      - name: Download and inspect authorized Chill Brian reference clip
         run: |
           curl --fail --location --retry 3 \
             "https://resource2.heygen.ai/text_to_speech/a0071e4bb842413bbeb2819c6b1de7c8/d2f4f24783d04e22ab49ee8fdc3715e0/id=43407896-acc6-4a02-875c-03185165250e.wav" \
             --output chill-brian-reference.wav
-          ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 chill-brian-reference.wav
+          python - <<'PY'
+          import json
+          import soundfile as sf
+          info = sf.info("chill-brian-reference.wav")
+          if info.frames <= 0 or info.samplerate <= 0:
+              raise SystemExit("Reference audio is empty or invalid.")
+          print(json.dumps({
+              "frames": info.frames,
+              "sample_rate": info.samplerate,
+              "channels": info.channels,
+              "duration_seconds": info.duration,
+              "format": info.format,
+              "subtype": info.subtype,
+          }, indent=2))
+          PY
 
       - name: Render one locked cue with the local zero-cost clone
         run: |
@@ -62,6 +76,8 @@ jobs:
           array = wav.squeeze().detach().cpu().numpy()
           sf.write("D1-A02-108-local-clone-proof.wav", array, model.sr, subtype="PCM_16")
           duration = len(array) / model.sr
+          if duration <= 0:
+              raise SystemExit("Generated audio is empty.")
           record = {
               "schema": "qctp-a03-local-voice-proof-v1",
               "cue_id": "D1-A02-108",
@@ -82,10 +98,35 @@ jobs:
           print(json.dumps(record, indent=2))
           PY
 
-      - name: Inspect rendered proof
+      - name: Inspect rendered proof and hashes
         run: |
-          ffprobe -v error -show_entries stream=codec_name,sample_rate,channels,duration -of json D1-A02-108-local-clone-proof.wav
-          sha256sum chill-brian-reference.wav D1-A02-108-local-clone-proof.wav QCTP_A03_LOCAL_VOICE_PROOF.json
+          python - <<'PY'
+          import hashlib
+          import json
+          import pathlib
+          import soundfile as sf
+
+          paths = [
+              pathlib.Path("chill-brian-reference.wav"),
+              pathlib.Path("D1-A02-108-local-clone-proof.wav"),
+              pathlib.Path("QCTP_A03_LOCAL_VOICE_PROOF.json"),
+          ]
+          result = {}
+          for path in paths:
+              body = path.read_bytes()
+              item = {"bytes": len(body), "sha256": hashlib.sha256(body).hexdigest()}
+              if path.suffix.lower() == ".wav":
+                  info = sf.info(path)
+                  item.update({
+                      "sample_rate": info.samplerate,
+                      "channels": info.channels,
+                      "duration_seconds": info.duration,
+                      "format": info.format,
+                      "subtype": info.subtype,
+                  })
+              result[path.name] = item
+          print(json.dumps(result, indent=2))
+          PY
 
       - name: Upload local voice proof
         uses: actions/upload-artifact@v4
