@@ -1,0 +1,110 @@
+name: QCTP A03R controlled closeout
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "device-preview/a03/gate-summary.json"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: qctp-a03r-controlled-closeout
+  cancel-in-progress: false
+
+jobs:
+  closeout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout published controlled main state
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Correct manifest cue-count source and attest correction
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib
+          path = pathlib.Path('tools/closeout_qctp_a03r.py')
+          before = path.read_bytes()
+          text = before.decode('utf-8')
+          old = 'require(manifest.get("cue_count") == 35, "Cue count changed")'
+          new = 'require(len(manifest.get("cue_renders", [])) == 35, "Cue count changed")'
+          if old in text:
+              path.write_text(text.replace(old, new), encoding='utf-8')
+          elif new not in text:
+              raise SystemExit('Expected A03R closeout correction target is missing.')
+          after = path.read_bytes()
+          record = {
+              'schema': 'qctp-a03r-closeout-source-correction-v1',
+              'before_sha256': hashlib.sha256(before).hexdigest(),
+              'after_sha256': hashlib.sha256(after).hexdigest(),
+              'correction': 'Cue count is derived from manifest cue_renders rather than a nonexistent top-level field.',
+          }
+          pathlib.Path('QCTP_A03R_CLOSEOUT_SOURCE_CORRECTION_REV0.json').write_text(
+              json.dumps(record, indent=2) + '\n', encoding='utf-8'
+          )
+          print(json.dumps(record, indent=2))
+          PY
+
+      - name: Validate published package and persist controlled state
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python tools/closeout_qctp_a03r.py \
+            --root . \
+            --repository "$GITHUB_REPOSITORY"
+
+      - name: Remove superseded duplicate A03 workflow
+        run: |
+          rm -f .github/workflows/qctp-a03-build-and-publish.yml
+
+      - name: Verify persisted authority and release holds
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          state = json.loads(pathlib.Path('QCTP_CURRENT_STATE.json').read_text())
+          manifest = json.loads(pathlib.Path('QCTP_MACRO_DELIVERABLE_MANIFEST_REV10.json').read_text())
+          gate = json.loads(pathlib.Path('device-preview/a03/gate-summary.json').read_text())
+          machine = json.loads(pathlib.Path('device-preview/a03/machine-verification.json').read_text())
+          assert state['schema'] == 'qctp-current-state-v17'
+          assert state['active_action']['action_id'] == 'QCTP-D1-AUDIO-A04'
+          assert state['release_authority']['rev2_candidate'] == 'ZERO_RELEASE'
+          assert manifest['schema'] == 'qctp-macro-deliverable-manifest-v10'
+          assert manifest['release_authority'] == 'ZERO_RELEASE'
+          assert gate['result'] == 'PASS'
+          assert machine['result'] == 'PASS'
+          assert machine['integrated_gate_result'] == 'PASS'
+          assert pathlib.Path('QCTP_DAY1_AUDIO_A03R_MACHINE_PACKAGE_CLOSEOUT_REV0_2026-08-20.md').exists()
+          print('A03R controlled closeout verification: PASS')
+          PY
+
+      - name: Commit controlled closeout and anti-regression cleanup
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            QCTP_CURRENT_STATE.json \
+            QCTP_MACRO_DELIVERABLE_MANIFEST_REV10.json \
+            QCTP_DAY1_AUDIO_A03R_MACHINE_PACKAGE_CLOSEOUT_REV0_2026-08-20.md \
+            QCTP_A03R_CLOSEOUT_SOURCE_CORRECTION_REV0.json \
+            tools/closeout_qctp_a03r.py \
+            .github/workflows/qctp-a03-build-and-publish.yml
+          if git diff --cached --quiet; then
+            echo "A03R controlled closeout already persisted."
+            exit 0
+          fi
+          git commit -m "Close QCTP A03R machine package and activate physical acceptance"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
