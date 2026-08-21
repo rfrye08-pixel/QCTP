@@ -1,0 +1,73 @@
+name: QCTP A03R live deployment verification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/qctp-a03r-live-verify-trigger"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: qctp-a03r-live-deployment-verification
+  cancel-in-progress: false
+
+jobs:
+  verify-live-and-persist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout controlled main state
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fetch live deployment, require exact hashes, and advance controlled state
+        run: |
+          python tools/verify_qctp_a03r_live_deployment.py \
+            --root . \
+            --attempts 60 \
+            --delay-seconds 5
+
+      - name: Verify release holds remain closed
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          state = json.loads(pathlib.Path('QCTP_CURRENT_STATE.json').read_text())
+          manifest = json.loads(pathlib.Path('QCTP_MACRO_DELIVERABLE_MANIFEST_REV11.json').read_text())
+          evidence = json.loads(pathlib.Path('QCTP_DAY1_AUDIO_A03R_LIVE_DEPLOYMENT_VERIFICATION_REV0_2026-08-20.json').read_text())
+          assert state['schema'] == 'qctp-current-state-v18'
+          assert state['active_action']['action_id'] == 'QCTP-D1-AUDIO-A04'
+          assert state['release_authority']['rev2_candidate'] == 'ZERO_RELEASE'
+          assert state['release_authority']['physical_content_acceptance'] == 'OPEN_A04_REQUIRED'
+          assert manifest['schema'] == 'qctp-macro-deliverable-manifest-v11'
+          assert manifest['release_authority'] == 'ZERO_RELEASE'
+          assert evidence['result'] == 'PASS'
+          assert evidence['exact_hash_match_to_machine_verified_publication'] == 'PASS_8_OF_8'
+          print('A03R live HTTPS deployment verification: PASS')
+          PY
+
+      - name: Commit live deployment evidence and state advance
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            QCTP_CURRENT_STATE.json \
+            QCTP_MACRO_DELIVERABLE_MANIFEST_REV11.json \
+            QCTP_DAY1_AUDIO_A03R_LIVE_DEPLOYMENT_VERIFICATION_REV0_2026-08-20.json
+          if git diff --cached --quiet; then
+            echo "A03R live verification already persisted."
+            exit 0
+          fi
+          git commit -m "Verify live QCTP A03R deployment and preserve release holds"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
