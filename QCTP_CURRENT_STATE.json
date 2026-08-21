@@ -1,9 +1,9 @@
 {
-  "schema": "qctp-current-state-v17",
+  "schema": "qctp-current-state-v18",
   "project": "QCTP",
-  "updated_at": "2026-08-20T21:29:20-05:00",
+  "updated_at": "2026-08-20T21:37:45-05:00",
   "status": "ACTIVE",
-  "supersedes": "qctp-current-state-v16",
+  "supersedes": "qctp-current-state-v17",
   "product_identity": {
     "name": "QCTP",
     "expanded_name": "Quantum Consciousness Training Platform",
@@ -12,7 +12,7 @@
     "experience_goal": "Teach selected teachers' and practitioner lineages' actual methods, improve clarity and delivery without silently replacing them, and make the complete system serious, precise, exploratory, user-friendly, and capability-driven."
   },
   "authority_refs": {
-    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV10.json",
+    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV11.json",
     "source_fidelity_standard": "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
     "day1_source_evidence_packet": "QCTP_DAY1_PRIMARY_SOURCE_EVIDENCE_PACKET_REV0.md",
     "day1_source_crosswalk": "QCTP_DAY1_SOURCE_PRACTICE_CROSSWALK_REV0.csv",
@@ -32,7 +32,8 @@
     "breathwork_system": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
     "candidate_branch_state": "QCTP_REV2_CODEX_BRANCH_STATE.json on qctp-platform-rev2-codex",
     "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2",
-    "day1_audio_a03r_closeout": "QCTP_DAY1_AUDIO_A03R_MACHINE_PACKAGE_CLOSEOUT_REV0_2026-08-20.md"
+    "day1_audio_a03r_closeout": "QCTP_DAY1_AUDIO_A03R_MACHINE_PACKAGE_CLOSEOUT_REV0_2026-08-20.md",
+    "day1_audio_a03r_live_deployment": "QCTP_DAY1_AUDIO_A03R_LIVE_DEPLOYMENT_VERIFICATION_REV0_2026-08-20.json"
   },
   "source_fidelity_control": {
     "status": "CONTROLLED",
@@ -218,7 +219,7 @@
     "physical_content_acceptance": "OPEN_A04_REQUIRED",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "controlled_interpretation": "QCTP-D1-AUDIO-A03R is machine-complete and delivered as a non-credit five-minute device candidate. The locked 35-cue script hash is unchanged; 25-minute voice/support assets and three five-minute composites exist; four critical cues passed normalized ASR at WER 0.0; acoustic, timing, continuous-support, anti-startle marker, binaural, Chromium, and WebKit iPhone-profile gates passed. This grants test-candidate authority only. Physical iPhone content acceptance, private-runtime installation, Rev2 merge, and public release remain unauthorized.",
+  "controlled_interpretation": "QCTP-D1-AUDIO-A03R is machine-complete and delivered as a non-credit five-minute device candidate. The locked 35-cue script hash is unchanged; 25-minute voice/support assets and three five-minute composites exist; four critical cues passed normalized ASR at WER 0.0; acoustic, timing, continuous-support, anti-startle marker, binaural, Chromium, and WebKit iPhone-profile gates passed. This grants test-candidate authority only. Physical iPhone content acceptance, private-runtime installation, Rev2 merge, and public release remain unauthorized. The public HTTPS deployment was then fetched independently and matched all eight machine-verified published-file hashes exactly.",
   "next_controlled_action": "Execute QCTP-D1-AUDIO-A04: Ryan opens the delivered five-minute candidate in iPhone Safari with stereo headphones, selects Binaural Low A, completes only that five-minute test, and reports the six controlled observations.",
   "day1_audio_action_a03r": {
     "action_id": "QCTP-D1-AUDIO-A03R",
@@ -265,7 +266,14 @@
         "critical-asr.json": "38ac81e35703abafc6c7c788246d1faf4d544f951a0f7609f07c3abc0aff8bb4",
         "gate-summary.json": "08499c79349b9b733cff95bb06198e16b88a4dae5e1b63912764f00b53ac5c56"
       },
-      "evidence_class": "CALCULATED_AND_MACHINE_VERIFIED"
+      "evidence_class": "CALCULATED_AND_MACHINE_VERIFIED",
+      "live_https_deployment": {
+        "result": "PASS",
+        "verified_at": "2026-08-20T21:37:45-05:00",
+        "evidence_ref": "QCTP_DAY1_AUDIO_A03R_LIVE_DEPLOYMENT_VERIFICATION_REV0_2026-08-20.json",
+        "exact_hash_match": "PASS_8_OF_8",
+        "base_url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/"
+      }
     },
     "physical_iphone_acceptance": "OPEN",
     "release_authority": "ZERO_RELEASE"
