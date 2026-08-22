@@ -1,281 +1,156 @@
 {
-  "schema": "qctp-current-state-v18",
+  "schema": "qctp-current-state-v19",
   "project": "QCTP",
-  "updated_at": "2026-08-20T21:37:45-05:00",
+  "updated_at": "2026-08-21T21:37:46-05:00",
   "status": "ACTIVE",
-  "supersedes": "qctp-current-state-v17",
+  "supersedes": "qctp-current-state-v18",
   "product_identity": {
     "name": "QCTP",
     "expanded_name": "Quantum Consciousness Training Platform",
     "foundation_program": "112-day Quantum Consciousness Training Program",
-    "scope": "Source-grounded lessons and practices, exact state training, Breath Director, guided practice, source tracks, Studio, Lab, voice capture, local transcription, Codex, Mirror, Insights, experiments, and daily integration.",
-    "experience_goal": "Teach selected teachers' and practitioner lineages' actual methods, improve clarity and delivery without silently replacing them, and make the complete system serious, precise, exploratory, user-friendly, and capability-driven."
+    "scope": "Source-grounded lessons and practices, guided meditation, breath training, source tracks, Studio, Lab, voice capture, local transcription, Codex, Mirror, Insights, experiments, and daily integration.",
+    "experience_goal": "Deliver a reliable and compelling morning practice on iPhone, teach selected source methods faithfully, improve execution without silently replacing them, and preserve local-first user data and zero-recurring-cost defaults."
   },
   "authority_refs": {
-    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV11.json",
+    "macro_deliverable_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV12.json",
+    "codex_rev3_handoff": "QCTP_CODEX_REV3_FULL_UPGRADE_AND_NATURAL_VOICE_HANDOFF_REV0_2026-08-21.md",
+    "a04_voice_failure": "QCTP_DAY1_AUDIO_A04_PHYSICAL_VOICE_NATURALNESS_FAILURE_REV0_2026-08-21.md",
     "source_fidelity_standard": "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
-    "day1_source_evidence_packet": "QCTP_DAY1_PRIMARY_SOURCE_EVIDENCE_PACKET_REV0.md",
-    "day1_source_crosswalk": "QCTP_DAY1_SOURCE_PRACTICE_CROSSWALK_REV0.csv",
-    "day1_source_map_review": "QCTP_DAY1_SOURCE_FIDELITY_REVIEW_REV0.md",
-    "day1_source_faithful_baseline": "QCTP_DAY1_SOURCE_FAITHFUL_BASELINE_REV0.md",
-    "day1_qctp_enhancement_delta": "QCTP_DAY1_QCTP_ENHANCEMENT_DELTA_REV0.md",
-    "day1_source_labeled_script": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0.json and PART1-PART5",
-    "day1_independent_script_review": "QCTP_DAY1_INDEPENDENT_SOURCE_FIDELITY_REVIEW_REV0.md",
-    "day1_script_machine_verification": "QCTP_DAY1_SOURCE_SCRIPT_MACHINE_VERIFICATION_REV0.json",
-    "day1_script_lock": "QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json",
-    "day1_audio_implementation_handoff": "QCTP_DAY1_SOURCE_GROUNDED_AUDIO_IMPLEMENTATION_HANDOFF_REV0_2026-08-20.md",
     "product_architecture": "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
-    "protocol_hardening": "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
+    "training_protocol": "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
     "state_atlas": "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md",
     "meditation_audio_qa": "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
-    "ux_engagement": "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
-    "breathwork_system": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
-    "candidate_branch_state": "QCTP_REV2_CODEX_BRANCH_STATE.json on qctp-platform-rev2-codex",
-    "candidate_pr": "https://github.com/rfrye08-pixel/QCTP/pull/2",
-    "day1_audio_a03r_closeout": "QCTP_DAY1_AUDIO_A03R_MACHINE_PACKAGE_CLOSEOUT_REV0_2026-08-20.md",
-    "day1_audio_a03r_live_deployment": "QCTP_DAY1_AUDIO_A03R_LIVE_DEPLOYMENT_VERIFICATION_REV0_2026-08-20.json"
+    "ux_spec": "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+    "breathwork_spec": "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
+    "voice_capture_spec": "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
+    "zero_cost_runtime": "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
+    "local_ai_mirror": "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
+    "thomas_campbell_track": "QCTP_THOMAS_CAMPBELL_INTEGRATION_REV0_2026-08-18.md",
+    "robert_edward_grant_track": "QCTP_ROBERT_EDWARD_GRANT_INTEGRATION_REV0_2026-08-17.md",
+    "day1_source_evidence": "QCTP_DAY1_PRIMARY_SOURCE_EVIDENCE_PACKET_REV0.md",
+    "day1_source_crosswalk": "QCTP_DAY1_SOURCE_PRACTICE_CROSSWALK_REV0.csv",
+    "day1_source_baseline": "QCTP_DAY1_SOURCE_FAITHFUL_BASELINE_REV0.md",
+    "day1_enhancement_delta": "QCTP_DAY1_QCTP_ENHANCEMENT_DELTA_REV0.md",
+    "day1_script_lock": "QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json",
+    "day1_audio_handoff": "QCTP_DAY1_SOURCE_GROUNDED_AUDIO_IMPLEMENTATION_HANDOFF_REV0_2026-08-20.md",
+    "a03r_machine_closeout": "QCTP_DAY1_AUDIO_A03R_MACHINE_PACKAGE_CLOSEOUT_REV0_2026-08-20.md",
+    "a03r_live_deployment": "QCTP_DAY1_AUDIO_A03R_LIVE_DEPLOYMENT_VERIFICATION_REV0_2026-08-20.json",
+    "rev2_candidate_branch_state": "QCTP_REV2_CODEX_BRANCH_STATE.json on qctp-platform-rev2-codex",
+    "rev2_pull_request": "https://github.com/rfrye08-pixel/QCTP/pull/2"
   },
-  "source_fidelity_control": {
-    "status": "CONTROLLED",
-    "production_loop": "PRIMARY SOURCE METHOD -> SOURCE-FAITHFUL BASELINE -> QCTP ENHANCEMENT DELTA -> AUDIO/APP IMPLEMENTATION -> VERIFICATION -> USER ACCEPTANCE",
-    "practice_classes": [
-      "SOURCE_FAITHFUL",
-      "SOURCE_ENHANCED",
-      "QCTP_SYNTHESIS",
-      "QCTP_ORIGINAL"
-    ],
-    "segment_level_crosswalk_required": true,
-    "source_specific_breath_preserved": true,
-    "source_specific_terminology_preserved": true,
-    "unresolved_source_segments_renderable": false,
-    "qctp_support_must_be_labeled": true,
-    "paid_script_copying_allowed": false
-  },
-  "controlled_training_model": {
-    "loop": "PREPARE -> INDUCE -> RECOGNIZE -> STABILIZE -> USE -> EXIT -> RECORD -> ADAPT",
-    "reliability_levels": [
-      "INTRODUCED",
-      "ACCESSED",
-      "STABILIZED",
-      "FUNCTIONAL",
-      "TRANSFERABLE"
-    ],
-    "timer_completion_equals_state_attainment": false,
-    "technical_audio_continuity_equals_content_acceptance": false,
-    "generic_qctp_method_may_replace_source_method": false,
-    "raw_observation_separate_from_interpretation": true,
-    "silent_failure_allowed": false
-  },
-  "released_runtime": {
-    "branch": "main",
-    "version": "1.1.4",
-    "deployment": "https://rfrye08-pixel.github.io/QCTP/",
-    "release_authority": "LIMITED_DAY1_USE_SCREEN_UP",
-    "not_the_rev2_private_origin": true
-  },
-  "private_runtime": {
-    "machine": "REOS",
-    "origin": "https://reos.tail6ed282.ts.net/",
-    "transport": "Tailscale Serve private HTTPS",
-    "loopback_gateway": "http://127.0.0.1:8787",
-    "latest_user_session_script_family": "PROTECTED_REV1_1_4_DAY1_GUIDANCE",
-    "source_grounded_day1_installed": false,
-    "content_acceptance": "FAIL_CURRENT_GUIDANCE"
-  },
-  "rev2_candidate": {
-    "branch": "qctp-platform-rev2-codex",
-    "observed_head_sha": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
-    "version": "2.0.0-alpha.1",
-    "pull_request": 2,
-    "pull_request_state": "OPEN_DRAFT_UNMERGED",
-    "implementation_disposition": "NON_BREATH_PLATFORM_COMPLETE_CANDIDATE",
-    "audio_delivery_disposition": "SAME_ORIGIN_TECHNICAL_FOUNDATION_PRESERVED",
-    "guidance_disposition": "SOURCE_GROUNDED_MACHINE_PACKAGE_DELIVERED_PHYSICAL_ACCEPTANCE_OPEN",
-    "production_deployed": false,
+  "configuration": {
+    "released_branch": "main",
+    "released_runtime_version": "1.1.4",
+    "private_runtime_origin": "https://reos.tail6ed282.ts.net/",
+    "private_runtime_machine": "REOS",
+    "rev2_predecessor_branch": "qctp-platform-rev2-codex",
+    "rev2_predecessor_head": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
+    "rev2_pull_request": 2,
+    "rev3_execution_branch": "qctp-platform-rev3-codex",
+    "rev3_branch_base": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
     "release_authority": "ZERO_RELEASE"
   },
-  "day1_first_natural_session": {
-    "date": "2026-08-20",
-    "evidence_class": "USER_REPORTED_FULL_NATURAL_DURATION_PHYSICAL_IPHONE_EXPERIENCE",
-    "duration_seconds": 1500,
-    "practice_completion": "PASS_USER_REPORTED",
-    "guide_audio_continuity": "LIMITED_PASS_USER_REPORTED",
-    "breath_coaching": "FAIL",
-    "cue_entry_startle": "FAIL",
-    "guidance_quality": "FAIL",
-    "continuous_support_requested": true,
-    "state_access_credit": "NOT_PROMOTED_FROM_COMPLETION",
-    "content_release_effect": "CURRENT_DAY1_GUIDANCE_REJECTED"
-  },
-  "day1_source_action_a01": {
-    "action_id": "QCTP-D1-SOURCE-A01",
-    "status": "COMPLETE",
-    "result": "PRIMARY_SOURCE_EVIDENCE_PACKET_AND_COMPLETE_SEGMENT_CROSSWALK_DELIVERED",
-    "source_map": {
-      "00_00_to_03_00": "Bullard contraction awareness plus QCTP baseline support",
-      "03_00_to_08_00": "HeartMath Quick Coherence",
-      "08_00_to_23_00": "Dispenza body-area-to-broad-space induction",
-      "23_00_to_25_00": "QCTP pure observation and return",
-      "mossbridge": "DEFERRED_TO_LATER_PSI_REMOTE_VIEWING_PRECOGNITION_OBE_TRACKS"
-    },
-    "verification": "PASS"
-  },
-  "day1_source_action_a02": {
-    "action_id": "QCTP-D1-SOURCE-A02",
-    "status": "COMPLETE",
-    "result": "SOURCE_FAITHFUL_BASELINE_ENHANCEMENT_DELTA_SOURCE_LABELED_SCRIPT_AND_SCRIPT_LOCK_DELIVERED",
-    "source_faithful_baseline": "COMPLETE",
-    "qctp_enhancement_delta": "COMPLETE",
-    "script": {
-      "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
-      "script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
-      "duration_seconds": 1500,
-      "cue_parts": 5,
-      "cue_count": 35,
-      "total_word_count": 774,
-      "guidance_tier": "TEACH",
-      "major_phase_boundaries_preserved": true,
-      "continuous_support_bed_required": true,
-      "pre_cue_marker_required": true,
-      "binaural_support": "OPTIONAL_QCTP_SUPPORT_PROFILE_NOT_LOCKED",
-      "advanced_state_claims_authorized": false
-    },
-    "source_contract": {
-      "bullard": "contraction awareness, feeling/release, constructive quality",
-      "heartmath": "heart-area attention, five seconds in/five seconds out or comfortable, appreciation/care/calm/ease, no hold",
+  "controlled_truth": {
+    "source_first_required": true,
+    "locked_day1_script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+    "day1_script_cue_count": 35,
+    "day1_duration_seconds": 1500,
+    "day1_source_map": {
+      "bullard": "contraction awareness and constructive-quality transition",
+      "heartmath": "heart-area attention and five seconds in / five seconds out or comfortable; no hold",
       "dispenza": "body-area-in-space to whole-body and room-scale spatial attention",
-      "qctp": "baseline, source transitions, attention recovery, pure observation, return, debrief",
-      "mossbridge": "DEFERRED"
+      "qctp": "baseline, transitions, observation, return, debrief, audio and app support"
     },
-    "verification": {
-      "independent_source_fidelity_review": "PASS",
-      "deterministic_machine_gate": "PASS",
-      "workflow_run_id": 32425246503,
-      "job_id": 96605742534,
-      "artifact_id": 9427163011,
-      "artifact_zip_sha256": "e900187484162946e167e1daacadbba0605486b50d9f9654e7058ec2547d1c08",
-      "script_and_cue_hashes": "PASS",
-      "timing_and_non_overlap": "PASS",
-      "source_ownership": "PASS",
-      "legacy_four_six_absent": "PASS",
-      "day1_breath_count_absent": "PASS",
-      "external_media_reference_absent": "PASS",
-      "unsupported_advanced_claims_absent": "PASS"
-    },
-    "script_lock": "PASS",
-    "render_authority": "TEST_RENDER_AUTHORIZED",
-    "release_authority": "ZERO_RELEASE"
+    "a03r_machine_package": "PASS_TECHNICAL_ONLY",
+    "a04_physical_voice_naturalness": "FAIL_ROBOTIC",
+    "a03r_voice_stem": "REJECTED_DO_NOT_PROMOTE",
+    "private_runtime_source_grounded_day1_installed": false,
+    "natural_voice_selected": false,
+    "paid_cloud_authorized": false
   },
-  "active_action": {
+  "a04_failure": {
     "action_id": "QCTP-D1-AUDIO-A04",
-    "status": "USER_LAST_MILE_PHYSICAL_ACCEPTANCE_REQUIRED",
-    "objective": "Run one five-minute Safari acceptance test with stereo headphones, beginning with Binaural Low A, and capture startle, voice, five/five breathing, support, marker, and return observations.",
-    "candidate_url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/",
-    "predecessor": "QCTP-D1-AUDIO-A03R",
-    "user_action_required_now": true
-  },
-  "prior_day1_guidance_rev1": {
-    "status": "SUPERSEDED_FOR_CONTENT_BY_SOURCE_SCRIPT_LOCK",
-    "preserved_engineering": [
-      "continuous audio architecture",
-      "anti-startle pre-cue marker and fades",
-      "slower narration and mastering limits",
-      "Ambient/Binaural support options",
-      "local/offline packaging",
-      "readiness and fail-closed behavior",
-      "improved return timing",
-      "voice-first debrief and adaptation",
-      "capability credit separate from timer completion"
+    "status": "CLOSED_FAIL_VOICE_NATURALNESS",
+    "evidence_class": "USER_REPORTED_DIRECT_PHYSICAL_IPHONE_AUDIO_PERCEPTION",
+    "observation_verbatim": "The voice sounds robotic",
+    "release_effect": "REJECT_A03R_VOICE_NO_INSTALL_NO_FULL_RETEST",
+    "likely_contributors": [
+      "resource-constrained Chatterbox Nano model",
+      "broad spectral time-stretch of every generated cue to predetermined duration"
     ],
-    "prohibited_regressions": [
-      "Do not restore QCTP-B1 four-in/six-out as Day 1 source breathing",
-      "Do not restore one-to-ten breath counting to Day 1",
-      "Do not render the prior unsourced script",
-      "Do not attribute QCTP binaural support to a teacher"
-    ]
+    "causal_confidence": "LIKELY_CONTRIBUTORS_NOT_PROVEN_SOLE_CAUSE"
   },
-  "open_implementation_packages": [
-    "QCTP-D1-AUDIO-A04 five-minute physical iPhone acceptance",
-    "Day 1 natural-duration physical acceptance after five-minute pass",
-    "Breath Director and seven-session Breath Foundations",
-    "Protocol-hardening runtime schemas and State Map",
-    "Source-track MVPs and crosswalks",
-    "User-experience exploration upgrade",
-    "Foundation Days 2-112 authored under the source-first production method"
+  "a05_partial_work": {
+    "status": "TOOLING_EXISTS_PACKAGE_NOT_DELIVERED",
+    "main_commits": {
+      "failure_recorder": "4be60afc256e97bd54a7867fc41517bbe9235f78",
+      "no_stretch_audition_builder": "a96fa7503829eb2be0c49224bb74298571655c14",
+      "machine_verifier": "d41d2d1f1005dbd231eeadbb9162d1156fd83a3e",
+      "browser_verifier": "544c85a98e65888ed164cbb6277650dfb63cc098",
+      "live_verifier": "71b0096a8631de5febdc88bd8b0a00130808642b"
+    },
+    "device_preview_a05_exists": false,
+    "physical_voice_selection": "OPEN"
+  },
+  "preserved_platform_capabilities": [
+    "React and TypeScript mobile PWA",
+    "IndexedDB local-first storage and Rev1 migration",
+    "voice capture and PX13 local Whisper transcription",
+    "deterministic Mirror Core and optional local AI Mirror",
+    "private Tailscale HTTPS runtime",
+    "same-origin and offline media packaging",
+    "source tracks, Practice, Studio, Lab, Codex, Insights, and Settings",
+    "continuous support audio, predictive markers, bed ducking, fades, return, and fail-closed contracts"
+  ],
+  "active_action": {
+    "action_id": "QCTP-REV3-CODEX-A01",
+    "status": "CODEX_EXECUTION_AUTHORIZED",
+    "branch": "qctp-platform-rev3-codex",
+    "objective": "Build the complete Rev3 QCTP upgrade, immediately restore a reliable morning-practice path, solve natural voice quality through physical audition before full rendering, and implement the controlled breath, state, UX, source-track, local-AI, reliability, and release packages.",
+    "handoff_ref": "QCTP_CODEX_REV3_FULL_UPGRADE_AND_NATURAL_VOICE_HANDOFF_REV0_2026-08-21.md",
+    "user_action_required_now": "OPEN_CODEX_WITH_REPOSITORY_AND_HANDOFF_PACKAGE"
+  },
+  "execution_order": [
+    "P0 branch preflight, authority loading, and evidence reconciliation",
+    "P1 immediate voice-free morning continuity inside normal app",
+    "P2 natural voice audit and blind physical audition; no full render until PASS",
+    "P3 full selected-voice Day 1 render and continuous-player integration",
+    "P4 Breath Director and seven-session Breath Foundations",
+    "P5 State Atlas, capability progression, and adaptive training loop",
+    "P6 morning cockpit, app navigation, UX, excitement, and accessibility",
+    "P7 source-track integration including Campbell, Grant, psi, remote viewing, and OBE under source-fidelity controls",
+    "P8 local AI Mirror, voice capture, local transcription, data export and recovery hardening",
+    "P9 automated and physical acceptance, PX13 deployment, state persistence, and release package"
+  ],
+  "holds": [
+    "Do not merge or release Rev2 or Rev3 without explicit authority",
+    "Do not modify main or qctp-platform-rev2-codex for Rev3 implementation",
+    "Do not alter locked Day 1 source content without new hash and fidelity review",
+    "Do not reuse or promote the rejected A03R voice",
+    "Do not broad-stretch narration; default maximum 0.97x–1.03x unless separately accepted",
+    "Do not render the full 25-minute narration before a short human naturalness audition passes",
+    "Do not introduce required paid API use or recurring cloud cost",
+    "Do not delete or overwrite user records or Rev1 migration source",
+    "Do not claim state attainment from timer completion",
+    "Do not ask Ryan to perform repeated long tests when a short acceptance can close the same risk"
   ],
   "release_acceptance_holds": [
-    "Pass five-minute physical iPhone acceptance",
-    "Pass later natural-duration source-grounded Day 1 acceptance",
-    "Complete remaining physical-iPhone lifecycle, migration, and export checks",
-    "Do not merge or release Rev2 without explicit authority"
+    "Natural voice physical acceptance",
+    "Five-minute source-grounded audio and UX acceptance",
+    "Natural 25-minute Day 1 acceptance",
+    "Breath Director physical acceptance",
+    "offline, reconnect, microphone, notification, lifecycle, import/export, migration, and recovery acceptance",
+    "PX13 private runtime exact-build verification",
+    "explicit merge and deployment authority"
   ],
   "release_authority": {
-    "released_rev1_1_4": "LIMITED_DAY1_USE_SCREEN_UP",
-    "rev2_candidate": "ZERO_RELEASE",
-    "current_day1_guidance": "CONTENT_ACCEPTANCE_FAIL",
-    "source_map_a01": "COMPLETE",
-    "source_script_a02": "COMPLETE_SCRIPT_LOCK_PASS",
-    "voice_and_support_audio": "MACHINE_VERIFIED_TEST_PACKAGE_DELIVERED",
-    "physical_content_acceptance": "OPEN_A04_REQUIRED",
+    "main": "NO_REV3_IMPLEMENTATION_WRITES",
+    "rev2_candidate": "FROZEN_PREDECESSOR_ZERO_RELEASE",
+    "rev3_candidate": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE",
+    "voice_audition": "AUTHORIZED",
+    "full_voice_render": "WITHHELD_UNTIL_HUMAN_NATURALNESS_PASS",
+    "private_runtime_install": "WITHHELD_UNTIL_VERIFIED_CANDIDATE",
     "paid_cloud_services": "NOT_AUTHORIZED"
   },
-  "controlled_interpretation": "QCTP-D1-AUDIO-A03R is machine-complete and delivered as a non-credit five-minute device candidate. The locked 35-cue script hash is unchanged; 25-minute voice/support assets and three five-minute composites exist; four critical cues passed normalized ASR at WER 0.0; acoustic, timing, continuous-support, anti-startle marker, binaural, Chromium, and WebKit iPhone-profile gates passed. This grants test-candidate authority only. Physical iPhone content acceptance, private-runtime installation, Rev2 merge, and public release remain unauthorized. The public HTTPS deployment was then fetched independently and matched all eight machine-verified published-file hashes exactly.",
-  "next_controlled_action": "Execute QCTP-D1-AUDIO-A04: Ryan opens the delivered five-minute candidate in iPhone Safari with stereo headphones, selects Binaural Low A, completes only that five-minute test, and reports the six controlled observations.",
-  "day1_audio_action_a03r": {
-    "action_id": "QCTP-D1-AUDIO-A03R",
-    "status": "MACHINE_PACKAGE_COMPLETE_PHYSICAL_ACCEPTANCE_OPEN",
-    "result": "SOURCE_GROUNDED_AUDIO_AND_FIVE_MINUTE_DEVICE_CANDIDATE_DELIVERED",
-    "script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
-    "duration_seconds": 1500,
-    "cue_count": 35,
-    "support_candidates": [
-      "AMBIENT",
-      "BINAURAL_LOW_A",
-      "MINIMAL_CONTINUITY"
-    ],
-    "public_candidate_url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/",
-    "verification": {
-      "critical_cue_asr": "PASS_4_OF_4_WER_0_0",
-      "machine_gate": "PASS",
-      "chromium": "PASS",
-      "webkit_iphone_profile": "PASS",
-      "diagnostic_retention_on_failure": "PASS",
-      "workflow_run_id": 32438955834,
-      "job_id": 96645641762,
-      "diagnostic_artifact": {
-        "id": 9431976673,
-        "name": "qctp-a03r-diagnostics-c6118498553b7d4618d133a07b964d02eefd30de",
-        "size_in_bytes": 65267457,
-        "digest": "sha256:fa1f390714faba0faacbb1a0a7f0c68184f74617bad8d294a2628306800febc0",
-        "expires_at": "2026-09-20T02:25:03Z"
-      },
-      "verified_package_artifact": {
-        "id": 9431977804,
-        "name": "qctp-a03r-source-grounded-audio-c6118498553b7d4618d133a07b964d02eefd30de",
-        "size_in_bytes": 62983736,
-        "digest": "sha256:66bbde054f659422b13f4b2d80bb119e702f1ce50dfeef9707267d54a025e5ef",
-        "expires_at": "2026-09-20T02:25:07Z"
-      },
-      "published_file_sha256": {
-        "index.html": "742052b67f23ae73265f48d6098a61cf57b0d1313e43eeead6cf1acb23116ea9",
-        "acceptance-ambient.mp3": "cc75cb78aea097fbe2441e4db9a1319f9996884e5cbab1bca39d0386db24c7e0",
-        "acceptance-binaural-low-a.mp3": "9e4367fdf6dccba1cb7704930a36a26bb11bb9c12346920b2cb5f2a423bec3ce",
-        "acceptance-minimal.mp3": "b2d51b9215fc7332477490222556a8e77d3510482f9888477fd5101d8c0c5011",
-        "manifest.json": "4add48d038c516bf9ae27c3c5468dd7fa1e4c64c3b7254572ec881e8152aa541",
-        "machine-verification.json": "4b13d81b10b9615c06082dcffb98eda0bdbd634ced51721729c9b6f7b7a18e52",
-        "critical-asr.json": "38ac81e35703abafc6c7c788246d1faf4d544f951a0f7609f07c3abc0aff8bb4",
-        "gate-summary.json": "08499c79349b9b733cff95bb06198e16b88a4dae5e1b63912764f00b53ac5c56"
-      },
-      "evidence_class": "CALCULATED_AND_MACHINE_VERIFIED",
-      "live_https_deployment": {
-        "result": "PASS",
-        "verified_at": "2026-08-20T21:37:45-05:00",
-        "evidence_ref": "QCTP_DAY1_AUDIO_A03R_LIVE_DEPLOYMENT_VERIFICATION_REV0_2026-08-20.json",
-        "exact_hash_match": "PASS_8_OF_8",
-        "base_url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/"
-      }
-    },
-    "physical_iphone_acceptance": "OPEN",
-    "release_authority": "ZERO_RELEASE"
-  }
+  "next_controlled_action": "Codex checks out qctp-platform-rev3-codex, reads the Rev3 handoff and exact authority files in order, validates the branch and controlled hashes, then executes the largest safe work package beginning with the normal-app voice-free morning fallback and natural-voice audition pipeline."
 }
