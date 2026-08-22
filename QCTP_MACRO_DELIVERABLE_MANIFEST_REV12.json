@@ -1,0 +1,67 @@
+{
+  "schema": "qctp-macro-deliverable-manifest-v12",
+  "manifest_id": "QCTP-PLATFORM-REV12-REV3-CODEX-EXECUTION",
+  "updated_at": "2026-08-21T21:37:46-05:00",
+  "status": "ACTIVE",
+  "supersedes": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV11.json",
+  "north_star": "A source-grounded, natural-sounding, one-tap morning consciousness training platform that works reliably on iPhone with zero recurring API cost and preserves user data and evidence.",
+  "execution_branch": "qctp-platform-rev3-codex",
+  "deliverables": [
+    {
+      "id": "QCTP-R12-D01",
+      "name": "Immediate morning-practice continuity",
+      "status": "OPEN",
+      "acceptance": "Voice-free Day 1 mode available in normal private app; one tap; continuous support and HeartMath rail; offline; no rejected voice."
+    },
+    {
+      "id": "QCTP-R12-D02",
+      "name": "Natural voice recovery",
+      "status": "OPEN_RELEASE_CRITICAL",
+      "acceptance": "At least three blind same-text candidates; no broad time-stretch; license/consent verified; Ryan selects a voice that is not robotic."
+    },
+    {
+      "id": "QCTP-R12-D03",
+      "name": "Source-grounded Day 1 production experience",
+      "status": "OPEN",
+      "acceptance": "Locked 35-cue script, selected natural voice, support modes, anti-startle entry, breath coaching, full return, local package, 5-minute then 25-minute physical pass."
+    },
+    {
+      "id": "QCTP-R12-D04",
+      "name": "Breath Director and Breath Foundations",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "acceptance": "Source-specific breath preserved; visual/audio coaching; safety/stop rules; saved preferences; physical iPhone pass."
+    },
+    {
+      "id": "QCTP-R12-D05",
+      "name": "Protocol hardening and State Atlas",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "acceptance": "Teach/Coach/Test/Independent tiers, state markers, progression gates, raw observation separate from interpretation."
+    },
+    {
+      "id": "QCTP-R12-D06",
+      "name": "User-friendly and exciting mobile experience",
+      "status": "SPEC_CLOSED_IMPLEMENTATION_OPEN",
+      "acceptance": "Today cockpit, morning-ready flow, source labels, voice-first notes, clear progress, offline/update status, no setup burden."
+    },
+    {
+      "id": "QCTP-R12-D07",
+      "name": "Source tracks",
+      "status": "PARTIAL",
+      "acceptance": "Thomas Campbell and Robert Edward Grant controlled MVPs plus existing source map; no fabricated methods or paid-script copying."
+    },
+    {
+      "id": "QCTP-R12-D08",
+      "name": "Local-first AI, transcription, and data reliability",
+      "status": "PARTIAL",
+      "acceptance": "No required API key; local Whisper and Mirror preserved; data migration/export/deletion/offline/reconnect tests pass."
+    },
+    {
+      "id": "QCTP-R12-D09",
+      "name": "Rev3 verification and deployment package",
+      "status": "OPEN",
+      "acceptance": "Repository, browser, WebKit, Windows/private-runtime, physical iPhone, checksums, rollback, state persistence, draft PR, zero release."
+    }
+  ],
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "Codex opens rfrye08-pixel/QCTP, checks out qctp-platform-rev3-codex, loads QCTP_CURRENT_STATE.json and every authority file named by it, reconciles the main-only A04/A05 evidence, implements the immediate voice-free morning mode and blind natural-voice audition, then continues through the complete Rev3 execution contract."
+}
