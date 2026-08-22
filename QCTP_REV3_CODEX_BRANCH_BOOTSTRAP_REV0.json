@@ -1,0 +1,47 @@
+{
+  "schema": "qctp-rev3-codex-branch-bootstrap-v1",
+  "branch": "qctp-platform-rev3-codex",
+  "created_at": "2026-08-21T21:54:15-05:00",
+  "repository": "rfrye08-pixel/QCTP",
+  "starting_baseline_commit": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
+  "handoff_seed_commit": "1df43eca79673eff602d00e1e284241ecbb6d7fa",
+  "predecessor_branch": "qctp-platform-rev2-codex",
+  "predecessor_pr": 2,
+  "predecessor_disposition": "FROZEN_DRAFT_DO_NOT_MERGE",
+  "main_authority": {
+    "current_state": "QCTP_CURRENT_STATE.json v19",
+    "macro_manifest": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV12.json",
+    "handoff": "QCTP_CODEX_REV3_FULL_UPGRADE_AND_NATURAL_VOICE_HANDOFF_REV0_2026-08-21.md",
+    "a04_failure": "QCTP_DAY1_AUDIO_A04_PHYSICAL_VOICE_NATURALNESS_FAILURE_REV0_2026-08-21.md"
+  },
+  "controlled_script": {
+    "id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+    "sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+    "cue_count": 35,
+    "duration_seconds": 1500,
+    "change_authority": "NEW_HASH_AND_SOURCE_FIDELITY_REVIEW_REQUIRED"
+  },
+  "voice_status": {
+    "a03r_machine_package": "PASS_TECHNICAL_ONLY",
+    "a04_physical_naturalness": "FAIL_ROBOTIC",
+    "a03r_voice": "REJECTED_DO_NOT_PROMOTE",
+    "full_render_authority": "WITHHELD_UNTIL_SHORT_PHYSICAL_NATURALNESS_PASS"
+  },
+  "first_work_package": [
+    "reconcile main-only authority and A05 partial tools without merging main wholesale",
+    "create QCTP_REV3_CODEX_BRANCH_STATE.json with actual checked-out SHAs and dirty-tree status",
+    "implement normal-app voice-free Day 1 morning fallback",
+    "build materially different blind natural-voice candidates and stop for Ryan only at physical selection"
+  ],
+  "holds": [
+    "ZERO_RELEASE",
+    "NO_MAIN_WRITES_FROM_REV3_EXECUTION",
+    "NO_REV2_WRITES_OR_MERGE",
+    "NO_REJECTED_A03R_VOICE",
+    "NO_BROAD_SPECTRAL_TIME_STRETCH",
+    "NO_REQUIRED_PAID_API",
+    "NO_FULL_25_MINUTE_RENDER_BEFORE_HUMAN_VOICE_PASS",
+    "NO_USER_DATA_LOSS"
+  ],
+  "next_controlled_action": "Codex validates this bootstrap against main-controlled authority, then executes the largest safe Rev3 work package beginning with morning continuity and natural-voice recovery."
+}
