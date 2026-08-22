@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+.preview-smoke/
+.vite/
+.env
+.env.local
+.env.*.local
+*.log
+*_PLAN.md

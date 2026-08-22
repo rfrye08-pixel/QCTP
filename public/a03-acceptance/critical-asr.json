@@ -1,0 +1,104 @@
+{
+  "D1-A02-108": {
+    "transcript": "if the body is ready allow a small amount of the holding to release if nothing changes remain accurate and accepting do not force a deeper process",
+    "raw_transcript": "If the body is ready, allow a small amount of the holding to release. If nothing changes, remain accurate and accepting. Do not force a deeper process.",
+    "normalized_transcript": "if the body is ready allow a small amount of the holding to release if nothing changes remain accurate and accepting do not force a deeper process",
+    "expected_text": "If the body is ready, allow a small amount of the holding to release. If nothing changes, remain accurate and accepting. Do not force a deeper process.",
+    "expected_normalized": "if the body is ready allow a small amount of the holding to release if nothing changes remain accurate and accepting do not force a deeper process",
+    "wer": 0.0,
+    "model": "small.en",
+    "language": "en",
+    "language_probability": 1,
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 6.16,
+        "text": "If the body is ready, allow a small amount of the holding to release."
+      },
+      {
+        "start": 7.2,
+        "end": 11.92,
+        "text": "If nothing changes, remain accurate and accepting."
+      },
+      {
+        "start": 13.2,
+        "end": 15.9,
+        "text": "Do not force a deeper process."
+      }
+    ]
+  },
+  "D1-A02-210": {
+    "transcript": "begin an easy even breath in for five one two three four five out for five one two three four five",
+    "raw_transcript": "Begin an easy, even breath. In for five. One, two, three, four, five. Out for five. One, two, three, four, five.",
+    "normalized_transcript": "begin an easy even breath in for five one two three four five out for five one two three four five",
+    "expected_text": "Begin an easy, even breath. In for five: one, two, three, four, five. Out for five: one, two, three, four, five.",
+    "expected_normalized": "begin an easy even breath in for five one two three four five out for five one two three four five",
+    "wer": 0.0,
+    "model": "small.en",
+    "language": "en",
+    "language_probability": 1,
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 13.32,
+        "text": "Begin an easy, even breath. In for five. One, two, three, four, five. Out for five. One, two, three, four, five."
+      }
+    ]
+  },
+  "D1-A02-480": {
+    "transcript": "bring awareness to the region between your ears sense the volume this region occupies do not analyze it feel that area as existing within space",
+    "raw_transcript": "Bring awareness to the region between your ears. Sense the volume this region occupies. Do not analyze it. Feel that area as existing within space.",
+    "normalized_transcript": "bring awareness to the region between your ears sense the volume this region occupies do not analyze it feel that area as existing within space",
+    "expected_text": "Bring awareness to the region between your ears. Sense the volume this region occupies. Do not analyze it. Feel that area as existing within space.",
+    "expected_normalized": "bring awareness to the region between your ears sense the volume this region occupies do not analyze it feel that area as existing within space",
+    "wer": 0.0,
+    "model": "small.en",
+    "language": "en",
+    "language_probability": 1,
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 3.58,
+        "text": "Bring awareness to the region between your ears."
+      },
+      {
+        "start": 4.38,
+        "end": 7.86,
+        "text": "Sense the volume this region occupies."
+      },
+      {
+        "start": 8.92,
+        "end": 10.74,
+        "text": "Do not analyze it."
+      },
+      {
+        "start": 11.42,
+        "end": 15.0,
+        "text": "Feel that area as existing within space."
+      }
+    ]
+  },
+  "D1-A02-1440": {
+    "transcript": "begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural",
+    "raw_transcript": "Begin returning. Feel both feet, the chair, and the weight of your hands. Let the next breath be completely natural.",
+    "normalized_transcript": "begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural",
+    "expected_text": "Begin returning. Feel both feet, the chair, and the weight of your hands. Let the next breath be completely natural.",
+    "expected_normalized": "begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural",
+    "wer": 0.0,
+    "model": "small.en",
+    "language": "en",
+    "language_probability": 1,
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 6.78,
+        "text": "Begin returning. Feel both feet, the chair, and the weight of your hands."
+      },
+      {
+        "start": 7.7,
+        "end": 10.76,
+        "text": "Let the next breath be completely natural."
+      }
+    ]
+  }
+}

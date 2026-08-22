@@ -1,0 +1,5 @@
+QCTP-D1-SOURCE-A02
+triggered_at=2026-08-20T17:52:00-05:00
+purpose=run the final PR-based machine gate after the baseline, enhancement delta, source-labeled script, validator, and independent fidelity review are present on main
+expected_script_sha256=2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555
+release_authority=ZERO_RELEASE

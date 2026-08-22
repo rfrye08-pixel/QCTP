@@ -1,0 +1,6 @@
+QCTP-D1-AUDIO-A03R
+triggered_at=2026-08-20T21:10:45-05:00
+correction=browser verifier converted to the repository ESM runtime after retained diagnostics proved all machine gates passed and only CommonJS loading failed; full publication remains fail-closed until Chromium and WebKit iPhone-profile playback pass
+locked_script_sha256=2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555
+release_authority=ZERO_RELEASE
+physical_iphone_acceptance=OPEN

@@ -1,0 +1,93 @@
+{
+  "schema": "qctp-rev2-codex-branch-state-v3",
+  "branch": "qctp-platform-rev2-codex",
+  "updated_at": "2026-08-20T18:05:00-05:00",
+  "version": "2.0.0-alpha.1",
+  "base_commit": "cec7f3dad3fb761c6883fbe2051fe76c9b45eb83",
+  "observed_head_sha": "3420743b0ad9d64d4961912c3d7624cbec24b6ed",
+  "target_branch": "main",
+  "status": "SOURCE_GROUNDED_DAY1_SCRIPT_LOCKED_AUDIO_IMPLEMENTATION_OPEN",
+  "release_authority": "ZERO_RELEASE",
+  "branch_truth": "The branch contains the maintainable Rev2 platform and the earlier same-origin 21-cue audio implementation. That earlier guide failed content acceptance. The source-grounded Day 1 script and script-lock artifacts on main now control content. A03 must implement them before another user test; the old updater shall not be treated as current guidance release work.",
+  "controlled_authorities": [
+    "QCTP_CURRENT_STATE.json v16 on main",
+    "QCTP_MACRO_DELIVERABLE_MANIFEST_REV9.json on main",
+    "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md on main",
+    "QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json on main",
+    "QCTP_DAY1_SOURCE_GROUNDED_AUDIO_IMPLEMENTATION_HANDOFF_REV0_2026-08-20.md on main",
+    "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
+    "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md"
+  ],
+  "runtime_baseline": {
+    "mode": "Free Local",
+    "normal_recurring_api_cost_usd": 0,
+    "provider_key_required": false,
+    "paid_cloud_on_critical_path": false,
+    "paid_cloud_enabled": false,
+    "private_origin": "https://reos.tail6ed282.ts.net/"
+  },
+  "implemented_platform": [
+    "TypeScript and React mobile PWA",
+    "IndexedDB local-first domain and migration",
+    "voice capture and PX13 local Whisper",
+    "Mirror Core and Local AI Mirror",
+    "Paths, Practice, Studio, Lab, Codex, Insights, and Settings",
+    "private Tailscale HTTPS runtime",
+    "same-origin media packaging and Windows deployment tooling"
+  ],
+  "superseded_day1_candidate": {
+    "cue_count": 21,
+    "audio_mode": "same-origin local cue files",
+    "technical_continuity": "USER_REPORTED_FULL_1500_SECOND_SESSION",
+    "content_acceptance": "FAIL",
+    "failures": [
+      "no usable breath coaching",
+      "voice entries startled the user",
+      "guidance was not a sufficiently faithful or effective implementation of the course sources"
+    ],
+    "disposition": "PRESERVE_FOR_ROLLBACK_ONLY_DO_NOT_PROMOTE_OR_RETEST"
+  },
+  "source_grounded_day1": {
+    "action_a01": "COMPLETE",
+    "action_a02": "COMPLETE",
+    "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+    "script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+    "duration_seconds": 1500,
+    "cue_count": 35,
+    "total_word_count": 774,
+    "guidance_tier": "TEACH",
+    "source_map": {
+      "bullard": "contraction awareness",
+      "heartmath": "five-in/five-out-or-comfortable Quick Coherence",
+      "dispenza": "body-area-to-broad-space induction",
+      "qctp": "baseline, transitions, observation, return, and debrief"
+    },
+    "independent_fidelity_review": "PASS",
+    "machine_gate": {
+      "result": "PASS",
+      "workflow_run_id": 32425246503,
+      "job_id": 96605742534,
+      "artifact_id": 9427163011,
+      "artifact_zip_sha256": "e900187484162946e167e1daacadbba0605486b50d9f9654e7058ec2547d1c08"
+    },
+    "script_lock": "LOCKED_FOR_TEST_RENDERING",
+    "render_authority": "TEST_RENDER_AUTHORIZED",
+    "implemented_on_branch": false,
+    "physical_acceptance": "OPEN"
+  },
+  "active_action": {
+    "action_id": "QCTP-D1-AUDIO-A03",
+    "status": "NOMINATED_EXECUTION_AUTHORIZED",
+    "objective": "Render and integrate the locked 35-cue source-grounded Chill Brian script with continuous anti-startle support, HeartMath five/five breath rail, Ambient/Binaural/Minimal candidates, dual-stem player, composite fallback, automated gates, and a five-minute physical iPhone acceptance build.",
+    "handoff": "QCTP_DAY1_SOURCE_GROUNDED_AUDIO_IMPLEMENTATION_HANDOFF_REV0_2026-08-20.md on main"
+  },
+  "holds": [
+    "Do not rerun the old Day 1 audio updater as the next content action",
+    "Do not render the prior unsourced script",
+    "Do not change locked wording without new hash and review",
+    "Do not freeze a binaural frequency profile before A/B physical acceptance",
+    "Do not ask Ryan to repeat the full 25-minute guide before the five-minute candidate passes",
+    "Do not merge or publicly deploy"
+  ],
+  "next_controlled_action": "Execute QCTP-D1-AUDIO-A03 from the main-controlled script lock and handoff; no Ryan action is required until a machine-verified five-minute private-iPhone candidate exists."
+}

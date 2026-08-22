@@ -1,0 +1,56 @@
+{
+  "schema": "qctp-day1-audio-patch-state-overlay-v1b",
+  "overlay_id": "QCTP-D1-AUDIO-PATCH-OVERLAY-REV1B",
+  "updated_at": "2026-08-18T23:52:42-05:00",
+  "branch": "qctp-platform-rev2-codex",
+  "original_head_under_test": "80801cdf34a4856c95a4d9349aa8a019fdf6fa38",
+  "focused_mechanism_source_head": "ecb2aa6cbed879fbd6313a1ebc1c9adc417adf00",
+  "status": "FOCUSED_PHYSICAL_IPHONE_OPENING_AND_DELAYED_CUE_PASS_PRIVATE_PX13_RUNTIME_UPDATE_OPEN",
+  "verification_ref": "QCTP_DAY1_AUDIO_PATCH_VERIFICATION_REV1_2026-08-18.md",
+  "physical_acceptance_ref": "QCTP_DAY1_AUDIO_PHYSICAL_IPHONE_ACCEPTANCE_REV0_2026-08-18.md on main",
+  "superseding_correction_ref": "QCTP_DEVICE_PREVIEW_404_CORRECTION_AND_REDEPLOYMENT_REV0_2026-08-18.md on main",
+  "recorded_automated_verification": {
+    "npm_ci": "PASS",
+    "npm_run_check": "PASS",
+    "vitest_files": 41,
+    "vitest_tests": 231,
+    "production_build": "PASS",
+    "playwright_passed": 14,
+    "playwright_controlled_skips": 6,
+    "playwright_failed": 0,
+    "opening_and_45_second_assets_reachable": "PASS"
+  },
+  "invalidated_preview": {
+    "url": "https://rfrye08-pixel.github.io/QCTP-Device-Preview/",
+    "repository_exists": false,
+    "target_iphone_result": "GITHUB_PAGES_404",
+    "user_screenshot_sha256": "b6ba73539fa33b39f096025c527c466de66633aea9dafa7c098151465a719b5c",
+    "deployed_transition_claims": "INVALIDATED_UNSUPPORTED"
+  },
+  "focused_acceptance": {
+    "url": "https://rfrye08-pixel.github.io/QCTP/device-preview/",
+    "source_path": "main/device-preview/index.html",
+    "identity_path": "main/device-preview/QCTP_DEVICE_PREVIEW_DEPLOYMENT.json",
+    "endpoint_loaded_on_target_iphone": "PASS",
+    "opening_cue_audible": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
+    "automatic_45_second_cue_audible": "PASS_USER_REPORTED_PHYSICAL_DEVICE",
+    "test_completed": "PASS",
+    "user_statement": "Both cues were audible",
+    "supporting_screenshot_sha256": "bb8d517df0713522eb8bed732bd016c68a1c27dab621d3b8148888f64287f38b",
+    "production": false,
+    "local_px13_apis": false
+  },
+  "closed_holds": [
+    "Corrected endpoint load on physical iPhone",
+    "Opening cue audibility on physical iPhone",
+    "Automatic 45-second cue audibility on physical iPhone"
+  ],
+  "remaining_holds": [
+    "Pull, build, and restart the private PX13 runtime",
+    "Confirm the opening and 45-second cues once in the full private QCTP PWA",
+    "Full natural-duration Day 1 acceptance",
+    "Remaining Rev2 device, migration, and release holds"
+  ],
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "Update the private PX13 QCTP runtime from qctp-platform-rev2-codex, restart the gateway, and repeat the opening-plus-45-second audio check inside the full private PWA."
+}

@@ -1,0 +1,2 @@
+QCTP updater REV8 must pass the Windows live-root deployment simulation before another PX13 attempt.
+Gate revision: simulated gateway, active esbuild lock, updater execution, live-root discovery, static deployment, and served-identity verification now run in one PowerShell step so the gateway remains alive throughout.
