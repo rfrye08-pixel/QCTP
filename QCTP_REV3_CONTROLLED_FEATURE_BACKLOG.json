@@ -2,7 +2,7 @@
   "schema": "qctp-rev3-controlled-feature-backlog-v1",
   "branch": "qctp-platform-rev3-codex",
   "created_at": "2026-08-22T20:42:00-05:00",
-  "updated_at": "2026-08-22T21:02:00-05:00",
+  "updated_at": "2026-08-22T21:34:00-05:00",
   "status": "ACTIVE_ZERO_RELEASE",
   "authority_snapshot": {
     "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -67,13 +67,23 @@
       "delivered": "Initial complete controlled feature backlog and machine validator",
       "verification": "Backlog validator PASS; format, lint, typecheck, 56 files and 341 tests with coverage, controlled audio verification, and production build PASS",
       "release_authority": "ZERO_RELEASE"
+    },
+    {
+      "checkpoint_id": "QCTP-REV3-SCHEDULE-001",
+      "commit": "8203eaf0203fe9b267f0281930d8b36a005c35e9",
+      "tree": "8b2c1d4aaa4d7da148356f7e62967f12cea266c3",
+      "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN",
+      "delivered": "DST-safe 04:00 local Day 1 readiness, user-selected additional-practice times, durable reminder receipts, explicit permission/fallback status, atomic settings persistence, and a morning-first iPhone cockpit",
+      "verification": "npm run check PASS with 59 files and 357 tests; npm run test:e2e PASS with 25 passes and 7 intentional project/platform skips; no paid-cloud request",
+      "evidence": "QCTP_REV3_LOCAL_SCHEDULE_AND_REMINDER_VERIFICATION_REV0_2026-08-22.json",
+      "release_authority": "ZERO_RELEASE"
     }
   ],
   "summary": {
     "feature_count": 61,
     "EXISTING": 2,
-    "NEEDS_HARDENING": 42,
-    "NEW": 12,
+    "NEEDS_HARDENING": 44,
+    "NEW": 10,
     "BLOCKED": 3,
     "DEFERRED": 2
   },
@@ -393,7 +403,7 @@
         "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
         "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md"
       ],
-      "status": "NEW",
+      "status": "NEEDS_HARDENING",
       "dependencies": [
         "Controlled content eligibility",
         "Local timezone and DST-safe scheduler",
@@ -409,10 +419,16 @@
         "Installed iPhone Today shows the correct ready mission at actual morning wake."
       ],
       "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
-      "evidence_produced": [],
+      "evidence_produced": [
+        "src/schedule/schedule.ts",
+        "src/schedule/schedule.test.ts",
+        "src/data/schedule-persistence.test.ts",
+        "tests/e2e/schedule-reminders.spec.ts",
+        "QCTP_REV3_LOCAL_SCHEDULE_AND_REMINDER_VERIFICATION_REV0_2026-08-22.json"
+      ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Implement a local-first schedule ledger and 04:00 readiness selector."
+        "next_executable_step": "Run the installed-iPhone actual-wake, timezone, background/lock, and cold-offline physical readiness gate."
       }
     },
     {
@@ -424,7 +440,7 @@
         "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
         "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md"
       ],
-      "status": "NEW",
+      "status": "NEEDS_HARDENING",
       "dependencies": [
         "QCTP-REV3-F008",
         "Per-content controlled schedule metadata",
@@ -441,11 +457,16 @@
       ],
       "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; unsourced future schedules withheld.",
       "evidence_produced": [
-        "src/app/screens/OverviewScreens.tsx currently exposes static morning, midday, and evening component status only"
+        "src/schedule/schedule.ts",
+        "src/app/screens/OverviewScreens.tsx",
+        "src/app/screens/SettingsScreen.tsx",
+        "src/data/schedule-persistence.test.ts",
+        "tests/e2e/schedule-reminders.spec.ts",
+        "QCTP_REV3_LOCAL_SCHEDULE_AND_REMINDER_VERIFICATION_REV0_2026-08-22.json"
       ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Add controlled schedule metadata for released Day 1 only and leave future schedules held."
+        "next_executable_step": "Add explicit snooze/acknowledge controls and physically verify personal-time delivery/reopen recovery; keep absent source clock times null."
       }
     },
     {
@@ -476,11 +497,16 @@
       "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; guaranteed iOS delivery cannot be claimed without physical proof.",
       "evidence_produced": [
         "src/app/QctpProvider.tsx Mirror completion notification",
-        "src/app/screens/MirrorScreen.tsx Result notifications"
+        "src/app/screens/MirrorScreen.tsx Result notifications",
+        "src/notifications/local-notifications.ts",
+        "src/app/QctpProvider.tsx schedule reconciliation",
+        "src/app/screens/SettingsScreen.tsx reminder permission and limitation status",
+        "tests/e2e/schedule-reminders.spec.ts",
+        "QCTP_REV3_LOCAL_SCHEDULE_AND_REMINDER_VERIFICATION_REV0_2026-08-22.json"
       ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Generalize Mirror-only notification state into a durable local notification and reminder center."
+        "next_executable_step": "Physically measure installed-PWA foreground, background/lock, force-closed, denied, and reopen recovery; add snooze/acknowledge without claiming guaranteed closed-app delivery."
       }
     },
     {
@@ -897,11 +923,13 @@
       "evidence_produced": [
         "src/app/screens/OverviewScreens.tsx",
         "tests/e2e/bootstrap-navigation.spec.ts",
-        "QCTP_REV3_UX_ACCEPTANCE_REV0_2026-08-22.json"
+        "tests/e2e/schedule-reminders.spec.ts",
+        "QCTP_REV3_UX_ACCEPTANCE_REV0_2026-08-22.json",
+        "QCTP_REV3_LOCAL_SCHEDULE_AND_REMINDER_VERIFICATION_REV0_2026-08-22.json"
       ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Add dynamic schedule, notification, next-lesson, and source-track status without disturbing the working morning action."
+        "next_executable_step": "Add controlled next-lesson and source-track-next selectors plus explicit interrupted-session actions, then run the physical one-handed morning gate."
       }
     },
     {

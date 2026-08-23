@@ -1,0 +1,90 @@
+{
+  "schema": "qctp-rev3-local-schedule-reminder-verification-v1",
+  "document_id": "QCTP-REV3-SCHEDULE-REMINDER-A01",
+  "recorded_at": "2026-08-22T21:34:00-05:00",
+  "branch": "qctp-platform-rev3-codex",
+  "implementation_commit": "8203eaf0203fe9b267f0281930d8b36a005c35e9",
+  "implementation_tree": "8b2c1d4aaa4d7da148356f7e62967f12cea266c3",
+  "starting_commit": "3c924355cd8e2af448001a1ba1231a5ab0911594",
+  "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
+  "release_authority": "ZERO_RELEASE",
+  "delivered": {
+    "daily_boundary": "04:00_LOCAL_PROGRAM_DATE_WITH_IANA_TIMEZONE_AND_DST_HANDLING",
+    "controlled_catalog": "DAY1_ONLY_MORNING_DAYTIME_EVENING_ASSIGNMENTS_DAYS_2_THROUGH_112_HELD",
+    "additional_assignments": "DAYTIME_AND_EVENING_VISIBLE_WITH_NULL_SOURCE_CLOCK_AND_OPTIONAL_USER_SELECTED_LOCAL_TIMES",
+    "persistence": "ADDITIVE_DEFAULTED_SETTINGS_LEDGER_INDEXEDDB_CLOSE_REOPEN_AND_VALIDATED_JSON_MERGE",
+    "notifications": "EXPLICIT_PERMISSION_STATES_GENERIC_PRIVACY_SAFE_COPY_FOREGROUND_BEST_EFFORT_DELIVERY_DURABLE_IN_APP_FALLBACK",
+    "today": "MORNING_ACTION_FIRST_START_BUTTON_IN_FIRST_IPHONE_VIEWPORT_LATER_TODAY_RECOVERY_AND_OFFLINE_STATUS",
+    "settings": "FIXED_04_00_READINESS_TIMEZONE_PERMISSION_STATUS_PERSONAL_DAYTIME_AND_EVENING_TIMES_AND_DELIVERY_LIMITATION",
+    "cost": "ZERO_RECURRING_API_COST_NO_PAID_CLOUD_CRITICAL_PATH"
+  },
+  "authority_constraints": {
+    "controlled_clock_time": "Only the primary Foundation lesson has a controlled 04:00 local clock time.",
+    "daytime": "Day 1 requires at least three safe eyes-open micro-entries but supplies no exact clock time.",
+    "evening": "Day 1 supplies a ten-minute evening close but no exact clock time.",
+    "future_days": "Foundation Days 2 through 112 remain controlled content holds and receive no fabricated content or schedule.",
+    "progression": "Calendar time and reminder delivery never advance Foundation currentDay or award completion."
+  },
+  "verification": {
+    "repository_gate": {
+      "command": "npm run check",
+      "result": "PASS",
+      "test_files": 59,
+      "tests": 357,
+      "coverage": {
+        "statements_percent": 88.01,
+        "branches_percent": 78.98,
+        "functions_percent": 92.49,
+        "lines_percent": 89.53
+      },
+      "audio_pack": "PASS_23_MP3_13340411_BYTES",
+      "production_build": "PASS_54_PRECACHE_ENTRIES"
+    },
+    "browser_gate": {
+      "command": "npm run test:e2e",
+      "result": "PASS",
+      "passed": 25,
+      "intentional_project_or_platform_skips": 7,
+      "projects": ["chromium", "iphone-portrait-webkit"],
+      "assertions": [
+        "The morning Begin button is inside the first iPhone viewport.",
+        "User-selected daytime and evening times survive reload and remain explicitly personal.",
+        "A service-worker-controlled Chromium reload preserves the Today schedule while offline.",
+        "No OpenAI, Anthropic, or other paid-cloud request is made by the schedule flow.",
+        "Existing Voice-Free, Mirror, REG-01, navigation, and voice-capture regressions remain green."
+      ]
+    },
+    "schedule_unit_gate": {
+      "result": "PASS_8_OF_8",
+      "coverage": [
+        "03:59, 04:00, and 04:01 local boundary states",
+        "America/Chicago 2026 spring-forward and fall-back transitions",
+        "timezone/date-line move cannot retract or duplicate the active assignment identity",
+        "no default daytime or evening clock time",
+        "user-selected local times",
+        "reserved Day 2 content hold",
+        "bounded idempotent reminder receipts"
+      ]
+    },
+    "persistence_gate": "PASS_ATOMIC_CONCURRENT_SETTINGS_UPDATE_CLOSE_REOPEN_AND_VALIDATED_JSON_MERGE",
+    "permission_gate": "PASS_NO_PERMISSION_PROMPT_AT_BOOT_VISIBILITY_PERMISSION_REFRESH_AND_EXPLICIT_BUTTON_ONLY",
+    "privacy_gate": "PASS_GENERIC_NOTIFICATION_COPY_EXCLUDES_JOURNAL_MIRROR_TRANSCRIPT_OBSERVATION_AND_SOURCE_CONTENT"
+  },
+  "migration_status": {
+    "database_version": 5,
+    "database_version_change": "NONE",
+    "strategy": "Defaulted nested reminderPreferences field inside the existing settings record.",
+    "legacy_settings_parse": "PASS_WITH_SAFE_DEFAULTS",
+    "export_import": "PASS",
+    "existing_data_reset": "NONE"
+  },
+  "remaining_holds": [
+    "Installed-iPhone foreground, background/lock, force-closed, permission default/granted/denied, and reopen recovery must be physically measured.",
+    "Closed-PWA notification delivery is explicitly best effort and is not guaranteed without a separately controlled private Web Push architecture and physical proof.",
+    "An actual wake-time 04:00 local installed-iPhone readiness check remains open.",
+    "Exact clock times for daytime and evening work remain user-selected because no source authority supplies them.",
+    "Foundation Days 2 through 112 remain unauthored and unscheduled.",
+    "No merge or deployment is authorized."
+  ],
+  "next_controlled_action": "Continue the independent Today/workbook/voice-note and recovery hardening package while the blind physical voice decision remains open."
+}
