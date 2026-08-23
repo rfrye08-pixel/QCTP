@@ -2,7 +2,7 @@
   "schema": "qctp-rev3-controlled-feature-backlog-v1",
   "branch": "qctp-platform-rev3-codex",
   "created_at": "2026-08-22T20:42:00-05:00",
-  "updated_at": "2026-08-23T05:10:00-05:00",
+  "updated_at": "2026-08-23T06:34:21-05:00",
   "status": "ACTIVE_ZERO_RELEASE",
   "authority_snapshot": {
     "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -701,7 +701,9 @@
       "evidence_produced": [
         "src/app/App.tsx",
         "src/voice-capture/VoiceRecorderPanel.tsx",
-        "tests/e2e/voice-offline.spec.ts"
+        "tests/e2e/voice-offline.spec.ts",
+        "global modal inert boundary, Safari invoker restoration, native-audio focus trap, durable post-save status, and 44-pixel mobile controls",
+        "QCTP_REV3_TIMED_VOICE_CAPTURE_AND_DATA_INTEGRITY_VERIFICATION_REV0_2026-08-23.json"
       ],
       "deferral": {
         "reason": null,
@@ -735,7 +737,9 @@
       "evidence_produced": [
         "src/app/components/FieldDictation.tsx",
         "src/voice-capture/FieldDictation.test.tsx",
-        "partial field integrations"
+        "typed field capture context persisted through raw recording, linked Codex record, Rev4 export, and local transcription queue",
+        "workbook, Lab, Mirror, Campbell source-track, and other partial field integrations",
+        "QCTP_REV3_TIMED_VOICE_CAPTURE_AND_DATA_INTEGRITY_VERIFICATION_REV0_2026-08-23.json"
       ],
       "deferral": {
         "reason": null,
@@ -759,7 +763,8 @@
       "implementation_package": "P7 Timed Auto-Dictation",
       "automated_acceptance_criteria": [
         "5, 10, and 20-minute presets auto-stop at controlled durations.",
-        "Pause/resume, reload recovery, append-once, offline retention, and timer cleanup pass.",
+        "Pause/resume, exact active-duration checkpointing, reload recovery, offline retention, and timer cleanup pass.",
+        "Independent MediaRecorder sessions are not exposed as one appended recording until codec/remux playback and transcription are verified.",
         "REG-01 still enforces its controlled five-minute gate."
       ],
       "physical_acceptance_criteria": [
@@ -767,12 +772,16 @@
       ],
       "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
       "evidence_produced": [
-        "src/voice-capture/VoiceRecorderPanel.tsx duration picker",
-        "src/reg/reg01.ts five-minute mode"
+        "src/voice-capture/VoiceRecorderPanel.tsx global duration picker and exact-limit review state",
+        "src/voice-capture/browser-recorder.ts foreground, finalization, cancellation, and active-duration lifecycle",
+        "src/voice-capture/repository-persistence.ts renewable owner lease and compare-and-swap recovery",
+        "tests/e2e/voice-offline.spec.ts 5/10/20 no-cloud auto-stop gates",
+        "src/reg/reg01.ts fixed five-minute mode",
+        "QCTP_REV3_TIMED_VOICE_CAPTURE_AND_DATA_INTEGRITY_VERIFICATION_REV0_2026-08-23.json"
       ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Expose a general timed-capture route and verify all three durations."
+        "next_executable_step": "Run real ten- and twenty-minute iPhone captures through foreground/background, playback, export, and PX13 Whisper; keep append unavailable until a codec-safe route passes."
       }
     },
     {
@@ -802,7 +811,9 @@
       ],
       "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; no unsourced experiment method may be invented.",
       "evidence_produced": [
-        "Voice destination enum and generic Lab fields only"
+        "Voice destination enum and generic Lab fields",
+        "typed experiment capture context in domain, capture acceptance, migration, and Rev4 export foundations",
+        "QCTP_REV3_TIMED_VOICE_CAPTURE_AND_DATA_INTEGRITY_VERIFICATION_REV0_2026-08-23.json"
       ],
       "deferral": {
         "reason": null,
@@ -1603,7 +1614,11 @@
         "src/mirror/deletion.ts",
         "export/import and deletion tests",
         "typed and voice debrief relationship, queue uniqueness, recording linkage, and ZIP binary round-trip tests",
-        "PWA A to B to A browser gate preserves recording and attachment Blob SHA-256 fingerprints"
+        "PWA A to B to A browser gate preserves recording and attachment Blob SHA-256 fingerprints",
+        "strict Rev4 typed-recording contract with explicit v2/v3 and pre-Rev4 row normalization",
+        "atomic merge rejection for same recording IDs and cross-owner audio-chunk or attachment-binary keys",
+        "declared segment/chunk graph and byte-count playback validation",
+        "QCTP_REV3_TIMED_VOICE_CAPTURE_AND_DATA_INTEGRITY_VERIFICATION_REV0_2026-08-23.json"
       ],
       "deferral": {
         "reason": null,
@@ -1745,7 +1760,7 @@
       ],
       "implementation_package": "P8 Mobile Recovery Matrix",
       "automated_acceptance_criteria": [
-        "Track stop, pagehide, foreground/background, interrupted append, offline/reconnect, quota failure, export/import, migration, deletion, and rollback paths all fail safely.",
+        "Track stop, pagehide, foreground/background, interrupted capture, offline/reconnect, quota failure, export/import, migration, deletion, and rollback paths all fail safely.",
         "Every uncertain operation records recoverable state and never reports success prematurely."
       ],
       "physical_acceptance_criteria": [
@@ -1758,7 +1773,11 @@
         "post-session offline voice acceptance with preserved playback chunks and queued local transcription",
         "QCTP_REV3_MIGRATION_AND_DATA_PRESERVATION_REV0_2026-08-22.json",
         "runtime rollback tools",
-        "Practice and voice-capture critical activities hold shared Web Locks; explicit update activation requires an exclusive lock and fails closed across tabs"
+        "Practice and voice-capture critical activities hold shared Web Locks; explicit update activation requires an exclusive lock and fails closed across tabs",
+        "renewable recording owner lease with atomic claim and compare-and-swap fencing for append, finalize, empty rollback, recovery, and discard",
+        "foreign CAPTURING rows are read-only in Codex and repository deletion rejects them",
+        "late chunk failure, cancellation, hidden-during-start, finalization, and malformed-row recovery regressions",
+        "QCTP_REV3_TIMED_VOICE_CAPTURE_AND_DATA_INTEGRITY_VERIFICATION_REV0_2026-08-23.json"
       ],
       "deferral": {
         "reason": null,
@@ -1932,7 +1951,9 @@
         "server/spend-limit.ts",
         "src/domain/schemas.ts",
         "Settings Free Local status",
-        "branch-state runtime evidence"
+        "branch-state runtime evidence",
+        "5/10/20 Auto-Dictation and offline practice-debrief browser gates queue local transcription with the optional companion absent and no paid-provider request",
+        "QCTP_REV3_TIMED_VOICE_CAPTURE_AND_DATA_INTEGRITY_VERIFICATION_REV0_2026-08-23.json"
       ],
       "deferral": {
         "reason": null,
