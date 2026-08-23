@@ -1,6 +1,6 @@
 import { createReadStream, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:http";
-import { extname, resolve, sep } from "node:path";
+import { extname, relative, resolve, sep } from "node:path";
 
 const IDENTITY_NAME = "QCTP_REV3_RUNTIME_IDENTITY.json";
 
@@ -47,13 +47,24 @@ const contentTypes = new Map([
   [".json", "application/json; charset=utf-8"],
   [".m4a", "audio/mp4"],
   [".mp3", "audio/mpeg"],
+  [".mp4", "video/mp4"],
   [".ogg", "audio/ogg"],
   [".png", "image/png"],
   [".svg", "image/svg+xml"],
   [".txt", "text/plain; charset=utf-8"],
   [".wav", "audio/wav"],
+  [".webm", "video/webm"],
   [".webmanifest", "application/manifest+json; charset=utf-8"],
   [".woff2", "font/woff2"],
+]);
+
+const rangeMediaExtensions = new Set([
+  ".m4a",
+  ".mp3",
+  ".mp4",
+  ".ogg",
+  ".wav",
+  ".webm",
 ]);
 
 function applySecurityHeaders(response) {
@@ -71,9 +82,14 @@ function applySecurityHeaders(response) {
 }
 
 function resolveRequestPath(pathname) {
-  const decoded = decodeURIComponent(pathname);
-  const relative = decoded.replace(/^\/+/, "");
-  const requested = resolve(root, relative || "index.html");
+  let decoded;
+  try {
+    decoded = decodeURIComponent(pathname);
+  } catch {
+    return null;
+  }
+  const relativePath = decoded.replace(/^\/+/, "");
+  const requested = resolve(root, relativePath || "index.html");
   const boundary = `${root.endsWith(sep) ? root : `${root}${sep}`}`;
   if (requested !== root && !requested.startsWith(boundary)) {
     return null;
@@ -81,8 +97,83 @@ function resolveRequestPath(pathname) {
   return requested;
 }
 
-const server = createServer((request, response) => {
-  applySecurityHeaders(response);
+function getCacheControl(path) {
+  const noStore =
+    path.endsWith("index.html") ||
+    path.endsWith(IDENTITY_NAME) ||
+    path.endsWith("QCTP_REV3_CONTENT_MANIFEST.json") ||
+    path.endsWith("sw.js") ||
+    path.endsWith(".webmanifest") ||
+    path.endsWith(".json");
+  if (noStore) return "no-store";
+
+  const siteRelative = relative(root, path).split(sep).join("/");
+  const isContentHashedAsset =
+    /^assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(?:css|js|mjs|woff2?)$/u.test(
+      siteRelative,
+    ) || /^workbox-[A-Za-z0-9_-]{8,}\.js$/u.test(siteRelative);
+  return isContentHashedAsset
+    ? "public, max-age=31536000, immutable"
+    : "no-cache";
+}
+
+function parseSingleByteRange(header, size) {
+  if (typeof header !== "string" || size === 0) return null;
+  const match = /^bytes=(\d*)-(\d*)$/u.exec(header.trim());
+  if (!match || (match[1] === "" && match[2] === "")) return null;
+
+  if (match[1] === "") {
+    const suffixLength = Number(match[2]);
+    if (!Number.isSafeInteger(suffixLength) || suffixLength <= 0) return null;
+    const start = Math.max(size - suffixLength, 0);
+    return { start, end: size - 1, length: size - start };
+  }
+
+  const start = Number(match[1]);
+  const requestedEnd = match[2] === "" ? size - 1 : Number(match[2]);
+  if (
+    !Number.isSafeInteger(start) ||
+    !Number.isSafeInteger(requestedEnd) ||
+    start >= size ||
+    requestedEnd < start
+  ) {
+    return null;
+  }
+  const end = Math.min(requestedEnd, size - 1);
+  return { start, end, length: end - start + 1 };
+}
+
+function writeInternalError(response) {
+  if (response.destroyed) return;
+  if (response.headersSent) {
+    response.destroy();
+    return;
+  }
+  response.writeHead(500, {
+    "Cache-Control": "no-store",
+    "Content-Type": "text/plain; charset=utf-8",
+  });
+  response.end("Unable to read the requested file.");
+}
+
+function streamFile(response, path, status, headers, range) {
+  const stream = createReadStream(
+    path,
+    range === undefined ? undefined : { start: range.start, end: range.end },
+  );
+  stream.once("open", () => {
+    if (response.destroyed) {
+      stream.destroy();
+      return;
+    }
+    response.writeHead(status, headers);
+    stream.pipe(response);
+  });
+  stream.on("error", () => writeInternalError(response));
+  response.once("close", () => stream.destroy());
+}
+
+function handleRequest(request, response) {
   if (request.method !== "GET" && request.method !== "HEAD") {
     response.writeHead(405, {
       Allow: "GET, HEAD",
@@ -92,7 +183,14 @@ const server = createServer((request, response) => {
     return;
   }
 
-  const url = new URL(request.url ?? "/", `http://${host}:${port}`);
+  let url;
+  try {
+    url = new URL(request.url ?? "/", `http://${host}:${port}`);
+  } catch {
+    response.writeHead(400, { "Cache-Control": "no-store" });
+    response.end("Invalid URL.");
+    return;
+  }
   if (url.pathname === "/__qctp_runtime/health") {
     response.writeHead(200, {
       "Cache-Control": "no-store",
@@ -139,27 +237,55 @@ const server = createServer((request, response) => {
     return;
   }
 
-  const noStore =
-    path.endsWith("index.html") ||
-    path.endsWith(IDENTITY_NAME) ||
-    path.endsWith("QCTP_REV3_CONTENT_MANIFEST.json") ||
-    path.endsWith("sw.js") ||
-    path.endsWith(".webmanifest") ||
-    path.endsWith(".json");
-  response.writeHead(200, {
-    "Cache-Control": noStore
-      ? "no-store"
-      : "public, max-age=31536000, immutable",
-    "Content-Length": details.size,
-    "Content-Type":
-      contentTypes.get(extname(path).toLowerCase()) ??
-      "application/octet-stream",
-  });
-  if (request.method === "HEAD") {
+  const extension = extname(path).toLowerCase();
+  const supportsRanges = rangeMediaExtensions.has(extension);
+  const rangeHeader = request.headers.range;
+  const range =
+    supportsRanges && rangeHeader !== undefined
+      ? parseSingleByteRange(rangeHeader, details.size)
+      : undefined;
+  const baseHeaders = {
+    "Cache-Control": getCacheControl(path),
+    "Content-Type": contentTypes.get(extension) ?? "application/octet-stream",
+  };
+  if (supportsRanges) {
+    baseHeaders["Accept-Ranges"] = "bytes";
+  }
+  if (supportsRanges && rangeHeader !== undefined && range === null) {
+    response.writeHead(416, {
+      ...baseHeaders,
+      "Content-Length": 0,
+      "Content-Range": `bytes */${details.size}`,
+    });
     response.end();
     return;
   }
-  createReadStream(path).pipe(response);
+
+  const status = range === undefined ? 200 : 206;
+  const headers = {
+    ...baseHeaders,
+    "Content-Length": range === undefined ? details.size : range.length,
+    ...(range === undefined
+      ? {}
+      : {
+          "Content-Range": `bytes ${range.start}-${range.end}/${details.size}`,
+        }),
+  };
+  if (request.method === "HEAD") {
+    response.writeHead(status, headers);
+    response.end();
+    return;
+  }
+  streamFile(response, path, status, headers, range);
+}
+
+const server = createServer((request, response) => {
+  applySecurityHeaders(response);
+  try {
+    handleRequest(request, response);
+  } catch {
+    writeInternalError(response);
+  }
 });
 
 server.listen(port, host, () => {

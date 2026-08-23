@@ -72,7 +72,7 @@ export async function acceptVoiceCapture(
     durationMs: normalizedDurationMs,
     mimeType: capture.mimeType,
     destinationType: destinationMap[capture.destination],
-    destinationId: capture.fieldTargetId ?? recordId,
+    destinationId: capture.sessionId ?? capture.fieldTargetId ?? recordId,
     status: "LOCAL_ONLY",
     transcriptionRoute: "local_only",
     provider: null,
@@ -109,11 +109,15 @@ export async function acceptVoiceCapture(
     attachmentIds: [],
     revisionIds: [],
     pathId: capture.destination === "studio" ? "reg-path" : null,
-    sessionId: capture.destination === "studio" ? capture.fieldTargetId : null,
+    sessionId:
+      capture.sessionId ??
+      (capture.destination === "studio" ? capture.fieldTargetId : null),
     fields: {
+      captureModality: "voice",
       voiceRecordingId: capture.recordingId,
       destination: capture.destination,
       fieldTargetId: capture.fieldTargetId,
+      practiceSessionId: capture.sessionId,
       layerStatus: {
         rawAudio: "preserved",
         verbatimTranscript: "pending_or_not_requested",
@@ -124,10 +128,16 @@ export async function acceptVoiceCapture(
     },
     deletedAt: null,
   });
-  await repository.saveRecording(acceptedRecording);
-  await repository.saveRecord(record);
-  const queueItem = capture.queueLocalTranscription
-    ? await repository.enqueueTranscription(capture.recordingId, acceptedAt)
-    : null;
-  return { recordingId: capture.recordingId, record, queueItem };
+  const accepted = await repository.acceptVoiceCaptureBundle({
+    recording: acceptedRecording,
+    record,
+    queueLocalTranscription: capture.queueLocalTranscription,
+    practiceDebriefSessionId: capture.sessionId,
+    acceptedAt,
+  });
+  return {
+    recordingId: capture.recordingId,
+    record: accepted.record,
+    queueItem: accepted.queueItem,
+  };
 }

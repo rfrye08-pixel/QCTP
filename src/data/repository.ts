@@ -68,6 +68,10 @@ import {
   type StateId,
   type StateSessionRecord,
 } from "../state-atlas";
+import {
+  transitionPracticeDebrief as applyPracticeDebriefTransition,
+  type PracticeDebriefTransition,
+} from "../practice/debrief";
 
 import {
   openQctpDatabase,
@@ -472,6 +476,173 @@ export class QctpRepository {
     const parsed = VoiceRecordingSchema.parse(value);
     await this.database.put("recordings", parsed);
     return parsed;
+  }
+
+  async acceptVoiceCaptureBundle(input: {
+    recording: VoiceRecording;
+    record: CodexRecord;
+    queueLocalTranscription: boolean;
+    practiceDebriefSessionId?: string | null;
+    acceptedAt: string;
+  }): Promise<{
+    recording: VoiceRecording;
+    record: CodexRecord;
+    queueItem: TranscriptionQueueItem | null;
+    practiceSession: PracticeSession | null;
+  }> {
+    const acceptedRecording = VoiceRecordingSchema.parse(input.recording);
+    const record = CodexRecordSchema.parse(input.record);
+    if (record.fields.voiceRecordingId !== acceptedRecording.id) {
+      throw new Error("The accepted record must link the same local audio.");
+    }
+    if (
+      input.practiceDebriefSessionId &&
+      record.sessionId !== input.practiceDebriefSessionId
+    ) {
+      throw new Error("The debrief record must link its practice session.");
+    }
+
+    const transaction = this.database.transaction(
+      [
+        "recordings",
+        "records",
+        "searchDocuments",
+        "transcriptionQueue",
+        "transcripts",
+        "practiceSessions",
+      ],
+      "readwrite",
+    );
+    const recordings = transaction.objectStore("recordings");
+    const storedRecording = await recordings.get(acceptedRecording.id);
+    if (
+      !storedRecording ||
+      storedRecording.deletedAt ||
+      storedRecording.status === "DELETED"
+    ) {
+      throw new Error("The local recording metadata is missing.");
+    }
+    const current = VoiceRecordingSchema.parse(storedRecording);
+    if (current.status === "CAPTURING" || current.status === "PAUSED") {
+      throw new Error("Stop the local recording before accepting it.");
+    }
+    const queueStore = transaction.objectStore("transcriptionQueue");
+    const recordStore = transaction.objectStore("records");
+    const [existingQueue, existingTranscript, storedRecord] = await Promise.all(
+      [
+        queueStore.index("recordingId").get(acceptedRecording.id),
+        transaction
+          .objectStore("transcripts")
+          .index("recordingId")
+          .get(acceptedRecording.id),
+        recordStore.get(record.id),
+      ],
+    );
+    let durableRecord = record;
+    if (storedRecord) {
+      const existingRecord = CodexRecordSchema.parse(storedRecord);
+      if (
+        existingRecord.fields.voiceRecordingId !== acceptedRecording.id ||
+        existingRecord.sessionId !== record.sessionId
+      ) {
+        throw new Error("The accepted record ID collides with another record.");
+      }
+      durableRecord = existingRecord;
+    }
+    const queueItem = existingTranscript
+      ? null
+      : existingQueue
+        ? TranscriptionQueueItemSchema.parse(existingQueue)
+        : input.queueLocalTranscription
+          ? TranscriptionQueueItemSchema.parse({
+              schemaVersion: 1,
+              id: `transcription-${acceptedRecording.id}`,
+              recordingId: acceptedRecording.id,
+              status: "QUEUED",
+              attempts: 0,
+              nextAttemptAt: null,
+              lastError: null,
+              createdAt: input.acceptedAt,
+              updatedAt: input.acceptedAt,
+            })
+          : null;
+    const alreadyAccepted = current.acceptedAt !== null;
+    const status = existingTranscript
+      ? "TRANSCRIBED"
+      : existingQueue
+        ? current.status === "LOCAL_ONLY"
+          ? "TRANSCRIPTION_QUEUED"
+          : current.status
+        : input.queueLocalTranscription
+          ? "TRANSCRIPTION_QUEUED"
+          : alreadyAccepted
+            ? current.status
+            : "LOCAL_ONLY";
+    const recording = alreadyAccepted
+      ? VoiceRecordingSchema.parse({
+          ...current,
+          status,
+          provider: existingTranscript?.provider ?? current.provider,
+          model: existingTranscript?.model ?? current.model,
+          updatedAt:
+            status === current.status ? current.updatedAt : input.acceptedAt,
+        })
+      : VoiceRecordingSchema.parse({
+          ...acceptedRecording,
+          acceptedAt: acceptedRecording.acceptedAt,
+          status,
+          provider: existingTranscript?.provider ?? current.provider,
+          model: existingTranscript?.model ?? current.model,
+          updatedAt: input.acceptedAt,
+        });
+
+    let practiceSession: PracticeSession | null = null;
+    if (input.practiceDebriefSessionId) {
+      const practiceStore = transaction.objectStore("practiceSessions");
+      const storedSession = await practiceStore.get(
+        input.practiceDebriefSessionId,
+      );
+      if (!storedSession) {
+        throw new Error(
+          `Practice session not found: ${input.practiceDebriefSessionId}`,
+        );
+      }
+      const currentSession = PracticeSessionSchema.parse(storedSession);
+      if (!currentSession.debrief) {
+        throw new Error("This practice does not have an eligible debrief.");
+      }
+      practiceSession = PracticeSessionSchema.parse({
+        ...currentSession,
+        debrief: applyPracticeDebriefTransition(
+          { id: currentSession.id },
+          currentSession.debrief,
+          {
+            to: "completed",
+            occurredAt: input.acceptedAt,
+            record: durableRecord,
+          },
+        ),
+      });
+    }
+
+    const writes: Promise<IDBValidKey>[] = [recordings.put(recording)];
+    if (!storedRecord) {
+      writes.push(
+        recordStore.put(durableRecord),
+        transaction
+          .objectStore("searchDocuments")
+          .put(recordToSearchDocument(durableRecord)),
+      );
+    }
+    if (queueItem && !existingQueue) writes.push(queueStore.put(queueItem));
+    if (practiceSession) {
+      writes.push(
+        transaction.objectStore("practiceSessions").put(practiceSession),
+      );
+    }
+    await Promise.all(writes);
+    await transaction.done;
+    return { recording, record: durableRecord, queueItem, practiceSession };
   }
 
   async getRecording(id: string): Promise<VoiceRecording | undefined> {
@@ -1524,7 +1695,154 @@ export class QctpRepository {
   }
 
   async getPracticeSession(id: string): Promise<PracticeSession | undefined> {
-    return this.database.get("practiceSessions", id);
+    const value = await this.database.get("practiceSessions", id);
+    return value ? PracticeSessionSchema.parse(value) : undefined;
+  }
+
+  async transitionPracticeDebrief(
+    sessionId: string,
+    transition: PracticeDebriefTransition,
+  ): Promise<PracticeSession> {
+    const transaction = this.database.transaction(
+      ["practiceSessions", "records"],
+      "readwrite",
+    );
+    const practiceStore = transaction.objectStore("practiceSessions");
+    const stored = await practiceStore.get(sessionId);
+    if (!stored) {
+      throw new Error(`Practice session not found: ${sessionId}`);
+    }
+    const current = PracticeSessionSchema.parse(stored);
+    if (!current.debrief) {
+      throw new Error("This practice does not have an eligible debrief.");
+    }
+    let command = transition;
+    if (transition.to === "completed") {
+      const storedRecord = await transaction
+        .objectStore("records")
+        .get(transition.record.id);
+      if (!storedRecord) {
+        throw new Error(`Debrief record not found: ${transition.record.id}`);
+      }
+      const record = CodexRecordSchema.parse(storedRecord);
+      command = { ...transition, record };
+    }
+    const next = PracticeSessionSchema.parse({
+      ...current,
+      debrief: applyPracticeDebriefTransition(
+        { id: current.id },
+        current.debrief,
+        command,
+      ),
+    });
+    await practiceStore.put(next);
+    await transaction.done;
+    return next;
+  }
+
+  async acceptTypedPracticeDebrief(
+    sessionId: string,
+    rawObservation: string,
+    acceptedAt = new Date().toISOString(),
+  ): Promise<{ practiceSession: PracticeSession; record: CodexRecord }> {
+    const observation = rawObservation.trim();
+    if (!observation) throw new Error("Enter a raw observation before saving.");
+    const recordId = `practice-debrief:${sessionId}`;
+    if (recordId.length > 240) {
+      throw new Error("The practice identifier is too long to link safely.");
+    }
+    const transaction = this.database.transaction(
+      ["practiceSessions", "records", "searchDocuments"],
+      "readwrite",
+    );
+    const practiceStore = transaction.objectStore("practiceSessions");
+    const recordStore = transaction.objectStore("records");
+    const storedSession = await practiceStore.get(sessionId);
+    if (!storedSession) {
+      throw new Error(`Practice session not found: ${sessionId}`);
+    }
+    const currentSession = PracticeSessionSchema.parse(storedSession);
+    if (!currentSession.debrief) {
+      throw new Error("This practice does not have an eligible debrief.");
+    }
+    const storedRecord = await recordStore.get(recordId);
+    let record: CodexRecord;
+    if (storedRecord) {
+      record = CodexRecordSchema.parse(storedRecord);
+      if (
+        record.sessionId !== sessionId ||
+        record.fields.captureModality !== "typed" ||
+        record.observation?.text !== observation
+      ) {
+        throw new Error("This debrief already links different preserved data.");
+      }
+    } else {
+      record = CodexRecordSchema.parse({
+        schemaVersion: 1,
+        id: recordId,
+        kind: "voice_note",
+        title: "Day 1 raw observation",
+        createdAt: acceptedAt,
+        updatedAt: acceptedAt,
+        observation: {
+          id: `${recordId}:observation`,
+          text: observation,
+          capturedAt: acceptedAt,
+          evidenceClass: "self_reported",
+          provenance: {
+            actor: "user",
+            method: "practice-debrief-direct-entry",
+            provider: null,
+            model: null,
+          },
+          sourceIds: [],
+        },
+        interpretation: null,
+        tags: ["foundation", "day-1", "post-practice", "raw-observation"],
+        backlinks: [],
+        sourceLinks: [],
+        attachmentIds: [],
+        revisionIds: [],
+        pathId: null,
+        sessionId,
+        fields: {
+          captureModality: "typed",
+          practiceSessionId: sessionId,
+          layerStatus: {
+            rawAudio: "not_created_typed_fallback",
+            verbatimTranscript: "not_applicable",
+            correctedTranscript: "not_created",
+            cleanNote: "not_created",
+            interpretation: "not_created",
+          },
+        },
+        deletedAt: null,
+      });
+    }
+    const practiceSession = PracticeSessionSchema.parse({
+      ...currentSession,
+      debrief: applyPracticeDebriefTransition(
+        { id: currentSession.id },
+        currentSession.debrief,
+        {
+          to: "completed",
+          occurredAt: acceptedAt,
+          record,
+        },
+      ),
+    });
+    const writes: Promise<IDBValidKey>[] = [practiceStore.put(practiceSession)];
+    if (!storedRecord) {
+      writes.push(
+        recordStore.put(record),
+        transaction
+          .objectStore("searchDocuments")
+          .put(recordToSearchDocument(record)),
+      );
+    }
+    await Promise.all(writes);
+    await transaction.done;
+    return { practiceSession, record };
   }
 
   async listPracticeSessions(): Promise<PracticeSession[]> {

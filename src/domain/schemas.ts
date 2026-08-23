@@ -182,6 +182,63 @@ export const PracticeSupportModeSchema = z.enum([
   "minimal_continuity",
 ]);
 
+export const PracticeDebriefStatusSchema = z.enum([
+  "pending",
+  "remind_later",
+  "skipped",
+  "completed",
+]);
+
+export const PracticeDebriefSchema = z
+  .object({
+    status: PracticeDebriefStatusSchema,
+    recordId: EntityIdSchema.nullable().default(null),
+    updatedAt: IsoDateTimeSchema,
+    remindAt: IsoDateTimeSchema.nullable().default(null),
+    promptVersion: z.literal("RAW_OBSERVATION_REV0"),
+  })
+  .superRefine((debrief, context) => {
+    if (debrief.status === "completed" && debrief.recordId === null) {
+      context.addIssue({
+        code: "custom",
+        path: ["recordId"],
+        message: "A completed debrief must link its raw observation record.",
+      });
+    }
+    if (debrief.status !== "completed" && debrief.recordId !== null) {
+      context.addIssue({
+        code: "custom",
+        path: ["recordId"],
+        message: "Only a completed debrief may link a raw observation record.",
+      });
+    }
+    if (debrief.status === "remind_later" && debrief.remindAt === null) {
+      context.addIssue({
+        code: "custom",
+        path: ["remindAt"],
+        message: "A deferred debrief must record when it should resurface.",
+      });
+    }
+    if (
+      debrief.status === "remind_later" &&
+      debrief.remindAt !== null &&
+      Date.parse(debrief.remindAt) <= Date.parse(debrief.updatedAt)
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["remindAt"],
+        message: "A deferred debrief must resurface after its update time.",
+      });
+    }
+    if (debrief.status !== "remind_later" && debrief.remindAt !== null) {
+      context.addIssue({
+        code: "custom",
+        path: ["remindAt"],
+        message: "Only a deferred debrief may retain a reminder time.",
+      });
+    }
+  });
+
 export const PracticeSessionSchema = z.object({
   schemaVersion: z.literal(CURRENT_DOMAIN_VERSION),
   id: EntityIdSchema,
@@ -209,6 +266,7 @@ export const PracticeSessionSchema = z.object({
   narrationUsed: z.literal(false),
   narratedContentAcceptance: z.literal("NOT_APPLICABLE"),
   stateAttainment: z.literal("NOT_ASSESSED"),
+  debrief: PracticeDebriefSchema.nullable().default(null),
   createdAt: IsoDateTimeSchema,
 });
 
@@ -739,6 +797,8 @@ export type PracticeCompletionMode = z.infer<
   typeof PracticeCompletionModeSchema
 >;
 export type PracticeSupportMode = z.infer<typeof PracticeSupportModeSchema>;
+export type PracticeDebriefStatus = z.infer<typeof PracticeDebriefStatusSchema>;
+export type PracticeDebrief = z.infer<typeof PracticeDebriefSchema>;
 export type PracticeSession = z.infer<typeof PracticeSessionSchema>;
 export type WorkbookState = z.infer<typeof WorkbookStateSchema>;
 export type PracticeAttemptIssue = z.infer<typeof PracticeAttemptIssueSchema>;

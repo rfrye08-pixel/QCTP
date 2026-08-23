@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
 
-import { openQctp, readStore } from "./support";
+import {
+  auditPaidCloudRequests,
+  createPendingVoiceFreePracticeSession,
+  openQctp,
+  putStore,
+  readStore,
+} from "./support";
 
 test("blind audition cannot reveal route identities or evict the main offline package", async ({
   context,
@@ -114,6 +120,79 @@ test("Voice-Free Day 1 presents the controlled six-phase 25:00 sequence and earl
   expect(foundation[0]?.currentDay).toBe(1);
   expect(foundation[0]?.completion["1"]?.morning ?? false).toBe(false);
   expect(await readStore(page, "practiceSessions")).toEqual([]);
+});
+
+test("a pending post-session debrief resurfaces and saves typed raw evidence without state credit", async ({
+  page,
+}) => {
+  const paidCloudRequests = auditPaidCloudRequests(page);
+  await openQctp(page);
+  await putStore(
+    page,
+    "practiceSessions",
+    createPendingVoiceFreePracticeSession("e2e-practice-debrief"),
+  );
+  await page.reload();
+
+  await expect(
+    page.getByRole("heading", { name: "Raw observation is still open" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Finish raw observation" }).click();
+  const debrief = page.locator("#post-session-debrief");
+  await expect(debrief).toBeVisible();
+  await expect(debrief).toBeFocused();
+  await expect(debrief).toContainText("Before explaining it");
+  await expect(debrief).toContainText("no interpretation or state claim");
+
+  await debrief.getByRole("button", { name: "Type instead" }).click();
+  await debrief
+    .getByRole("textbox", { name: "Raw observation" })
+    .fill("Warmth was directly noticeable in the center of my chest.");
+  await debrief.getByRole("button", { name: "Save raw observation" }).click();
+  await expect(debrief).toHaveCount(0);
+
+  const sessions = await readStore<{
+    id: string;
+    stateAttainment: string;
+    debrief: { status: string; recordId: string | null };
+  }>(page, "practiceSessions");
+  expect(sessions).toEqual([
+    expect.objectContaining({
+      id: "e2e-practice-debrief",
+      stateAttainment: "NOT_ASSESSED",
+      debrief: expect.objectContaining({
+        status: "completed",
+        recordId: "practice-debrief:e2e-practice-debrief",
+      }),
+    }),
+  ]);
+  const records = await readStore<{
+    id: string;
+    sessionId: string | null;
+    interpretation: unknown;
+    observation: { text: string } | null;
+    fields: { captureModality?: string };
+  }>(page, "records");
+  expect(records).toEqual([
+    expect.objectContaining({
+      id: "practice-debrief:e2e-practice-debrief",
+      sessionId: "e2e-practice-debrief",
+      interpretation: null,
+      observation: expect.objectContaining({
+        text: "Warmth was directly noticeable in the center of my chest.",
+      }),
+      fields: expect.objectContaining({ captureModality: "typed" }),
+    }),
+  ]);
+  expect(
+    (
+      await readStore<{ completion: Record<string, { morning: boolean }> }>(
+        page,
+        "foundation",
+      )
+    )[0]?.completion["1"]?.morning ?? false,
+  ).toBe(false);
+  expect(paidCloudRequests).toEqual([]);
 });
 
 test("Voice-Free Day 1 uses only checksum-manifested same-origin support stems", async ({

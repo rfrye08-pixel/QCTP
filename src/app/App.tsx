@@ -10,6 +10,7 @@ import {
   AppSettingsSchema,
   FoundationStateSchema,
   PracticeSessionSchema,
+  type PracticeSession,
 } from "../domain";
 import {
   createFoundationProgress,
@@ -18,10 +19,12 @@ import {
 } from "../foundation";
 import {
   useVoiceFreeDay1Session,
+  createPendingPracticeDebrief,
   VOICE_FREE_DAY1_PRACTICE_ID,
   VOICE_FREE_DAY1_SCRIPT_ID,
   VOICE_FREE_DAY1_SCRIPT_SHA256,
   type VoiceFreeAttemptIssue,
+  type PracticeDebriefTransition,
   type VoiceFreeNaturalCompletion,
 } from "../practice";
 import { Shell } from "./Shell";
@@ -38,6 +41,7 @@ import { MirrorScreen } from "./screens/MirrorScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
 import { useQctp } from "./qctp-context";
 import { routeFromHash, type AppRoute } from "./routes";
+import { PostSessionDebrief } from "./components/PostSessionDebrief";
 
 export function App() {
   const runtime = useQctp();
@@ -45,6 +49,8 @@ export function App() {
     routeFromHash(window.location.hash),
   );
   const [quickCaptureOpen, setQuickCaptureOpen] = useState(false);
+  const [unresolvedDebriefSession, setUnresolvedDebriefSession] =
+    useState<PracticeSession | null>(null);
   const persistence = useMemo(
     () => new RepositoryCapturePersistence(runtime.repository),
     [runtime.repository],
@@ -55,6 +61,23 @@ export function App() {
     window.addEventListener("hashchange", handleHash);
     return () => window.removeEventListener("hashchange", handleHash);
   }, []);
+
+  useEffect(() => {
+    let disposed = false;
+    void runtime.repository.listPracticeSessions().then((sessions) => {
+      if (disposed) return;
+      setUnresolvedDebriefSession(
+        sessions.find(
+          (candidate) =>
+            candidate.debrief?.status === "pending" ||
+            candidate.debrief?.status === "remind_later",
+        ) ?? null,
+      );
+    });
+    return () => {
+      disposed = true;
+    };
+  }, [runtime.repository, runtime.revision]);
 
   const navigate = useCallback((next: AppRoute) => {
     window.location.hash = `/${next}`;
@@ -83,6 +106,15 @@ export function App() {
         narrationUsed: false,
         narratedContentAcceptance: "NOT_APPLICABLE",
         stateAttainment: "NOT_ASSESSED",
+        debrief: createPendingPracticeDebrief(
+          {
+            id: completion.id,
+            completionStatus: "completed",
+            naturalCompletion: true,
+            testShortened: false,
+          },
+          completion.endedAt,
+        ),
         createdAt: completion.endedAt,
       });
       const current =
@@ -169,6 +201,51 @@ export function App() {
     [runtime],
   );
 
+  const updatePostSessionDebrief = useCallback(
+    async (sessionId: string, transition: PracticeDebriefTransition) => {
+      await runtime.repository.transitionPracticeDebrief(sessionId, transition);
+      await runtime.refresh();
+    },
+    [runtime],
+  );
+
+  const acceptTypedPostSessionDebrief = useCallback(
+    async (sessionId: string, rawObservation: string) => {
+      await runtime.repository.acceptTypedPracticeDebrief(
+        sessionId,
+        rawObservation,
+      );
+      await runtime.refresh();
+    },
+    [runtime],
+  );
+
+  const acceptPostSessionDebrief = useCallback(
+    async (capture: AcceptedCapture) => {
+      if (!capture.sessionId) {
+        throw new Error("The practice link is missing from this debrief.");
+      }
+      await acceptVoiceCapture(runtime.repository, capture);
+      await runtime.refresh();
+      if (
+        capture.queueLocalTranscription &&
+        runtime.localTranscriptionStatus === "ready"
+      ) {
+        void runtime.processTranscriptionQueue();
+      }
+    },
+    [runtime],
+  );
+
+  const practiceActive = [
+    "starting",
+    "running",
+    "paused",
+    "recording_issue",
+    "saving",
+    "save_pending",
+  ].includes(voiceFreeSession.status);
+
   const screen = (() => {
     switch (route) {
       case "today":
@@ -178,6 +255,8 @@ export function App() {
             voiceFreeSession={voiceFreeSession}
             onStartVoiceFreeDay1={startVoiceFreeDay1}
             onQuickCapture={() => setQuickCaptureOpen(true)}
+            unresolvedDebriefSession={unresolvedDebriefSession}
+            onOpenDebrief={() => navigate("practice")}
           />
         );
       case "paths":
@@ -185,7 +264,33 @@ export function App() {
       case "more":
         return <MoreOverview onNavigate={navigate} />;
       case "practice":
-        return <PracticeScreen voiceFreeSession={voiceFreeSession} />;
+        return (
+          <>
+            <PracticeScreen voiceFreeSession={voiceFreeSession} />
+            {unresolvedDebriefSession && !practiceActive ? (
+              <PostSessionDebrief
+                session={unresolvedDebriefSession}
+                persistence={persistence}
+                localTranscriptionAvailable={
+                  runtime.localTranscriptionStatus === "ready"
+                }
+                onAccept={acceptPostSessionDebrief}
+                onTypeAccept={(rawObservation) =>
+                  acceptTypedPostSessionDebrief(
+                    unresolvedDebriefSession.id,
+                    rawObservation,
+                  )
+                }
+                onTransition={(transition) =>
+                  updatePostSessionDebrief(
+                    unresolvedDebriefSession.id,
+                    transition,
+                  )
+                }
+              />
+            ) : null}
+          </>
+        );
       case "studio":
         return <StudioScreen />;
       case "lab":
@@ -205,14 +310,7 @@ export function App() {
       foundationDay={runtime.foundation.currentDay}
       onNavigate={navigate}
       onQuickCapture={() => setQuickCaptureOpen(true)}
-      practiceActive={[
-        "starting",
-        "running",
-        "paused",
-        "recording_issue",
-        "saving",
-        "save_pending",
-      ].includes(voiceFreeSession.status)}
+      practiceActive={practiceActive}
     >
       {screen}
       {quickCaptureOpen ? (

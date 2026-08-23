@@ -4,6 +4,7 @@ import {
   AppSettingsSchema,
   CodexRecordSchema,
   MirrorResultSchema,
+  PracticeSessionSchema,
   QctpExportDataSchema,
   VoiceRecordingSchema,
   createDefaultSettings,
@@ -55,6 +56,59 @@ describe("versioned domain schemas", () => {
         },
       }),
     ).toThrow();
+  });
+
+  it("upgrades existing practice sessions with a null debrief and validates completed links", () => {
+    const legacy = {
+      schemaVersion: 1,
+      id: "practice-legacy",
+      practiceId: "foundation-day1-source-rev0-voice-free",
+      foundationDay: 1,
+      scriptId: "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+      scriptSha256:
+        "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+      startedAt: now,
+      endedAt: now,
+      elapsedMs: 1_500_000,
+      completionMode: "VOICE_FREE_FALLBACK",
+      supportMode: "ambient",
+      sourceSequence: ["Bullard", "HeartMath", "Dispenza", "QCTP return"],
+      heartMathBreath:
+        "approximately five seconds in / five seconds out or comfortable; no hold",
+      naturalCompletion: true,
+      narrationUsed: false,
+      narratedContentAcceptance: "NOT_APPLICABLE",
+      stateAttainment: "NOT_ASSESSED",
+      createdAt: now,
+    };
+    expect(PracticeSessionSchema.parse(legacy).debrief).toBeNull();
+    expect(
+      PracticeSessionSchema.parse({
+        ...legacy,
+        debrief: {
+          status: "completed",
+          recordId: "voice-record:debrief-one",
+          updatedAt: now,
+          remindAt: null,
+          promptVersion: "RAW_OBSERVATION_REV0",
+        },
+      }).debrief,
+    ).toMatchObject({
+      status: "completed",
+      recordId: "voice-record:debrief-one",
+    });
+    expect(() =>
+      PracticeSessionSchema.parse({
+        ...legacy,
+        debrief: {
+          status: "completed",
+          recordId: null,
+          updatedAt: now,
+          remindAt: null,
+          promptVersion: "RAW_OBSERVATION_REV0",
+        },
+      }),
+    ).toThrow("must link its raw observation record");
   });
 
   it("keeps observation evidence and interpretation as separately identified layers", () => {

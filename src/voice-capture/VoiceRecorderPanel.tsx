@@ -21,6 +21,10 @@ export interface VoiceRecorderPanelProps {
   mode?: CaptureMode;
   initialDestination?: CaptureDestination;
   fieldTargetId?: string | null;
+  sessionId?: string | null;
+  initialTitle?: string;
+  initialTags?: readonly string[];
+  defaultQueueLocalTranscription?: boolean;
   localTranscriptionAvailable?: boolean;
   allowPause?: boolean;
   allowAppend?: boolean;
@@ -61,6 +65,10 @@ export function VoiceRecorderPanel({
   mode = "quick",
   initialDestination = "unclassified",
   fieldTargetId = null,
+  sessionId = null,
+  initialTitle = "",
+  initialTags = [],
+  defaultQueueLocalTranscription,
   localTranscriptionAvailable = false,
   allowPause = true,
   allowAppend = true,
@@ -74,16 +82,17 @@ export function VoiceRecorderPanel({
   const [autoMinutes, setAutoMinutes] = useState<5 | 10 | 20>(5);
   const [destination, setDestination] =
     useState<CaptureDestination>(initialDestination);
-  const [title, setTitle] = useState("");
-  const [tagText, setTagText] = useState("");
+  const [title, setTitle] = useState(initialTitle);
+  const [tagText, setTagText] = useState(initialTags.join(", "));
   const [manualText, setManualText] = useState("");
   const [queueLocalTranscription, setQueueLocalTranscription] = useState(
-    localTranscriptionAvailable,
+    defaultQueueLocalTranscription ?? localTranscriptionAvailable,
   );
   const [playbackUrl, setPlaybackUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const sessionRef = useRef<BrowserRecorderSession | null>(null);
+  const acceptingRef = useRef(false);
 
   useEffect(
     () => () => {
@@ -208,6 +217,8 @@ export function VoiceRecorderPanel({
   const accept = useCallback(async () => {
     if (!recorderState.recordingId || !recorderState.mimeType || !isReview)
       return;
+    if (acceptingRef.current) return;
+    acceptingRef.current = true;
     setSaving(true);
     setSaveError(null);
     try {
@@ -223,6 +234,7 @@ export function VoiceRecorderPanel({
         mimeType: recorderState.mimeType,
         manualText: manualText.trim(),
         fieldTargetId,
+        sessionId,
         queueLocalTranscription,
       });
       onClose();
@@ -233,6 +245,7 @@ export function VoiceRecorderPanel({
           : "The recording remains local but could not be routed.",
       );
     } finally {
+      acceptingRef.current = false;
       setSaving(false);
     }
   }, [
@@ -246,6 +259,7 @@ export function VoiceRecorderPanel({
     recorderState.accumulatedMs,
     recorderState.mimeType,
     recorderState.recordingId,
+    sessionId,
     tagText,
     title,
   ]);
@@ -373,15 +387,17 @@ export function VoiceRecorderPanel({
               Discard
             </button>
           </div>
-          <label>
-            Title
-            <input
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              placeholder="Voice note"
-            />
-          </label>
-          {mode !== "field" ? (
+          {mode !== "debrief" ? (
+            <label>
+              Title
+              <input
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                placeholder="Voice note"
+              />
+            </label>
+          ) : null}
+          {mode !== "field" && mode !== "debrief" ? (
             <label>
               Destination
               <select
@@ -398,16 +414,20 @@ export function VoiceRecorderPanel({
               </select>
             </label>
           ) : null}
+          {mode !== "debrief" ? (
+            <label>
+              Tags
+              <input
+                value={tagText}
+                onChange={(event) => setTagText(event.target.value)}
+                placeholder="geometry, observation"
+              />
+            </label>
+          ) : null}
           <label>
-            Tags
-            <input
-              value={tagText}
-              onChange={(event) => setTagText(event.target.value)}
-              placeholder="geometry, observation"
-            />
-          </label>
-          <label>
-            Manual text or correction (optional)
+            {mode === "debrief"
+              ? "Optional typed raw observation"
+              : "Manual text or correction (optional)"}
             <textarea
               value={manualText}
               onChange={(event) => setManualText(event.target.value)}
@@ -418,7 +438,6 @@ export function VoiceRecorderPanel({
             <input
               type="checkbox"
               checked={queueLocalTranscription}
-              disabled={!localTranscriptionAvailable}
               onChange={(event) =>
                 setQueueLocalTranscription(event.target.checked)
               }
@@ -428,7 +447,7 @@ export function VoiceRecorderPanel({
               <small>
                 {localTranscriptionAvailable
                   ? "Processes after this recording is accepted."
-                  : "Local companion unavailable; the recording remains fully usable."}
+                  : "Stays queued locally until the PX13 companion is available; the recording remains fully usable."}
               </small>
             </span>
           </label>

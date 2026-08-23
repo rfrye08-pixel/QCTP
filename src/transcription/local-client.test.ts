@@ -59,6 +59,7 @@ describe("Free Local Mode transcription client", () => {
       mimeType: "audio/webm",
       manualText: "",
       fieldTargetId: null,
+      sessionId: null,
       queueLocalTranscription: true,
     });
   });

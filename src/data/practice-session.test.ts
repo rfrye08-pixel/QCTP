@@ -31,6 +31,7 @@ function session(id: string): PracticeSession {
     narrationUsed: false,
     narratedContentAcceptance: "NOT_APPLICABLE",
     stateAttainment: "NOT_ASSESSED",
+    debrief: null,
     createdAt: endedAt,
   };
 }
@@ -75,6 +76,62 @@ describe("Voice-Free practice persistence", () => {
       imported.close();
       await deleteQctpDatabase(importedName);
     }
+  });
+
+  it("persists a deferred or completed raw-observation debrief without changing completion credit", async () => {
+    await repository.initializeDefaults(startedAt);
+    await repository.savePracticeSession({
+      ...session("practice-debrief"),
+      debrief: {
+        status: "pending",
+        recordId: null,
+        updatedAt: endedAt,
+        remindAt: null,
+        promptVersion: "RAW_OBSERVATION_REV0",
+      },
+    });
+    const reminderAt = "2026-08-22T11:00:00.000Z";
+    const deferred = await repository.transitionPracticeDebrief(
+      "practice-debrief",
+      {
+        to: "remind_later",
+        occurredAt: endedAt,
+        remindAt: reminderAt,
+      },
+    );
+    expect(deferred.debrief).toMatchObject({
+      status: "remind_later",
+      remindAt: reminderAt,
+    });
+    const completed = await repository.acceptTypedPracticeDebrief(
+      "practice-debrief",
+      "Warmth was directly noticeable in the center of my chest.",
+      reminderAt,
+    );
+    expect(completed).toMatchObject({
+      practiceSession: {
+        naturalCompletion: true,
+        stateAttainment: "NOT_ASSESSED",
+        debrief: {
+          status: "completed",
+          recordId: "practice-debrief:practice-debrief",
+        },
+      },
+      record: {
+        interpretation: null,
+        sessionId: "practice-debrief",
+      },
+    });
+    expect(
+      await repository.acceptTypedPracticeDebrief(
+        "practice-debrief",
+        "Warmth was directly noticeable in the center of my chest.",
+        reminderAt,
+      ),
+    ).toEqual(completed);
+    expect(
+      (await repository.getFoundationState())?.completion["1"]?.morning,
+    ).not.toBe(true);
   });
 
   it("commits the practice evidence and Foundation morning flag atomically", async () => {

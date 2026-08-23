@@ -59,6 +59,14 @@ export function validateExportRelations(snapshot: QctpExportData): void {
     "transcript",
   );
   assertUnique(
+    snapshot.transcriptionQueue.map((entity) => entity.id),
+    "transcription queue item",
+  );
+  assertUnique(
+    snapshot.transcriptionQueue.map((entity) => entity.recordingId),
+    "transcription queue recording",
+  );
+  assertUnique(
     snapshot.derivedNotes.map((entity) => entity.id),
     "derived note",
   );
@@ -180,6 +188,48 @@ export function validateExportRelations(snapshot: QctpExportData): void {
           );
         }
       }
+    }
+  }
+  for (const queueItem of snapshot.transcriptionQueue) {
+    if (!recordings.has(queueItem.recordingId)) {
+      throw new QctpImportError(
+        `Transcription queue item ${queueItem.id} references missing recording ${queueItem.recordingId}`,
+      );
+    }
+  }
+  for (const session of snapshot.practiceSessions) {
+    const debriefRecordId = session.debrief?.recordId;
+    if (!debriefRecordId) continue;
+    const record = snapshot.records.find(
+      (candidate) => candidate.id === debriefRecordId,
+    );
+    if (!record) {
+      throw new QctpImportError(
+        `Practice session ${session.id} references missing debrief record ${debriefRecordId}`,
+      );
+    }
+    if (record.sessionId !== session.id) {
+      throw new QctpImportError(
+        `Practice session ${session.id} debrief record ${debriefRecordId} has a mismatched session link`,
+      );
+    }
+    if (record.fields.captureModality === "typed") {
+      if (!record.observation?.text.trim()) {
+        throw new QctpImportError(
+          `Practice session ${session.id} typed debrief record ${debriefRecordId} has no raw observation`,
+        );
+      }
+      continue;
+    }
+    const recordingId = record.fields.voiceRecordingId;
+    if (
+      record.fields.captureModality !== "voice" ||
+      typeof recordingId !== "string" ||
+      !recordings.has(recordingId)
+    ) {
+      throw new QctpImportError(
+        `Practice session ${session.id} debrief record ${debriefRecordId} references missing recording`,
+      );
     }
   }
   for (const capability of snapshot.stateCapabilities) {

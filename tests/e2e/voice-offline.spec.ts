@@ -2,11 +2,13 @@ import { expect, test } from "@playwright/test";
 
 import {
   auditPaidCloudRequests,
+  createPendingVoiceFreePracticeSession,
   forceOffline,
   indexedDbBlobRoundTripSupported,
   installFakeMicrophone,
   mediaTestState,
   openQctp,
+  putStore,
   readAudioChunkFacts,
   readStore,
 } from "./support";
@@ -70,7 +72,12 @@ test("permission waits for Start and offline chunks remain playable in IndexedDB
     page.getByRole("checkbox", {
       name: /Queue no-cost local PX13 transcription/,
     }),
-  ).toBeDisabled();
+  ).toBeEnabled();
+  await expect(
+    page.getByRole("checkbox", {
+      name: /Queue no-cost local PX13 transcription/,
+    }),
+  ).not.toBeChecked();
   await page.getByRole("button", { name: "Save locally", exact: true }).click();
   await expect(
     page.getByRole("dialog", { name: "Quick Capture" }),
@@ -104,6 +111,96 @@ test("permission waits for Start and offline chunks remain playable in IndexedDB
     ),
   ).toBe(false);
   expect((await mediaTestState(page)).trackStops).toBeGreaterThan(0);
+  expect(paidCloudRequests).toEqual([]);
+  await expect(
+    page.getByRole("alert").filter({ hasText: /api.?key/i }),
+  ).toHaveCount(0);
+});
+
+test("a voice-first practice debrief accepts offline audio and queues PX13 transcription locally", async ({
+  context,
+  page,
+}) => {
+  await installFakeMicrophone(page);
+  const paidCloudRequests = auditPaidCloudRequests(page);
+  await openQctp(page);
+  test.skip(
+    !(await indexedDbBlobRoundTripSupported(page)),
+    "This Playwright WebKit runtime cannot structured-clone Blob data into IndexedDB; validate capture on physical iOS Safari.",
+  );
+  await putStore(
+    page,
+    "practiceSessions",
+    createPendingVoiceFreePracticeSession("e2e-voice-debrief"),
+  );
+  await page.reload();
+  await page.getByRole("button", { name: "Finish raw observation" }).click();
+  const debrief = page.locator("#post-session-debrief");
+  await expect(debrief).toBeVisible();
+  await forceOffline(context, page);
+
+  await debrief.getByRole("button", { name: "Record raw observation" }).click();
+  await debrief.getByRole("button", { name: "Start recording" }).click();
+  await expect(
+    debrief.getByText("Recording — audio is being stored locally"),
+  ).toBeVisible();
+  await page.waitForTimeout(120);
+  await debrief.getByRole("button", { name: "Stop", exact: true }).click();
+  const queue = debrief.getByRole("checkbox", {
+    name: /Queue no-cost local PX13 transcription/,
+  });
+  await expect(queue).toBeEnabled();
+  await expect(queue).toBeChecked();
+  await debrief
+    .getByRole("textbox", { name: "Optional typed raw observation" })
+    .fill("Breathing felt smoother and my shoulders released.");
+  await debrief.getByRole("button", { name: "Save locally & queue" }).click();
+  await expect(debrief).toHaveCount(0);
+
+  const chunks = await readAudioChunkFacts(page);
+  expect(chunks.length).toBeGreaterThan(0);
+  expect(chunks.every((chunk) => chunk.type === "audio/webm")).toBe(true);
+  expect(await readStore(page, "transcriptionQueue")).toHaveLength(1);
+  expect(
+    await readStore<{
+      status: string;
+      acceptedAt: string | null;
+      destinationId: string | null;
+    }>(page, "recordings"),
+  ).toEqual([
+    expect.objectContaining({
+      status: "TRANSCRIPTION_QUEUED",
+      destinationId: "e2e-voice-debrief",
+    }),
+  ]);
+  expect(
+    await readStore<{
+      sessionId: string | null;
+      interpretation: unknown;
+      fields: { captureModality?: string; voiceRecordingId?: string };
+    }>(page, "records"),
+  ).toEqual([
+    expect.objectContaining({
+      sessionId: "e2e-voice-debrief",
+      interpretation: null,
+      fields: expect.objectContaining({
+        captureModality: "voice",
+      }),
+    }),
+  ]);
+  expect(
+    await readStore<{ debrief: { status: string; recordId: string | null } }>(
+      page,
+      "practiceSessions",
+    ),
+  ).toEqual([
+    expect.objectContaining({
+      debrief: expect.objectContaining({
+        status: "completed",
+        recordId: expect.stringMatching(/^voice-record:/u),
+      }),
+    }),
+  ]);
   expect(paidCloudRequests).toEqual([]);
   await expect(
     page.getByRole("alert").filter({ hasText: /api.?key/i }),

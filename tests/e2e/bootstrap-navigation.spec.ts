@@ -9,6 +9,28 @@ import {
   readStore,
 } from "./support";
 
+test("a failed app bundle leaves a visible non-destructive recovery screen", async ({
+  page,
+}) => {
+  await page.route(/\/assets\/.*\.js$/u, (route) => route.abort());
+  await page.goto("/");
+
+  await expect(
+    page.getByRole("heading", { name: "Opening your practice…" }),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Reload QCTP" })).toHaveAttribute(
+    "href",
+    "./",
+  );
+  await expect(
+    page.getByText(/does not clear local recordings, journal entries/i),
+  ).toBeVisible();
+  const background = await page
+    .locator("body")
+    .evaluate((body) => getComputedStyle(body).backgroundImage);
+  expect(background).toContain("radial-gradient");
+});
+
 test("boots the PWA into IndexedDB-backed Free Local Mode", async ({
   browserName,
   context,

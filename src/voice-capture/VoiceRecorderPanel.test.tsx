@@ -133,4 +133,56 @@ describe("VoiceRecorderPanel lifecycle controls", () => {
       screen.queryByRole("button", { name: /append segment/i }),
     ).not.toBeInTheDocument();
   });
+
+  it("keeps a debrief classified, queues offline, and latches rapid acceptance", async () => {
+    let releaseAccept: (() => void) | undefined;
+    const onAccept = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          releaseAccept = resolve;
+        }),
+    );
+    const onClose = vi.fn();
+    render(
+      <VoiceRecorderPanel
+        persistence={persistence}
+        mode="debrief"
+        initialDestination="codex"
+        sessionId="practice-one"
+        initialTitle="Day 1 raw observation"
+        initialTags={["raw-observation", "day-1"]}
+        defaultQueueLocalTranscription
+        localTranscriptionAvailable={false}
+        onAccept={onAccept}
+        onClose={onClose}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /start recording/i }));
+    fireEvent.click(await screen.findByRole("button", { name: "Stop" }));
+    const save = await screen.findByRole("button", {
+      name: /save locally & queue/i,
+    });
+    expect(screen.queryByLabelText("Title")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Tags")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Destination")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", {
+        name: /queue no-cost local px13 transcription/i,
+      }),
+    ).toBeChecked();
+    fireEvent.click(save);
+    fireEvent.click(save);
+    expect(onAccept).toHaveBeenCalledOnce();
+    expect(onAccept).toHaveBeenCalledWith(
+      expect.objectContaining({
+        destination: "codex",
+        sessionId: "practice-one",
+        title: "Day 1 raw observation",
+        tags: ["raw-observation", "day-1"],
+        queueLocalTranscription: true,
+      }),
+    );
+    releaseAccept?.();
+    await waitFor(() => expect(onClose).toHaveBeenCalledOnce());
+  });
 });

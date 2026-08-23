@@ -2,6 +2,41 @@ import { expect, type BrowserContext, type Page } from "@playwright/test";
 
 export const DATABASE_NAME = "qctp-rev2";
 
+export function createPendingVoiceFreePracticeSession(
+  id: string,
+  endedAt = "2026-08-22T10:25:00.000Z",
+) {
+  return {
+    schemaVersion: 1,
+    id,
+    practiceId: "foundation-day1-source-rev0-voice-free",
+    foundationDay: 1,
+    scriptId: "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+    scriptSha256:
+      "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+    startedAt: "2026-08-22T10:00:00.000Z",
+    endedAt,
+    elapsedMs: 1_500_000,
+    completionMode: "VOICE_FREE_FALLBACK",
+    supportMode: "ambient",
+    sourceSequence: ["Bullard", "HeartMath", "Dispenza", "QCTP return"],
+    heartMathBreath:
+      "approximately five seconds in / five seconds out or comfortable; no hold",
+    naturalCompletion: true,
+    narrationUsed: false,
+    narratedContentAcceptance: "NOT_APPLICABLE",
+    stateAttainment: "NOT_ASSESSED",
+    debrief: {
+      status: "pending",
+      recordId: null,
+      updatedAt: endedAt,
+      remindAt: null,
+      promptVersion: "RAW_OBSERVATION_REV0",
+    },
+    createdAt: endedAt,
+  };
+}
+
 interface CapturedRequest {
   url: string;
   method: string;

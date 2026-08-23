@@ -50,11 +50,15 @@ export function TodayOverview({
   voiceFreeSession,
   onStartVoiceFreeDay1,
   onQuickCapture,
+  unresolvedDebriefSession,
+  onOpenDebrief,
 }: {
   onNavigate: (route: AppRoute) => void;
   voiceFreeSession: VoiceFreeDay1SessionController;
   onStartVoiceFreeDay1: () => void;
   onQuickCapture: () => void;
+  unresolvedDebriefSession: PracticeSession | null;
+  onOpenDebrief: () => void;
 }) {
   const runtime = useQctp();
   const pwaStatus = usePwaStatus();
@@ -213,6 +217,43 @@ export function TodayOverview({
           <VoiceFreePhasePlan compact />
         </details>
       </section>
+      {unresolvedDebriefSession?.debrief ? (
+        <section className="panel-card pending-debrief-card">
+          <div className="card-heading">
+            <div>
+              <p className="eyebrow">Unfinished morning follow-through</p>
+              <h2>Raw observation is still open</h2>
+            </div>
+            <StatusBadge status="ready" />
+          </div>
+          <p>
+            Preserve what you directly noticed before adding meaning. This is
+            linked to the completed Day 1 session and cannot award state or
+            capability credit.
+          </p>
+          {unresolvedDebriefSession.debrief.status === "remind_later" ? (
+            <p className="fine-print" role="status">
+              Saved for later
+              {unresolvedDebriefSession.debrief.remindAt
+                ? ` · due again ${new Date(
+                    unresolvedDebriefSession.debrief.remindAt,
+                  ).toLocaleTimeString([], {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}`
+                : ""}
+              .
+            </p>
+          ) : null}
+          <button
+            className="secondary-button"
+            type="button"
+            onClick={onOpenDebrief}
+          >
+            Finish raw observation
+          </button>
+        </section>
+      ) : null}
       <section
         className="panel-card today-schedule-card"
         aria-labelledby="later-today-title"

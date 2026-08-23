@@ -16,7 +16,8 @@ export const captureDestinations = [
 ] as const;
 
 export type CaptureDestination = (typeof captureDestinations)[number][0];
-export type CaptureMode = "quick" | "field" | "auto-dictation" | "experiment";
+export type CaptureMode =
+  "quick" | "field" | "auto-dictation" | "experiment" | "debrief";
 
 export interface AcceptedCapture {
   recordingId: string;
@@ -27,5 +28,6 @@ export interface AcceptedCapture {
   mimeType: string;
   manualText: string;
   fieldTargetId: string | null;
+  sessionId: string | null;
   queueLocalTranscription: boolean;
 }

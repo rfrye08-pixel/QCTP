@@ -2356,8 +2356,59 @@
   color: var(--muted);
 }
 
+.post-session-debrief,
+.pending-debrief-card {
+  margin-bottom: 16px;
+  scroll-margin-top: 18px;
+}
+
+.post-session-debrief:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+.debrief-prompt {
+  max-width: 62ch;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.debrief-actions,
+.debrief-deferred,
+.debrief-typed-entry {
+  display: grid;
+  gap: 10px;
+}
+
+.debrief-deferred {
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--mint) 30%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel) 84%, transparent);
+}
+
+.debrief-deferred span {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.debrief-typed-entry textarea {
+  min-height: 130px;
+}
+
+.pending-debrief-card .secondary-button,
+.debrief-actions .primary-button,
+.debrief-actions .secondary-button {
+  min-height: 46px;
+}
+
 @media (min-width: 720px) {
   .voice-free-phase-plan {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .debrief-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

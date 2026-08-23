@@ -69,6 +69,38 @@ function createRecording(): VoiceRecording {
   };
 }
 
+function createDebriefPracticeSession(id: string, recordId: string) {
+  return PracticeSessionSchema.parse({
+    schemaVersion: 1,
+    id,
+    practiceId: "foundation-day1-source-rev0-voice-free",
+    foundationDay: 1,
+    scriptId: "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+    scriptSha256:
+      "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+    startedAt: now,
+    endedAt: now,
+    elapsedMs: 1_500_000,
+    completionMode: "VOICE_FREE_FALLBACK",
+    supportMode: "ambient",
+    sourceSequence: ["Bullard", "HeartMath", "Dispenza", "QCTP return"],
+    heartMathBreath:
+      "approximately five seconds in / five seconds out or comfortable; no hold",
+    naturalCompletion: true,
+    narrationUsed: false,
+    narratedContentAcceptance: "NOT_APPLICABLE",
+    stateAttainment: "NOT_ASSESSED",
+    debrief: {
+      status: "completed",
+      recordId,
+      updatedAt: now,
+      remindAt: null,
+      promptVersion: "RAW_OBSERVATION_REV0",
+    },
+    createdAt: now,
+  });
+}
+
 interface MutableArchiveEntry {
   id: string;
   ownerId: string;
@@ -283,10 +315,85 @@ describe("versioned export/import", () => {
         practiceSessions: [practice, practice],
       }),
     ).toThrow("Duplicate practice session id");
+    const debriefRecord = {
+      ...record,
+      id: "voice-record:debrief-recording",
+      kind: "voice_note" as const,
+      sessionId: practice.id,
+      fields: {
+        captureModality: "voice",
+        voiceRecordingId: relationRecording.id,
+      },
+    };
+    const debriefPractice = PracticeSessionSchema.parse({
+      ...practice,
+      debrief: {
+        status: "completed",
+        recordId: debriefRecord.id,
+        updatedAt: now,
+        remindAt: null,
+        promptVersion: "RAW_OBSERVATION_REV0",
+      },
+    });
+    expect(() =>
+      validateExportRelations({
+        ...valid,
+        records: [record, debriefRecord],
+        practiceSessions: [debriefPractice],
+      }),
+    ).not.toThrow();
+    expect(() =>
+      validateExportRelations({
+        ...valid,
+        records: [record, { ...debriefRecord, sessionId: "wrong-session" }],
+        practiceSessions: [debriefPractice],
+      }),
+    ).toThrow("mismatched session link");
+    expect(() =>
+      validateExportRelations({
+        ...valid,
+        records: [
+          record,
+          {
+            ...debriefRecord,
+            fields: { voiceRecordingId: "missing-recording" },
+          },
+        ],
+        practiceSessions: [debriefPractice],
+      }),
+    ).toThrow("references missing recording");
     expect(() =>
       validateExportRelations({
         ...valid,
         transcripts: [{ ...transcript, recordingId: "missing" }],
+      }),
+    ).toThrow("references missing recording");
+    const queueItem = {
+      schemaVersion: 1 as const,
+      id: "queue-relation-one",
+      recordingId: relationRecording.id,
+      status: "QUEUED" as const,
+      attempts: 0,
+      nextAttemptAt: null,
+      lastError: null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    expect(() =>
+      validateExportRelations({
+        ...valid,
+        transcriptionQueue: [
+          queueItem,
+          { ...queueItem, id: "queue-relation-two" },
+        ],
+      }),
+    ).toThrow("Duplicate transcription queue recording");
+    expect(() =>
+      validateExportRelations({
+        ...valid,
+        transcriptionQueue: [
+          { ...queueItem, recordingId: "missing-recording" },
+        ],
       }),
     ).toThrow("references missing recording");
     expect(() =>
@@ -395,6 +502,33 @@ describe("versioned export/import", () => {
       await testBlob("raw-audio", "audio/webm"),
       { id: "archive-chunk-1" },
     );
+    const debriefRecordId = "voice-record:recording-archive";
+    await source.saveRecord({
+      schemaVersion: 1,
+      id: debriefRecordId,
+      kind: "voice_note",
+      title: "Day 1 raw observation",
+      createdAt: now,
+      updatedAt: now,
+      observation: null,
+      interpretation: null,
+      tags: ["raw-observation"],
+      backlinks: [],
+      sourceLinks: [],
+      attachmentIds: [],
+      revisionIds: [],
+      pathId: null,
+      sessionId: "practice-archive",
+      fields: {
+        captureModality: "voice",
+        voiceRecordingId: "recording-archive",
+        practiceSessionId: "practice-archive",
+      },
+      deletedAt: null,
+    });
+    await source.savePracticeSession(
+      createDebriefPracticeSession("practice-archive", debriefRecordId),
+    );
     const image = await testBlob("image-bytes", "image/jpeg");
     const attachment: Attachment = {
       schemaVersion: 1,
@@ -421,6 +555,16 @@ describe("versioned export/import", () => {
     ).toBe("image-bytes");
     const snapshot = await target.readSnapshot();
     expect(snapshot.attachments).toEqual([attachment]);
+    expect(snapshot.practiceSessions[0]?.debrief).toMatchObject({
+      status: "completed",
+      recordId: debriefRecordId,
+    });
+    expect(
+      snapshot.records.find((record) => record.id === debriefRecordId),
+    ).toMatchObject({
+      sessionId: "practice-archive",
+      fields: { voiceRecordingId: "recording-archive" },
+    });
   });
 
   it("validates every archive artifact before the atomic database import starts", async () => {

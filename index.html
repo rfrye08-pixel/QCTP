@@ -21,9 +21,191 @@
     <link rel="icon" href="./qctp-icon-32.png" type="image/png" />
     <link rel="apple-touch-icon" href="./qctp-icon-180.png" sizes="180x180" />
     <title>QCTP Platform</title>
+    <style>
+      html {
+        min-width: 320px;
+        background: #071017;
+        color-scheme: dark;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        background: radial-gradient(
+          circle at 50% -10%,
+          #173047 0,
+          #0a1721 36%,
+          #071017 72%
+        );
+        color: #edf4fb;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      #root {
+        min-height: 100vh;
+      }
+
+      .qctp-recovery-shell {
+        display: grid;
+        min-height: 100vh;
+        min-height: 100svh;
+        padding: max(28px, env(safe-area-inset-top)) 20px
+          max(28px, env(safe-area-inset-bottom));
+        place-items: center;
+      }
+
+      .qctp-recovery-card {
+        width: min(100%, 460px);
+        padding: 26px;
+        border: 1px solid #31566a;
+        border-radius: 24px;
+        background: linear-gradient(155deg, #102b3b, #091720);
+        box-shadow: 0 24px 70px rgb(0 0 0 / 42%);
+      }
+
+      .qctp-recovery-mark {
+        display: grid;
+        width: 54px;
+        height: 54px;
+        margin-bottom: 20px;
+        transform: rotate(45deg);
+        border: 1px solid #67d7ff;
+        border-radius: 15px;
+        color: #7bd8bb;
+        background: #0a1c27;
+        box-shadow: 0 0 28px rgb(103 215 255 / 18%);
+        font-weight: 900;
+        place-items: center;
+      }
+
+      .qctp-recovery-mark span {
+        transform: rotate(-45deg);
+      }
+
+      .qctp-recovery-eyebrow {
+        margin: 0 0 8px;
+        color: #8bb8ff;
+        font-size: 0.72rem;
+        font-weight: 850;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .qctp-recovery-card h1 {
+        margin: 0;
+        font-size: clamp(1.75rem, 8vw, 2.7rem);
+        line-height: 1.04;
+        letter-spacing: -0.04em;
+      }
+
+      .qctp-recovery-copy {
+        margin: 16px 0;
+        color: #bdcbd5;
+        line-height: 1.55;
+      }
+
+      .qctp-recovery-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 9px;
+        margin-top: 20px;
+      }
+
+      .qctp-recovery-primary,
+      .qctp-recovery-secondary {
+        min-height: 50px;
+        padding: 13px 16px;
+        border-radius: 14px;
+        font: inherit;
+        font-weight: 800;
+        text-align: center;
+        text-decoration: none;
+        touch-action: manipulation;
+      }
+
+      .qctp-recovery-primary {
+        border: 0;
+        color: #071017;
+        background: linear-gradient(135deg, #9ac5ff, #7bd8bb);
+      }
+
+      .qctp-recovery-secondary {
+        border: 1px solid #36596b;
+        color: #edf4fb;
+        background: #102330;
+      }
+
+      .qctp-recovery-primary:focus-visible,
+      .qctp-recovery-secondary:focus-visible {
+        outline: 3px solid #8bb8ff;
+        outline-offset: 3px;
+      }
+
+      .qctp-recovery-note {
+        margin: 16px 0 0;
+        color: #8ea3b1;
+        font-size: 0.78rem;
+        line-height: 1.5;
+      }
+
+      .qctp-startup-alert {
+        width: min(calc(100% - 32px), 728px);
+        margin: max(12px, env(safe-area-inset-top)) auto 0;
+        padding: 12px 14px;
+        border: 1px solid #806f48;
+        border-radius: 14px;
+        color: #eed7a8;
+        background: #251f14;
+        font-size: 0.82rem;
+        line-height: 1.45;
+      }
+
+      .qctp-startup-alert strong {
+        display: block;
+        margin-bottom: 4px;
+        color: #f2c879;
+      }
+
+      .qctp-startup-alert button {
+        width: 100%;
+        margin-top: 10px;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main class="qctp-recovery-shell">
+        <section
+          class="qctp-recovery-card"
+          aria-labelledby="qctp-startup-title"
+        >
+          <div class="qctp-recovery-mark" aria-hidden="true">
+            <span>Q</span>
+          </div>
+          <p class="qctp-recovery-eyebrow">QCTP · local-first</p>
+          <h1 id="qctp-startup-title">Opening your practice…</h1>
+          <p class="qctp-recovery-copy" role="status" aria-live="polite">
+            Preparing the app and its on-device records. If this message
+            remains, use Reload QCTP below.
+          </p>
+          <div class="qctp-recovery-actions">
+            <a class="qctp-recovery-primary" href="./">Reload QCTP</a>
+          </div>
+          <p class="qctp-recovery-note">
+            Reloading does not clear local recordings, journal entries, workbook
+            answers, or queued work.
+          </p>
+        </section>
+      </main>
+    </div>
     <noscript
       >QCTP requires JavaScript for local storage, timed practice, and voice
       capture.</noscript
