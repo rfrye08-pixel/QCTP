@@ -120,9 +120,9 @@
         "be64429a56d73c6bacc350d8916b03935540209f"
       ],
       "implementation_tree": "54b391d81ce1d4cb4868455186eb4ccb4544c45a",
-      "local_metadata_commit": null,
-      "remote_commit": null,
-      "remote_tree": null,
+      "local_metadata_commit": "ceb2692c02c61b527a2d931c54714b019bc5cfee",
+      "remote_commit": "21a03b936bf797b15a298ca717789dff889508f9",
+      "remote_tree": "c9526571c642e0555b00080527dcb73425e069e1",
       "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
       "delivered": "Canonical authority-keyed source-class identity; phase-level Day 1 and transition provenance; separate State Atlas target and recipe provenance; readable scoped badges; strict writes and imports with recoverable held-row export; parent-bound persistence; lossless legacy enrichment; and preserved user provenance across Day 1, Breath, State Atlas, Campbell, REG, Lab, Codex, Mirror, Paths, Practice, and Studio",
       "verification": "npm run check PASS with 71 files and 413 tests, coverage, preview server 8 of 8, 23-file audio pack, and production build; full Playwright matrix PASS with 32 passes and 16 intentional project/platform skips; dedicated content gate PASS 2 of 2 including visible recoverable holds; provider stability test PASS 5 consecutive focused runs",

@@ -31,8 +31,8 @@
     "pwa_upgrade_rollback_remote_tree": "440bc44788a8dbec85cd4a9cf34223169f8f702c",
     "controlled_content_local_implementation_checkpoint": "be64429a56d73c6bacc350d8916b03935540209f",
     "controlled_content_implementation_tree": "54b391d81ce1d4cb4868455186eb4ccb4544c45a",
-    "state_checkpoint": "0a0f395f00428ffe3459689077321fa61160c1ee",
-    "origin_rev3_at_state_write": "162401e65f839dd5798663231ea7cb86d47c6792"
+    "state_checkpoint": "21a03b936bf797b15a298ca717789dff889508f9",
+    "origin_rev3_at_state_write": "21a03b936bf797b15a298ca717789dff889508f9"
   },
   "starting_baseline": {
     "required_rev2_commit": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
@@ -136,10 +136,10 @@
       "be64429a56d73c6bacc350d8916b03935540209f"
     ],
     "implementation_tree": "54b391d81ce1d4cb4868455186eb4ccb4544c45a",
-    "metadata_commit": null,
-    "remote_commit": null,
-    "remote_tree": null,
-    "origin_publication": "PENDING_REV3_ONLY_EXACT_TREE",
+    "metadata_commit": "ceb2692c02c61b527a2d931c54714b019bc5cfee",
+    "remote_commit": "21a03b936bf797b15a298ca717789dff889508f9",
+    "remote_tree": "c9526571c642e0555b00080527dcb73425e069e1",
+    "origin_publication": "PASS_EXACT_TREE_REV3_ONLY",
     "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
     "local_history_backup_branch": "backup/rev3-source-class-preedit-20260823-002931",
     "local_history_backup_commit": "68ca4a2a370a12fbb977eabdf97bd3159892e5c5",
@@ -251,7 +251,10 @@
       "browser_gate": "32_PASS_16_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS",
       "dedicated_content_gate": "2_OF_2_CHROMIUM_AND_IPHONE_PORTRAIT_PASS",
       "provider_stability_gate": "5_CONSECUTIVE_FOCUSED_RUNS_PASS_WITHOUT_VISIBLE_ONLINE_OFFLINE_FLICKER",
-      "publication_status": "PENDING_REV3_ONLY_EXACT_TREE",
+      "local_metadata_commit": "ceb2692c02c61b527a2d931c54714b019bc5cfee",
+      "remote_commit": "21a03b936bf797b15a298ca717789dff889508f9",
+      "remote_tree": "c9526571c642e0555b00080527dcb73425e069e1",
+      "publication_status": "PASS_EXACT_TREE_REV3_ONLY",
       "deployment_status": "NOT_STAGED_NOT_DEPLOYED_LIVE_PREVIEW_REMAINS_5A884AE9"
     },
     "voice_free_machine": {
