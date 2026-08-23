@@ -2,7 +2,7 @@
   "schema": "qctp-rev3-controlled-feature-backlog-v1",
   "branch": "qctp-platform-rev3-codex",
   "created_at": "2026-08-22T20:42:00-05:00",
-  "updated_at": "2026-08-22T20:58:00-05:00",
+  "updated_at": "2026-08-22T21:02:00-05:00",
   "status": "ACTIVE_ZERO_RELEASE",
   "authority_snapshot": {
     "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -57,7 +57,12 @@
   "checkpoint_history": [
     {
       "checkpoint_id": "QCTP-REV3-CONTROL-001",
-      "commit": "b8fd95801613c4b6a5993612e221780fecb53e32",
+      "commit": "bac3326d7d180b632dba328e8f38f1e2deffe542",
+      "local_commits": [
+        "b8fd95801613c4b6a5993612e221780fecb53e32",
+        "c08e64ae3cfb8c3f2d0db57d1bc5c73537362cbf"
+      ],
+      "tree": "f3e9e85f58a0f7ef1e78d758f8c3b2dadcd96036",
       "result": "PASS",
       "delivered": "Initial complete controlled feature backlog and machine validator",
       "verification": "Backlog validator PASS; format, lint, typecheck, 56 files and 341 tests with coverage, controlled audio verification, and production build PASS",

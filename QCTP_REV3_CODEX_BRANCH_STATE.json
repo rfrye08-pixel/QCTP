@@ -1,7 +1,7 @@
 {
   "schema": "qctp-rev3-codex-branch-state-v3",
   "branch": "qctp-platform-rev3-codex",
-  "updated_at": "2026-08-22T20:58:00-05:00",
+  "updated_at": "2026-08-22T21:02:00-05:00",
   "status": "CONTROLLED_REV3_FEATURE_BACKLOG_CREATED_VALIDATED_FULL_SCOPE_INCREMENTAL_EXECUTION_ACTIVE_ZERO_RELEASE",
   "release_authority": "ZERO_RELEASE",
   "actual_shas": {
@@ -15,9 +15,9 @@
     "ux_evidence_checkpoint": "511860e1bae0d8693c5b220d46a9a17e8f68135c",
     "private_preview_recovery_checkpoint": "712aeace2b981fa677c9be6b762f5903232835a9",
     "controlled_backlog_baseline": "712aeace2b981fa677c9be6b762f5903232835a9",
-    "controlled_backlog_checkpoint": "b8fd95801613c4b6a5993612e221780fecb53e32",
-    "state_checkpoint": "b8fd95801613c4b6a5993612e221780fecb53e32",
-    "origin_rev3_at_state_write": "712aeace2b981fa677c9be6b762f5903232835a9"
+    "controlled_backlog_checkpoint": "bac3326d7d180b632dba328e8f38f1e2deffe542",
+    "state_checkpoint": "bac3326d7d180b632dba328e8f38f1e2deffe542",
+    "origin_rev3_at_state_write": "bac3326d7d180b632dba328e8f38f1e2deffe542"
   },
   "starting_baseline": {
     "required_rev2_commit": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
@@ -49,6 +49,17 @@
     "remote_commit": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
     "remote_parent": "a2093caa714332313fa7196f3dc58a67a2d721d2",
     "fresh_verification_clone": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\work\\QCTP-rev3-pushed",
+    "tree_identity_verification": "PASS_EXACT",
+    "protected_refs_mutated": false
+  },
+  "controlled_backlog_publish": {
+    "local_commits": [
+      "b8fd95801613c4b6a5993612e221780fecb53e32",
+      "c08e64ae3cfb8c3f2d0db57d1bc5c73537362cbf"
+    ],
+    "remote_commit": "bac3326d7d180b632dba328e8f38f1e2deffe542",
+    "remote_parent": "712aeace2b981fa677c9be6b762f5903232835a9",
+    "exact_tree": "f3e9e85f58a0f7ef1e78d758f8c3b2dadcd96036",
     "tree_identity_verification": "PASS_EXACT",
     "protected_refs_mutated": false
   },
