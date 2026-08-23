@@ -14,6 +14,7 @@ import {
   type AcceptedCapture,
 } from "../../voice-capture";
 import { ScreenHeader } from "../components/ScreenHeader";
+import { ContentClassBadge } from "../components/ContentClassBadge";
 import { StatusBadge } from "../components/StatusBadge";
 import { useQctp } from "../qctp-context";
 import "../platform-styles.css";
@@ -397,6 +398,7 @@ export function LabScreen() {
           Define the protocol before the result. Raw outcomes stay distinct from
           interpretation and every save creates an inspectable revision.
         </p>
+        <ContentClassBadge authorityKey="workflow.lab" scope="Lab workflow" />
       </ScreenHeader>
 
       <section

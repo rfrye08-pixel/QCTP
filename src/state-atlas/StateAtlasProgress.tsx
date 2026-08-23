@@ -6,9 +6,17 @@ import {
   recommendedGuidanceTier,
   type CapabilitySnapshot,
 } from "./progression";
-import type { CapabilityLevel, StateId, StateSourceClass } from "./types";
+import type { CapabilityLevel, StateId } from "./types";
+import { ContentClassBadge } from "../app/components/ContentClassBadge";
 
 import "./state-atlas-progress.css";
+
+const relationshipLabels = {
+  qctp: "QCTP-authored recipe",
+  source_informed: "Source-informed recipe",
+  source_specific_target: "Source-specific target",
+  experimental_protocol: "Experimental protocol",
+} as const;
 
 export interface StateAtlasProgressProps {
   capabilities: readonly CapabilitySnapshot[];
@@ -17,13 +25,6 @@ export interface StateAtlasProgressProps {
   onStateSelect?: (stateId: StateId) => void;
   className?: string;
 }
-
-const SOURCE_CLASS_LABELS: Record<StateSourceClass, string> = {
-  qctp_original: "QCTP original",
-  qctp_synthesis: "QCTP synthesis",
-  source_specific: "Source-specific",
-  experimental_protocol: "Experimental protocol",
-};
 
 function levelIndex(level: CapabilityLevel | null): number {
   return level === null ? -1 : CAPABILITY_LEVELS.indexOf(level);
@@ -78,8 +79,28 @@ export function StateAtlasProgress({
               </header>
 
               <p className="qctp-state-source">
-                <span>{SOURCE_CLASS_LABELS[definition.sourceClass]}</span>
+                <ContentClassBadge
+                  authorityKey={definition.recipeContentRef.authorityKey}
+                  scope="Runnable state recipe"
+                />
+                {definition.sourceTargetContentRef ? (
+                  <ContentClassBadge
+                    authorityKey={
+                      definition.sourceTargetContentRef.authorityKey
+                    }
+                    scope="Source-specific target term"
+                  />
+                ) : null}
                 <strong>{definition.sourceLabel}</strong>
+                <small>
+                  {relationshipLabels[definition.sourceRelationship]}
+                </small>
+                {definition.sourceTargetContentRef ? (
+                  <small>
+                    The source-faithful target label identifies the intended
+                    markers; it does not establish attainment.
+                  </small>
+                ) : null}
               </p>
 
               <div

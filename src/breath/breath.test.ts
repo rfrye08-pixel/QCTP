@@ -56,12 +56,16 @@ describe("controlled breath catalog", () => {
     ]);
     for (const method of BREATH_METHODS) {
       expect(method.sourceClass).toBe("qctp_regulation_support");
+      expect(method.contentClass).toMatch(
+        /^(?:SOURCE_ENHANCED|QCTP_ORIGINAL)$/u,
+      );
       expect(method.volumeInstruction.length).toBeGreaterThan(10);
       expect(method.permittedPostures.length).toBeGreaterThan(0);
       expect(method.transitionInstruction.length).toBeGreaterThan(10);
       expect(method.stopConditions).toContain("Dizziness");
       expect(method.stopConditions).toContain("Marked air hunger");
     }
+    expect(getBreathMethod("QCTP-B2").contentClass).toBe("SOURCE_ENHANCED");
   });
 
   it("keeps B1 quiet, no-hold, four-in/six-out and releases counting", () => {
@@ -178,6 +182,12 @@ describe("deterministic Breath Director", () => {
     expect(
       ready({ goal: "acute_reset", activation: 5 }).prelude[0]?.repetitions,
     ).toBe(3);
+    expect(
+      ready({ goal: "acute_reset", activation: 3 }).embeddedContentRefs,
+    ).toContainEqual({
+      authorityKey: "breath.method.physiological-sigh",
+      contentClass: "SOURCE_ENHANCED",
+    });
   });
 
   it("uses balanced five/five as the controlled sleep fallback for air hunger", () => {
@@ -380,11 +390,56 @@ describe("cadence, adaptation, and persistence contracts", () => {
     expect(
       BreathSessionRecordSchema.parse(record).completedDurationSeconds,
     ).toBe(300);
+    const legacySelection: Record<string, unknown> = { ...selection };
+    delete legacySelection.contentClass;
+    delete legacySelection.contentRef;
+    delete legacySelection.embeddedContentRefs;
+    const migrated = BreathSessionRecordSchema.parse({
+      ...record,
+      selection: legacySelection,
+    });
+    expect(migrated.selection.contentRef).toEqual({
+      authorityKey: "breath.method.QCTP-B1",
+      contentClass: "QCTP_ORIGINAL",
+    });
+    expect(migrated.selection.contentClass).toBe("QCTP_ORIGINAL");
     expect(() =>
       BreathSessionRecordSchema.parse({
         ...record,
         stateCapabilityCreditGranted: true,
       }),
     ).toThrow();
+    expect(() =>
+      BreathSessionRecordSchema.parse({
+        ...record,
+        contentRef: {
+          authorityKey: "breath.method.QCTP-B2",
+          contentClass: "SOURCE_ENHANCED",
+        },
+      }),
+    ).toThrow(/CONTROLLED_CONTENT_PARENT_MISMATCH/u);
+    expect(() =>
+      BreathSessionRecordSchema.parse({
+        ...record,
+        selection: {
+          ...selection,
+          contentRef: {
+            authorityKey: "breath.method.QCTP-B2",
+            contentClass: "SOURCE_ENHANCED",
+          },
+          contentClass: "SOURCE_ENHANCED",
+        },
+      }),
+    ).toThrow(/CONTROLLED_CONTENT_PARENT_MISMATCH/u);
+    expect(() =>
+      BreathSessionRecordSchema.parse({
+        ...record,
+        foundationSessionId: "BREATH-01",
+        contentRef: {
+          authorityKey: "breath.foundation.BREATH-01",
+          contentClass: "QCTP_ORIGINAL",
+        },
+      }),
+    ).toThrow(/CONTROLLED_CONTENT_PARENT_MISMATCH/u);
   });
 });

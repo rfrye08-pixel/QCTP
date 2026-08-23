@@ -1,0 +1,134 @@
+{
+  "schema": "qctp-rev3-controlled-content-class-verification-v1",
+  "document_id": "QCTP-REV3-CONTROLLED-CONTENT-CLASS-VERIFICATION-REV0",
+  "evidence_id": "QCTP-REV3-CONTROLLED-CONTENT-001",
+  "created_at": "2026-08-23T01:24:29-05:00",
+  "recorded_at": "2026-08-23T02:06:16-05:00",
+  "branch": "qctp-platform-rev3-codex",
+  "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
+  "release_authority": "ZERO_RELEASE",
+  "protected_refs": {
+    "main": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
+    "qctp_platform_rev2_codex": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
+    "pr_2_mutated": false
+  },
+  "checkpoint": {
+    "starting_commit": "68ca4a2a370a12fbb977eabdf97bd3159892e5c5",
+    "local_implementation_commit": "be64429a56d73c6bacc350d8916b03935540209f",
+    "local_implementation_commits": [
+      "65e337416d80d4c8f9026bbe0554f7e1ba9f84a5",
+      "9f651807f1c918b4b44f4d5be960c939ba155d47",
+      "c4ef486c8319ea47f9265000b69bba5324fd3cbe",
+      "4ae0b19e8592d081f7f7995e970616f04580f00f",
+      "4d9825c611a4dfe37d720bccf84ae36a81e8a796",
+      "d25fffc3148c0a1cebf41c0136828130048f3631",
+      "714454a76ee25b5c8ecc7201bf6b4c8b51562723",
+      "14d5e96af0b5f3bd9e3aa46e97f1dfd095758914",
+      "be64429a56d73c6bacc350d8916b03935540209f"
+    ],
+    "implementation_tree": "54b391d81ce1d4cb4868455186eb4ccb4544c45a",
+    "origin_rev3_before_publication": "162401e65f839dd5798663231ea7cb86d47c6792",
+    "remote_checkpoint": null,
+    "remote_tree": null,
+    "publication_status": "PENDING_REV3_ONLY_EXACT_TREE_PUBLICATION"
+  },
+  "recovery": {
+    "backup_branch": "backup/rev3-source-class-preedit-20260823-002931",
+    "recoverable_bundle": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\backups\\rev3-source-class-preedit-20260823-002931.bundle",
+    "bundle_verification": "PASS_COMPLETE_HISTORY"
+  },
+  "canonical_contract": {
+    "enum": [
+      "SOURCE_FAITHFUL",
+      "SOURCE_ENHANCED",
+      "QCTP_SYNTHESIS",
+      "QCTP_ORIGINAL"
+    ],
+    "authority_ids": [
+      "QCTP-SOURCE-FIDELITY-REV0",
+      "QCTP-STATE-ATLAS-REV0",
+      "QCTP-BREATH-REV0",
+      "QCTP-TC-INTEGRATION-REV0",
+      "QCTP-REG-INTEGRATION-REV0",
+      "QCTP-PRODUCT-ARCH-REV2"
+    ],
+    "legacy_aliases": [
+      "source_faithful_summary",
+      "source_faithful",
+      "source_enhanced",
+      "qctp_synthesis",
+      "qctp_original"
+    ],
+    "unknown_alias_behavior": "VISIBLE_ATOMIC_AUTHORITY_HOLD_NO_SILENT_COERCION",
+    "parent_binding": "REGISTERED_BUT_FOREIGN_CONTENT_REFERENCES_REJECTED"
+  },
+  "delivered": [
+    "Authority-keyed controlled-content registry with exact source-class identity.",
+    "Human-readable, scope-specific badges on released Day 1, Breath, State Atlas, Campbell, REG, Lab, Codex, Mirror, Paths, Practice, and Studio surfaces, with at least 12 px computed iPhone text.",
+    "Day 1 overall synthesis, source-enhanced phases, QCTP-original observation and return, and QCTP synthesis transitions remain separately identified.",
+    "Campbell and Monroe source-faithful State Atlas targets remain separate from QCTP-original runnable recipes and do not claim state attainment.",
+    "Separate canonical content class and source-relationship fields so provenance is not collapsed.",
+    "Campbell source summaries classified SOURCE_FAITHFUL, original QCTP exercises classified QCTP_ORIGINAL, and reserved modules kept as visible authority holds.",
+    "Breath Foundation wrapper identity preserved separately from embedded source-enhanced physiological-sigh and method segments.",
+    "User observations, evidence, and Mirror results remain user provenance and are not reclassified as controlled authored content.",
+    "IndexedDB v5 lazy enrichment and Rev3 export v3 compatibility without eager database rewrite.",
+    "Unknown trusted legacy classes remain listable and JSON/ZIP exportable as explicit holds with the raw value preserved.",
+    "New writes and imports reject unknown classes, held rows, unmapped authorities, class mismatches, and parent-entity mismatches atomically."
+  ],
+  "verification": {
+    "repository_gate": {
+      "command": "npm run check",
+      "result": "PASS",
+      "test_files": 71,
+      "tests": 413,
+      "coverage_percent": {
+        "statements": 87.46,
+        "branches": 79.43,
+        "functions": 92.55,
+        "lines": 88.95
+      },
+      "preview_server_tests": "8_OF_8_PASS",
+      "audio_pack": "23_MP3_13340411_BYTES_VERIFIED",
+      "production_build": "PASS",
+      "build_warning": "EXISTING_MAIN_CHUNK_OVER_500_KB_WARNING_NON_BLOCKING",
+      "main_bundle": "820.96_KB_MINIFIED_231.27_KB_GZIP"
+    },
+    "browser_gate": {
+      "command": "npx playwright test --reporter=dot",
+      "result": "32_PASS_16_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS",
+      "profiles": ["Chromium desktop", "iPhone portrait WebKit"],
+      "companion_note": "Expected 127.0.0.1:8787 policy proxy refusal occurred because the optional local companion was deliberately absent; all acceptance tests passed."
+    },
+    "dedicated_content_gate": "2_OF_2_CHROMIUM_AND_IPHONE_PORTRAIT_PASS",
+    "provider_stability_gate": "5_CONSECUTIVE_FOCUSED_RUNS_PASS_WITHOUT_VISIBLE_ONLINE_OFFLINE_FLICKER",
+    "diff_check": "PASS",
+    "secret_pattern_scan": "PASS_NO_COMMON_PRIVATE_KEY_OR_PROVIDER_TOKEN_PATTERN",
+    "independent_judge": "PASS_NO_REMAINING_BLOCKER_OR_HIGH_PRIORITY_FINDING_AT_BE64429"
+  },
+  "physical_acceptance": {
+    "status": "OPEN",
+    "gate": "Confirm on the physical iPhone that scoped class labels are visible and understandable without dominating the practice flow.",
+    "machine_or_emulator_results_do_not_substitute": true
+  },
+  "migration_status": {
+    "database_version": 5,
+    "export_schema_version": 3,
+    "strategy": "LAZY_LOSSLESS_ENRICHMENT_WITH_RAW_LEGACY_VALUES_AND_EXPLICIT_RECOVERABLE_HOLDS",
+    "raw_database_rewrite": false,
+    "actual_origin_archive_gate": "OPEN"
+  },
+  "deployment": {
+    "staged": false,
+    "deployed": false,
+    "live_private_candidate": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "draft_pr": "https://github.com/rfrye08-pixel/QCTP/pull/4"
+  },
+  "holds": [
+    "Physical iPhone label visibility and comprehension remains open.",
+    "Actual-origin archive import and comparison remains open.",
+    "This checkpoint is not installed on the private iPhone preview.",
+    "Blind physical natural-voice selection remains open.",
+    "No merge or deployment is authorized."
+  ],
+  "next_controlled_action": "Implement the validated generic source-track registry and route guard for QCTP-REV3-F032 while physical voice and iPhone gates remain open."
+}

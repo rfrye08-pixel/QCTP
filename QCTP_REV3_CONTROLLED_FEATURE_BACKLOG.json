@@ -2,7 +2,7 @@
   "schema": "qctp-rev3-controlled-feature-backlog-v1",
   "branch": "qctp-platform-rev3-codex",
   "created_at": "2026-08-22T20:42:00-05:00",
-  "updated_at": "2026-08-23T00:14:00-05:00",
+  "updated_at": "2026-08-23T02:06:16-05:00",
   "status": "ACTIVE_ZERO_RELEASE",
   "authority_snapshot": {
     "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -104,13 +104,37 @@
       "verification": "npm run check PASS with 66 files and 390 tests; npm run test:e2e PASS with 30 passes and 16 intentional project/platform skips; dedicated PWA gate PASS with 2 governing passes and 6 intentional project/platform skips; preview server 8 of 8 PASS; runtime no-mutation self-test PASS",
       "evidence": "QCTP_REV3_PWA_UPGRADE_ROLLBACK_VERIFICATION_REV0_2026-08-23.json",
       "release_authority": "ZERO_RELEASE"
+    },
+    {
+      "checkpoint_id": "QCTP-REV3-CONTROLLED-CONTENT-001",
+      "local_implementation_commit": "be64429a56d73c6bacc350d8916b03935540209f",
+      "local_implementation_commits": [
+        "65e337416d80d4c8f9026bbe0554f7e1ba9f84a5",
+        "9f651807f1c918b4b44f4d5be960c939ba155d47",
+        "c4ef486c8319ea47f9265000b69bba5324fd3cbe",
+        "4ae0b19e8592d081f7f7995e970616f04580f00f",
+        "4d9825c611a4dfe37d720bccf84ae36a81e8a796",
+        "d25fffc3148c0a1cebf41c0136828130048f3631",
+        "714454a76ee25b5c8ecc7201bf6b4c8b51562723",
+        "14d5e96af0b5f3bd9e3aa46e97f1dfd095758914",
+        "be64429a56d73c6bacc350d8916b03935540209f"
+      ],
+      "implementation_tree": "54b391d81ce1d4cb4868455186eb4ccb4544c45a",
+      "local_metadata_commit": null,
+      "remote_commit": null,
+      "remote_tree": null,
+      "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
+      "delivered": "Canonical authority-keyed source-class identity; phase-level Day 1 and transition provenance; separate State Atlas target and recipe provenance; readable scoped badges; strict writes and imports with recoverable held-row export; parent-bound persistence; lossless legacy enrichment; and preserved user provenance across Day 1, Breath, State Atlas, Campbell, REG, Lab, Codex, Mirror, Paths, Practice, and Studio",
+      "verification": "npm run check PASS with 71 files and 413 tests, coverage, preview server 8 of 8, 23-file audio pack, and production build; full Playwright matrix PASS with 32 passes and 16 intentional project/platform skips; dedicated content gate PASS 2 of 2 including visible recoverable holds; provider stability test PASS 5 consecutive focused runs",
+      "evidence": "QCTP_REV3_CONTROLLED_CONTENT_CLASS_VERIFICATION_REV0_2026-08-23.json",
+      "release_authority": "ZERO_RELEASE"
     }
   ],
   "summary": {
     "feature_count": 61,
     "EXISTING": 2,
-    "NEEDS_HARDENING": 45,
-    "NEW": 9,
+    "NEEDS_HARDENING": 46,
+    "NEW": 8,
     "BLOCKED": 3,
     "DEFERRED": 2
   },
@@ -1182,7 +1206,7 @@
         "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
         "Rev3 handoff P4/P6"
       ],
-      "status": "NEW",
+      "status": "NEEDS_HARDENING",
       "dependencies": ["Shared content schema", "Source registry"],
       "implementation_package": "P4/P6 Source Label Normalization",
       "automated_acceptance_criteria": [
@@ -1195,12 +1219,26 @@
       ],
       "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
       "evidence_produced": [
-        "Partial lowercase contentClass values in src/state-atlas and src/source-tracks",
-        "Source labels in current panels"
+        "src/controlled-content/index.ts",
+        "src/controlled-content/index.test.ts",
+        "src/app/components/ContentClassBadge.tsx",
+        "src/app/components/ContentClassBadge.test.tsx",
+        "src/app/components/UserRecordStructuredFields.tsx",
+        "src/app/components/VoiceFreePhasePlan.tsx",
+        "src/domain/schemas.ts",
+        "src/breath/types.ts",
+        "src/state-atlas/StateAtlasProgress.tsx",
+        "src/state-atlas/types.ts",
+        "src/source-tracks/catalog.ts",
+        "src/data/controlled-content-persistence.test.ts",
+        "src/data/repository.test.ts",
+        "src/export-import/index.test.ts",
+        "tests/e2e/bootstrap-navigation.spec.ts",
+        "QCTP_REV3_CONTROLLED_CONTENT_CLASS_VERIFICATION_REV0_2026-08-23.json"
       ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Introduce the canonical schema and additive migration, then apply badges to released surfaces."
+        "next_executable_step": "Run the scoped-label physical iPhone gate and actual-origin archive comparison when Ryan authorizes installing this candidate; meanwhile preserve the canonical contract in every independently implemented source package."
       }
     },
     {
@@ -1299,11 +1337,12 @@
       ],
       "release_authority": "INFRASTRUCTURE_IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; content release remains per-source authority.",
       "evidence_produced": [
-        "src/source-tracks/catalog.ts CONTROLLED_SOURCE_ARCHITECTURE"
+        "src/source-tracks/catalog.ts CONTROLLED_SOURCE_ARCHITECTURE",
+        "src/controlled-content/index.ts canonical identity registry (partial lifecycle coverage)"
       ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Replace the hardcoded status list with a validated registry and route guard."
+        "next_executable_step": "Extend the canonical identity registry with lifecycle, prerequisite, safety, and evidence-gate metadata, then require the validated registry from every source-track route guard."
       }
     },
     {

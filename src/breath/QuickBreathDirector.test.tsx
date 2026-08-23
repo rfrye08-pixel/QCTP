@@ -137,4 +137,32 @@ describe("QuickBreathDirector", () => {
     expect(screen.getByText(/No nasal-only requirement/i)).toBeVisible();
     expect(screen.getByText(/Do not substitute QCTP-B1/i)).toBeVisible();
   });
+
+  it("shows source-enhanced provenance for the physiological-sigh prelude", () => {
+    render(
+      <Harness initial={preferences({ goal: "acute_reset", activation: 3 })} />,
+    );
+
+    const selectedProtocol = screen.getByLabelText(
+      /Selected protocol\. Content class: QCTP_ORIGINAL/u,
+    );
+    expect(selectedProtocol).toHaveTextContent(
+      "Selected protocol: QCTP original (QCTP_ORIGINAL)",
+    );
+    expect(selectedProtocol).toHaveAttribute(
+      "data-content-authority",
+      "breath.method.QCTP-B1",
+    );
+    const prelude = screen.getByLabelText(
+      /Prelude\. Content class: SOURCE_ENHANCED/u,
+    );
+    expect(prelude).toHaveTextContent(
+      "Prelude: Source enhanced (SOURCE_ENHANCED)",
+    );
+    expect(prelude).toHaveAttribute(
+      "data-content-authority",
+      "breath.method.physiological-sigh",
+    );
+    expect(screen.getByText(/Prelude · 2 gentle sigh/i)).toBeVisible();
+  });
 });

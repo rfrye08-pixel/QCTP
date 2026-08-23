@@ -10,7 +10,7 @@ import {
   type VoiceRecording,
 } from "../domain";
 
-import { deleteQctpDatabase } from "./db";
+import { deleteQctpDatabase, openQctpDatabase } from "./db";
 import { RegCompletionError, createQctpRepository } from "./repository";
 import type { QctpRepository } from "./repository";
 
@@ -226,6 +226,21 @@ describe("QctpRepository", () => {
     expect(
       await repository.findMigrationByFingerprint(ledger.sourceFingerprint),
     ).toEqual(ledger);
+  });
+
+  it("defaults the canonical content reference when reading a legacy REG session", async () => {
+    const legacySession = createReg01Session("legacy-reg", now);
+    Reflect.deleteProperty(legacySession, "contentRef");
+    const rawDatabase = await openQctpDatabase({ name: databaseName });
+    await rawDatabase.put("regSessions", legacySession);
+    rawDatabase.close();
+
+    expect(await repository.getRegSession(legacySession.id)).toMatchObject({
+      contentRef: {
+        authorityKey: "grant.exercise.REG-01-A",
+        contentClass: "QCTP_ORIGINAL",
+      },
+    });
   });
 
   it("rejects missing parents and mismatched binary metadata", async () => {
@@ -536,6 +551,19 @@ describe("QctpRepository", () => {
     expect(result.studioRecord.interpretation?.text).toBe(
       "Precision changes perception.",
     );
+    expect(result.session.contentRef).toEqual({
+      authorityKey: "grant.exercise.REG-01-A",
+      contentClass: "QCTP_ORIGINAL",
+    });
+    for (const record of [
+      result.studioRecord,
+      result.codexRecord,
+      result.mirrorRecord,
+    ]) {
+      expect(record.contentRef).toEqual(result.session.contentRef);
+      expect(record.fields).not.toHaveProperty("contentClass");
+      expect(record.observation?.provenance.actor).toBe("user");
+    }
   });
 
   it("supports selective and complete voice-layer deletion", async () => {

@@ -11,6 +11,8 @@ import {
   PathStateSchema,
   PracticeSessionSchema,
   QctpExportDataSchema,
+  QctpImportDataSchema,
+  RecoverableCodexRecordSchema,
   ReminderPreferencesSchema,
   RegSessionSchema,
   RevisionSchema,
@@ -51,6 +53,7 @@ import {
   type VoiceRecording,
   type WorkbookState,
 } from "../domain";
+import { contentRefFor } from "../controlled-content";
 import {
   BreathSessionRecordSchema,
   createDefaultBreathProfile,
@@ -425,13 +428,18 @@ export class QctpRepository {
   }
 
   async getRecord(id: string): Promise<CodexRecord | undefined> {
-    return this.database.get("records", id);
+    const value = await this.database.get("records", id);
+    return value === undefined
+      ? undefined
+      : RecoverableCodexRecordSchema.parse(value);
   }
 
   async listRecords(
     options: SearchRecordsOptions = {},
   ): Promise<CodexRecord[]> {
-    const records = await this.database.getAll("records");
+    const records = (await this.database.getAll("records")).map((record) =>
+      RecoverableCodexRecordSchema.parse(record),
+    );
     const tags = new Set(options.tags?.map(normalizeSearchText));
     const kinds = new Set(options.kinds);
     return records
@@ -1653,7 +1661,8 @@ export class QctpRepository {
   }
 
   async getRegSession(id: string): Promise<RegSession | undefined> {
-    return this.database.get("regSessions", id);
+    const value = await this.database.get("regSessions", id);
+    return value === undefined ? undefined : RegSessionSchema.parse(value);
   }
 
   async savePracticeSession(value: PracticeSession): Promise<PracticeSession> {
@@ -2117,6 +2126,7 @@ export class QctpRepository {
       revisionIds: [],
       pathId: "reg-path",
       sessionId: session.id,
+      contentRef: contentRefFor("grant.exercise.REG-01-A"),
       deletedAt: null,
     };
     const studioRecord = CodexRecordSchema.parse({
@@ -2129,6 +2139,7 @@ export class QctpRepository {
       fields: {
         surface: "studio",
         moduleId: session.moduleId,
+        controlledContentAuthorityKey: "grant.exercise.REG-01-A",
         precept: session.precept,
       },
     });
@@ -2141,6 +2152,7 @@ export class QctpRepository {
       interpretation: null,
       fields: {
         surface: "codex",
+        controlledContentAuthorityKey: "grant.exercise.REG-01-A",
         prompt:
           "What did the act of constructing reveal that looking at a finished image would not have revealed?",
       },
@@ -2154,6 +2166,7 @@ export class QctpRepository {
       interpretation: session.interpretation,
       fields: {
         surface: "mirror",
+        controlledContentAuthorityKey: "grant.exercise.REG-01-A",
         integrationAction: session.integrationAction,
         preceptReview: session.precept.review,
         evidenceRecordIds: [resultingIds.studio, resultingIds.codex],
@@ -2481,7 +2494,7 @@ export class QctpRepository {
     value: QctpExportData,
     options: ImportSnapshotOptions = {},
   ): Promise<void> {
-    const snapshot = QctpExportDataSchema.parse(value);
+    const snapshot = QctpImportDataSchema.parse(value);
     const mode = options.mode ?? "merge";
     const importedStateSessions = new Map(
       snapshot.stateSessions.map((session) => [session.id, session]),

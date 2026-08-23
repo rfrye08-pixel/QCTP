@@ -1,14 +1,21 @@
+import { contentRefFor } from "../controlled-content";
 import {
   StateDefinitionSchema,
   type StateDefinition,
   type StateId,
 } from "./types";
 
-const stateDefinitions: StateDefinition[] = [
+type StateDefinitionSource = Omit<
+  StateDefinition,
+  "recipeContentRef" | "sourceTargetContentRef"
+>;
+
+const stateDefinitions: StateDefinitionSource[] = [
   {
     id: "Q0",
     title: "Ordinary Baseline",
-    sourceClass: "qctp_original",
+    contentClass: "QCTP_ORIGINAL",
+    sourceRelationship: "qctp",
     sourceLabel: "QCTP baseline reference",
     purpose:
       "Record the ordinary starting condition without claiming a trained state.",
@@ -29,7 +36,8 @@ const stateDefinitions: StateDefinition[] = [
   {
     id: "Q1",
     title: "Regulated Body and Breath",
-    sourceClass: "qctp_original",
+    contentClass: "QCTP_ORIGINAL",
+    sourceRelationship: "qctp",
     sourceLabel: "QCTP original foundation state",
     purpose:
       "Reduce unnecessary muscular and respiratory effort while preserving alertness.",
@@ -67,7 +75,8 @@ const stateDefinitions: StateDefinition[] = [
   {
     id: "Q2",
     title: "Coherent Affective State",
-    sourceClass: "qctp_synthesis",
+    contentClass: "QCTP_SYNTHESIS",
+    sourceRelationship: "source_informed",
     sourceLabel: "QCTP synthesis informed by heart-focused coherence methods",
     purpose:
       "Generate a clear constructive body-state and retain it after releasing the memory story.",
@@ -109,7 +118,8 @@ const stateDefinitions: StateDefinition[] = [
   {
     id: "Q3",
     title: "Focused Attention",
-    sourceClass: "qctp_original",
+    contentClass: "QCTP_ORIGINAL",
+    sourceRelationship: "qctp",
     sourceLabel: "QCTP attentional foundation",
     purpose:
       "Hold attention on one selected object, recognize capture, and return efficiently.",
@@ -152,7 +162,8 @@ const stateDefinitions: StateDefinition[] = [
   {
     id: "Q4",
     title: "Open Monitoring and Spatial Awareness",
-    sourceClass: "qctp_original",
+    contentClass: "QCTP_SYNTHESIS",
+    sourceRelationship: "source_informed",
     sourceLabel: "QCTP open-monitoring and spatial-attention practice",
     purpose:
       "Include body, room, sound, thought, and sensation in one broad field without following one event.",
@@ -184,8 +195,9 @@ const stateDefinitions: StateDefinition[] = [
   {
     id: "Q5",
     title: "Gap Awareness",
-    sourceClass: "qctp_original",
-    sourceLabel: "QCTP original Gap practice",
+    contentClass: "QCTP_SYNTHESIS",
+    sourceRelationship: "source_informed",
+    sourceLabel: "QCTP synthesis Gap practice",
     purpose:
       "Recognize content-light intervals while awareness and memory remain continuous.",
     prerequisiteGroups: [[{ stateId: "Q4", minimumLevel: "Stabilized" }]],
@@ -216,7 +228,8 @@ const stateDefinitions: StateDefinition[] = [
   {
     id: "TC-PC",
     title: "Point Consciousness",
-    sourceClass: "source_specific",
+    contentClass: "QCTP_ORIGINAL",
+    sourceRelationship: "source_specific_target",
     sourceLabel: "Campbell source-specific target with original QCTP recipe",
     purpose:
       "Reduce physical salience and narration while retaining alert awareness and one stable intent.",
@@ -251,7 +264,8 @@ const stateDefinitions: StateDefinition[] = [
   {
     id: "M-F10",
     title: "Focus 10 Candidate State",
-    sourceClass: "source_specific",
+    contentClass: "QCTP_ORIGINAL",
+    sourceRelationship: "source_specific_target",
     sourceLabel: "Monroe source-specific target with original QCTP induction",
     purpose:
       "Approach mind-awake/body-asleep markers without treating ordinary relaxation as proof.",
@@ -291,7 +305,8 @@ const stateDefinitions: StateDefinition[] = [
   {
     id: "M-F12",
     title: "Focus 12 Candidate State",
-    sourceClass: "source_specific",
+    contentClass: "QCTP_ORIGINAL",
+    sourceRelationship: "source_specific_target",
     sourceLabel:
       "Monroe source-specific target with original QCTP expansion practice",
     purpose:
@@ -331,7 +346,8 @@ const stateDefinitions: StateDefinition[] = [
   {
     id: "QR",
     title: "Remote-Information Receiver State",
-    sourceClass: "experimental_protocol",
+    contentClass: "QCTP_SYNTHESIS",
+    sourceRelationship: "experimental_protocol",
     sourceLabel: "QCTP experimental synthesis",
     purpose:
       "Reduce analysis, preserve first-pass descriptors, and evaluate blinded correspondence after capture.",
@@ -373,7 +389,8 @@ const stateDefinitions: StateDefinition[] = [
   {
     id: "QO",
     title: "OBE Threshold and Separation Practice",
-    sourceClass: "qctp_synthesis",
+    contentClass: "QCTP_ORIGINAL",
+    sourceRelationship: "source_informed",
     sourceLabel: "QCTP original practice informed by source traditions",
     purpose:
       "Test nonphysical-movement imagery only after stable Focus 10 while preserving safety and recall.",
@@ -406,8 +423,10 @@ const stateDefinitions: StateDefinition[] = [
   {
     id: "QI",
     title: "Stable Imaginality Environment",
-    sourceClass: "qctp_synthesis",
-    sourceLabel: "QCTP Studio/Lab synthesis",
+    contentClass: "QCTP_ORIGINAL",
+    sourceRelationship: "source_informed",
+    sourceLabel:
+      "QCTP original Studio/Lab practice informed by source concepts",
     purpose:
       "Build a repeatable inner environment and separate deliberate construction from spontaneous candidates.",
     prerequisiteGroups: [
@@ -445,8 +464,16 @@ const stateDefinitions: StateDefinition[] = [
   },
 ];
 
-export const STATE_ATLAS =
-  StateDefinitionSchema.array().parse(stateDefinitions);
+export const STATE_ATLAS = StateDefinitionSchema.array().parse(
+  stateDefinitions.map((definition) => ({
+    ...definition,
+    recipeContentRef: contentRefFor(`state.recipe.${definition.id}`),
+    sourceTargetContentRef:
+      definition.sourceRelationship === "source_specific_target"
+        ? contentRefFor(`state.target.${definition.id}`)
+        : null,
+  })),
+);
 
 const statesById = new Map(
   STATE_ATLAS.map((definition) => [definition.id, definition] as const),

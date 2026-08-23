@@ -7,7 +7,12 @@ import {
   createInitialFoundationProgress,
   foundationCompletionGate,
 } from "./foundation-protocol";
-import type { BreathCalibrationTrial, BreathSessionRecord } from "./types";
+import {
+  BreathFoundationProtocolSegmentSchema,
+  ReadyBreathSelectionSchema,
+  type BreathCalibrationTrial,
+  type BreathSessionRecord,
+} from "./types";
 
 const now = "2026-08-22T12:00:00.000Z";
 
@@ -41,6 +46,17 @@ function recordForGate(): BreathSessionRecord {
     comfortableMethodIds: [],
   });
   if (selection.status !== "ready") throw new Error("fixture blocked");
+  const foundationSelection = ReadyBreathSelectionSchema.parse({
+    ...selection,
+    protocolId: protocol.protocolId,
+    contentClass: "QCTP_ORIGINAL",
+    contentRef: {
+      authorityKey: "breath.foundation.BREATH-02",
+      contentClass: "QCTP_ORIGINAL",
+    },
+    embeddedContentRefs: protocol.segments.map((segment) => segment.contentRef),
+    methodId: null,
+  });
   return {
     schemaVersion: 1,
     id: "breath-foundation-gate",
@@ -55,7 +71,7 @@ function recordForGate(): BreathSessionRecord {
       currentSegmentId: protocol.segments[0]!.segmentId,
       savedAt: now,
     },
-    selection,
+    selection: foundationSelection,
     startedAt: now,
     endedAt: now,
     plannedDurationSeconds: protocol.totalActiveDurationSeconds,
@@ -95,6 +111,30 @@ describe("Breath Foundations controlled protocol integrity", () => {
     expect(
       comparison.segments.map((segment) => segment.durationSeconds),
     ).toEqual([180, 180]);
+    expect(
+      comparison.segments.map((segment) => segment.contentRef.authorityKey),
+    ).toEqual(["breath.method.QCTP-B3", "breath.method.QCTP-B1"]);
+
+    const physiologicalSigh = createFoundationProtocol("BREATH-03");
+    expect(physiologicalSigh.segments[0]?.contentRef).toEqual({
+      authorityKey: "breath.method.physiological-sigh",
+      contentClass: "SOURCE_ENHANCED",
+    });
+
+    const cyclicSighing = createFoundationProtocol("BREATH-04");
+    expect(cyclicSighing.segments[0]?.contentRef).toEqual({
+      authorityKey: "breath.method.QCTP-B2",
+      contentClass: "SOURCE_ENHANCED",
+    });
+    expect(() =>
+      BreathFoundationProtocolSegmentSchema.parse({
+        ...cyclicSighing.segments[0],
+        contentRef: {
+          authorityKey: "breath.method.QCTP-B1",
+          contentClass: "QCTP_ORIGINAL",
+        },
+      }),
+    ).toThrow(/CONTROLLED_CONTENT_PARENT_MISMATCH/u);
 
     const combined = createFoundationProtocol("BREATH-06");
     expect(

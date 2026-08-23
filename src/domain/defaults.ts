@@ -1,3 +1,4 @@
+import { contentRefFor } from "../controlled-content";
 import type {
   AppSettings,
   EvidenceLayer,
@@ -151,6 +152,7 @@ export function createReg01Session(
     schemaVersion: 1,
     id,
     moduleId: "REG-01-A",
+    contentRef: contentRefFor("grant.exercise.REG-01-A"),
     status: "not_started",
     startedAt: null,
     completedAt: null,

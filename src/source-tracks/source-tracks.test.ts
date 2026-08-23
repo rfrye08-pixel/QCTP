@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { getControlledContent } from "../controlled-content";
 import {
   CONTROLLED_SOURCE_ARCHITECTURE,
   getCampbellExercise,
@@ -17,7 +18,7 @@ describe("controlled source-track catalogs", () => {
     );
     expect(
       THOMAS_CAMPBELL_MODULES.every((module) =>
-        module.sourceLabel.toLowerCase().includes("qctp"),
+        module.sourceLabel.toLowerCase().includes("campbell"),
       ),
     ).toBe(true);
   });
@@ -37,7 +38,7 @@ describe("controlled source-track catalogs", () => {
           .slice(0, firstInterpretation)
           .every((field) => field.layer === "raw"),
       ).toBe(true);
-      expect(exercise.contentClass).toBe("qctp_original");
+      expect(exercise.contentClass).toBe("QCTP_ORIGINAL");
     }
   });
 
@@ -58,5 +59,20 @@ describe("controlled source-track catalogs", () => {
     expect(CONTROLLED_SOURCE_ARCHITECTURE.map((source) => source.id)).toContain(
       "psionics",
     );
+    for (const module of THOMAS_CAMPBELL_MODULES.filter(
+      (candidate) => candidate.status === "reserved",
+    )) {
+      expect(module.contentClass).toBeNull();
+      expect(getControlledContent(`campbell.module.${module.id}`)).toBeNull();
+      expect(module.sourceLabel).toMatch(/content held/i);
+    }
+    for (const module of THOMAS_CAMPBELL_MODULES.filter(
+      (candidate) => candidate.status !== "reserved",
+    )) {
+      expect(module.contentClass).toBe("SOURCE_FAITHFUL");
+      expect(
+        getControlledContent(`campbell.module.${module.id}`)?.contentClass,
+      ).toBe("SOURCE_FAITHFUL");
+    }
   });
 });

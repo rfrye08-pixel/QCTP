@@ -1,6 +1,15 @@
 import { z } from "zod";
 
 import {
+  ControlledContentHoldSchema,
+  ControlledContentRefSchema,
+  contentRefFor,
+  controlledContentRefSchemaFor,
+  migrateTrustedLegacyContentRef,
+  normalizeLegacyControlledContentClass,
+  trustedLegacyAuthorityKey,
+} from "../controlled-content";
+import {
   BreathProfileSchema,
   BreathSessionRecordSchema,
 } from "../breath/types";
@@ -134,25 +143,103 @@ export const RecordKindSchema = z.enum([
   "integration",
 ]);
 
-export const CodexRecordSchema = z.object({
-  schemaVersion: z.literal(CURRENT_DOMAIN_VERSION),
-  id: EntityIdSchema,
-  kind: RecordKindSchema,
-  title: z.string().trim().min(1),
-  createdAt: IsoDateTimeSchema,
-  updatedAt: IsoDateTimeSchema,
-  observation: EvidenceLayerSchema.nullable().default(null),
-  interpretation: InterpretationLayerSchema.nullable().default(null),
-  tags: z.array(TagSchema).default([]),
-  backlinks: z.array(BacklinkSchema).default([]),
-  sourceLinks: z.array(SourceLinkSchema).default([]),
-  attachmentIds: z.array(EntityIdSchema).default([]),
-  revisionIds: z.array(EntityIdSchema).default([]),
-  pathId: EntityIdSchema.nullable().default(null),
-  sessionId: EntityIdSchema.nullable().default(null),
-  fields: z.record(z.string(), z.unknown()).default({}),
-  deletedAt: IsoDateTimeSchema.nullable().default(null),
-});
+const CodexRecordObjectSchema = z
+  .object({
+    schemaVersion: z.literal(CURRENT_DOMAIN_VERSION),
+    id: EntityIdSchema,
+    kind: RecordKindSchema,
+    title: z.string().trim().min(1),
+    createdAt: IsoDateTimeSchema,
+    updatedAt: IsoDateTimeSchema,
+    observation: EvidenceLayerSchema.nullable().default(null),
+    interpretation: InterpretationLayerSchema.nullable().default(null),
+    tags: z.array(TagSchema).default([]),
+    backlinks: z.array(BacklinkSchema).default([]),
+    sourceLinks: z.array(SourceLinkSchema).default([]),
+    attachmentIds: z.array(EntityIdSchema).default([]),
+    revisionIds: z.array(EntityIdSchema).default([]),
+    pathId: EntityIdSchema.nullable().default(null),
+    sessionId: EntityIdSchema.nullable().default(null),
+    contentRef: ControlledContentRefSchema.optional(),
+    controlledContentHold: ControlledContentHoldSchema.optional(),
+    fields: z.record(z.string(), z.unknown()).default({}),
+    deletedAt: IsoDateTimeSchema.nullable().default(null),
+  })
+  .superRefine((record, context) => {
+    if (record.controlledContentHold) {
+      const expectedAuthorityKey = trustedLegacyAuthorityKey(record.fields);
+      if (expectedAuthorityKey !== record.controlledContentHold.authorityKey) {
+        context.addIssue({
+          code: "custom",
+          path: ["controlledContentHold", "authorityKey"],
+          message: "CONTROLLED_CONTENT_HOLD_AUTHORITY_MISMATCH",
+        });
+      }
+      if (
+        record.fields.contentClass !== record.controlledContentHold.rawValue
+      ) {
+        context.addIssue({
+          code: "custom",
+          path: ["controlledContentHold", "rawValue"],
+          message: "CONTROLLED_CONTENT_HOLD_RAW_VALUE_MISMATCH",
+        });
+      }
+      if (
+        record.contentRef &&
+        record.contentRef.authorityKey !==
+          record.controlledContentHold.authorityKey
+      ) {
+        context.addIssue({
+          code: "custom",
+          path: ["contentRef", "authorityKey"],
+          message: "CONTROLLED_CONTENT_HOLD_REFERENCE_MISMATCH",
+        });
+      }
+      return;
+    }
+    const expectedAuthorityKey = record.fields.controlledContentAuthorityKey;
+    if (typeof expectedAuthorityKey !== "string") return;
+    if (record.contentRef?.authorityKey !== expectedAuthorityKey) {
+      context.addIssue({
+        code: "custom",
+        path: ["contentRef", "authorityKey"],
+        message: `CONTROLLED_CONTENT_PARENT_MISMATCH: expected ${expectedAuthorityKey}`,
+      });
+      return;
+    }
+    const rawClass = record.fields.contentClass;
+    if (typeof rawClass !== "string") return;
+    const normalized = normalizeLegacyControlledContentClass(rawClass);
+    if (!normalized) {
+      context.addIssue({
+        code: "custom",
+        path: ["fields", "contentClass"],
+        message: `UNMAPPED_LEGACY_CONTENT_CLASS: ${rawClass}`,
+      });
+    } else if (normalized !== record.contentRef.contentClass) {
+      context.addIssue({
+        code: "custom",
+        path: ["fields", "contentClass"],
+        message: `CONTROLLED_CONTENT_CLASS_MISMATCH: expected ${record.contentRef.contentClass}`,
+      });
+    }
+  });
+
+export const RecoverableCodexRecordSchema = z.preprocess(
+  migrateTrustedLegacyContentRef,
+  CodexRecordObjectSchema,
+);
+
+export const CodexRecordSchema = RecoverableCodexRecordSchema.superRefine(
+  (record, context) => {
+    if (!record.controlledContentHold) return;
+    context.addIssue({
+      code: "custom",
+      path: ["controlledContentHold"],
+      message: record.controlledContentHold.message,
+    });
+  },
+);
 
 export const DayCompletionSchema = z.object({
   morning: z.boolean().default(false),
@@ -266,6 +353,9 @@ export const PracticeSessionSchema = z.object({
   narrationUsed: z.literal(false),
   narratedContentAcceptance: z.literal("NOT_APPLICABLE"),
   stateAttainment: z.literal("NOT_ASSESSED"),
+  contentRef: controlledContentRefSchemaFor("foundation.day1.practice").default(
+    contentRefFor("foundation.day1.practice"),
+  ),
   debrief: PracticeDebriefSchema.nullable().default(null),
   createdAt: IsoDateTimeSchema,
 });
@@ -503,6 +593,9 @@ export const RegSessionSchema = z.object({
   schemaVersion: z.literal(CURRENT_DOMAIN_VERSION),
   id: EntityIdSchema,
   moduleId: z.literal("REG-01-A"),
+  contentRef: controlledContentRefSchemaFor("grant.exercise.REG-01-A").default(
+    contentRefFor("grant.exercise.REG-01-A"),
+  ),
   status: z.enum(["not_started", "in_progress", "complete"]),
   startedAt: IsoDateTimeSchema.nullable().default(null),
   completedAt: IsoDateTimeSchema.nullable().default(null),
@@ -729,7 +822,7 @@ export const QctpExportDataSchema = z.object({
   foundation: FoundationStateSchema.nullable(),
   workbook: WorkbookStateSchema.nullable(),
   settings: AppSettingsSchema.nullable(),
-  records: z.array(CodexRecordSchema),
+  records: z.array(RecoverableCodexRecordSchema),
   recordings: z.array(VoiceRecordingSchema),
   transcripts: z.array(TranscriptSchema),
   derivedNotes: z.array(DerivedNoteSchema),
@@ -749,13 +842,17 @@ export const QctpExportDataSchema = z.object({
   mirrorInsightFeedback: z.array(MirrorInsightFeedbackSchema).default([]),
 });
 
-const QctpLegacyExportV2Schema = QctpExportDataSchema.extend({
+export const QctpImportDataSchema = QctpExportDataSchema.extend({
+  records: z.array(CodexRecordSchema),
+});
+
+const QctpLegacyExportV2Schema = QctpImportDataSchema.extend({
   schema: z.literal("qctp-export-v2"),
   schemaVersion: z.literal(2),
 });
 
 export const QctpExportImportSchema = z.union([
-  QctpExportDataSchema,
+  QctpImportDataSchema,
   QctpLegacyExportV2Schema.transform((legacy) => ({
     ...legacy,
     schema: "qctp-export-v3" as const,
@@ -790,7 +887,7 @@ export type Backlink = z.infer<typeof BacklinkSchema>;
 export type Revision = z.infer<typeof RevisionSchema>;
 export type Attachment = z.infer<typeof AttachmentSchema>;
 export type RecordKind = z.infer<typeof RecordKindSchema>;
-export type CodexRecord = z.infer<typeof CodexRecordSchema>;
+export type CodexRecord = z.infer<typeof RecoverableCodexRecordSchema>;
 export type DayCompletion = z.infer<typeof DayCompletionSchema>;
 export type FoundationState = z.infer<typeof FoundationStateSchema>;
 export type PracticeCompletionMode = z.infer<

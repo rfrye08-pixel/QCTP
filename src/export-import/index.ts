@@ -1,4 +1,5 @@
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
+import { z } from "zod";
 
 import {
   ArchiveManifestSchema,
@@ -13,6 +14,7 @@ import type {
   ImportSnapshotOptions,
   QctpRepository,
 } from "../data";
+import { ControlledContentHoldError } from "../controlled-content";
 import {
   StateCapabilityIntegrityError,
   assertValidStateCapabilityLedger,
@@ -335,6 +337,24 @@ export async function parseQctpJson(input: unknown): Promise<QctpExportData> {
     return parsed;
   } catch (error) {
     if (error instanceof QctpImportError) throw error;
+    if (error instanceof ControlledContentHoldError) {
+      throw new QctpImportError(error.message, { cause: error });
+    }
+    if (error instanceof z.ZodError) {
+      const controlledIssue = error.issues.find((issue) =>
+        /^(?:UNREGISTERED_CONTROLLED_CONTENT|UNMAPPED_LEGACY_CONTENT_CLASS|CONTROLLED_CONTENT_CLASS_MISMATCH|CONTROLLED_CONTENT_PARENT_MISMATCH):/u.test(
+          issue.message,
+        ),
+      );
+      if (controlledIssue) {
+        const message = controlledIssue.message.endsWith("No data changed.")
+          ? controlledIssue.message
+          : `${controlledIssue.message}. No data changed.`;
+        throw new QctpImportError(message, {
+          cause: error,
+        });
+      }
+    }
     throw new QctpImportError("The file is not valid QCTP Rev2/Rev3 JSON.", {
       cause: error,
     });

@@ -4,7 +4,9 @@ import {
   type VoiceFreeDay1SessionController,
   type VoiceFreeSupportMode,
 } from "../../practice";
+import { getControlledContent } from "../../controlled-content";
 import { ScreenHeader } from "../components/ScreenHeader";
+import { ContentClassBadge } from "../components/ContentClassBadge";
 import { StatusBadge } from "../components/StatusBadge";
 import { VoiceFreePhasePlan } from "../components/VoiceFreePhasePlan";
 
@@ -33,6 +35,10 @@ export function VoiceFreeDay1Screen({
           guided by continuous nonverbal support. The rejected A03R narration is
           not used.
         </p>
+        <ContentClassBadge
+          authorityKey="foundation.day1.practice"
+          scope="Day 1 practice"
+        />
       </ScreenHeader>
 
       <section className="panel-card voice-free-readiness">
@@ -67,6 +73,18 @@ export function VoiceFreeDay1Screen({
 
         <div className="voice-free-stage" aria-live="polite">
           <p className="phase-source">{session.phase.sourceLabel}</p>
+          <div aria-label={`${session.phase.title} controlled provenance`}>
+            {session.phase.contentRefs.map((contentRef) => (
+              <ContentClassBadge
+                key={contentRef.authorityKey}
+                authorityKey={contentRef.authorityKey}
+                scope={
+                  getControlledContent(contentRef.authorityKey)?.title ??
+                  session.phase.title
+                }
+              />
+            ))}
+          </div>
           <strong className="voice-free-timer" data-testid="practice-timer">
             {formatPracticeSeconds(session.remainingSeconds)}
           </strong>

@@ -7,6 +7,7 @@ import {
   type CSSProperties,
 } from "react";
 
+import { ContentClassBadge } from "../app/components/ContentClassBadge";
 import { selectBreathProtocol } from "./director";
 import type {
   BreathCadence,
@@ -353,6 +354,10 @@ function SelectionDetails({ selection }: { selection: BreathSelection }) {
     <section className="qctp-breath-selection" aria-live="polite">
       <p className="qctp-breath-selection-label">Deterministic selection</p>
       <h3>{selection.title}</h3>
+      <ContentClassBadge
+        authorityKey={selection.contentRef.authorityKey}
+        scope="Selected protocol"
+      />
       <p>{selection.why}</p>
       <dl className="qctp-breath-details">
         <div>
@@ -380,10 +385,16 @@ function SelectionDetails({ selection }: { selection: BreathSelection }) {
         </div>
       </dl>
       {selection.prelude.map((prelude) => (
-        <p className="qctp-breath-prelude" key={prelude.kind}>
-          <strong>Prelude · {prelude.repetitions} gentle sigh(s):</strong>{" "}
-          {prelude.instruction}
-        </p>
+        <div className="qctp-breath-prelude" key={prelude.kind}>
+          <ContentClassBadge
+            authorityKey="breath.method.physiological-sigh"
+            scope="Prelude"
+          />
+          <p>
+            <strong>Prelude · {prelude.repetitions} gentle sigh(s):</strong>{" "}
+            {prelude.instruction}
+          </p>
+        </div>
       ))}
       {selection.warnings.length > 0 ? (
         <ul className="qctp-breath-warnings">

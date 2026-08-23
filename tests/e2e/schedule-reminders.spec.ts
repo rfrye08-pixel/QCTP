@@ -56,6 +56,15 @@ test("Today remains the reminder fallback while the network is offline", async (
     )
     .toBe(true);
   await context.setOffline(true);
+  await expect
+    .poll(() =>
+      page.evaluate(() => ({
+        offline: !navigator.onLine,
+        durableHint:
+          sessionStorage.getItem("qctp-network-offline-hint") === "true",
+      })),
+    )
+    .toEqual({ offline: true, durableHint: true });
   await page.reload({ waitUntil: "domcontentloaded" });
 
   await expect(

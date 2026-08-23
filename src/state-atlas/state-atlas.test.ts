@@ -5,6 +5,7 @@ import {
   STATE_ATLAS,
   STATE_PRACTICE_RECIPES,
   StateAttemptSchema,
+  StateDefinitionSchema,
   StateSessionRecordSchema,
   TRAINING_PROCESS_PHASES,
   evaluateCapabilityProgression,
@@ -152,15 +153,64 @@ describe("controlled State Atlas", () => {
       "QI",
     ]);
     expect(getStateDefinition("TC-PC")).toMatchObject({
-      sourceClass: "source_specific",
+      contentClass: "QCTP_ORIGINAL",
+      recipeContentRef: {
+        authorityKey: "state.recipe.TC-PC",
+        contentClass: "QCTP_ORIGINAL",
+      },
+      sourceTargetContentRef: {
+        authorityKey: "state.target.TC-PC",
+        contentClass: "SOURCE_FAITHFUL",
+      },
+      sourceRelationship: "source_specific_target",
     });
-    expect(getStateDefinition("M-F10").sourceLabel).toMatch(/Monroe/i);
+    for (const stateId of ["M-F10", "M-F12"] as const) {
+      expect(getStateDefinition(stateId)).toMatchObject({
+        recipeContentRef: {
+          authorityKey: `state.recipe.${stateId}`,
+          contentClass: "QCTP_ORIGINAL",
+        },
+        sourceTargetContentRef: {
+          authorityKey: `state.target.${stateId}`,
+          contentClass: "SOURCE_FAITHFUL",
+        },
+      });
+      expect(getStateDefinition(stateId).sourceLabel).toMatch(/Monroe/i);
+    }
     expect(getStateDefinition("QR")).toMatchObject({
-      sourceClass: "experimental_protocol",
+      contentClass: "QCTP_SYNTHESIS",
+      sourceRelationship: "experimental_protocol",
       functionalMinimumAttempts: 10,
       functionalRequiresBlinding: true,
       functionalRequiresFeedback: true,
     });
+    expect(getStateDefinition("Q4").contentClass).toBe("QCTP_SYNTHESIS");
+    expect(getStateDefinition("Q5").contentClass).toBe("QCTP_SYNTHESIS");
+    expect(getStateDefinition("QO").contentClass).toBe("QCTP_ORIGINAL");
+    expect(getStateDefinition("QI").contentClass).toBe("QCTP_ORIGINAL");
+  });
+
+  it("requires source-target identity separately from the runnable recipe identity", () => {
+    const sourceSpecific = getStateDefinition("TC-PC");
+    expect(() =>
+      StateDefinitionSchema.parse({
+        ...sourceSpecific,
+        sourceTargetContentRef: null,
+      }),
+    ).toThrow(/CONTROLLED_CONTENT_TARGET_REQUIRED/u);
+    expect(() =>
+      StateDefinitionSchema.parse({
+        ...sourceSpecific,
+        sourceTargetContentRef:
+          getStateDefinition("M-F10").sourceTargetContentRef,
+      }),
+    ).toThrow(/CONTROLLED_CONTENT_PARENT_MISMATCH/u);
+    expect(() =>
+      StateDefinitionSchema.parse({
+        ...getStateDefinition("Q1"),
+        sourceTargetContentRef: sourceSpecific.sourceTargetContentRef,
+      }),
+    ).toThrow(/CONTROLLED_CONTENT_TARGET_NOT_APPLICABLE/u);
   });
 
   it("provides an instruction, timing cue, stop gate, and no-attainment contract for every state", () => {
@@ -529,9 +579,12 @@ describe("process and persistence contracts", () => {
       saveStatus: "saved",
       updatedAt: base.endedAt,
     } as const;
-    expect(StateSessionRecordSchema.parse(record).rawObservation?.text).toMatch(
-      /raw observed/i,
-    );
+    const migrated = StateSessionRecordSchema.parse(record);
+    expect(migrated.rawObservation?.text).toMatch(/raw observed/i);
+    expect(migrated.contentRef).toEqual({
+      authorityKey: "state.recipe.Q1",
+      contentClass: "QCTP_ORIGINAL",
+    });
     expect(() =>
       StateSessionRecordSchema.parse({
         ...record,
@@ -547,6 +600,15 @@ describe("process and persistence contracts", () => {
         },
       }),
     ).toThrow(/before interpretation/i);
+    expect(() =>
+      StateSessionRecordSchema.parse({
+        ...record,
+        contentRef: {
+          authorityKey: "state.recipe.Q2",
+          contentClass: "QCTP_SYNTHESIS",
+        },
+      }),
+    ).toThrow(/CONTROLLED_CONTENT_PARENT_MISMATCH/u);
   });
 
   it("requires an outcome record whenever feedback is marked scored", () => {

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
+import { contentRefFor } from "../controlled-content";
 import type { PracticeSession } from "../domain";
 
 import { deleteQctpDatabase } from "./db";
@@ -31,6 +32,7 @@ function session(id: string): PracticeSession {
     narrationUsed: false,
     narratedContentAcceptance: "NOT_APPLICABLE",
     stateAttainment: "NOT_ASSESSED",
+    contentRef: contentRefFor("foundation.day1.practice"),
     debrief: null,
     createdAt: endedAt,
   };

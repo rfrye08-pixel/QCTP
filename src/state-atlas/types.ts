@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+import {
+  ControlledContentClassSchema,
+  ControlledContentRefSchema,
+  contentRefFor,
+} from "../controlled-content";
+
 export const TrainingProcessPhaseSchema = z.enum([
   "PREPARE",
   "INDUCE",
@@ -41,10 +47,10 @@ export const StateIdSchema = z.enum([
   "QI",
 ]);
 
-export const StateSourceClassSchema = z.enum([
-  "qctp_original",
-  "qctp_synthesis",
-  "source_specific",
+export const StateSourceRelationshipSchema = z.enum([
+  "qctp",
+  "source_informed",
+  "source_specific_target",
   "experimental_protocol",
 ]);
 
@@ -75,26 +81,82 @@ export const StatePracticeRecipeSchema = z.object({
   stopConditions: z.array(z.string().trim().min(1)).min(1),
 });
 
-export const StateDefinitionSchema = z.object({
-  id: StateIdSchema,
-  title: z.string().trim().min(1),
-  sourceClass: StateSourceClassSchema,
-  sourceLabel: z.string().trim().min(1),
-  purpose: z.string().trim().min(1),
-  prerequisiteGroups: z.array(z.array(StatePrerequisiteSchema).min(1)),
-  targetMarkers: z.array(StateMarkerDefinitionSchema),
-  minimumAccessedMarkers: z.number().int().min(0),
-  minimumContinuousSecondsForStabilized: z.number().int().nonnegative(),
-  stabilizationAttemptCount: z.number().int().positive(),
-  stabilizationWindow: z.number().int().positive(),
-  functionalMinimumAttempts: z.number().int().positive(),
-  functionalRequiresBlinding: z.boolean(),
-  functionalRequiresFeedback: z.boolean(),
-  functionalRequiresCoherentEpisode: z.boolean(),
-  permittedContexts: z.array(z.string().trim().min(1)).min(1),
-  lookAlikes: z.array(z.string().trim().min(1)),
-  corrections: z.array(z.string().trim().min(1)),
-});
+export const StateDefinitionSchema = z
+  .object({
+    id: StateIdSchema,
+    title: z.string().trim().min(1),
+    contentClass: ControlledContentClassSchema,
+    recipeContentRef: ControlledContentRefSchema,
+    sourceTargetContentRef: ControlledContentRefSchema.nullable(),
+    sourceRelationship: StateSourceRelationshipSchema,
+    sourceLabel: z.string().trim().min(1),
+    purpose: z.string().trim().min(1),
+    prerequisiteGroups: z.array(z.array(StatePrerequisiteSchema).min(1)),
+    targetMarkers: z.array(StateMarkerDefinitionSchema),
+    minimumAccessedMarkers: z.number().int().min(0),
+    minimumContinuousSecondsForStabilized: z.number().int().nonnegative(),
+    stabilizationAttemptCount: z.number().int().positive(),
+    stabilizationWindow: z.number().int().positive(),
+    functionalMinimumAttempts: z.number().int().positive(),
+    functionalRequiresBlinding: z.boolean(),
+    functionalRequiresFeedback: z.boolean(),
+    functionalRequiresCoherentEpisode: z.boolean(),
+    permittedContexts: z.array(z.string().trim().min(1)).min(1),
+    lookAlikes: z.array(z.string().trim().min(1)),
+    corrections: z.array(z.string().trim().min(1)),
+  })
+  .superRefine((definition, context) => {
+    const expectedRecipeKey = `state.recipe.${definition.id}`;
+    if (definition.recipeContentRef.authorityKey !== expectedRecipeKey) {
+      context.addIssue({
+        code: "custom",
+        path: ["recipeContentRef", "authorityKey"],
+        message: `CONTROLLED_CONTENT_PARENT_MISMATCH: expected ${expectedRecipeKey}`,
+      });
+    }
+    if (definition.recipeContentRef.contentClass !== definition.contentClass) {
+      context.addIssue({
+        code: "custom",
+        path: ["contentClass"],
+        message: `CONTROLLED_CONTENT_CLASS_MISMATCH: expected ${definition.recipeContentRef.contentClass}`,
+      });
+    }
+
+    const expectedTargetKey = `state.target.${definition.id}`;
+    if (definition.sourceRelationship === "source_specific_target") {
+      if (!definition.sourceTargetContentRef) {
+        context.addIssue({
+          code: "custom",
+          path: ["sourceTargetContentRef"],
+          message: `CONTROLLED_CONTENT_TARGET_REQUIRED: expected ${expectedTargetKey}`,
+        });
+      } else if (
+        definition.sourceTargetContentRef.authorityKey !== expectedTargetKey
+      ) {
+        context.addIssue({
+          code: "custom",
+          path: ["sourceTargetContentRef", "authorityKey"],
+          message: `CONTROLLED_CONTENT_PARENT_MISMATCH: expected ${expectedTargetKey}`,
+        });
+      } else if (
+        definition.sourceTargetContentRef.contentClass !== "SOURCE_FAITHFUL"
+      ) {
+        context.addIssue({
+          code: "custom",
+          path: ["sourceTargetContentRef", "contentClass"],
+          message:
+            "CONTROLLED_CONTENT_CLASS_MISMATCH: expected SOURCE_FAITHFUL",
+        });
+      }
+    } else if (definition.sourceTargetContentRef) {
+      context.addIssue({
+        code: "custom",
+        path: ["sourceTargetContentRef"],
+        message:
+          "CONTROLLED_CONTENT_TARGET_NOT_APPLICABLE: source-specific target relationship required",
+      });
+    }
+  });
 
 export const ObservationLayerSchema = z.object({
   text: z.string().trim().min(1),
@@ -202,11 +264,12 @@ export const StateAttemptSchema = z
   .object(stateAttemptShape)
   .superRefine(validateAttemptEvidence);
 
-export const StateSessionRecordSchema = z
+const StateSessionRecordObjectSchema = z
   .object({
     schemaVersion: z.literal(1),
     ...stateAttemptShape,
     sessionRevision: z.string().trim().min(1),
+    contentRef: ControlledContentRefSchema.optional(),
     startedAt: z.string().datetime({ offset: true }),
     posture: z.string().trim().min(1),
     breathMethod: z.string().trim().min(1).nullable(),
@@ -216,7 +279,36 @@ export const StateSessionRecordSchema = z
     saveStatus: z.enum(["saved", "save_pending"]),
     updatedAt: z.string().datetime({ offset: true }),
   })
-  .superRefine(validateAttemptEvidence);
+  .superRefine((value, context) => {
+    validateAttemptEvidence(value, context);
+    const expectedAuthorityKey = `state.recipe.${value.stateId}`;
+    if (
+      value.contentRef &&
+      value.contentRef.authorityKey !== expectedAuthorityKey
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["contentRef", "authorityKey"],
+        message: `CONTROLLED_CONTENT_PARENT_MISMATCH: expected ${expectedAuthorityKey}`,
+      });
+    }
+  });
+
+export const StateSessionRecordSchema = z.preprocess((value) => {
+  if (
+    typeof value !== "object" ||
+    value === null ||
+    "contentRef" in value ||
+    !("stateId" in value) ||
+    typeof value.stateId !== "string"
+  ) {
+    return value;
+  }
+  return {
+    ...value,
+    contentRef: contentRefFor(`state.recipe.${value.stateId}`),
+  };
+}, StateSessionRecordObjectSchema);
 
 export const CapabilityTransitionSchema = z.object({
   from: CapabilityLevelSchema.nullable(),
@@ -240,7 +332,9 @@ export type TrainingProcessPhase = z.infer<typeof TrainingProcessPhaseSchema>;
 export type GuidanceTier = z.infer<typeof GuidanceTierSchema>;
 export type CapabilityLevel = z.infer<typeof CapabilityLevelSchema>;
 export type StateId = z.infer<typeof StateIdSchema>;
-export type StateSourceClass = z.infer<typeof StateSourceClassSchema>;
+export type StateSourceRelationship = z.infer<
+  typeof StateSourceRelationshipSchema
+>;
 export type StatePrerequisite = z.infer<typeof StatePrerequisiteSchema>;
 export type StateMarkerDefinition = z.infer<typeof StateMarkerDefinitionSchema>;
 export type StatePracticeStep = z.infer<typeof StatePracticeStepSchema>;

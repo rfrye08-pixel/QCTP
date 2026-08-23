@@ -11,7 +11,11 @@ import {
   createInitialFoundationProgress,
 } from "./foundation-protocol";
 import { recoverInterruptedBreathSessions } from "./recovery";
-import type { BreathSessionRecord } from "./types";
+import {
+  ReadyBreathSelectionSchema,
+  type BreathFoundationProtocol,
+  type BreathSessionRecord,
+} from "./types";
 
 let repository: QctpRepository;
 let databaseName: string;
@@ -44,7 +48,7 @@ function session(status: BreathSessionRecord["status"]): BreathSessionRecord {
     id: `breath-${status}`,
     goal: "calm_coherence",
     context: "general",
-    foundationSessionId: "BREATH-01",
+    foundationSessionId: null,
     selection,
     startedAt: "2026-08-22T10:00:00.000Z",
     endedAt: null,
@@ -67,6 +71,30 @@ function session(status: BreathSessionRecord["status"]): BreathSessionRecord {
     stateCapabilityCreditGranted: false,
     updatedAt: "2026-08-22T10:00:42.000Z",
   };
+}
+
+function foundationSelection(
+  selection: BreathSessionRecord["selection"],
+  protocol: BreathFoundationProtocol,
+): BreathSessionRecord["selection"] {
+  const methodIds = [
+    ...new Set(
+      protocol.segments.flatMap((segment) =>
+        segment.methodId ? [segment.methodId] : [],
+      ),
+    ),
+  ];
+  return ReadyBreathSelectionSchema.parse({
+    ...selection,
+    protocolId: protocol.protocolId,
+    contentClass: "QCTP_ORIGINAL",
+    contentRef: {
+      authorityKey: `breath.foundation.${protocol.foundationSessionId}`,
+      contentClass: "QCTP_ORIGINAL",
+    },
+    embeddedContentRefs: protocol.segments.map((segment) => segment.contentRef),
+    methodId: methodIds.length === 1 ? methodIds[0] : null,
+  });
 }
 
 describe("Breath session crash recovery", () => {
@@ -119,11 +147,13 @@ describe("Breath session crash recovery", () => {
       ...progress[1]!,
       activePracticeMilliseconds: 37_000,
     };
+    const base = session("in_progress");
     await repository.saveBreathSession({
-      ...session("in_progress"),
+      ...base,
       id: "breath-progressive-checkpoint",
       foundationSessionId: "BREATH-02",
       foundationProtocol: protocol,
+      selection: foundationSelection(base.selection, protocol),
       protocolProgress: progress,
       completedDurationSeconds: 217,
       finalState: {

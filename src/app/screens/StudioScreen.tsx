@@ -33,6 +33,7 @@ import {
   type AcceptedCapture,
 } from "../../voice-capture";
 import { ScreenHeader } from "../components/ScreenHeader";
+import { ContentClassBadge } from "../components/ContentClassBadge";
 import { StatusBadge } from "../components/StatusBadge";
 import { useQctp } from "../qctp-context";
 
@@ -401,6 +402,10 @@ export function StudioScreen() {
           Construct two equal circles by hand, preserve observation before
           interpretation, and carry one verified insight into daily life.
         </p>
+        <ContentClassBadge
+          authorityKey="grant.exercise.REG-01-A"
+          scope="REG-01 exercise"
+        />
       </ScreenHeader>
 
       <section className="panel-card studio-intro">

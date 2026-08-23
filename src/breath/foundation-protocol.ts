@@ -1,3 +1,5 @@
+import { contentRefFor } from "../controlled-content";
+
 import { BREATH_FOUNDATIONS, getBreathMethod } from "./catalog";
 import {
   BreathFoundationProtocolSchema,
@@ -122,6 +124,7 @@ function methodSegment(
     order,
     label,
     technique: "controlled_method",
+    contentRef: contentRefFor(`breath.method.${methodId}`),
     methodId,
     methodName: method.name,
     cadence,
@@ -156,6 +159,11 @@ function specialSegment(
   return {
     segmentId: `${sessionId}-S${order}`,
     order,
+    contentRef: contentRefFor(
+      values.technique === "physiological_sigh"
+        ? "breath.method.physiological-sigh"
+        : "breath.method.natural-breathing",
+    ),
     methodId: null,
     comfortRequired: false,
     ...values,

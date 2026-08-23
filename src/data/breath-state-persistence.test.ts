@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
   BreathProfileSchema,
+  ReadyBreathSelectionSchema,
+  createFoundationProtocol,
   createDefaultBreathProfile,
   normalizeBreathProfile,
   selectBreathProtocol,
@@ -71,6 +73,36 @@ function breathSession(
     status: "completed",
     stateCapabilityCreditGranted: false,
     updatedAt: later,
+  };
+}
+
+function foundationBreathSession(
+  id: string,
+  startedAt = now,
+): BreathSessionRecord {
+  const base = breathSession(id, "calm_coherence", startedAt);
+  const protocol = createFoundationProtocol("BREATH-01");
+  return {
+    ...base,
+    foundationSessionId: "BREATH-01",
+    foundationProtocol: protocol,
+    contentRef: {
+      authorityKey: "breath.foundation.BREATH-01",
+      contentClass: "QCTP_ORIGINAL",
+    },
+    selection: ReadyBreathSelectionSchema.parse({
+      ...base.selection,
+      protocolId: protocol.protocolId,
+      contentClass: "QCTP_ORIGINAL",
+      contentRef: {
+        authorityKey: "breath.foundation.BREATH-01",
+        contentClass: "QCTP_ORIGINAL",
+      },
+      embeddedContentRefs: protocol.segments.map(
+        (segment) => segment.contentRef,
+      ),
+      methodId: "QCTP-B3",
+    }),
   };
 }
 
@@ -302,15 +334,13 @@ describe("Breath and State repository CRUD", () => {
     expect(await repository.listBreathSessions("focus")).toEqual([focus]);
 
     const interrupted = await repository.saveBreathSession({
-      ...breathSession("breath-foundation-interrupted"),
-      foundationSessionId: "BREATH-01",
+      ...foundationBreathSession("breath-foundation-interrupted"),
       endedAt: null,
       completedDurationSeconds: 45,
       status: "interrupted",
     });
     const pending = await repository.saveBreathSession({
-      ...breathSession("breath-foundation-pending", "focus", later),
-      foundationSessionId: "BREATH-01",
+      ...foundationBreathSession("breath-foundation-pending", later),
       status: "save_pending",
     });
     expect(await repository.listBreathFoundationSessions("BREATH-01")).toEqual([

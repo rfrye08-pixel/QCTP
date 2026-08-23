@@ -1,14 +1,10 @@
-export type SourceContentClass =
-  | "source_faithful_summary"
-  | "source_enhanced"
-  | "qctp_synthesis"
-  | "qctp_original";
+import type { ControlledContentClass } from "../controlled-content";
 
 export interface SourceTrackModule {
   id: string;
   title: string;
   status: "ready" | "prerequisite" | "reserved";
-  contentClass: SourceContentClass;
+  contentClass: ControlledContentClass | null;
   sourceLabel: string;
   objective: string;
   exerciseId: string | null;
@@ -27,7 +23,7 @@ export interface SourceTrackExercise {
   id: string;
   moduleId: string;
   title: string;
-  contentClass: "qctp_original";
+  contentClass: "QCTP_ORIGINAL";
   sourceConcept: string;
   instructions: readonly string[];
   fields: readonly SourceExerciseField[];
@@ -35,15 +31,16 @@ export interface SourceTrackExercise {
   safety: readonly string[];
 }
 
-const CAMPBELL_LABEL =
-  "Thomas Campbell source concept · original QCTP exercise";
+const CAMPBELL_LABEL = "Thomas Campbell source-concept summary";
+const CAMPBELL_HELD_LABEL =
+  "Thomas Campbell source concept · QCTP practice content held";
 
 export const THOMAS_CAMPBELL_MODULES: readonly SourceTrackModule[] = [
   {
     id: "TC-01",
     title: "Open-Minded Skepticism",
     status: "ready",
-    contentClass: "qctp_original",
+    contentClass: "SOURCE_FAITHFUL",
     sourceLabel: CAMPBELL_LABEL,
     objective:
       "Distinguish possibility, probability, belief, disbelief, and personal knowledge while preserving contrary data.",
@@ -56,9 +53,8 @@ export const THOMAS_CAMPBELL_MODULES: readonly SourceTrackModule[] = [
     id: "TC-02",
     title: "Meditation Mechanics and Point Consciousness",
     status: "prerequisite",
-    contentClass: "source_enhanced",
-    sourceLabel:
-      "Campbell point-consciousness target · hardened QCTP State Atlas recipe",
+    contentClass: "SOURCE_FAITHFUL",
+    sourceLabel: "Campbell point-consciousness target summary",
     objective:
       "Reduce sensory and intellectual dominance without strain while alert continuity remains present.",
     exerciseId: "TC-02-POINT-CONSCIOUSNESS",
@@ -69,8 +65,8 @@ export const THOMAS_CAMPBELL_MODULES: readonly SourceTrackModule[] = [
     id: "TC-03",
     title: "Intellect, Intuition, and Noise",
     status: "reserved",
-    contentClass: "qctp_original",
-    sourceLabel: CAMPBELL_LABEL,
+    contentClass: null,
+    sourceLabel: CAMPBELL_HELD_LABEL,
     objective:
       "Separate first impressions, second impressions, and intellectual story using feedback.",
     exerciseId: null,
@@ -81,7 +77,7 @@ export const THOMAS_CAMPBELL_MODULES: readonly SourceTrackModule[] = [
     id: "TC-04",
     title: "Intent Quality",
     status: "ready",
-    contentClass: "qctp_original",
+    contentClass: "SOURCE_FAITHFUL",
     sourceLabel: CAMPBELL_LABEL,
     objective:
       "Compare stated desire, control, fear, image protection, caring action, behavior, and outcome.",
@@ -93,7 +89,7 @@ export const THOMAS_CAMPBELL_MODULES: readonly SourceTrackModule[] = [
     id: "TC-05",
     title: "Fear, Ego, and Belief Audit",
     status: "ready",
-    contentClass: "qctp_original",
+    contentClass: "SOURCE_FAITHFUL",
     sourceLabel: CAMPBELL_LABEL,
     objective:
       "Reconstruct observable triggers and test one lower-fear behavior without forcing an interpretation.",
@@ -106,9 +102,8 @@ export const THOMAS_CAMPBELL_MODULES: readonly SourceTrackModule[] = [
     id: "TC-06",
     title: "Stable Imaginality",
     status: "prerequisite",
-    contentClass: "qctp_original",
-    sourceLabel:
-      "Campbell imaginality concept · original QCTP environment exercise",
+    contentClass: "SOURCE_FAITHFUL",
+    sourceLabel: "Campbell imaginality source-concept summary",
     objective:
       "Revisit a stable inner environment while separating deliberate construction from spontaneous candidates.",
     exerciseId: "TC-06-IMAGINALITY-MAP",
@@ -120,8 +115,8 @@ export const THOMAS_CAMPBELL_MODULES: readonly SourceTrackModule[] = [
     id: "TC-07",
     title: "Remote Information Experiments",
     status: "reserved",
-    contentClass: "qctp_original",
-    sourceLabel: CAMPBELL_LABEL,
+    contentClass: null,
+    sourceLabel: CAMPBELL_HELD_LABEL,
     objective:
       "Use blinded target IDs, immutable raw descriptors, separated analytical overlay, and honest feedback scoring.",
     exerciseId: null,
@@ -132,8 +127,8 @@ export const THOMAS_CAMPBELL_MODULES: readonly SourceTrackModule[] = [
     id: "TC-08",
     title: "Probable Future and Decision Trees",
     status: "reserved",
-    contentClass: "qctp_original",
-    sourceLabel: CAMPBELL_LABEL,
+    contentClass: null,
+    sourceLabel: CAMPBELL_HELD_LABEL,
     objective:
       "Treat future impressions as probabilities and return on a predefined feedback date.",
     exerciseId: null,
@@ -144,9 +139,9 @@ export const THOMAS_CAMPBELL_MODULES: readonly SourceTrackModule[] = [
     id: "TC-09",
     title: "OBE, Data-Stream Transition, and Healing Intent",
     status: "reserved",
-    contentClass: "source_enhanced",
+    contentClass: null,
     sourceLabel:
-      "Campbell source-specific concepts · QCTP safety and experiment controls",
+      "Campbell source-specific concepts · QCTP practice content held",
     objective:
       "Use a stable prerequisite state without breath strain; keep healing intent consent-based and nonmedical.",
     exerciseId: null,
@@ -158,8 +153,8 @@ export const THOMAS_CAMPBELL_MODULES: readonly SourceTrackModule[] = [
     id: "TC-10",
     title: "Quality of Consciousness in Daily Life",
     status: "reserved",
-    contentClass: "qctp_original",
-    sourceLabel: CAMPBELL_LABEL,
+    contentClass: null,
+    sourceLabel: CAMPBELL_HELD_LABEL,
     objective:
       "Translate practice into lower-fear, caring, authentic, and responsible choices.",
     exerciseId: null,
@@ -173,7 +168,7 @@ export const THOMAS_CAMPBELL_EXERCISES: readonly SourceTrackExercise[] = [
     id: "TC-01-POSSIBILITY-LEDGER",
     moduleId: "TC-01",
     title: "Possibility Ledger",
-    contentClass: "qctp_original",
+    contentClass: "QCTP_ORIGINAL",
     sourceConcept: "Open-minded skepticism",
     instructions: [
       "State one claim neutrally.",
@@ -238,7 +233,7 @@ export const THOMAS_CAMPBELL_EXERCISES: readonly SourceTrackExercise[] = [
     id: "TC-02-POINT-CONSCIOUSNESS",
     moduleId: "TC-02",
     title: "Point Consciousness evidence record",
-    contentClass: "qctp_original",
+    contentClass: "QCTP_ORIGINAL",
     sourceConcept: "Point consciousness",
     instructions: [
       "Use only a safe seated or supported reclining setting.",
@@ -288,7 +283,7 @@ export const THOMAS_CAMPBELL_EXERCISES: readonly SourceTrackExercise[] = [
     id: "TC-04-INTENT-STACK",
     moduleId: "TC-04",
     title: "Intent Stack",
-    contentClass: "qctp_original",
+    contentClass: "QCTP_ORIGINAL",
     sourceConcept: "Intent quality",
     instructions: [
       "Record the real choice before judging it.",
@@ -354,7 +349,7 @@ export const THOMAS_CAMPBELL_EXERCISES: readonly SourceTrackExercise[] = [
     id: "TC-05-TRIGGER-RECONSTRUCTION",
     moduleId: "TC-05",
     title: "Trigger Reconstruction",
-    contentClass: "qctp_original",
+    contentClass: "QCTP_ORIGINAL",
     sourceConcept: "Fear, ego, and belief audit",
     instructions: [
       "Begin with the observable event and immediate body response.",
@@ -420,7 +415,7 @@ export const THOMAS_CAMPBELL_EXERCISES: readonly SourceTrackExercise[] = [
     id: "TC-06-IMAGINALITY-MAP",
     moduleId: "TC-06",
     title: "Stable Imaginality Map",
-    contentClass: "qctp_original",
+    contentClass: "QCTP_ORIGINAL",
     sourceConcept: "Imaginality",
     instructions: [
       "Create one anchor environment without copying a proprietary exercise.",

@@ -40,6 +40,40 @@ describe("Voice-Free Day 1 controlled definition", () => {
     expect(getVoiceFreeDay1Phase(1_500).id).toBe("return");
   });
 
+  it("preserves each source method, QCTP transition, and original support layer as a canonical phase reference", () => {
+    expect(
+      Object.fromEntries(
+        VOICE_FREE_DAY1_PHASES.map((phase) => [
+          phase.id,
+          phase.contentRefs.map((reference) => [
+            reference.authorityKey,
+            reference.contentClass,
+          ]),
+        ]),
+      ),
+    ).toEqual({
+      settle: [
+        ["foundation.day1.phase.baseline-observation", "QCTP_ORIGINAL"],
+        ["foundation.day1.phase.bullard-contraction", "SOURCE_ENHANCED"],
+        ["foundation.day1.transition.bullard-to-heartmath", "QCTP_SYNTHESIS"],
+      ],
+      coherence: [
+        ["foundation.day1.phase.heart-coherence", "SOURCE_ENHANCED"],
+        ["foundation.day1.transition.heartmath-to-dispenza", "QCTP_SYNTHESIS"],
+      ],
+      "attention-contrast": [
+        ["foundation.day1.phase.spatial-induction", "SOURCE_ENHANCED"],
+        ["foundation.day1.transition.spatial-to-open-space", "QCTP_SYNTHESIS"],
+      ],
+      "open-space": [
+        ["foundation.day1.phase.open-spatial-awareness", "SOURCE_ENHANCED"],
+        ["foundation.day1.transition.end-spatial-method", "QCTP_SYNTHESIS"],
+      ],
+      observe: [["foundation.day1.phase.pure-observation", "QCTP_ORIGINAL"]],
+      return: [["foundation.day1.phase.return", "QCTP_ORIGINAL"]],
+    });
+  });
+
   it("provides a no-hold five-in/five-out rail only in coherence", () => {
     expect(getHeartMathBreathRail(179.9).active).toBe(false);
     expect(getHeartMathBreathRail(180)).toMatchObject({

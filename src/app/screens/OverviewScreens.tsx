@@ -16,6 +16,7 @@ import { StateAtlasProgress } from "../../state-atlas";
 import { CONTROLLED_SOURCE_ARCHITECTURE } from "../../source-tracks";
 import { deriveControlledSchedule } from "../../schedule";
 import { FieldDictation } from "../components/FieldDictation";
+import { ContentClassBadge } from "../components/ContentClassBadge";
 import { CampbellTrackPanel } from "../components/CampbellTrackPanel";
 import { BreathFoundationsPanel } from "../components/BreathFoundationsPanel";
 import { StateAtlasTrainingPanel } from "../components/StateAtlasTrainingPanel";
@@ -147,6 +148,10 @@ export function TodayOverview({
           <div>
             <p className="eyebrow">Morning practice ready now</p>
             <h2>Voice-Free Day 1 · 25 minutes</h2>
+            <ContentClassBadge
+              authorityKey="foundation.day1.practice"
+              scope="Day 1 practice"
+            />
           </div>
           <StatusBadge status="ready" />
         </div>
@@ -587,6 +592,10 @@ export function PathsOverview({
           <div>
             <p className="eyebrow">Primary path</p>
             <h2>112-Day Foundation</h2>
+            <ContentClassBadge
+              authorityKey="foundation.day1.practice"
+              scope="Day 1 practice only"
+            />
           </div>
           <StatusBadge status="released" />
         </div>
@@ -608,6 +617,14 @@ export function PathsOverview({
           <div>
             <p className="eyebrow">Source track</p>
             <h2>Robert Edward Grant</h2>
+            <ContentClassBadge
+              authorityKey="source.profile.robert-edward-grant"
+              scope="Grant source profile"
+            />
+            <ContentClassBadge
+              authorityKey="grant.exercise.REG-01-A"
+              scope="REG-01 exercise"
+            />
           </div>
           <span className="counter">01 / 12</span>
         </div>
@@ -650,6 +667,12 @@ export function PathsOverview({
             <article key={source.id}>
               <strong>{source.label}</strong>
               <small>{source.status.replaceAll("_", " ")}</small>
+              {["bullard", "heartmath", "dispenza"].includes(source.id) ? (
+                <ContentClassBadge
+                  authorityKey={`source.profile.${source.id}`}
+                  scope="Source profile"
+                />
+              ) : null}
             </article>
           ))}
         </div>

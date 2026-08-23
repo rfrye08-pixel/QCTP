@@ -6,7 +6,10 @@ import {
   MirrorResultSchema,
   PracticeSessionSchema,
   QctpExportDataSchema,
+  RecoverableCodexRecordSchema,
+  RegSessionSchema,
   VoiceRecordingSchema,
+  createReg01Session,
   createDefaultSettings,
 } from "./index";
 
@@ -81,7 +84,12 @@ describe("versioned domain schemas", () => {
       stateAttainment: "NOT_ASSESSED",
       createdAt: now,
     };
-    expect(PracticeSessionSchema.parse(legacy).debrief).toBeNull();
+    const migrated = PracticeSessionSchema.parse(legacy);
+    expect(migrated.debrief).toBeNull();
+    expect(migrated.contentRef).toEqual({
+      authorityKey: "foundation.day1.practice",
+      contentClass: "QCTP_SYNTHESIS",
+    });
     expect(
       PracticeSessionSchema.parse({
         ...legacy,
@@ -109,6 +117,27 @@ describe("versioned domain schemas", () => {
         },
       }),
     ).toThrow("must link its raw observation record");
+    expect(() =>
+      PracticeSessionSchema.parse({
+        ...legacy,
+        contentRef: {
+          authorityKey: "grant.exercise.REG-01-A",
+          contentClass: "QCTP_ORIGINAL",
+        },
+      }),
+    ).toThrow(/CONTROLLED_CONTENT_PARENT_MISMATCH/u);
+  });
+
+  it("rejects a registered but foreign controlled identity on REG-01", () => {
+    expect(() =>
+      RegSessionSchema.parse({
+        ...createReg01Session("reg-parent-mismatch", now),
+        contentRef: {
+          authorityKey: "foundation.day1.practice",
+          contentClass: "QCTP_SYNTHESIS",
+        },
+      }),
+    ).toThrow(/CONTROLLED_CONTENT_PARENT_MISMATCH/u);
   });
 
   it("keeps observation evidence and interpretation as separately identified layers", () => {
@@ -157,6 +186,63 @@ describe("versioned domain schemas", () => {
 
     expect(record.observation?.id).not.toBe(record.interpretation?.id);
     expect(record.interpretation?.basedOnEvidenceIds).toEqual(["evidence-1"]);
+    const protocolLinked = CodexRecordSchema.parse({
+      ...record,
+      contentRef: {
+        authorityKey: "grant.exercise.REG-01-A",
+        contentClass: "QCTP_ORIGINAL",
+      },
+      fields: {
+        controlledContentAuthorityKey: "grant.exercise.REG-01-A",
+      },
+    });
+    expect(protocolLinked.observation?.provenance.actor).toBe("user");
+    expect(() =>
+      CodexRecordSchema.parse({
+        ...protocolLinked,
+        fields: {
+          ...protocolLinked.fields,
+          controlledContentAuthorityKey: "foundation.day1.practice",
+        },
+      }),
+    ).toThrow(/CONTROLLED_CONTENT_PARENT_MISMATCH/u);
+  });
+
+  it("exposes an unknown trusted legacy class as a recoverable read hold while strict saves reject it", () => {
+    const legacy = {
+      schemaVersion: 1,
+      id: "legacy-held-record",
+      kind: "source_note",
+      title: "Legacy held record",
+      createdAt: now,
+      updatedAt: now,
+      observation: null,
+      interpretation: null,
+      tags: [],
+      backlinks: [],
+      sourceLinks: [],
+      attachmentIds: [],
+      revisionIds: [],
+      pathId: "thomas-campbell",
+      sessionId: null,
+      fields: {
+        sourceTrack: "thomas-campbell",
+        exerciseId: "TC-01-POSSIBILITY-LEDGER",
+        contentClass: "mystery_class",
+      },
+      deletedAt: null,
+    };
+    expect(RecoverableCodexRecordSchema.parse(legacy)).toMatchObject({
+      fields: { contentClass: "mystery_class" },
+      controlledContentHold: {
+        status: "HELD",
+        code: "UNMAPPED_LEGACY_CONTENT_CLASS",
+        rawValue: "mystery_class",
+      },
+    });
+    expect(() => CodexRecordSchema.parse(legacy)).toThrow(
+      /UNMAPPED_LEGACY_CONTENT_CLASS.*No data changed/u,
+    );
   });
 
   it("requires every supported Codex and Lab record to use a current schema version", () => {

@@ -1248,6 +1248,53 @@
   white-space: pre-wrap;
 }
 
+.mirror-evidence-index dl > .record-template-origin {
+  border-left-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 5%, transparent);
+}
+
+.record-template-origin dd {
+  display: grid;
+  gap: 4px;
+}
+
+.record-template-origin strong {
+  color: var(--text);
+}
+
+.record-template-origin-class {
+  color: var(--amber);
+  font-weight: 750;
+}
+
+.record-template-origin-note {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.mirror-evidence-index dl > .record-controlled-content-hold {
+  border-left-color: var(--danger, #e07a77);
+  background: color-mix(in srgb, var(--danger, #e07a77) 7%, transparent);
+}
+
+.record-controlled-content-hold dd {
+  display: grid;
+  gap: 5px;
+}
+
+.record-controlled-content-hold strong {
+  color: var(--danger, #e8a09d);
+}
+
+.record-controlled-content-hold code {
+  overflow-wrap: anywhere;
+}
+
+.record-controlled-content-hold-note {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .mirror-deleted-list,
 .mirror-deleted-item,
 .mirror-deleted-snapshots,
@@ -1942,7 +1989,7 @@
 
 .controlled-source-map > p:not(.eyebrow) {
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: max(0.94rem, 12px);
 }
 
 .controlled-source-map > div {
@@ -2118,7 +2165,7 @@
   min-height: 44px;
   margin-top: 6px;
   padding: 8px 10px;
-  font-size: 0.75rem;
+  font-size: max(0.9rem, 12px);
 }
 
 .secondary-link {
@@ -2425,4 +2472,44 @@
     transform: none !important;
     transition: opacity 240ms linear;
   }
+}
+span.content-class-badge {
+  display: inline-flex;
+  box-sizing: border-box;
+  max-width: 100%;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.12rem 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--accent, #79d8ff) 42%, transparent);
+  border-radius: 999px;
+  padding: 0.3rem 0.58rem;
+  color: var(--text-secondary, #b8d8e8);
+  background: color-mix(in srgb, var(--accent, #79d8ff) 9%, transparent);
+  font-size: 0.8rem;
+  font-weight: 720;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  vertical-align: middle;
+}
+
+.content-class-badge > .content-class-meaning {
+  min-width: 0;
+  font-size: inherit;
+  overflow-wrap: break-word;
+}
+
+.content-class-badge > .content-class-token {
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.025em;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.content-class-badge.content-class-hold {
+  border-color: color-mix(in srgb, #e5b866 55%, transparent);
+  color: #e5c88e;
+  background: color-mix(in srgb, #e5b866 10%, transparent);
 }

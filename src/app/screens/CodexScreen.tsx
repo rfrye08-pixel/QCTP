@@ -31,6 +31,7 @@ import {
   type VoiceRecording,
 } from "../../domain";
 import { ScreenHeader } from "../components/ScreenHeader";
+import { ContentClassBadge } from "../components/ContentClassBadge";
 import { useQctp } from "../qctp-context";
 import "../platform-styles.css";
 
@@ -922,6 +923,10 @@ export function CodexScreen() {
           interpretation, and tags remain separate linked layers with explicit
           provenance.
         </p>
+        <ContentClassBadge
+          authorityKey="workflow.codex"
+          scope="Codex workflow"
+        />
       </ScreenHeader>
 
       <section className="panel-card codex-controls" aria-label="Search Codex">

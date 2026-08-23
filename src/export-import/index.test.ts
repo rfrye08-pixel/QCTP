@@ -5,6 +5,7 @@ import {
   createReg01Session,
   PracticeSessionSchema,
   type Attachment,
+  type CodexRecord,
   type QctpExportData,
   type VoiceRecording,
 } from "../domain";
@@ -183,6 +184,137 @@ describe("versioned export/import", () => {
       stateSessions: [],
       stateCapabilities: [],
     });
+  });
+
+  it("normalizes trusted legacy content classes losslessly and atomically holds unknown values", async () => {
+    const base = await source.readSnapshot(now);
+    const legacyRecord: CodexRecord = {
+      schemaVersion: 1,
+      id: "legacy-campbell-export",
+      kind: "source_note",
+      title: "Legacy Campbell export",
+      createdAt: now,
+      updatedAt: now,
+      observation: null,
+      interpretation: null,
+      tags: ["thomas-campbell"],
+      backlinks: [],
+      sourceLinks: [],
+      attachmentIds: [],
+      revisionIds: [],
+      pathId: "thomas-campbell",
+      sessionId: null,
+      fields: {
+        sourceTrack: "thomas-campbell",
+        exerciseId: "TC-01-POSSIBILITY-LEDGER",
+        contentClass: "qctp_original",
+      },
+      deletedAt: null,
+    };
+    const parsed = await parseQctpJson({
+      ...base,
+      records: [...base.records, legacyRecord],
+    });
+    const normalized = parsed.records.find(
+      (record) => record.id === legacyRecord.id,
+    );
+    expect(normalized?.contentRef).toEqual({
+      authorityKey: "campbell.exercise.TC-01-POSSIBILITY-LEDGER",
+      contentClass: "QCTP_ORIGINAL",
+    });
+    expect(normalized?.fields.contentClass).toBe("qctp_original");
+
+    await expect(
+      importJson(target, {
+        ...base,
+        records: [
+          {
+            ...legacyRecord,
+            fields: { ...legacyRecord.fields, contentClass: "mystery_class" },
+          },
+        ],
+      }),
+    ).rejects.toThrow(/UNMAPPED_LEGACY_CONTENT_CLASS.*No data changed/u);
+    expect(await target.listRecords()).toEqual([]);
+  });
+
+  it("surfaces direct controlled-content holds and performs no partial import", async () => {
+    const base = await source.readSnapshot(now);
+    const practice = {
+      ...createDebriefPracticeSession(
+        "practice-controlled-hold",
+        "record-not-needed-before-schema-hold",
+      ),
+      debrief: null,
+    };
+    const cases = [
+      {
+        contentRef: {
+          authorityKey: "missing.controlled-content",
+          contentClass: "QCTP_ORIGINAL",
+        },
+        expected: /UNREGISTERED_CONTROLLED_CONTENT.*No data changed/u,
+      },
+      {
+        contentRef: {
+          authorityKey: "foundation.day1.practice",
+          contentClass: "QCTP_ORIGINAL",
+        },
+        expected: /CONTROLLED_CONTENT_CLASS_MISMATCH.*No data changed/u,
+      },
+      {
+        contentRef: {
+          authorityKey: "grant.exercise.REG-01-A",
+          contentClass: "QCTP_ORIGINAL",
+        },
+        expected: /CONTROLLED_CONTENT_PARENT_MISMATCH.*No data changed/u,
+      },
+    ] as const;
+
+    for (const item of cases) {
+      await expect(
+        importJson(target, {
+          ...base,
+          practiceSessions: [{ ...practice, contentRef: item.contentRef }],
+        }),
+      ).rejects.toThrow(item.expected);
+      expect((await target.readSnapshot()).practiceSessions).toEqual([]);
+    }
+
+    await expect(
+      importJson(target, {
+        ...base,
+        records: [
+          {
+            schemaVersion: 1,
+            id: "reg-controlled-shadow-hold",
+            kind: "geometry",
+            title: "Recoverable REG record",
+            createdAt: now,
+            updatedAt: now,
+            observation: null,
+            interpretation: null,
+            tags: [],
+            backlinks: [],
+            sourceLinks: [],
+            attachmentIds: [],
+            revisionIds: [],
+            pathId: "reg-path",
+            sessionId: null,
+            contentRef: {
+              authorityKey: "grant.exercise.REG-01-A",
+              contentClass: "QCTP_ORIGINAL",
+            },
+            fields: {
+              controlledContentAuthorityKey: "grant.exercise.REG-01-A",
+              contentClass: "mystery_class",
+            },
+            deletedAt: null,
+          },
+        ],
+      }),
+    ).rejects.toThrow(/UNMAPPED_LEGACY_CONTENT_CLASS.*No data changed/u);
+    expect((await target.readSnapshot()).records).toEqual([]);
   });
 
   it("validates cross-entity references before any JSON write", async () => {

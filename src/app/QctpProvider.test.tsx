@@ -208,7 +208,10 @@ describe("QCTP private device-session restoration", () => {
       );
     }
 
-    await waitFor(() => expect(mirrorPolicyCalls).toBe(2));
+    // A background retry may overlap the deliberate click, so the governing
+    // assertion is that at least one post-success probe failed without making
+    // the already-healthy connection visibly flicker offline.
+    await waitFor(() => expect(mirrorPolicyCalls).toBeGreaterThanOrEqual(2));
     expect(screen.getByLabelText("mirror connection status")).toHaveTextContent(
       "online",
     );

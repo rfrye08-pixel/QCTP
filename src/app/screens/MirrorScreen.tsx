@@ -24,7 +24,9 @@ import {
   type AcceptedCapture,
 } from "../../voice-capture";
 import { ScreenHeader } from "../components/ScreenHeader";
+import { ContentClassBadge } from "../components/ContentClassBadge";
 import { StatusBadge } from "../components/StatusBadge";
+import { UserRecordStructuredFields } from "../components/UserRecordStructuredFields";
 import { useQctp, type MirrorClientJob } from "../qctp-context";
 import "../platform-styles.css";
 
@@ -1155,6 +1157,10 @@ export function MirrorScreen() {
           compose grounded generative requests that synchronize with PX13 when
           it is available.
         </p>
+        <ContentClassBadge
+          authorityKey="workflow.mirror"
+          scope="Mirror workflow"
+        />
       </ScreenHeader>
 
       <section className="hero-card mirror-core-card">
@@ -2071,12 +2077,7 @@ export function MirrorScreen() {
                   <dt>Tags</dt>
                   <dd>{record.tags.join(", ") || "None"}</dd>
                 </div>
-                <div>
-                  <dt>Structured fields</dt>
-                  <dd>
-                    <pre>{JSON.stringify(record.fields, null, 2)}</pre>
-                  </dd>
-                </div>
+                <UserRecordStructuredFields record={record} />
                 <div>
                   <dt>Backlinks</dt>
                   <dd>

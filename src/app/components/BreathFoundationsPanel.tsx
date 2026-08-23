@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { contentRefFor } from "../../controlled-content";
 import {
   advanceForegroundPracticeClock,
   applyActivePracticeDelta,
@@ -22,6 +23,7 @@ import {
   type ForegroundPracticeClock,
 } from "../../breath";
 import { useQctp } from "../qctp-context";
+import { ContentClassBadge } from "./ContentClassBadge";
 
 const emptyRating: BreathStateRating = {
   activation: 2,
@@ -82,6 +84,16 @@ function sessionSelection(
     status: "ready",
     protocolId: protocol.protocolId,
     sourceClass: "qctp_regulation_support",
+    contentClass: session.contentClass,
+    contentRef: contentRefFor(`breath.foundation.${session.id}`),
+    embeddedContentRefs: [
+      ...new Map(
+        protocol.segments.map(
+          (segment) =>
+            [segment.contentRef.authorityKey, segment.contentRef] as const,
+        ),
+      ).values(),
+    ],
     goal: goalBySession[session.id],
     methodId: controlledMethods.length === 1 ? controlledMethods[0] : null,
     title: `Breath Foundations ${session.order}: ${session.title}`,
@@ -529,6 +541,7 @@ export function BreathFoundationsPanel() {
       goal: goalBySession[selected.id],
       context: "general",
       foundationSessionId: selected.id,
+      contentRef: contentRefFor(`breath.foundation.${selected.id}`),
       foundationProtocol: protocol,
       protocolProgress: initialProgress,
       checkpoint: {
@@ -788,6 +801,10 @@ export function BreathFoundationsPanel() {
               {selected.id} · {protocol.protocolId} · exact method provenance
             </p>
             <h3>{selected.title}</h3>
+            <ContentClassBadge
+              authorityKey={`breath.foundation.${selected.id}`}
+              scope="Curriculum session"
+            />
           </div>
           <strong className="breath-session-clock">
             {formatClock(
@@ -799,6 +816,10 @@ export function BreathFoundationsPanel() {
           {protocol.segments.map((segment, index) => (
             <li key={segment.segmentId}>
               <strong>{segment.label}</strong>
+              <ContentClassBadge
+                authorityKey={segment.contentRef.authorityKey}
+                scope="Method segment"
+              />
               <span>
                 {segment.methodId ?? segment.methodName} ·{" "}
                 {segment.durationSeconds}s · {segment.posture}

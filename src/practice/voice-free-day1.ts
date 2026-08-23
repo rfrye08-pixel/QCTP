@@ -1,3 +1,8 @@
+import {
+  contentRefFor,
+  type ControlledContentRef,
+} from "../controlled-content";
+
 export const VOICE_FREE_DAY1_PRACTICE_ID =
   "foundation-day1-source-rev0-voice-free" as const;
 export const VOICE_FREE_DAY1_SCRIPT_ID =
@@ -33,6 +38,7 @@ export interface VoiceFreeDay1Phase {
   readonly startSeconds: number;
   readonly endSeconds: number;
   readonly sourceLabel: string;
+  readonly contentRefs: readonly Readonly<ControlledContentRef>[];
   readonly readOnceInstruction: string;
   readonly markerAtStart: boolean;
 }
@@ -41,6 +47,16 @@ const qctpBaseUrl = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const SUPPORT_ROOT = `${qctpBaseUrl}audio/day1-source-rev0`;
+
+function controlledRefs(
+  ...authorityKeys: string[]
+): readonly Readonly<ControlledContentRef>[] {
+  return Object.freeze(
+    authorityKeys.map((authorityKey) =>
+      Object.freeze(contentRefFor(authorityKey)),
+    ),
+  );
+}
 
 export const VOICE_FREE_SUPPORT_MODES: Readonly<
   Record<VoiceFreeSupportMode, Readonly<VoiceFreeSupportDefinition>>
@@ -86,6 +102,11 @@ export const VOICE_FREE_DAY1_PHASES: readonly Readonly<VoiceFreeDay1Phase>[] =
       startSeconds: 0,
       endSeconds: 180,
       sourceLabel: "Bullard + QCTP baseline support",
+      contentRefs: controlledRefs(
+        "foundation.day1.phase.baseline-observation",
+        "foundation.day1.phase.bullard-contraction",
+        "foundation.day1.transition.bullard-to-heartmath",
+      ),
       readOnceInstruction:
         "Notice your starting mind, emotion, natural breath, and body effort. Locate one clear contraction without searching for a story. Allow a small release if the body is ready, and invite acceptance, gratitude, peace, or care into any space that opens.",
       markerAtStart: false,
@@ -96,6 +117,10 @@ export const VOICE_FREE_DAY1_PHASES: readonly Readonly<VoiceFreeDay1Phase>[] =
       startSeconds: 180,
       endSeconds: 480,
       sourceLabel: "HeartMath Quick Coherence",
+      contentRefs: controlledRefs(
+        "foundation.day1.phase.heart-coherence",
+        "foundation.day1.transition.heartmath-to-dispenza",
+      ),
       readOnceInstruction:
         "Place attention in the heart area. Breathe about five seconds in and five seconds out, or use a comfortable rhythm. Do not hold. Make a sincere attempt to feel appreciation, care, calm, or ease. Comfort controls the pace.",
       markerAtStart: true,
@@ -106,6 +131,10 @@ export const VOICE_FREE_DAY1_PHASES: readonly Readonly<VoiceFreeDay1Phase>[] =
       startSeconds: 480,
       endSeconds: 780,
       sourceLabel: "Dispenza spatial-attention induction",
+      contentRefs: controlledRefs(
+        "foundation.day1.phase.spatial-induction",
+        "foundation.day1.transition.spatial-to-open-space",
+      ),
       readOnceInstruction:
         "Release deliberate breath timing. Sense the volume between the ears, then the space around the head. Continue through the torso and whole body. Compare narrow attention with sensing the space around each area; do not construct a visual scene.",
       markerAtStart: true,
@@ -116,6 +145,10 @@ export const VOICE_FREE_DAY1_PHASES: readonly Readonly<VoiceFreeDay1Phase>[] =
       startSeconds: 780,
       endSeconds: 1_380,
       sourceLabel: "Dispenza broad spatial attention + QCTP transition",
+      contentRefs: controlledRefs(
+        "foundation.day1.phase.open-spatial-awareness",
+        "foundation.day1.transition.end-spatial-method",
+      ),
       readOnceInstruction:
         "Sense the space surrounding the whole body and the room as one volume. Include sounds in the same field without following them. If attention is captured, return to one body-area-and-space reference, then reopen. Near the end, stop deliberately widening and notice what remains.",
       markerAtStart: true,
@@ -126,6 +159,7 @@ export const VOICE_FREE_DAY1_PHASES: readonly Readonly<VoiceFreeDay1Phase>[] =
       startSeconds: 1_380,
       endSeconds: 1_440,
       sourceLabel: "QCTP observation support",
+      contentRefs: controlledRefs("foundation.day1.phase.pure-observation"),
       readOnceInstruction:
         "Release breath control, emotional generation, and spatial induction. Observe the mind, body, emotion, natural breath, and sense of space without grading the experience.",
       markerAtStart: true,
@@ -136,6 +170,7 @@ export const VOICE_FREE_DAY1_PHASES: readonly Readonly<VoiceFreeDay1Phase>[] =
       startSeconds: 1_440,
       endSeconds: 1_500,
       sourceLabel: "QCTP return support",
+      contentRefs: controlledRefs("foundation.day1.phase.return"),
       readOnceInstruction:
         "Feel the feet, chair, hands, and natural breath. Re-establish the room, time of day, and next action. Move gently, open the eyes, and carry one useful quality into ordinary activity. Stand only when fully oriented.",
       markerAtStart: true,

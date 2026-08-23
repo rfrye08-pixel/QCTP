@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+import {
+  ControlledContentClassSchema,
+  ControlledContentRefSchema,
+  contentRefFor,
+} from "../controlled-content";
+
 export const BreathMethodIdSchema = z.enum([
   "QCTP-B1",
   "QCTP-B2",
@@ -124,6 +130,7 @@ export const BreathMethodSchema = z.object({
   id: BreathMethodIdSchema,
   name: z.string().trim().min(1),
   sourceClass: z.literal("qctp_regulation_support"),
+  contentClass: ControlledContentClassSchema,
   primaryUses: z.array(z.string().trim().min(1)).min(1),
   cadence: BreathCadenceSchema,
   inhaleRoute: BreathRouteSchema,
@@ -154,6 +161,7 @@ export const BreathFoundationSessionSchema = z.object({
   order: z.number().int().min(1).max(7),
   title: z.string().trim().min(1),
   sourceClass: z.literal("qctp_regulation_support"),
+  contentClass: ControlledContentClassSchema,
   durationSeconds: z.number().int().positive(),
   methodIds: z.array(BreathMethodIdSchema),
   objectives: z.array(z.string().trim().min(1)).min(1),
@@ -162,34 +170,70 @@ export const BreathFoundationSessionSchema = z.object({
   grantsStateCreditFromElapsedTime: z.literal(false),
 });
 
-export const BreathFoundationProtocolSegmentSchema = z.object({
-  segmentId: z.string().trim().min(1),
-  order: z.number().int().positive(),
-  label: z.string().trim().min(1),
-  technique: z.enum([
-    "controlled_method",
-    "physiological_sigh",
-    "natural_breathing",
-  ]),
-  methodId: BreathMethodIdSchema.nullable(),
-  methodName: z.string().trim().min(1),
-  cadence: BreathCadenceSchema.nullable(),
-  inhaleRoute: BreathRouteSchema,
-  exhaleRoute: BreathRouteSchema,
-  posture: BreathPostureSchema,
-  durationSeconds: z.number().int().positive(),
-  comfortRequired: z.boolean(),
-  instructions: z.array(z.string().trim().min(1)).min(1),
-  cuePhases: z
-    .array(
-      z.object({
-        label: z.string().trim().min(1),
-        durationSeconds: z.number().positive(),
-        toneHz: z.number().positive().nullable(),
-      }),
-    )
-    .min(1),
-});
+const BreathFoundationProtocolSegmentObjectSchema = z
+  .object({
+    segmentId: z.string().trim().min(1),
+    order: z.number().int().positive(),
+    label: z.string().trim().min(1),
+    technique: z.enum([
+      "controlled_method",
+      "physiological_sigh",
+      "natural_breathing",
+    ]),
+    contentRef: ControlledContentRefSchema,
+    methodId: BreathMethodIdSchema.nullable(),
+    methodName: z.string().trim().min(1),
+    cadence: BreathCadenceSchema.nullable(),
+    inhaleRoute: BreathRouteSchema,
+    exhaleRoute: BreathRouteSchema,
+    posture: BreathPostureSchema,
+    durationSeconds: z.number().int().positive(),
+    comfortRequired: z.boolean(),
+    instructions: z.array(z.string().trim().min(1)).min(1),
+    cuePhases: z
+      .array(
+        z.object({
+          label: z.string().trim().min(1),
+          durationSeconds: z.number().positive(),
+          toneHz: z.number().positive().nullable(),
+        }),
+      )
+      .min(1),
+  })
+  .superRefine((segment, context) => {
+    const expectedAuthorityKey = authorityKeyForBreathSegment(segment);
+    if (
+      expectedAuthorityKey &&
+      segment.contentRef.authorityKey !== expectedAuthorityKey
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["contentRef", "authorityKey"],
+        message: `CONTROLLED_CONTENT_PARENT_MISMATCH: expected ${expectedAuthorityKey}`,
+      });
+    }
+  });
+
+function authorityKeyForBreathSegment(value: unknown): string | null {
+  if (typeof value !== "object" || value === null) return null;
+  return "methodId" in value && typeof value.methodId === "string"
+    ? `breath.method.${value.methodId}`
+    : "technique" in value && value.technique === "physiological_sigh"
+      ? "breath.method.physiological-sigh"
+      : "technique" in value && value.technique === "natural_breathing"
+        ? "breath.method.natural-breathing"
+        : null;
+}
+
+export const BreathFoundationProtocolSegmentSchema = z.preprocess((value) => {
+  if (typeof value !== "object" || value === null || "contentRef" in value) {
+    return value;
+  }
+  const authorityKey = authorityKeyForBreathSegment(value);
+  return authorityKey
+    ? { ...value, contentRef: contentRefFor(authorityKey) }
+    : value;
+}, BreathFoundationProtocolSegmentObjectSchema);
 
 export const BreathFoundationProtocolSchema = z.object({
   protocolId: z.string().trim().min(1),
@@ -217,29 +261,113 @@ export const BreathPreludeSchema = z.object({
   instruction: z.string().trim().min(1),
 });
 
-export const ReadyBreathSelectionSchema = z.object({
-  status: z.literal("ready"),
-  protocolId: z.string().trim().min(1),
-  sourceClass: z.enum([
-    "qctp_regulation_support",
-    "source_specific_controlled",
-  ]),
-  goal: BreathGoalSchema,
-  methodId: BreathMethodIdSchema.nullable(),
-  title: z.string().trim().min(1),
-  cadence: BreathCadenceSchema,
-  inhaleRoute: BreathRouteSchema,
-  exhaleRoute: BreathRouteSchema,
-  volumeInstruction: z.string().trim().min(1),
-  plannedDurationSeconds: z.number().int().positive().nullable(),
-  permittedPostures: z.array(BreathPostureSchema).min(1),
-  transitionInstruction: z.string().trim().min(1),
-  why: z.string().trim().min(1),
-  prelude: z.array(BreathPreludeSchema),
-  stopConditions: z.array(z.string().trim().min(1)).min(1),
-  warnings: z.array(z.string().trim().min(1)),
-  grantsStateCreditFromElapsedTime: z.literal(false),
-});
+const ReadyBreathSelectionObjectSchema = z
+  .object({
+    status: z.literal("ready"),
+    protocolId: z.string().trim().min(1),
+    sourceClass: z.enum([
+      "qctp_regulation_support",
+      "source_specific_controlled",
+    ]),
+    contentClass: ControlledContentClassSchema,
+    contentRef: ControlledContentRefSchema,
+    embeddedContentRefs: z.array(ControlledContentRefSchema).default([]),
+    goal: BreathGoalSchema,
+    methodId: BreathMethodIdSchema.nullable(),
+    title: z.string().trim().min(1),
+    cadence: BreathCadenceSchema,
+    inhaleRoute: BreathRouteSchema,
+    exhaleRoute: BreathRouteSchema,
+    volumeInstruction: z.string().trim().min(1),
+    plannedDurationSeconds: z.number().int().positive().nullable(),
+    permittedPostures: z.array(BreathPostureSchema).min(1),
+    transitionInstruction: z.string().trim().min(1),
+    why: z.string().trim().min(1),
+    prelude: z.array(BreathPreludeSchema),
+    stopConditions: z.array(z.string().trim().min(1)).min(1),
+    warnings: z.array(z.string().trim().min(1)),
+    grantsStateCreditFromElapsedTime: z.literal(false),
+  })
+  .superRefine((selection, context) => {
+    const expectedAuthorityKey = authorityKeyForBreathProtocol(
+      selection.protocolId,
+    );
+    if (
+      expectedAuthorityKey &&
+      selection.contentRef.authorityKey !== expectedAuthorityKey
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["contentRef", "authorityKey"],
+        message: `CONTROLLED_CONTENT_PARENT_MISMATCH: expected ${expectedAuthorityKey}`,
+      });
+    }
+    if (selection.contentClass !== selection.contentRef.contentClass) {
+      context.addIssue({
+        code: "custom",
+        path: ["contentClass"],
+        message:
+          "CONTROLLED_CONTENT_PARENT_MISMATCH: selection class must describe its protocol contentRef",
+      });
+    }
+  });
+
+function authorityKeyForBreathProtocol(protocolId: string): string | null {
+  if (/^QCTP-B[1-6]$/u.test(protocolId)) {
+    return `breath.method.${protocolId}`;
+  }
+  const foundation = /^(BREATH-0[1-7])-PROTOCOL-REV1$/u.exec(protocolId);
+  if (foundation?.[1]) {
+    return `breath.foundation.${foundation[1]}`;
+  }
+  if (protocolId === "QCTP-BREATH-CALIBRATION-REV0") {
+    return "breath.calibration";
+  }
+  if (protocolId === "FOUNDATION-DAY-01-HEARTMATH-REV0") {
+    return "foundation.day1.heartmath-rail";
+  }
+  return null;
+}
+
+function migrateLegacyReadyBreathSelection(value: unknown): unknown {
+  if (
+    typeof value !== "object" ||
+    value === null ||
+    !("protocolId" in value) ||
+    typeof value.protocolId !== "string"
+  ) {
+    return value;
+  }
+  const authorityKey = authorityKeyForBreathProtocol(value.protocolId);
+  if (!authorityKey) return value;
+  const expected = contentRefFor(authorityKey);
+  const inferredEmbeddedContentRefs =
+    "prelude" in value &&
+    Array.isArray(value.prelude) &&
+    value.prelude.some((item: unknown) => {
+      if (typeof item !== "object" || item === null || !("kind" in item)) {
+        return false;
+      }
+      return item.kind === "physiological_sigh";
+    })
+      ? [contentRefFor("breath.method.physiological-sigh")]
+      : [];
+  return {
+    ...value,
+    contentClass:
+      "contentClass" in value ? value.contentClass : expected.contentClass,
+    contentRef: "contentRef" in value ? value.contentRef : expected,
+    embeddedContentRefs:
+      "embeddedContentRefs" in value
+        ? value.embeddedContentRefs
+        : inferredEmbeddedContentRefs,
+  };
+}
+
+export const ReadyBreathSelectionSchema = z.preprocess(
+  migrateLegacyReadyBreathSelection,
+  ReadyBreathSelectionObjectSchema,
+);
 
 export const BlockedBreathSelectionSchema = z.object({
   status: z.literal("blocked"),
@@ -261,7 +389,7 @@ export const BlockedBreathSelectionSchema = z.object({
   grantsStateCreditFromElapsedTime: z.literal(false),
 });
 
-export const BreathSelectionSchema = z.discriminatedUnion("status", [
+export const BreathSelectionSchema = z.union([
   ReadyBreathSelectionSchema,
   BlockedBreathSelectionSchema,
 ]);
@@ -403,37 +531,153 @@ export const BreathSessionCheckpointSchema = z.object({
   savedAt: z.string().datetime({ offset: true }),
 });
 
-export const BreathSessionRecordSchema = z.object({
-  schemaVersion: z.literal(1),
-  id: z.string().trim().min(1).max(240),
-  goal: BreathGoalSchema,
-  context: BreathContextSchema,
-  foundationSessionId: BreathFoundationSessionIdSchema.nullable().default(null),
-  foundationProtocol: BreathFoundationProtocolSchema.nullable().optional(),
-  protocolProgress: z.array(BreathFoundationProtocolProgressSchema).optional(),
-  checkpoint: BreathSessionCheckpointSchema.nullable().optional(),
-  selection: ReadyBreathSelectionSchema,
-  startedAt: z.string().datetime({ offset: true }),
-  endedAt: z.string().datetime({ offset: true }).nullable(),
-  plannedDurationSeconds: z.number().int().nonnegative(),
-  completedDurationSeconds: z.number().int().nonnegative(),
-  initialState: BreathStateRatingSchema,
-  finalState: BreathStateRatingSchema.nullable(),
-  adjustments: z.array(BreathAdjustmentSchema),
-  symptoms: z.array(z.string().trim().min(1)),
-  shouldReuseForGoal: z.boolean().nullable(),
-  rawObservation: z.string(),
-  interpretation: z.string(),
-  status: z.enum([
-    "in_progress",
-    "completed",
-    "stopped",
-    "interrupted",
-    "save_pending",
-  ]),
-  stateCapabilityCreditGranted: z.literal(false),
-  updatedAt: z.string().datetime({ offset: true }),
-});
+const BreathSessionRecordObjectSchema = z
+  .object({
+    schemaVersion: z.literal(1),
+    id: z.string().trim().min(1).max(240),
+    goal: BreathGoalSchema,
+    context: BreathContextSchema,
+    foundationSessionId:
+      BreathFoundationSessionIdSchema.nullable().default(null),
+    contentRef: ControlledContentRefSchema.optional(),
+    foundationProtocol: BreathFoundationProtocolSchema.nullable().optional(),
+    protocolProgress: z
+      .array(BreathFoundationProtocolProgressSchema)
+      .optional(),
+    checkpoint: BreathSessionCheckpointSchema.nullable().optional(),
+    selection: ReadyBreathSelectionSchema,
+    startedAt: z.string().datetime({ offset: true }),
+    endedAt: z.string().datetime({ offset: true }).nullable(),
+    plannedDurationSeconds: z.number().int().nonnegative(),
+    completedDurationSeconds: z.number().int().nonnegative(),
+    initialState: BreathStateRatingSchema,
+    finalState: BreathStateRatingSchema.nullable(),
+    adjustments: z.array(BreathAdjustmentSchema),
+    symptoms: z.array(z.string().trim().min(1)),
+    shouldReuseForGoal: z.boolean().nullable(),
+    rawObservation: z.string(),
+    interpretation: z.string(),
+    status: z.enum([
+      "in_progress",
+      "completed",
+      "stopped",
+      "interrupted",
+      "save_pending",
+    ]),
+    stateCapabilityCreditGranted: z.literal(false),
+    updatedAt: z.string().datetime({ offset: true }),
+  })
+  .superRefine((record, context) => {
+    const expectedAuthorityKey = record.foundationSessionId
+      ? `breath.foundation.${record.foundationSessionId}`
+      : authorityKeyForBreathProtocol(record.selection.protocolId);
+    if (
+      expectedAuthorityKey &&
+      record.contentRef &&
+      record.contentRef.authorityKey !== expectedAuthorityKey
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["contentRef", "authorityKey"],
+        message: `CONTROLLED_CONTENT_PARENT_MISMATCH: expected ${expectedAuthorityKey}`,
+      });
+    }
+    if (record.foundationSessionId) {
+      const expectedProtocolId = `${record.foundationSessionId}-PROTOCOL-REV1`;
+      if (record.selection.protocolId !== expectedProtocolId) {
+        context.addIssue({
+          code: "custom",
+          path: ["selection", "protocolId"],
+          message: `CONTROLLED_CONTENT_PARENT_MISMATCH: expected ${expectedProtocolId}`,
+        });
+      }
+      if (
+        record.foundationProtocol &&
+        (record.foundationProtocol.foundationSessionId !==
+          record.foundationSessionId ||
+          record.foundationProtocol.protocolId !== expectedProtocolId)
+      ) {
+        context.addIssue({
+          code: "custom",
+          path: ["foundationProtocol"],
+          message: `CONTROLLED_CONTENT_PARENT_MISMATCH: expected ${record.foundationSessionId} / ${expectedProtocolId}`,
+        });
+      }
+    } else if (
+      record.foundationProtocol ||
+      /^(?:BREATH-0[1-7])-PROTOCOL-REV1$/u.test(record.selection.protocolId)
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["foundationSessionId"],
+        message:
+          "CONTROLLED_CONTENT_PARENT_MISMATCH: a Foundation protocol requires its Foundation session identity",
+      });
+    }
+  });
+
+export const BreathSessionRecordSchema = z.preprocess((value) => {
+  if (typeof value !== "object" || value === null) {
+    return value;
+  }
+  const foundationSessionId =
+    "foundationSessionId" in value &&
+    typeof value.foundationSessionId === "string"
+      ? value.foundationSessionId
+      : null;
+  const selection =
+    "selection" in value &&
+    typeof value.selection === "object" &&
+    value.selection !== null
+      ? value.selection
+      : null;
+  const protocolId =
+    selection &&
+    "protocolId" in selection &&
+    typeof selection.protocolId === "string"
+      ? selection.protocolId
+      : null;
+  const authorityKey = foundationSessionId
+    ? `breath.foundation.${foundationSessionId}`
+    : protocolId
+      ? authorityKeyForBreathProtocol(protocolId)
+      : null;
+  const foundationProtocol =
+    "foundationProtocol" in value &&
+    typeof value.foundationProtocol === "object" &&
+    value.foundationProtocol !== null
+      ? value.foundationProtocol
+      : null;
+  const segments =
+    foundationProtocol &&
+    "segments" in foundationProtocol &&
+    Array.isArray(foundationProtocol.segments)
+      ? foundationProtocol.segments
+      : [];
+  const embeddedContentRefs = [
+    ...new Map(
+      segments.flatMap((segment) => {
+        const segmentAuthorityKey = authorityKeyForBreathSegment(segment);
+        return segmentAuthorityKey
+          ? [[segmentAuthorityKey, contentRefFor(segmentAuthorityKey)] as const]
+          : [];
+      }),
+    ).values(),
+  ];
+  const enrichedSelection =
+    selection &&
+    !("embeddedContentRefs" in selection) &&
+    embeddedContentRefs.length > 0
+      ? { ...selection, embeddedContentRefs }
+      : selection;
+  return {
+    ...value,
+    ...(enrichedSelection ? { selection: enrichedSelection } : {}),
+    ...(!("contentRef" in value) && authorityKey
+      ? { contentRef: contentRefFor(authorityKey) }
+      : {}),
+  };
+}, BreathSessionRecordObjectSchema);
 
 export type BreathMethodId = z.infer<typeof BreathMethodIdSchema>;
 export type BreathGoal = z.infer<typeof BreathGoalSchema>;

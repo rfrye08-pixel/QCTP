@@ -63,6 +63,21 @@ describe("StateAtlasProgress", () => {
     expect(onStateSelect).toHaveBeenCalledTimes(1);
   });
 
+  it("shows a source-faithful target separately from the original runnable recipe without granting attainment", () => {
+    const { container } = render(
+      <StateAtlasProgress capabilities={[]} stateIds={["M-F10"]} />,
+    );
+
+    expect(
+      container.querySelector('[data-content-authority="state.target.M-F10"]'),
+    ).toHaveAttribute("data-content-class", "SOURCE_FAITHFUL");
+    expect(
+      container.querySelector('[data-content-authority="state.recipe.M-F10"]'),
+    ).toHaveAttribute("data-content-class", "QCTP_ORIGINAL");
+    expect(screen.getByText(/does not establish attainment/i)).toBeVisible();
+    expect(screen.getByText("Not introduced")).toBeVisible();
+  });
+
   it("does not advance or emit anything when time passes", () => {
     vi.useFakeTimers();
     const onStateSelect = vi.fn();

@@ -1,4 +1,6 @@
+import { getControlledContent } from "../../controlled-content";
 import { VOICE_FREE_DAY1_PHASES } from "../../practice";
+import { ContentClassBadge } from "./ContentClassBadge";
 
 function phaseTime(seconds: number): string {
   return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(
@@ -24,6 +26,18 @@ export function VoiceFreePhasePlan({ compact = false }: { compact?: boolean }) {
             </p>
             <h3>{phase.title}</h3>
             <small>{phase.sourceLabel}</small>
+            <div aria-label={`${phase.title} controlled provenance`}>
+              {phase.contentRefs.map((contentRef) => (
+                <ContentClassBadge
+                  key={contentRef.authorityKey}
+                  authorityKey={contentRef.authorityKey}
+                  scope={
+                    getControlledContent(contentRef.authorityKey)?.title ??
+                    phase.title
+                  }
+                />
+              ))}
+            </div>
             {compact ? null : <p>{phase.readOnceInstruction}</p>}
           </div>
         </article>

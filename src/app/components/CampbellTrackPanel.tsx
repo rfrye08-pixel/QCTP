@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 
+import { contentRefFor } from "../../controlled-content";
 import { CodexRecordSchema } from "../../domain";
 import {
   getCampbellExercise,
@@ -7,6 +8,7 @@ import {
   type SourceExerciseField,
 } from "../../source-tracks";
 import { FieldDictation } from "./FieldDictation";
+import { ContentClassBadge } from "./ContentClassBadge";
 import { StatusBadge } from "./StatusBadge";
 import { useQctp } from "../qctp-context";
 
@@ -124,12 +126,12 @@ export function CampbellTrackPanel({
         revisionIds: [],
         pathId: "thomas-campbell",
         sessionId: null,
+        contentRef: contentRefFor(`campbell.exercise.${exercise.id}`),
         fields: {
           sourceTrack: "thomas-campbell",
           moduleId: exercise.moduleId,
           exerciseId: exercise.id,
           sourceConcept: exercise.sourceConcept,
-          contentClass: exercise.contentClass,
           structuredFields: values,
           completionGate: exercise.completionGate,
           stateCapabilityCreditGranted: false,
@@ -156,6 +158,10 @@ export function CampbellTrackPanel({
         <div>
           <p className="eyebrow">Controlled source track</p>
           <h2>Thomas Campbell</h2>
+          <ContentClassBadge
+            authorityKey="source.profile.thomas-campbell"
+            scope="Campbell source profile"
+          />
         </div>
         <span className="counter">05 / 10 MVP exercises</span>
       </div>
@@ -172,6 +178,10 @@ export function CampbellTrackPanel({
               <div>
                 <h3>{module.title}</h3>
                 <small>{module.sourceLabel}</small>
+                <ContentClassBadge
+                  authorityKey={`campbell.module.${module.id}`}
+                  scope="Source summary"
+                />
               </div>
               <StatusBadge
                 status={
@@ -219,6 +229,10 @@ export function CampbellTrackPanel({
         <section className="source-exercise" aria-live="polite">
           <p className="eyebrow">{exercise.moduleId} · QCTP original</p>
           <h3>{exercise.title}</h3>
+          <ContentClassBadge
+            authorityKey={`campbell.exercise.${exercise.id}`}
+            scope="QCTP exercise"
+          />
           <ol className="instruction-list">
             {exercise.instructions.map((instruction) => (
               <li key={instruction}>{instruction}</li>

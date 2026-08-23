@@ -265,6 +265,215 @@ test("Paths exposes controlled Breath, State, Grant, and Campbell work without f
   await expectNoHorizontalOverflow(page);
 });
 
+test("canonical content classes remain visible, authority-keyed, and mobile-safe", async ({
+  page,
+}) => {
+  await openQctp(page);
+  const capturedAt = "2026-08-23T06:30:00.000Z";
+  await putStore(page, "records", {
+    schemaVersion: 1,
+    id: "e2e-user-evidence-controlled-tool",
+    kind: "mirror",
+    title: "Ryan's REG observation",
+    createdAt: capturedAt,
+    updatedAt: capturedAt,
+    observation: {
+      id: "e2e-user-evidence-controlled-tool:observation",
+      text: "I noticed the two circles crossed at two points.",
+      capturedAt,
+      evidenceClass: "self_reported",
+      provenance: {
+        actor: "user",
+        method: "manual_entry",
+        provider: null,
+        model: null,
+      },
+      sourceIds: [],
+    },
+    interpretation: null,
+    tags: ["e2e-controlled-tool-origin"],
+    backlinks: [],
+    sourceLinks: [],
+    attachmentIds: [],
+    revisionIds: [],
+    pathId: "reg-path",
+    sessionId: null,
+    contentRef: {
+      authorityKey: "grant.exercise.REG-01-A",
+      contentClass: "QCTP_ORIGINAL",
+    },
+    fields: {
+      controlledContentAuthorityKey: "grant.exercise.REG-01-A",
+      contentClass: "qctp_original",
+      surface: "mirror",
+      userVisibleNote: "Kept as user evidence.",
+    },
+    deletedAt: null,
+  });
+  await putStore(page, "records", {
+    schemaVersion: 1,
+    id: "e2e-held-legacy-content",
+    kind: "source_note",
+    title: "Legacy held Campbell observation",
+    createdAt: capturedAt,
+    updatedAt: capturedAt,
+    observation: null,
+    interpretation: null,
+    tags: ["e2e-controlled-hold"],
+    backlinks: [],
+    sourceLinks: [],
+    attachmentIds: [],
+    revisionIds: [],
+    pathId: "thomas-campbell",
+    sessionId: null,
+    fields: {
+      sourceTrack: "thomas-campbell",
+      exerciseId: "TC-01-POSSIBILITY-LEDGER",
+      contentClass: "mystery_class",
+      userVisibleNote: "Preserve this held observation.",
+    },
+    deletedAt: null,
+  });
+  await page.reload();
+  await expect(
+    page.locator(
+      '[data-content-authority="foundation.day1.practice"][data-content-class="QCTP_SYNTHESIS"]',
+    ),
+  ).toBeVisible();
+
+  await page
+    .getByRole("navigation", { name: "Primary navigation" })
+    .getByRole("button", { name: "Paths", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: /BREATH-04.*Cyclic Sighing/u })
+    .click();
+  await expect(
+    page.locator(
+      '[data-content-authority="breath.method.QCTP-B2"][data-content-class="SOURCE_ENHANCED"]',
+    ),
+  ).toBeVisible();
+  for (const [contentClass, humanLabel] of [
+    ["SOURCE_FAITHFUL", "Source faithful"],
+    ["SOURCE_ENHANCED", "Source enhanced"],
+    ["QCTP_SYNTHESIS", "QCTP synthesis"],
+    ["QCTP_ORIGINAL", "QCTP original"],
+  ] as const) {
+    const badge = page
+      .locator(`[data-content-class="${contentClass}"]`)
+      .first();
+    await expect(badge).toBeVisible();
+    await expect(badge).toContainText(humanLabel);
+    await expect(badge).toContainText(contentClass);
+    const fontSizes = await badge.evaluate((element) => [
+      Number.parseFloat(getComputedStyle(element).fontSize),
+      ...Array.from(
+        element.querySelectorAll(
+          ".content-class-meaning, .content-class-token",
+        ),
+        (part) => Number.parseFloat(getComputedStyle(part).fontSize),
+      ),
+    ]);
+    expect(Math.min(...fontSizes)).toBeGreaterThanOrEqual(12);
+  }
+  await expect(
+    page.locator(
+      '[data-content-authority="campbell.module.TC-03"][data-content-class="HELD"]',
+    ),
+  ).toContainText("AUTHORITY HOLD");
+  await expectNoHorizontalOverflow(page);
+
+  const navigation = page.getByRole("navigation", {
+    name: "Primary navigation",
+  });
+  await navigation
+    .getByRole("button", { name: "Practice", exact: true })
+    .click();
+  await expect(
+    page
+      .locator(".screen-header")
+      .locator('[data-content-class="QCTP_SYNTHESIS"]'),
+  ).toBeVisible();
+  await navigation.getByRole("button", { name: "Studio", exact: true }).click();
+  await expect(
+    page
+      .locator(".screen-header")
+      .locator('[data-content-class="QCTP_ORIGINAL"]'),
+  ).toBeVisible();
+
+  await navigation.getByRole("button", { name: "More", exact: true }).click();
+  for (const [surface, authorityKey] of [
+    ["Lab", "workflow.lab"],
+    ["Codex", "workflow.codex"],
+    ["Mirror / Insights", "workflow.mirror"],
+  ] as const) {
+    await page.getByRole("button", { name: new RegExp(`^${surface}`) }).click();
+    await expect(
+      page
+        .locator(".screen-header")
+        .locator(
+          `[data-content-authority="${authorityKey}"][data-content-class="QCTP_ORIGINAL"]`,
+        ),
+    ).toBeVisible();
+    if (authorityKey === "workflow.mirror") {
+      const userEvidence = page
+        .locator(".mirror-evidence-index details")
+        .filter({ hasText: "Ryan's REG observation" });
+      await userEvidence.locator("summary").click();
+      await expect(
+        userEvidence.getByText("Observation", { exact: true }),
+      ).toBeVisible();
+      await expect(userEvidence).toContainText(
+        "I noticed the two circles crossed at two points.",
+      );
+      const toolOrigin = userEvidence.locator(
+        '[data-originating-controlled-tool="grant.exercise.REG-01-A"]',
+      );
+      await expect(toolOrigin).toContainText(
+        "Template/tool class: QCTP original (QCTP_ORIGINAL)",
+      );
+      await expect(toolOrigin).toContainText(
+        "Your observation, interpretation, and result remain user evidence.",
+      );
+      const userFields = userEvidence.locator(
+        ".user-record-structured-fields pre",
+      );
+      await expect(userFields).toContainText('"surface": "mirror"');
+      await expect(userFields).toContainText(
+        '"userVisibleNote": "Kept as user evidence."',
+      );
+      await expect(userFields).not.toContainText("contentClass");
+      await expect(userFields).not.toContainText(
+        "controlledContentAuthorityKey",
+      );
+      await expect(userEvidence.locator(".content-class-badge")).toHaveCount(0);
+
+      const heldEvidence = page
+        .locator(".mirror-evidence-index details")
+        .filter({ hasText: "Legacy held Campbell observation" });
+      await heldEvidence.locator("summary").click();
+      const recoveryHold = heldEvidence.locator(
+        '[data-controlled-content-hold="UNMAPPED_LEGACY_CONTENT_CLASS"]',
+      );
+      await expect(recoveryHold).toContainText(
+        "campbell.exercise.TC-01-POSSIBILITY-LEDGER",
+      );
+      await expect(recoveryHold).toContainText("Original value: mystery_class");
+      await expect(recoveryHold).toContainText(
+        "Recovery export remains available. Editing and validated import stay blocked",
+      );
+      await expect(recoveryHold).toContainText("No data was changed.");
+      await expect(recoveryHold.locator('[role="status"]')).toHaveCount(0);
+      await expect(heldEvidence.locator(".content-class-badge")).toHaveCount(0);
+      await expect(
+        heldEvidence.locator(".user-record-structured-fields pre"),
+      ).not.toContainText("mystery_class");
+    }
+    await expectNoHorizontalOverflow(page);
+    await navigation.getByRole("button", { name: "More", exact: true }).click();
+  }
+});
+
 test("bottom navigation and every released platform surface render", async ({
   page,
 }) => {

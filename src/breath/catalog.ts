@@ -24,6 +24,7 @@ const methodCatalog: BreathMethod[] = [
     id: "QCTP-B1",
     name: "Foundation Resonance Breath",
     sourceClass: "qctp_regulation_support",
+    contentClass: "QCTP_ORIGINAL",
     primaryUses: [
       "Morning settling",
       "Coherence support outside controlled source sessions",
@@ -62,6 +63,7 @@ const methodCatalog: BreathMethod[] = [
     id: "QCTP-B2",
     name: "Cyclic Sighing",
     sourceClass: "qctp_regulation_support",
+    contentClass: "SOURCE_ENHANCED",
     primaryUses: ["Five-minute emotional downshift", "Reducing activation"],
     cadence: {
       kind: "double_inhale",
@@ -93,6 +95,7 @@ const methodCatalog: BreathMethod[] = [
     id: "QCTP-B3",
     name: "Balanced Breath",
     sourceClass: "qctp_regulation_support",
+    contentClass: "QCTP_ORIGINAL",
     primaryUses: [
       "Balanced focus",
       "CAD and geometry preparation",
@@ -130,6 +133,7 @@ const methodCatalog: BreathMethod[] = [
     id: "QCTP-B4",
     name: "Box Breath",
     sourceClass: "qctp_regulation_support",
+    contentClass: "QCTP_ORIGINAL",
     primaryUses: [
       "Composure",
       "Deliberate attention",
@@ -167,6 +171,7 @@ const methodCatalog: BreathMethod[] = [
     id: "QCTP-B5",
     name: "Alternate Nostril Breath",
     sourceClass: "qctp_regulation_support",
+    contentClass: "QCTP_ORIGINAL",
     primaryUses: [
       "Attention training",
       "Ritualized state transition",
@@ -206,6 +211,7 @@ const methodCatalog: BreathMethod[] = [
     id: "QCTP-B6",
     name: "Step Breath",
     sourceClass: "qctp_regulation_support",
+    contentClass: "QCTP_ORIGINAL",
     primaryUses: [
       "Calm walking",
       "Transition after work",
@@ -247,6 +253,7 @@ const foundationCatalog: BreathFoundationSession[] = [
     order: 1,
     title: "Mechanics",
     sourceClass: "qctp_regulation_support",
+    contentClass: "QCTP_ORIGINAL",
     durationSeconds: 300,
     methodIds: ["QCTP-B3"],
     objectives: [
@@ -268,6 +275,7 @@ const foundationCatalog: BreathFoundationSession[] = [
     order: 2,
     title: "Exhale Bias",
     sourceClass: "qctp_regulation_support",
+    contentClass: "QCTP_ORIGINAL",
     durationSeconds: 360,
     methodIds: ["QCTP-B3", "QCTP-B1"],
     objectives: [
@@ -289,6 +297,7 @@ const foundationCatalog: BreathFoundationSession[] = [
     order: 3,
     title: "Physiological Sigh",
     sourceClass: "qctp_regulation_support",
+    contentClass: "QCTP_ORIGINAL",
     durationSeconds: 180,
     methodIds: [],
     objectives: [
@@ -307,6 +316,7 @@ const foundationCatalog: BreathFoundationSession[] = [
     order: 4,
     title: "Cyclic Sighing",
     sourceClass: "qctp_regulation_support",
+    contentClass: "QCTP_ORIGINAL",
     durationSeconds: 300,
     methodIds: ["QCTP-B2"],
     objectives: ["Perform a gentle five-minute cyclic-sighing downshift."],
@@ -323,6 +333,7 @@ const foundationCatalog: BreathFoundationSession[] = [
     order: 5,
     title: "Holds and Box Breathing",
     sourceClass: "qctp_regulation_support",
+    contentClass: "QCTP_ORIGINAL",
     durationSeconds: 240,
     methodIds: ["QCTP-B4"],
     objectives: [
@@ -344,6 +355,7 @@ const foundationCatalog: BreathFoundationSession[] = [
     order: 6,
     title: "Alternate Nostril and Walking Breath",
     sourceClass: "qctp_regulation_support",
+    contentClass: "QCTP_ORIGINAL",
     durationSeconds: 480,
     methodIds: ["QCTP-B5", "QCTP-B6"],
     objectives: [
@@ -365,6 +377,7 @@ const foundationCatalog: BreathFoundationSession[] = [
     order: 7,
     title: "Personal Calibration and Baseline Lock",
     sourceClass: "qctp_regulation_support",
+    contentClass: "QCTP_ORIGINAL",
     durationSeconds: 780,
     methodIds: ["QCTP-B3", "QCTP-B1"],
     objectives: [

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 
+import { contentRefFor } from "../../controlled-content";
 import {
   capabilitySnapshotsFromRecords,
   evaluateCapabilityProgression,
@@ -233,6 +234,7 @@ export function StateAtlasTrainingPanel() {
       schemaVersion: 1,
       ...baseAttempt,
       sessionRevision: `${stateId}-REV0`,
+      contentRef: contentRefFor(`state.recipe.${stateId}`),
       startedAt,
       posture: "safe supported posture",
       breathMethod: null,
