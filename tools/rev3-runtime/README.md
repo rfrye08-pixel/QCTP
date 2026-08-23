@@ -40,6 +40,30 @@ and task-action values are represented only by SHA-256 so credentials cannot be
 printed. A discovered directory is a candidate root, not proof that it is the
 served root; exact served identity is the responsibility of the preview test.
 
+## Durable tailnet-only private preview
+
+The Tailscale 8443 route depends on a loopback listener. Do not run the preview
+server as a child of an interactive Codex terminal because that child exits when
+the terminal session closes and Tailscale will return an empty HTTP 502 page.
+
+Install the exact staged candidate as a hidden, current-user logon task instead:
+
+```powershell
+pwsh -NoProfile -File .\tools\rev3-runtime\Install-QctpRev3PrivatePreviewStartup.ps1 `
+  -CandidateDirectory 'C:\QCTP-Rev3-Private-Candidates\qctp-rev3-<exact-sha>' `
+  -ExpectedCandidateSha '<exact-40-character-sha>'
+```
+
+The installer copies only the launcher and static preview server to
+`%LOCALAPPDATA%\QCTP\rev3-preview`, registers `QCTP Rev3 Private Preview` for
+the current user's logon, starts it immediately, and requires a matching
+ZERO_RELEASE health response on `127.0.0.1:4179`. Task Scheduler owns the
+supervisor for its full lifetime. The supervisor restarts an unexpectedly
+stopped listener with bounded backoff, and Task Scheduler provides a second
+process-level restart layer. The installer refuses to stop an unrecognized
+listener or supervisor. It does not change Tailscale Serve, Funnel, the 443
+runtime, `main`, Rev2, or any user data.
+
 ## 2. Stage the exact candidate
 
 Run only after the Rev3 work is committed, pushed, and the worktree is clean:

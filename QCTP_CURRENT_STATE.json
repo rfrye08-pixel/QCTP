@@ -1,8 +1,8 @@
 {
   "schema": "qctp-current-state-v20",
   "project": "QCTP",
-  "updated_at": "2026-08-22T19:14:04-05:00",
-  "status": "REV3_CANDIDATE_IMPLEMENTED_MACHINE_VERIFIED_PHYSICAL_AND_RELEASE_GATES_OPEN",
+  "updated_at": "2026-08-22T20:13:00-05:00",
+  "status": "REV3_CANDIDATE_IMPLEMENTED_MACHINE_VERIFIED_PRIVATE_PREVIEW_RECOVERED_PHYSICAL_AND_RELEASE_GATES_OPEN",
   "supersedes": "qctp-current-state-v19",
   "product_identity": {
     "name": "QCTP",
@@ -41,6 +41,7 @@
     "blind_voice_selection": "QCTP_REV3_BLIND_VOICE_PHYSICAL_SELECTION_REV0_2026-08-22.json",
     "ux_acceptance": "QCTP_REV3_UX_ACCEPTANCE_REV0_2026-08-22.json",
     "migration_evidence": "QCTP_REV3_MIGRATION_AND_DATA_PRESERVATION_REV0_2026-08-22.json",
+    "private_preview_startup_recovery": "QCTP_REV3_PRIVATE_PREVIEW_STARTUP_RECOVERY_REV0_2026-08-22.json",
     "execution_report": "CODEX_EXECUTION_REPORT.md"
   },
   "configuration": {
@@ -58,7 +59,7 @@
     "rev3_source_tree": "d59bbfee998d2dd51c38d437bb91b862601893d6",
     "rev3_voice_free_evidence_checkpoint": "dbe7aa8341107c5b3ed2884dd73e605c17b151dd",
     "rev3_ux_evidence_checkpoint": "511860e1bae0d8693c5b220d46a9a17e8f68135c",
-    "origin_rev3_at_state_write": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "origin_rev3_at_state_write": "4dd19d9052a01e155fea753b3dd3ea70b1f6422f",
     "draft_rev3_pull_request": "https://github.com/rfrye08-pixel/QCTP/pull/4",
     "release_authority": "ZERO_RELEASE"
   },
@@ -89,7 +90,7 @@
     "p5_today_mobile_ux": "IMPLEMENTED_WINDOWS_WEBKIT_IPHONE_PROFILE_PASS_PHYSICAL_IPHONE_OPEN",
     "p6_source_tracks": "CAMPBELL_AND_REG01_CONTROLLED_MVPS_PRESENT_BROADER_TRACKS_PARTIAL",
     "p7_local_first_reliability": "IMPLEMENTED_AUTOMATED_FIXTURE_PASS_ACTUAL_ORIGIN_AND_PHYSICAL_RECOVERY_OPEN",
-    "p8_release_package": "EXACT_REMOTE_CHECKPOINT_STAGED_LOOPBACK_AND_PRIVATE_HTTPS_VERIFIED_DRAFT_PR_OPEN_ZERO_RELEASE"
+    "p8_release_package": "EXACT_REMOTE_CHECKPOINT_STAGED_PRIVATE_HTTPS_VERIFIED_DURABLE_SUPERVISOR_CRASH_RECOVERY_PASS_DRAFT_PR_OPEN_ZERO_RELEASE"
   },
   "performed_verification": {
     "repository_check": "PASS_56_TEST_FILES_341_TESTS_COVERAGE_THRESHOLDS_PASS",
@@ -105,9 +106,11 @@
     "exact_remote_candidate": "PASS_5A884AE9_53_FILES_53880106_BYTES",
     "isolated_loopback_preview": "PASS_EVIDENCE_SHA256_735871BAD47001DAC6AFBBF834A36AE3195F19FB091F2FCD2CF0D2741F5322FC",
     "private_https_preview": "PASS_TAILNET_ONLY_API_UNAUTHENTICATED_401_EVIDENCE_SHA256_9244C2B3672E26295DCAB1215CD5C29FFBC5A58C8B5212626BAD4DA31992039E",
+    "private_preview_startup_recovery": "PASS_ROOT_CAUSE_502_NO_LISTENER_IN_PROCESS_RECOVERY_5_69_SECONDS_WEBKIT_IPHONE13_NON_WHITE",
     "existing_443_runtime": "UNCHANGED_IDENTITY_AND_INDEX_HASH_MATCH_HEALTH_200_FUNNEL_OFF"
   },
   "release_acceptance_holds": [
+    "Physical iPhone reload confirmation against the recovered private Rev3 preview",
     "Physical iPhone Voice-Free Day 1 morning-mode, cold-offline, support-audio, marker, return, and wake-lock acceptance",
     "Ryan blind natural-voice choice A, B, C, or NONE with one naturalness observation",
     "Five-minute selected-voice Day 1 physical acceptance after a voice passes",
@@ -130,9 +133,9 @@
   },
   "active_action": {
     "action_id": "QCTP-REV3-CODEX-A01",
-    "status": "EXACT_REMOTE_CANDIDATE_VERIFIED_DRAFT_PR_OPEN_PHYSICAL_GATES_REMAIN",
+    "status": "PRIVATE_PREVIEW_RECOVERED_DURABLE_SUPERVISOR_VERIFIED_DRAFT_PR_OPEN_PHYSICAL_GATES_REMAIN",
     "branch": "qctp-platform-rev3-codex",
-    "user_action_required_now": "PHYSICAL_IPHONE_VOICE_FREE_DAY1_MORNING_GATE"
+    "user_action_required_now": "PHYSICAL_IPHONE_RELOAD_RECOVERED_PRIVATE_PREVIEW"
   },
-  "next_controlled_action": "Ryan performs one complete Voice-Free Day 1 morning session from the exact private Rev3 preview on iPhone, including a cold-offline launch, and reports whether launch, continuous support audio, nonverbal phase markers, and the complete return all worked."
+  "next_controlled_action": "Ryan reloads https://reos.tail6ed282.ts.net:8443/ once on the iPhone and confirms that the Today screen renders instead of a white page."
 }

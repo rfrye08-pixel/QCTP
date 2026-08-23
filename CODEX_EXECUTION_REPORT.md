@@ -42,22 +42,27 @@
 - Exact-SHA candidate staging, fail-closed local-media checks, isolated
   loopback serving, install backup, rollback, and tamper-test tooling under
   `tools/rev3-runtime/`.
+- A hidden current-user Rev3 preview supervisor that starts at Windows logon,
+  binds only exact ZERO_RELEASE candidates to loopback, rejects unknown
+  listeners and duplicate supervisors, and recovers a stopped preview child
+  with bounded backoff.
 - The requested crystal-gateway iPhone/PWA icon wired as the 180-pixel Apple
   touch icon and 192/512-pixel PWA icons.
 
 ## Verification performed
 
-| Gate                                                                          | Result                                                                                                                                         |
-| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| Repository format, lint, TypeScript, unit/integration, coverage, audio, build | PASS — 56 test files / 341 tests; coverage thresholds passed; 23 legacy MP3 files / 13,340,411 bytes; 54-entry production precache             |
-| Chromium and iPhone-profile browser suite                                     | PASS — 22 tests; 6 intentional project/harness skips                                                                                           |
-| Voice-Free Day 1 machine gate                                                 | PASS — 75 / 75 checks; report bound to `7f03ec5a…`                                                                                             |
-| Voice-Free Day 1 browser gate                                                 | PASS — Chromium cold offline and Windows WebKit/iPhone harness                                                                                 |
-| Blind voice audition                                                          | PASS — local ASR/intelligibility, identical text, real silence, matched loudness, browser persistence/offline/secrecy, and complete hash chain |
-| Migration/data fixtures                                                       | PASS — 13 files / 89 tests from clean committed checkpoint                                                                                     |
-| Mobile UX evidence                                                            | PASS — Playwright WebKit 26.5, iPhone 13 profile, eight screenshots, no overflow/page errors/paid-cloud requests                               |
-| Local Whisper companion                                                       | PASS — 44 tests, 99.17% coverage, Ruff, basedpyright, and ty                                                                                   |
-| Runtime/rollback tooling self-test                                            | PASS — manifest tamper, A03 path/hash, external dependency, exact loopback, install backup, and rollback                                       |
+| Gate                                                                          | Result                                                                                                                                                                                                          |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository format, lint, TypeScript, unit/integration, coverage, audio, build | PASS — 56 test files / 341 tests; coverage thresholds passed; 23 legacy MP3 files / 13,340,411 bytes; 54-entry production precache                                                                              |
+| Chromium and iPhone-profile browser suite                                     | PASS — 22 tests; 6 intentional project/harness skips                                                                                                                                                            |
+| Voice-Free Day 1 machine gate                                                 | PASS — 75 / 75 checks; report bound to `7f03ec5a…`                                                                                                                                                              |
+| Voice-Free Day 1 browser gate                                                 | PASS — Chromium cold offline and Windows WebKit/iPhone harness                                                                                                                                                  |
+| Blind voice audition                                                          | PASS — local ASR/intelligibility, identical text, real silence, matched loudness, browser persistence/offline/secrecy, and complete hash chain                                                                  |
+| Migration/data fixtures                                                       | PASS — 13 files / 89 tests from clean committed checkpoint                                                                                                                                                      |
+| Mobile UX evidence                                                            | PASS — Playwright WebKit 26.5, iPhone 13 profile, eight screenshots, no overflow/page errors/paid-cloud requests                                                                                                |
+| Local Whisper companion                                                       | PASS — 44 tests, 99.17% coverage, Ruff, basedpyright, and ty                                                                                                                                                    |
+| Runtime/rollback tooling self-test                                            | PASS — manifest tamper, A03 path/hash, external dependency, exact loopback, install backup, and rollback                                                                                                        |
+| Private-preview white-screen recovery                                         | PASS — empty 502 traced to stopped 4179 listener; exact child crash recovered under the same supervisor in 5.69 seconds; final WebKit/iPhone 13 smoke rendered non-white with no page errors or failed requests |
 
 Machine and simulated-browser results do not substitute for physical iPhone,
 human voice-naturalness, actual-origin migration, or release acceptance.
@@ -120,6 +125,13 @@ reconnect, long-recording, quota, and interruption tests remain physical holds.
   — SHA-256
   `735871bad47001dac6afbbf834a36ae3195f19fb091f2fcd2cf0d2741f5322fc`.
 - Tailnet-only private preview: <https://reos.tail6ed282.ts.net:8443/>.
+- White-screen incident recovery evidence:
+  `QCTP_REV3_PRIVATE_PREVIEW_STARTUP_RECOVERY_REV0_2026-08-22.json`. The
+  candidate and user data were intact; the stopped interactive preview
+  listener was replaced by the supervised `QCTP Rev3 Private Preview` logon
+  task. A controlled child-process failure recovered in 5.69 seconds, and a
+  final WebKit/iPhone 13 run rendered the exact candidate with an active service
+  worker, no page errors, and no failed requests.
 - Private HTTPS evidence:
   `C:\QCTP-Rev3-Private-Evidence\private-https-final-5a884ae9eb3195a32039b5d6780bf2a4d89dfb35.json`
   — SHA-256
@@ -132,16 +144,17 @@ reconnect, long-recording, quota, and interruption tests remain physical holds.
 
 ## Remaining holds
 
-1. Physical iPhone Voice-Free morning/cold-offline/audio/marker/return gate.
-2. Blind human voice selection: A, B, C, or NONE.
-3. Five-minute and then natural 25-minute selected-voice Day 1 gates; both are
+1. Physical iPhone reload confirmation after the private-preview recovery.
+2. Physical iPhone Voice-Free morning/cold-offline/audio/marker/return gate.
+3. Blind human voice selection: A, B, C, or NONE.
+4. Five-minute and then natural 25-minute selected-voice Day 1 gates; both are
    withheld until the short voice passes.
-4. Breath Director physical iPhone acceptance.
-5. Actual-origin migration and existing-data preservation comparison.
-6. Physical microphone, offline/reconnect, lifecycle, quota, long-binary, and
+5. Breath Director physical iPhone acceptance.
+6. Actual-origin migration and existing-data preservation comparison.
+7. Physical microphone, offline/reconnect, lifecycle, quota, long-binary, and
    recovery acceptance.
-7. Physical remote-iPhone acceptance against the exact private Rev3 preview.
-8. Explicit merge and deployment authority.
+8. Physical remote-iPhone acceptance against the exact private Rev3 preview.
+9. Explicit merge and deployment authority.
 
 ## Release authority
 
@@ -150,7 +163,5 @@ paid-cloud dependency, or selected-voice integration is authorized or claimed.
 
 ## Exactly one next controlled action
 
-Ryan performs one complete Voice-Free Day 1 morning session from the exact
-private Rev3 preview on iPhone, including a cold-offline launch, and reports
-whether launch, continuous support audio, nonverbal phase markers, and the
-complete return all worked.
+Ryan reloads <https://reos.tail6ed282.ts.net:8443/> once on the iPhone and
+confirms that the Today screen renders instead of a white page.

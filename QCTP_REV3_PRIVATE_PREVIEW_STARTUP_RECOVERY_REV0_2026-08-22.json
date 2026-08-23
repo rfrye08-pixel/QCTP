@@ -1,0 +1,118 @@
+{
+  "schema": "qctp-rev3-private-preview-startup-recovery-v1",
+  "recorded_at": "2026-08-22T20:13:00-05:00",
+  "incident": {
+    "user_observation": "Physical iPhone Safari displayed a white page at the private Rev3 preview origin.",
+    "root_cause": "Tailscale Serve still routed the Rev3 static origin to 127.0.0.1:4179, but the prior interactive preview child process had stopped when its Codex terminal lifetime ended.",
+    "remote_failure": {
+      "origin": "https://reos.tail6ed282.ts.net:8443/",
+      "status": 502,
+      "response_bytes": 0,
+      "content_type": null,
+      "webkit_and_chromium_dom": "<html><head></head><body></body></html>"
+    },
+    "candidate_corruption": false,
+    "user_data_loss": false,
+    "service_worker_or_indexeddb_identified_as_cause": false
+  },
+  "preserved_candidate": {
+    "candidate_sha": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "source_branch": "qctp-platform-rev3-codex",
+    "candidate_directory": "C:\\QCTP-Rev3-Private-Candidates\\qctp-rev3-5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "content_file_count": 53,
+    "content_bytes": 53880106,
+    "content_manifest_sha256": "50eb39512e7159fbc36dfd86692184d2ba9a41b47c58048b87d223bc9fc05c49",
+    "integrity_result": "PASS_EXACT_NO_CORRUPTION",
+    "release_authority": "ZERO_RELEASE"
+  },
+  "remediation": {
+    "task_name": "QCTP Rev3 Private Preview",
+    "task_scope": "CURRENT_USER_LOGON_HIDDEN_LIMITED",
+    "task_state_after_install": "Running",
+    "task_last_result": 267009,
+    "task_last_result_meaning": "0x41301_TASK_CURRENTLY_RUNNING",
+    "loopback_binding": "127.0.0.1:4179",
+    "node_runtime": "EXPLICIT_LOCAL_HERMES_NODE_PATH",
+    "supervision": "IN_PROCESS_CHILD_RESTART_WITH_5_10_20_40_60_SECOND_BOUNDED_BACKOFF",
+    "task_scheduler_fallback": {
+      "restart_count": 3,
+      "restart_interval": "PT1M",
+      "execution_time_limit": "PT0S",
+      "scheduler_only_first_proof": "DID_NOT_RECOVER_WITHIN_90_SECONDS",
+      "scheduler_only_exact_failure_cause": "NOT_RECOVERABLE_BECAUSE_TASKSCHEDULER_OPERATIONAL_LOG_WAS_DISABLED"
+    },
+    "duplicate_supervisor_guard": "PASS_FAIL_CLOSED",
+    "installer_listener_guard": "PASS_REQUERIES_AND_REVALIDATES_EXACT_CONTROLLED_ZERO_RELEASE_LISTENER_BEFORE_STOP",
+    "launcher_sha256": "82e8def6d1d9f1c051e78af2edd91a2b7ed29d671f97d1af07aea29596d16f43",
+    "installed_launcher_hash_match": true,
+    "preview_server_sha256": "402f4e6f8477ea17057df112c2ce1c85ed865097d4823fb852c6c750a91208b5",
+    "installed_preview_server_hash_match": true
+  },
+  "controlled_crash_recovery_proof": {
+    "result": "PASS",
+    "stopped_at": "2026-08-22T20:11:01.3282134-05:00",
+    "recovered_at": "2026-08-22T20:11:07.0207409-05:00",
+    "recovery_seconds": 5.69,
+    "old_node_pid": 65308,
+    "old_node_pid_gone": true,
+    "new_node_pid": 59208,
+    "new_node_command_matches_exact_candidate": true,
+    "supervisor_pid_before": 60264,
+    "supervisor_pid_after": 60264,
+    "same_supervisor": true,
+    "runtime_restart_attempt": 1,
+    "task_state": "Running",
+    "loopback_health_candidate_sha": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "loopback_health_release_authority": "ZERO_RELEASE",
+    "private_https_status": 200,
+    "private_https_response_bytes": 1283,
+    "private_https_candidate_header": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35"
+  },
+  "post_recovery_webkit_iphone13": {
+    "started_at": "2026-08-22T20:11:46.338-05:00",
+    "completed_at": "2026-08-22T20:11:51.970-05:00",
+    "result": "PASS_NON_WHITE_EXACT_CANDIDATE",
+    "document_status": 200,
+    "candidate_sha": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "release_authority": "ZERO_RELEASE",
+    "root_child_count": 1,
+    "root_html_characters": 22045,
+    "expected_root_text_present": [
+      "QCTP",
+      "Today",
+      "Foundation Day 1",
+      "Voice-Free"
+    ],
+    "service_worker_activated_and_controlling": true,
+    "javascript_css_workbox_manifest_identity_status": "PASS_200_CORRECT_MIME",
+    "screenshot_width": 1170,
+    "screenshot_height": 1992,
+    "screenshot_sha256": "324538db78c63c61c24013a7a0f5332ab55bb034bb718daf335efd4541c47b72",
+    "sampled_nonwhite_ratio": 1.0,
+    "page_errors": [],
+    "request_failed_events": [],
+    "known_clean_context_console_hold": "Unauthenticated /api/transcriptions/policy intentionally returns HTTP 401; no other console errors."
+  },
+  "network_and_protected_runtime": {
+    "tailscale_visibility": "TAILNET_ONLY_FUNNEL_OFF",
+    "tailscale_8443_static_proxy": "http://127.0.0.1:4179",
+    "tailscale_8443_api_proxy": "http://127.0.0.1:8787/api",
+    "unauthenticated_api_probe_status": 401,
+    "existing_443_proxy": "http://127.0.0.1:8787",
+    "existing_443_index_sha256": "e7eb713893b385dd4822a5903830026a72b0368ce80040a55b019e390f567809",
+    "existing_443_health_status": 200,
+    "tailscale_configuration_modified": false,
+    "main_modified": false,
+    "rev2_modified": false,
+    "pr2_modified": false,
+    "user_data_modified": false,
+    "paid_api_key_required": false
+  },
+  "release_holds": [
+    "Physical iPhone reload confirmation remains required after this runtime recovery.",
+    "All prior Rev3 physical voice, Day 1, breath, migration, microphone, and release gates remain open.",
+    "Merge and deployment remain unauthorized."
+  ],
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "Ryan reloads https://reos.tail6ed282.ts.net:8443/ once on the iPhone and confirms that the Today screen renders instead of a white page."
+}

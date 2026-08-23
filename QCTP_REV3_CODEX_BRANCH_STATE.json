@@ -1,8 +1,8 @@
 {
   "schema": "qctp-rev3-codex-branch-state-v2",
   "branch": "qctp-platform-rev3-codex",
-  "updated_at": "2026-08-22T19:14:04-05:00",
-  "status": "EXACT_REMOTE_CANDIDATE_VERIFIED_DRAFT_PR_OPEN_PHYSICAL_GATES_REMAIN",
+  "updated_at": "2026-08-22T20:13:00-05:00",
+  "status": "PRIVATE_PREVIEW_RECOVERED_DURABLE_SUPERVISOR_VERIFIED_DRAFT_PR_OPEN_PHYSICAL_GATES_REMAIN",
   "release_authority": "ZERO_RELEASE",
   "actual_shas": {
     "main": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -14,7 +14,7 @@
     "voice_free_evidence_checkpoint": "dbe7aa8341107c5b3ed2884dd73e605c17b151dd",
     "ux_evidence_checkpoint": "511860e1bae0d8693c5b220d46a9a17e8f68135c",
     "state_checkpoint": null,
-    "origin_rev3_at_state_write": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35"
+    "origin_rev3_at_state_write": "4dd19d9052a01e155fea753b3dd3ea70b1f6422f"
   },
   "starting_baseline": {
     "required_rev2_commit": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
@@ -25,7 +25,7 @@
     "handoff": "QCTP_CODEX_REV3_FULL_UPGRADE_AND_NATURAL_VOICE_HANDOFF_REV0_2026-08-21.md"
   },
   "working_environment": {
-    "worktree": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\work\\QCTP-rev3",
+    "worktree": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\work\\QCTP-rev3-final",
     "branch": "qctp-platform-rev3-codex",
     "upstream": "origin/qctp-platform-rev3-codex",
     "starting_working_tree_status": "CLEAN",
@@ -98,7 +98,12 @@
     "repository": "56_TEST_FILES_341_TESTS_PASS_COVERAGE_THRESHOLDS_PASS",
     "browser_e2e": "22_PASS_6_INTENTIONAL_PROJECT_SKIPS",
     "whisper_companion": "44_TESTS_PASS_99_17_PERCENT_COVERAGE_RUFF_BASEDPYRIGHT_TY_PASS",
-    "runtime_tools": "SELF_TEST_PASS"
+    "runtime_tools": "SELF_TEST_PASS",
+    "private_preview_startup_recovery": {
+      "path": "QCTP_REV3_PRIVATE_PREVIEW_STARTUP_RECOVERY_REV0_2026-08-22.json",
+      "sha256": "b14ca64e2843080f7b3c8b34d75eee478a3b6ff679edfe98c1cdf1de40a4c865",
+      "result": "PASS_502_ROOT_CAUSE_DURABLE_LOGON_SUPERVISOR_5_69_SECOND_CRASH_RECOVERY_WEBKIT_IPHONE13_NON_WHITE"
+    }
   },
   "private_voice_mapping": {
     "tracked_by_git": false,
@@ -136,7 +141,14 @@
     "existing_443_handler": "UNCHANGED_HTTP_127_0_0_1_8787",
     "existing_443_runtime_identity_sha256": "72242dd73e9cb5e204f8c8feb54d8276489b470199eeb9130f515451d28d9f04",
     "existing_443_index_sha256": "e7eb713893b385dd4822a5903830026a72b0368ce80040a55b019e390f567809",
-    "existing_443_health_status": 200
+    "existing_443_health_status": 200,
+    "startup_task": "QCTP Rev3 Private Preview",
+    "startup_task_scope": "CURRENT_USER_LOGON_HIDDEN_LIMITED",
+    "startup_task_state": "Running",
+    "in_process_supervision": "PASS_BOUNDED_BACKOFF",
+    "controlled_crash_recovery_seconds": 5.69,
+    "post_recovery_webkit_iphone13": "PASS_NON_WHITE_EXACT_CANDIDATE",
+    "startup_recovery_evidence": "QCTP_REV3_PRIVATE_PREVIEW_STARTUP_RECOVERY_REV0_2026-08-22.json"
   },
   "closeout": {
     "pushed_to_origin": true,
@@ -150,6 +162,7 @@
   "release_holds": [
     "Do not modify, merge, reset, or rebase main, qctp-platform-rev2-codex, or PR #2.",
     "Do not merge or deploy Rev3 without explicit Ryan authority.",
+    "Physical iPhone reload confirmation against the recovered private Rev3 preview remains open.",
     "Physical Voice-Free Day 1 iPhone morning/cold-offline/audio/return gate remains open.",
     "Blind physical voice selection remains open; full five-minute and 25-minute voice renders remain withheld.",
     "Breath Director physical iPhone gate remains open.",
@@ -159,5 +172,5 @@
     "Foundation Days 2 through 112 remain unauthored and must not be fabricated.",
     "Required paid API keys and recurring paid cloud paths remain prohibited."
   ],
-  "next_controlled_action": "Ryan performs one complete Voice-Free Day 1 morning session from the exact private Rev3 preview on iPhone, including a cold-offline launch, and reports whether launch, continuous support audio, nonverbal phase markers, and the complete return all worked."
+  "next_controlled_action": "Ryan reloads https://reos.tail6ed282.ts.net:8443/ once on the iPhone and confirms that the Today screen renders instead of a white page."
 }
