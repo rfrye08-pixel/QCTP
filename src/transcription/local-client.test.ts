@@ -44,6 +44,9 @@ describe("Free Local Mode transcription client", () => {
       mimeType: "audio/webm",
       createdAt: "2026-08-17T12:00:00.000Z",
       append: false,
+      captureMode: "quick",
+      requestedDurationMs: null,
+      captureContext: { type: "global" },
     });
     const audio = await new Response("audio", {
       headers: { "content-type": "audio/webm" },
@@ -58,8 +61,10 @@ describe("Free Local Mode transcription client", () => {
       durationMs: 1_200,
       mimeType: "audio/webm",
       manualText: "",
-      fieldTargetId: null,
-      sessionId: null,
+      captureMode: "quick",
+      requestedDurationMinutes: null,
+      completedByDurationLimit: false,
+      context: { type: "global" },
       queueLocalTranscription: true,
     });
   });

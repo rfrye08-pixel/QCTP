@@ -730,7 +730,10 @@ export function MirrorScreen({
       await acceptVoiceCapture(repository, {
         ...capture,
         destination: "codex",
-        fieldTargetId: "mirror-request-prompt",
+        context: {
+          type: "field",
+          fieldTargetId: "mirror-request-prompt",
+        },
       });
       if (capture.manualText) {
         setPrompt((current) =>
@@ -3011,7 +3014,10 @@ export function MirrorScreen({
               persistence={capturePersistence}
               mode="field"
               initialDestination="codex"
-              fieldTargetId="mirror-request-prompt"
+              captureContext={{
+                type: "field",
+                fieldTargetId: "mirror-request-prompt",
+              }}
               localTranscriptionAvailable={
                 runtime.localTranscriptionStatus === "ready"
               }

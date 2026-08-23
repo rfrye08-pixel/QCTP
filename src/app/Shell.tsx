@@ -8,13 +8,15 @@ export function Shell({
   onQuickCapture,
   foundationDay,
   practiceActive = false,
+  inactiveForModal = false,
   children,
 }: {
   route: AppRoute;
   onNavigate: (route: AppRoute) => void;
-  onQuickCapture: () => void;
+  onQuickCapture: (trigger: HTMLButtonElement) => void;
   foundationDay: number;
   practiceActive?: boolean;
+  inactiveForModal?: boolean;
   children: ReactNode;
 }) {
   const primaryRoute = primaryRoutes.includes(
@@ -24,7 +26,11 @@ export function Shell({
     : "more";
 
   return (
-    <div className="app-frame">
+    <div
+      className="app-frame"
+      inert={inactiveForModal || undefined}
+      aria-hidden={inactiveForModal || undefined}
+    >
       <header className="app-bar">
         <button
           className="wordmark"
@@ -57,11 +63,11 @@ export function Shell({
         <button
           type="button"
           className="quick-capture-button"
-          aria-label="Open Quick Capture"
-          onClick={onQuickCapture}
+          aria-label="Open Voice Capture"
+          onClick={(event) => onQuickCapture(event.currentTarget)}
         >
           <span className="mic-glyph" aria-hidden="true" />
-          <span>Quick Capture</span>
+          <span>Voice Capture</span>
         </button>
       )}
 

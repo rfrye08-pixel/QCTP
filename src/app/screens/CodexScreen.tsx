@@ -1687,8 +1687,18 @@ export function CodexScreen({
                   {formatDuration(recording.durationMs)} ·{" "}
                   {formatBytes(recording.sizeBytes)}
                 </p>
-                <LocalAudio repository={repository} recording={recording} />
-                {unlinkedDelete?.recordingId === recording.id ? (
+                {recording.status === "CAPTURING" ? (
+                  <p className="platform-message warning" role="status">
+                    Active capture in another QCTP tab. Playback and deletion
+                    stay locked until that tab stops or orphan recovery safely
+                    completes.
+                  </p>
+                ) : (
+                  <LocalAudio repository={repository} recording={recording} />
+                )}
+                {recording.status ===
+                "CAPTURING" ? null : unlinkedDelete?.recordingId ===
+                  recording.id ? (
                   <div className="orphan-delete-confirmation">
                     <p className="platform-message warning">
                       This permanently removes the recording metadata, local

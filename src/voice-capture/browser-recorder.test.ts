@@ -8,6 +8,7 @@ import type { RecorderState } from "./recorder-machine";
 
 class FakeMediaRecorder extends EventTarget {
   static instances: FakeMediaRecorder[] = [];
+  static reportedMimeType: string | null = null;
   static isTypeSupported(type: string): boolean {
     return type.startsWith("audio/webm");
   }
@@ -17,7 +18,8 @@ class FakeMediaRecorder extends EventTarget {
 
   constructor(_stream: MediaStream, options?: MediaRecorderOptions) {
     super();
-    this.mimeType = options?.mimeType ?? "audio/webm";
+    this.mimeType =
+      FakeMediaRecorder.reportedMimeType ?? options?.mimeType ?? "audio/webm";
     FakeMediaRecorder.instances.push(this);
   }
 
@@ -53,7 +55,12 @@ interface TestCapturePersistence {
   >;
   appendChunk: ReturnType<
     typeof vi.fn<
-      (recordingId: string, index: number, chunk: Blob) => Promise<void>
+      (
+        recordingId: string,
+        index: number,
+        chunk: Blob,
+        activeDurationMs: number,
+      ) => Promise<void>
     >
   >;
   finalize: ReturnType<
@@ -62,6 +69,7 @@ interface TestCapturePersistence {
         recordingId: string,
         durationMs: number,
         mimeType: string,
+        completedByDurationLimit?: boolean,
       ) => Promise<Blob>
     >
   >;
@@ -71,6 +79,7 @@ interface TestCapturePersistence {
         recordingId: string,
         durationMs: number,
         mimeType: string,
+        completedByDurationLimit?: boolean,
       ) => Promise<Blob | null>
     >
   >;
@@ -83,13 +92,19 @@ function createPersistence(): TestCapturePersistence {
       (input: Parameters<CapturePersistence["begin"]>[0]) => Promise<number>
     >(() => Promise.resolve(0)),
     appendChunk: vi.fn<
-      (recordingId: string, index: number, chunk: Blob) => Promise<void>
+      (
+        recordingId: string,
+        index: number,
+        chunk: Blob,
+        activeDurationMs: number,
+      ) => Promise<void>
     >(() => Promise.resolve()),
     finalize: vi.fn<
       (
         recordingId: string,
         durationMs: number,
         mimeType: string,
+        completedByDurationLimit?: boolean,
       ) => Promise<Blob>
     >((_id, _duration, mimeType) =>
       new Response("audio", { headers: { "content-type": mimeType } }).blob(),
@@ -99,6 +114,7 @@ function createPersistence(): TestCapturePersistence {
         recordingId: string,
         durationMs: number,
         mimeType: string,
+        completedByDurationLimit?: boolean,
       ) => Promise<Blob | null>
     >((_id, _duration, mimeType) =>
       new Response("recovered", {
@@ -121,6 +137,7 @@ describe("BrowserRecorderSession", () => {
 
   beforeEach(() => {
     FakeMediaRecorder.instances = [];
+    FakeMediaRecorder.reportedMimeType = null;
     stopTrack.mockClear();
     getUserMedia.mockClear();
     Object.defineProperty(navigator, "mediaDevices", {
@@ -154,60 +171,260 @@ describe("BrowserRecorderSession", () => {
     expect(getUserMedia).not.toHaveBeenCalled();
     await session.start();
     expect(getUserMedia).toHaveBeenCalledWith({ audio: true });
+    expect(persistence.begin).toHaveBeenCalledWith(
+      expect.objectContaining({
+        recordingId: "browser-recording",
+        append: false,
+        captureMode: "quick",
+        requestedDurationMs: null,
+        captureContext: { type: "global" },
+      }),
+    );
     expect(latest).toMatchObject({
       phase: "recording",
       recordingId: "browser-recording",
     });
     const recorder = FakeMediaRecorder.instances[0];
     if (!recorder) throw new Error("Fake recorder was not created.");
-    recorder.emitChunk(new Blob(["chunk"], { type: "audio/webm" }));
-    await Promise.resolve();
     now = 1_350;
+    recorder.emitChunk(new Blob(["chunk"], { type: "audio/webm" }));
+    await vi.waitFor(() =>
+      expect(persistence.appendChunk).toHaveBeenCalledOnce(),
+    );
     await session.stop();
     const appendCall = persistence.appendChunk.mock.calls[0];
     expect(appendCall?.[0]).toBe("browser-recording");
     expect(appendCall?.[1]).toBe(0);
     expect(appendCall?.[2]).toBeInstanceOf(Blob);
+    expect(appendCall?.[3]).toBe(1_250);
     expect(persistence.finalize).toHaveBeenCalledWith(
       "browser-recording",
       1_250,
       "audio/webm;codecs=opus",
+      false,
     );
     expect(stopTrack).toHaveBeenCalledTimes(1);
-    expect(latest).toMatchObject({ phase: "review", accumulatedMs: 1_250 });
+    expect(latest).toMatchObject({
+      phase: "review",
+      accumulatedMs: 1_250,
+      stopReason: "user",
+    });
   });
 
-  it("auto-stops at its limit and preserves prior duration when appending", async () => {
-    vi.useFakeTimers();
-    let now = 10_000;
+  it("persists the MIME type reported by the constructed recorder", async () => {
+    FakeMediaRecorder.reportedMimeType = "audio/mp4";
     let latest: RecorderState | null = null;
     const persistence = createPersistence();
-    persistence.begin.mockResolvedValue(3);
     const session = new BrowserRecorderSession({
       persistence,
       onStateChange: (state) => {
         latest = state;
       },
-      now: () => now,
-      recordingId: "append-recording",
-      append: true,
-      initialAccumulatedMs: 4_000,
-      initialSizeBytes: 900,
-      durationLimitMs: 5_000,
+      createId: () => "normalized-mime",
+    });
+
+    await session.start();
+    expect(persistence.begin).toHaveBeenCalledWith(
+      expect.objectContaining({
+        recordingId: "normalized-mime",
+        mimeType: "audio/mp4",
+      }),
+    );
+    expect(latest).toMatchObject({ mimeType: "audio/mp4" });
+    await session.stop();
+    expect(persistence.finalize).toHaveBeenCalledWith(
+      "normalized-mime",
+      expect.any(Number),
+      "audio/mp4",
+      false,
+    );
+  });
+
+  it("leaves permission state terminal when the page hides after durable begin", async () => {
+    let latest: RecorderState | null = null;
+    let releaseBegin: ((nextIndex: number) => void) | undefined;
+    const persistence = createPersistence();
+    persistence.begin.mockImplementationOnce(
+      () =>
+        new Promise<number>((resolve) => {
+          releaseBegin = resolve;
+        }),
+    );
+    const session = new BrowserRecorderSession({
+      persistence,
+      onStateChange: (state) => {
+        latest = state;
+      },
+      createId: () => "hidden-after-begin",
+    });
+
+    const starting = session.start();
+    await vi.waitFor(() => expect(persistence.begin).toHaveBeenCalledOnce());
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      value: "hidden",
+    });
+    releaseBegin?.(0);
+    await starting;
+
+    expect(stopTrack).toHaveBeenCalledTimes(1);
+    expect(persistence.recoverInterrupted).toHaveBeenCalledWith(
+      "hidden-after-begin",
+      0,
+      "audio/webm;codecs=opus",
+      false,
+    );
+    expect(latest).toMatchObject({ phase: "error" });
+    expect((latest as RecorderState | null)?.error).toMatch(
+      /left the foreground/u,
+    );
+  });
+
+  it.each([300_000, 600_000, 1_200_000] as const)(
+    "auto-stops once at the controlled %i ms limit and returns a review Blob",
+    async (durationLimitMs) => {
+      vi.useFakeTimers();
+      let now = 10_000;
+      let latest: RecorderState | null = null;
+      const persistence = createPersistence();
+      const onCaptureReady = vi.fn<(blob: Blob, reason: string) => void>();
+      const recordingId = `timed-${String(durationLimitMs)}`;
+      const session = new BrowserRecorderSession({
+        persistence,
+        onStateChange: (state) => {
+          latest = state;
+        },
+        onCaptureReady,
+        now: () => now,
+        createId: () => recordingId,
+        durationLimitMs,
+        captureMode: "auto-dictation",
+        captureContext: { type: "global" },
+      });
+
+      await session.start();
+      expect(persistence.begin).toHaveBeenCalledWith(
+        expect.objectContaining({
+          recordingId,
+          append: false,
+          captureMode: "auto-dictation",
+          requestedDurationMs: durationLimitMs,
+          captureContext: { type: "global" },
+        }),
+      );
+      now += durationLimitMs;
+      await vi.advanceTimersByTimeAsync(100);
+      await vi.waitFor(() =>
+        expect(persistence.finalize).toHaveBeenCalledOnce(),
+      );
+
+      expect(persistence.finalize).toHaveBeenCalledWith(
+        recordingId,
+        durationLimitMs,
+        "audio/webm;codecs=opus",
+        true,
+      );
+      expect(latest).toMatchObject({
+        phase: "review",
+        accumulatedMs: durationLimitMs,
+        stopReason: "duration-limit",
+      });
+      expect(onCaptureReady).toHaveBeenCalledOnce();
+      expect(onCaptureReady.mock.calls[0]?.[0]).toBeInstanceOf(Blob);
+      expect(onCaptureReady.mock.calls[0]?.[1]).toBe("duration-limit");
+
+      await vi.advanceTimersByTimeAsync(1_000);
+      expect(persistence.finalize).toHaveBeenCalledOnce();
+      expect(onCaptureReady).toHaveBeenCalledOnce();
+    },
+  );
+
+  it("does not expose review actions until durable finalization completes", async () => {
+    let latest: RecorderState | null = null;
+    let releaseFinalize: ((blob: Blob) => void) | undefined;
+    const persistence = createPersistence();
+    persistence.finalize.mockImplementationOnce(
+      () =>
+        new Promise<Blob>((resolve) => {
+          releaseFinalize = resolve;
+        }),
+    );
+    const onCaptureReady = vi.fn<(blob: Blob, reason: string) => void>();
+    const session = new BrowserRecorderSession({
+      persistence,
+      onStateChange: (state) => {
+        latest = state;
+      },
+      onCaptureReady,
+      createId: () => "delayed-finalize",
+    });
+
+    await session.start();
+    const stopping = session.stop();
+    await vi.waitFor(() => expect(persistence.finalize).toHaveBeenCalledOnce());
+    expect(latest).toMatchObject({
+      phase: "finalizing",
+      stopReason: "user",
+    });
+    expect(onCaptureReady).not.toHaveBeenCalled();
+
+    releaseFinalize?.(new Blob(["durable"], { type: "audio/webm" }));
+    await stopping;
+    expect(latest).toMatchObject({ phase: "review", stopReason: "user" });
+    expect(onCaptureReady).toHaveBeenCalledOnce();
+  });
+
+  it("keeps controlled disposal pending until in-flight finalization completes", async () => {
+    let releaseFinalize: ((blob: Blob) => void) | undefined;
+    const persistence = createPersistence();
+    persistence.finalize.mockImplementationOnce(
+      () =>
+        new Promise<Blob>((resolve) => {
+          releaseFinalize = resolve;
+        }),
+    );
+    const session = new BrowserRecorderSession({
+      persistence,
+      onStateChange: () => undefined,
+      createId: () => "dispose-finalizing",
     });
     await session.start();
-    now = 11_100;
-    await vi.advanceTimersByTimeAsync(100);
-    expect(persistence.finalize).toHaveBeenCalledWith(
-      "append-recording",
-      5_000,
-      "audio/webm;codecs=opus",
-    );
-    expect(latest).toMatchObject({
-      phase: "review",
-      accumulatedMs: 5_000,
-      sizeBytes: 900,
+    const stopping = session.stop();
+    await vi.waitFor(() => expect(persistence.finalize).toHaveBeenCalledOnce());
+    let disposalComplete = false;
+    const disposal = session.dispose().then(() => {
+      disposalComplete = true;
     });
+    await Promise.resolve();
+    expect(disposalComplete).toBe(false);
+
+    releaseFinalize?.(new Blob(["durable"], { type: "audio/webm" }));
+    await Promise.all([stopping, disposal]);
+    expect(disposalComplete).toBe(true);
+  });
+
+  it("rejects a noncontrolled Auto-Dictation limit without beginning persistence", async () => {
+    let latest: RecorderState | null = null;
+    const persistence = createPersistence();
+    const session = new BrowserRecorderSession({
+      persistence,
+      onStateChange: (state) => {
+        latest = state;
+      },
+      durationLimitMs: 5_000,
+      captureMode: "auto-dictation",
+      captureContext: { type: "global" },
+    });
+
+    await session.start();
+
+    expect(persistence.begin).not.toHaveBeenCalled();
+    expect(FakeMediaRecorder.instances).toHaveLength(0);
+    expect(stopTrack).toHaveBeenCalledOnce();
+    expect(latest).toMatchObject({ phase: "error" });
+    expect((latest as RecorderState | null)?.error).toMatch(
+      /controlled 5-, 10-, or 20-minute limit/i,
+    );
   });
 
   it("interrupts, releases, and recovers capture when the document leaves the foreground", async () => {
@@ -244,7 +461,12 @@ describe("BrowserRecorderSession", () => {
     expect(recoveryCall?.[0]).not.toBe("");
     expect(recoveryCall?.[1]).toBe(450);
     expect(recoveryCall?.[2]).toBe("audio/webm;codecs=opus");
-    expect(latest).toMatchObject({ phase: "review", accumulatedMs: 450 });
+    expect(recoveryCall?.[3]).toBe(false);
+    expect(latest).toMatchObject({
+      phase: "review",
+      accumulatedMs: 450,
+      stopReason: "interrupted",
+    });
   });
 
   it("stops tracks synchronously on dispose and asynchronously recovers persisted chunks", async () => {
@@ -274,10 +496,12 @@ describe("BrowserRecorderSession", () => {
       "disposed-recording",
       1_250,
       "audio/webm;codecs=opus",
+      false,
     );
     expect(session.snapshot()).toMatchObject({
       phase: "review",
       accumulatedMs: 1_250,
+      stopReason: "interrupted",
     });
   });
 
@@ -305,11 +529,53 @@ describe("BrowserRecorderSession", () => {
     expect(persistence.begin).not.toHaveBeenCalled();
   });
 
-  it("stops the recorder and every microphone track when a chunk cannot persist", async () => {
+  it("returns recovered durable audio to review when a later chunk cannot persist", async () => {
+    const persistence = createPersistence();
+    persistence.appendChunk
+      .mockResolvedValueOnce()
+      .mockRejectedValueOnce(new Error("IndexedDB unavailable"));
+    let latest: RecorderState | null = null;
+    const onCaptureReady = vi.fn<(blob: Blob, reason: string) => void>();
+    const session = new BrowserRecorderSession({
+      persistence,
+      onStateChange: (state) => {
+        latest = state;
+      },
+      onCaptureReady,
+    });
+    await session.start();
+    const recorder = FakeMediaRecorder.instances[0];
+    if (!recorder) throw new Error("Fake recorder was not created.");
+
+    recorder.emitChunk(new Blob(["durable"], { type: "audio/webm" }));
+    await vi.waitFor(() =>
+      expect(persistence.appendChunk).toHaveBeenCalledOnce(),
+    );
+    recorder.emitChunk(new Blob(["failed"], { type: "audio/webm" }));
+    await vi.waitFor(() => {
+      expect(latest).toMatchObject({
+        phase: "review",
+        stopReason: "interrupted",
+      });
+    });
+    expect(recorder.state).toBe("inactive");
+    expect(stopTrack).toHaveBeenCalledTimes(1);
+    await vi.waitFor(() => {
+      expect(persistence.recoverInterrupted).toHaveBeenCalledOnce();
+    });
+    expect(persistence.finalize).not.toHaveBeenCalled();
+    expect(onCaptureReady).toHaveBeenCalledWith(
+      expect.any(Blob),
+      "interrupted",
+    );
+  });
+
+  it("shows an error when a failed chunk leaves no durable audio to recover", async () => {
     const persistence = createPersistence();
     persistence.appendChunk.mockRejectedValueOnce(
       new Error("IndexedDB unavailable"),
     );
+    persistence.recoverInterrupted.mockResolvedValueOnce(null);
     let latest: RecorderState | null = null;
     const session = new BrowserRecorderSession({
       persistence,
@@ -321,15 +587,44 @@ describe("BrowserRecorderSession", () => {
     const recorder = FakeMediaRecorder.instances[0];
     if (!recorder) throw new Error("Fake recorder was not created.");
 
-    recorder.emitChunk(new Blob(["chunk"], { type: "audio/webm" }));
-    await vi.waitFor(() => {
-      expect(latest).toMatchObject({ phase: "error" });
-    });
+    recorder.emitChunk(new Blob(["failed"], { type: "audio/webm" }));
+    await vi.waitFor(() => expect(latest).toMatchObject({ phase: "error" }));
     expect(recorder.state).toBe("inactive");
-    expect(stopTrack).toHaveBeenCalledTimes(1);
-    await vi.waitFor(() => {
-      expect(persistence.recoverInterrupted).toHaveBeenCalledOnce();
+    expect(persistence.recoverInterrupted).toHaveBeenCalledOnce();
+  });
+
+  it("serializes a late chunk failure behind cancellation so discard wins", async () => {
+    let rejectAppend: ((error: Error) => void) | undefined;
+    const persistence = createPersistence();
+    persistence.appendChunk.mockImplementationOnce(
+      () =>
+        new Promise<void>((_resolve, reject) => {
+          rejectAppend = reject;
+        }),
+    );
+    const onCaptureReady = vi.fn<(blob: Blob, reason: string) => void>();
+    const session = new BrowserRecorderSession({
+      persistence,
+      onStateChange: () => undefined,
+      onCaptureReady,
+      createId: () => "cancel-race",
     });
+    await session.start();
+    const recorder = FakeMediaRecorder.instances[0];
+    if (!recorder) throw new Error("Fake recorder was not created.");
+    recorder.emitChunk(new Blob(["late"], { type: "audio/webm" }));
+    await vi.waitFor(() =>
+      expect(persistence.appendChunk).toHaveBeenCalledOnce(),
+    );
+
+    const cancellation = session.cancel();
+    rejectAppend?.(new Error("late IndexedDB failure"));
+    await cancellation;
+
+    expect(persistence.discard).toHaveBeenCalledWith("cancel-race");
+    expect(persistence.recoverInterrupted).not.toHaveBeenCalled();
     expect(persistence.finalize).not.toHaveBeenCalled();
+    expect(onCaptureReady).not.toHaveBeenCalled();
+    expect(session.snapshot().phase).toBe("cancelled");
   });
 });

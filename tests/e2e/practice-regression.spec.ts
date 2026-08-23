@@ -348,9 +348,11 @@ test("REG-01 exposes nine controlled steps and holds completion on audio and art
   await page
     .getByRole("button", { name: "Record five-minute auto-dictation" })
     .click();
+  await expect(page.getByText("Controlled duration: 5 minutes")).toBeVisible();
+  await expect(page.getByRole("radio", { name: "10 minutes" })).toHaveCount(0);
+  await expect(page.getByRole("radio", { name: "20 minutes" })).toHaveCount(0);
   await expect(
-    page.getByRole("group", { name: "Auto-Dictation duration" }),
+    page.getByRole("button", { name: "Start 5-minute Auto-Dictation" }),
   ).toBeVisible();
-  await expect(page.getByRole("radio", { name: "5 minutes" })).toBeChecked();
   await expect(page.getByTestId("recorder-clock")).toHaveText(/5:00/);
 });

@@ -96,6 +96,11 @@ describe("Rev1 localStorage migration", () => {
     );
     expect(ledger?.sourceSnapshotJson).toBe(raw);
     expect(JSON.parse(ledger?.sourceSnapshotJson ?? "")).toEqual(legacy);
+    expect(await repository.readSnapshot()).toMatchObject({
+      schema: "qctp-export-v4",
+      schemaVersion: 4,
+      recordings: [],
+    });
   });
 
   it("is idempotent for byte-identical sources and wrapper imports", async () => {

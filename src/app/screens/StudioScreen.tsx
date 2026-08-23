@@ -303,7 +303,7 @@ function AuthorizedReg01StudioScreen() {
         title: "REG-01-A five-minute auto-dictation",
         destination: "studio",
         tags: [...new Set([...capture.tags, "reg-01", "auto-dictation"])],
-        fieldTargetId: current.id,
+        context: { type: "reg-session", regSessionId: current.id },
       });
       const linked = linkReg01AutoDictationRecording(
         current,
@@ -617,8 +617,12 @@ function AuthorizedReg01StudioScreen() {
               mode="auto-dictation"
               allowPause={false}
               allowAppend={false}
+              fixedAutoDurationMinutes={5}
               initialDestination="studio"
-              fieldTargetId={session.id}
+              captureContext={{
+                type: "reg-session",
+                regSessionId: session.id,
+              }}
               localTranscriptionAvailable={
                 runtime.localTranscriptionStatus === "ready"
               }

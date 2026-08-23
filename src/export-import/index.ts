@@ -360,9 +360,12 @@ export async function parseQctpJson(input: unknown): Promise<QctpExportData> {
         });
       }
     }
-    throw new QctpImportError("The file is not valid QCTP Rev2/Rev3 JSON.", {
-      cause: error,
-    });
+    throw new QctpImportError(
+      "The file is not valid QCTP Rev2/Rev3/Rev4 JSON.",
+      {
+        cause: error,
+      },
+    );
   }
 }
 

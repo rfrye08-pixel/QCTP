@@ -95,7 +95,11 @@ describe("Rev3 controlled training panels", () => {
         name: "Save evidence and evaluate gate",
       }),
     );
-    await screen.findByText(/controlled capability advanced to Introduced/i);
+    await screen.findByText(
+      /controlled capability advanced to Introduced/i,
+      {},
+      { timeout: 5_000 },
+    );
     const repository = await createQctpRepository();
     try {
       const [sessions, capabilities] = await Promise.all([

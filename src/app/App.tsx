@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from "react";
 
 import {
   acceptVoiceCapture,
@@ -61,11 +68,85 @@ export function App() {
   );
   const initialHashSynchronized = useRef(false);
   const [quickCaptureOpen, setQuickCaptureOpen] = useState(false);
+  const [captureSaveStatus, setCaptureSaveStatus] = useState<string | null>(
+    null,
+  );
+  const captureDialogRef = useRef<HTMLElement | null>(null);
+  const captureReturnFocusRef = useRef<HTMLElement | null>(null);
   const [unresolvedDebriefSession, setUnresolvedDebriefSession] =
     useState<PracticeSession | null>(null);
   const persistence = useMemo(
     () => new RepositoryCapturePersistence(runtime.repository),
     [runtime.repository],
+  );
+
+  const openVoiceCapture = useCallback((trigger: HTMLButtonElement) => {
+    // Mobile WebKit does not focus a button merely because it was tapped, so
+    // retain the concrete invoker instead of relying on document.activeElement.
+    captureReturnFocusRef.current = trigger;
+    setCaptureSaveStatus(null);
+    setQuickCaptureOpen(true);
+  }, []);
+
+  useEffect(() => {
+    if (quickCaptureOpen) {
+      const frame = window.requestAnimationFrame(() =>
+        captureDialogRef.current?.focus(),
+      );
+      return () => window.cancelAnimationFrame(frame);
+    }
+    const returnTarget = captureReturnFocusRef.current;
+    if (!returnTarget) return;
+    // Wait until React has removed `inert` from the app frame. WebKit ignores a
+    // focus attempt made while an ancestor is still transitioning out of inert.
+    const timer = window.setTimeout(() => {
+      if (returnTarget.isConnected) returnTarget.focus({ preventScroll: true });
+      captureReturnFocusRef.current = null;
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [quickCaptureOpen]);
+
+  const handleCaptureDialogKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLElement>) => {
+      const dialog = captureDialogRef.current;
+      if (!dialog) return;
+      if (event.key === "Escape") {
+        const safeClose = dialog.querySelector<HTMLButtonElement>(
+          ".recorder-idle-actions .secondary-button",
+        );
+        if (safeClose) {
+          event.preventDefault();
+          safeClose.click();
+        }
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = [
+        ...dialog.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), audio[controls], a[href], [tabindex]:not([tabindex="-1"])',
+        ),
+      ].filter(
+        (element) =>
+          !element.hidden &&
+          element.getAttribute("aria-hidden") !== "true" &&
+          element.getClientRects().length > 0,
+      );
+      if (focusable.length === 0) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable.at(-1);
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    },
+    [],
   );
 
   useEffect(() => {
@@ -234,6 +315,15 @@ export function App() {
     async (capture: AcceptedCapture) => {
       await acceptVoiceCapture(runtime.repository, capture);
       await runtime.refresh();
+      const label =
+        capture.captureMode === "auto-dictation"
+          ? "Auto-Dictation"
+          : "Voice note";
+      setCaptureSaveStatus(
+        capture.queueLocalTranscription
+          ? `${label} saved locally and queued for PX13 transcription.`
+          : `${label} saved locally.`,
+      );
       if (
         capture.queueLocalTranscription &&
         runtime.localTranscriptionStatus === "ready"
@@ -265,7 +355,7 @@ export function App() {
 
   const acceptPostSessionDebrief = useCallback(
     async (capture: AcceptedCapture) => {
-      if (!capture.sessionId) {
+      if (capture.context.type !== "practice-debrief") {
         throw new Error("The practice link is missing from this debrief.");
       }
       await acceptVoiceCapture(runtime.repository, capture);
@@ -307,7 +397,7 @@ export function App() {
             onNavigate={navigate}
             voiceFreeSession={voiceFreeSession}
             onStartVoiceFreeDay1={startVoiceFreeDay1}
-            onQuickCapture={() => setQuickCaptureOpen(true)}
+            onQuickCapture={openVoiceCapture}
             unresolvedDebriefSession={unresolvedDebriefSession}
             onOpenDebrief={() => navigate("practice")}
           />
@@ -372,37 +462,57 @@ export function App() {
   })();
 
   return (
-    <Shell
-      route={location.route}
-      foundationDay={runtime.foundation.currentDay}
-      onNavigate={navigate}
-      onQuickCapture={() => setQuickCaptureOpen(true)}
-      practiceActive={practiceActive}
-    >
-      {location.invalidLink ? (
-        <p className="platform-message warning" role="alert">
-          That record link is invalid. QCTP opened the nearest safe page and did
-          not change any local records.
-        </p>
-      ) : null}
-      {screen}
+    <>
+      <Shell
+        route={location.route}
+        foundationDay={runtime.foundation.currentDay}
+        onNavigate={navigate}
+        onQuickCapture={openVoiceCapture}
+        practiceActive={practiceActive}
+        inactiveForModal={quickCaptureOpen}
+      >
+        {location.invalidLink ? (
+          <p className="platform-message warning" role="alert">
+            That record link is invalid. QCTP opened the nearest safe page and
+            did not change any local records.
+          </p>
+        ) : null}
+        {screen}
+        {captureSaveStatus ? (
+          <div className="save-status global-capture-status" role="status">
+            <span>{captureSaveStatus}</span>
+            <button
+              type="button"
+              aria-label="Dismiss voice capture confirmation"
+              onClick={() => setCaptureSaveStatus(null)}
+            >
+              Dismiss
+            </button>
+          </div>
+        ) : null}
+      </Shell>
       {quickCaptureOpen ? (
         <div className="modal-backdrop" role="presentation">
           <section
+            ref={captureDialogRef}
             className="capture-sheet"
             role="dialog"
             aria-modal="true"
             aria-labelledby="capture-title"
+            tabIndex={-1}
+            onKeyDown={handleCaptureDialogKeyDown}
           >
             <div className="sheet-handle" />
             <p className="eyebrow">Global voice input</p>
-            <h2 id="capture-title">Quick Capture</h2>
+            <h2 id="capture-title">Voice Capture</h2>
             <p>
-              Microphone permission is requested only after Start. Every chunk
-              is written to IndexedDB as it arrives.
+              Choose a quick note or a 5-, 10-, or 20-minute Auto-Dictation.
+              Microphone permission is requested only after Start, and every
+              chunk is written to IndexedDB as it arrives.
             </p>
             <VoiceRecorderPanel
               persistence={persistence}
+              allowModeSelection
               localTranscriptionAvailable={
                 runtime.localTranscriptionStatus === "ready"
               }
@@ -412,6 +522,6 @@ export function App() {
           </section>
         </div>
       ) : null}
-    </Shell>
+    </>
   );
 }

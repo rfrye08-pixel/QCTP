@@ -49,7 +49,10 @@ import {
   synchronizeMirrorRequests,
   type MirrorServicePolicy,
 } from "../mirror";
-import { recoverInterruptedCaptures } from "../voice-capture/repository-persistence";
+import {
+  CAPTURE_RECOVERY_RETRY_MS,
+  recoverInterruptedCaptures,
+} from "../voice-capture/repository-persistence";
 import type { StateCapabilityRecord, StateSessionRecord } from "../state-atlas";
 import {
   deriveControlledSchedule,
@@ -200,6 +203,44 @@ export function QctpProvider({ children }: { children: ReactNode }) {
       providerActiveRef.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    const repository = ready?.repository;
+    if (!repository) return;
+    let disposed = false;
+    let inFlight = false;
+    const recoverExpiredCaptures = async () => {
+      if (disposed || inFlight) return;
+      inFlight = true;
+      try {
+        const result = await recoverInterruptedCaptures(repository);
+        if (
+          !disposed &&
+          (result.recoveredRecordingIds.length > 0 ||
+            result.discardedEmptyRecordingIds.length > 0)
+        ) {
+          setRevision((value) => value + 1);
+        }
+      } finally {
+        inFlight = false;
+      }
+    };
+    const interval = window.setInterval(
+      () => void recoverExpiredCaptures(),
+      CAPTURE_RECOVERY_RETRY_MS,
+    );
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") {
+        void recoverExpiredCaptures();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      disposed = true;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [ready?.repository]);
 
   useEffect(() => {
     let disposed = false;

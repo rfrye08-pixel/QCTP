@@ -316,6 +316,10 @@ describe("CodexScreen local workflows", () => {
       updatedAt: now,
       acceptedAt: now,
       durationMs: 1_000,
+      captureMode: null,
+      requestedDurationMs: null,
+      captureContext: null,
+      completedByDurationLimit: null,
       mimeType: "audio/webm",
       sizeBytes: 0,
       localBlobRef: "recording-1",
@@ -414,13 +418,17 @@ describe("CodexScreen local workflows", () => {
       updatedAt: now,
       acceptedAt: null,
       durationMs: 2_000,
+      captureMode: null,
+      requestedDurationMs: null,
+      captureContext: null,
+      completedByDurationLimit: null,
       mimeType: "audio/webm",
       sizeBytes: 0,
       localBlobRef: "orphan-recording",
       remoteObjectRef: null,
       destinationType: "unclassified",
       destinationId: null,
-      status: "CAPTURING",
+      status: "LOCAL_ONLY",
       segments: [
         {
           id: "orphan-segment",
@@ -474,5 +482,64 @@ describe("CodexScreen local workflows", () => {
     expect(
       screen.queryByRole("heading", { name: /unlinked local recordings/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("locks a foreign active capture against playback and deletion", async () => {
+    await repository.saveRecording({
+      schemaVersion: 1,
+      id: "foreign-active-recording",
+      createdAt: now,
+      updatedAt: now,
+      acceptedAt: null,
+      durationMs: 0,
+      captureMode: "quick",
+      requestedDurationMs: null,
+      captureContext: { type: "global" },
+      completedByDurationLimit: null,
+      mimeType: "audio/webm",
+      sizeBytes: 0,
+      localBlobRef: "foreign-active-recording",
+      remoteObjectRef: null,
+      destinationType: "unclassified",
+      destinationId: null,
+      status: "CAPTURING",
+      segments: [
+        {
+          id: "foreign-active-segment",
+          sequence: 0,
+          startedAt: now,
+          endedAt: now,
+          durationMs: 0,
+          mimeType: "audio/webm",
+          sizeBytes: 0,
+          chunkIds: [],
+        },
+      ],
+      captureOwnerId: "other-qctp-tab",
+      captureLeaseExpiresAt: "2099-08-17T12:00:00.000Z",
+      transcriptionRoute: "local_only",
+      provider: null,
+      model: null,
+      checksumSha256: null,
+      retentionPolicy: "keep",
+      failureCode: null,
+      failureMessage: null,
+      deletedAt: null,
+    });
+
+    renderCodex();
+    await screen.findByText(/active capture in another QCTP tab/i);
+    expect(
+      screen.queryByRole("button", {
+        name: "Discard foreign-active-recording",
+      }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/load local playback/i)).not.toBeInTheDocument();
+    await expect(
+      repository.deleteRecording("foreign-active-recording"),
+    ).rejects.toThrow(/still active/u);
+    expect(
+      await repository.getRecording("foreign-active-recording"),
+    ).toMatchObject({ status: "CAPTURING", captureOwnerId: "other-qctp-tab" });
   });
 });

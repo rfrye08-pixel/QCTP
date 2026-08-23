@@ -3,6 +3,7 @@ export type RecorderPhase =
   | "requesting-permission"
   | "recording"
   | "paused"
+  | "finalizing"
   | "review"
   | "saving"
   | "saved"
@@ -10,6 +11,7 @@ export type RecorderPhase =
   | "error";
 
 export type PauseReason = "user" | "document-hidden";
+export type StopReason = "user" | "duration-limit" | "interrupted";
 
 export interface RecorderState {
   phase: RecorderPhase;
@@ -21,6 +23,7 @@ export interface RecorderState {
   sizeBytes: number;
   level: number;
   pauseReason: PauseReason | null;
+  stopReason: StopReason | null;
   error: string | null;
 }
 
@@ -41,7 +44,8 @@ export type RecorderEvent =
   | { type: "TICK"; nowMs: number; level: number }
   | { type: "PAUSE"; nowMs: number; reason: PauseReason }
   | { type: "RESUME"; nowMs: number }
-  | { type: "STOP"; nowMs: number }
+  | { type: "BEGIN_FINALIZE"; nowMs: number; reason: StopReason }
+  | { type: "STOP"; nowMs: number; reason?: StopReason }
   | { type: "SAVE" }
   | { type: "SAVED" }
   | { type: "CANCEL" }
@@ -63,6 +67,7 @@ export const INITIAL_RECORDER_STATE: RecorderState = {
   sizeBytes: 0,
   level: 0,
   pauseReason: null,
+  stopReason: null,
   error: null,
 };
 
@@ -154,8 +159,23 @@ export function reduceRecorder(
         },
         shouldStop: false,
       };
-    case "STOP":
+    case "BEGIN_FINALIZE":
       if (!["recording", "paused"].includes(state.phase))
+        return { state, shouldStop: false };
+      return {
+        state: {
+          ...state,
+          phase: "finalizing",
+          accumulatedMs: recorderElapsedMs(state, event.nowMs),
+          startedAtMs: null,
+          level: 0,
+          pauseReason: null,
+          stopReason: event.reason,
+        },
+        shouldStop: false,
+      };
+    case "STOP":
+      if (!["recording", "paused", "finalizing"].includes(state.phase))
         return { state, shouldStop: false };
       return {
         state: {
@@ -165,6 +185,7 @@ export function reduceRecorder(
           startedAtMs: null,
           level: 0,
           pauseReason: null,
+          stopReason: event.reason ?? "user",
         },
         shouldStop: false,
       };

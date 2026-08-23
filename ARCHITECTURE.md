@@ -71,7 +71,7 @@ The gateway stays bound to loopback. For iPhone access, a private HTTPS reverse 
 
 ## Browser persistence
 
-The IndexedDB database is `qctp-rev2`, database version 3. Its stores are:
+The IndexedDB database is `qctp-rev2`, database version 5. Its stores are:
 
 - application state: `foundation`, `workbook`, `settings`, `paths`;
 - Codex: `records`, `searchDocuments`, `revisions`;
@@ -79,19 +79,20 @@ The IndexedDB database is `qctp-rev2`, database version 3. Its stores are:
 - Studio: `regSessions`, `attachments`, `attachmentBlobs`;
 - migration: `migrationLedger`;
 - Mirror: `mirrorRequests`, `mirrorResults`, `mirrorInsightFeedback`.
+- practice and regulation: `practiceSessions`, `breathProfiles`, `breathSessions`, `stateSessions`, `stateCapabilities`.
 
 Indexes support record kind/tag/time search, recording destination/status, recording-to-chunk and recording-to-transcript relations, attachment ownership, migration fingerprint idempotency, Mirror job status, and request/result synchronization.
 
 Each generated Mirror result records provider type (`deterministic`, `local_model`, or `cloud_model`), provider and model/runtime identifiers, the submitted query, exact source-record IDs, claim-level citations, generated text, proposed question/action, disposition, annotation, append-only lifecycle revisions, and `deletedAt`. Requests and results are tombstoned/restored together in one IndexedDB transaction. Deleted reflections are hidden from normal reads, retained for audit/export, and cannot be reviewed until restored. A separately typed-confirmed purge permanently removes a request or paired request/result/revision lifecycle; deterministic feedback has parallel tombstone/restore/purge controls. Source deletion remains blocked while any live or tombstoned provenance relation exists and unlocks only after those relations are purged. None of these actions mutates a cited source.
 
-Binary chunks are persisted as `Blob` values. JSON exports contain structured metadata; complete ZIP archives add audio and attachment binaries, paths constrained to dedicated archive directories, byte sizes, and SHA-256 checksums.
+Binary chunks are persisted as `Blob` values. Current JSON exports use `qctp-export-v4` and preserve typed recording mode, requested duration, workflow context, and duration-limit completion state. Valid v2/v3 exports normalize to v4 with missing typed recording metadata left null. Complete ZIP archives keep `qctp-archive-manifest-v1` because their binary layout is unchanged; they add audio and attachment binaries, paths constrained to dedicated archive directories, byte sizes, and SHA-256 checksums.
 
 ## Voice evidence flow
 
 ```text
 explicit Start
   -> MediaRecorder chunks written to IndexedDB
-  -> Stop / review / local playback / append / re-record / discard
+  -> Stop / review / local playback / re-record / discard
   -> explicit Accept + destination
   -> VoiceRecording marked accepted
   -> Codex/source record created
@@ -104,6 +105,8 @@ explicit Start
 ```
 
 Pausing because the document is hidden and user pause are explicit recorder states. Cancel/discard removes the unaccepted capture. A transcription error updates queue/status metadata but never deletes the recording. The browser client rejects a gateway that does not attest Free Local Mode.
+
+The production recorder does not expose cross-session audio append. MediaRecorder sessions may start independent codec containers, and byte-concatenating those containers is not a verified playback or transcription contract. Legacy segment metadata remains readable and recoverable, while new append UI is held until a real iPhone/Windows codec-remux path passes physical playback and local-Whisper acceptance.
 
 The server authentication and rate limiter run before multipart audio parsing. It validates the idempotency key, request fields, declared MIME type, detected file signature, bytes, and probed duration before invoking a provider. Provider errors are converted to redacted structured responses.
 

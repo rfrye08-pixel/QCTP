@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { PracticeSessionSchema } from "../domain";
+import {
+  PracticeSessionSchema,
+  type RequestedAutoDictationDurationMs,
+  type VoiceCaptureContext,
+  type VoiceCaptureMode,
+} from "../domain";
 import {
   createQctpRepository,
   deleteQctpDatabase,
@@ -43,6 +48,39 @@ function practiceSession(id: string, status: "pending" | "skipped") {
   });
 }
 
+async function createFinalizedRecording(
+  repository: QctpRepository,
+  input: {
+    recordingId: string;
+    captureMode: VoiceCaptureMode;
+    requestedDurationMs: RequestedAutoDictationDurationMs | null;
+    captureContext: VoiceCaptureContext;
+    durationMs?: number;
+    completedByDurationLimit?: boolean;
+  },
+): Promise<void> {
+  const persistence = new RepositoryCapturePersistence(repository);
+  await persistence.begin({
+    recordingId: input.recordingId,
+    mimeType: "audio/webm",
+    createdAt: "2026-08-17T12:00:00.000Z",
+    append: false,
+    captureMode: input.captureMode,
+    requestedDurationMs: input.requestedDurationMs,
+    captureContext: input.captureContext,
+  });
+  const audio = await new Response("audio", {
+    headers: { "content-type": "audio/webm" },
+  }).blob();
+  await persistence.appendChunk(input.recordingId, 0, audio);
+  await persistence.finalize(
+    input.recordingId,
+    input.durationMs ?? 1_200,
+    "audio/webm",
+    input.completedByDurationLimit ?? false,
+  );
+}
+
 describe("voice acceptance boundary", () => {
   let databaseName: string;
   let repository: QctpRepository;
@@ -50,18 +88,6 @@ describe("voice acceptance boundary", () => {
   beforeEach(async () => {
     databaseName = `voice-acceptance-${crypto.randomUUID()}`;
     repository = await createQctpRepository({ name: databaseName });
-    const persistence = new RepositoryCapturePersistence(repository);
-    await persistence.begin({
-      recordingId: "voice-one",
-      mimeType: "audio/webm",
-      createdAt: "2026-08-17T12:00:00.000Z",
-      append: false,
-    });
-    const audio = await new Response("audio", {
-      headers: { "content-type": "audio/webm" },
-    }).blob();
-    await persistence.appendChunk("voice-one", 0, audio);
-    await persistence.finalize("voice-one", 1_200, "audio/webm");
   });
 
   afterEach(async () => {
@@ -74,6 +100,15 @@ describe("voice acceptance boundary", () => {
     await repository.savePracticeSession(
       practiceSession("practice-one", "pending"),
     );
+    await createFinalizedRecording(repository, {
+      recordingId: "voice-one",
+      captureMode: "debrief",
+      requestedDurationMs: null,
+      captureContext: {
+        type: "practice-debrief",
+        practiceSessionId: "practice-one",
+      },
+    });
     const capture: AcceptedCapture = {
       recordingId: "voice-one",
       title: "Field observation",
@@ -82,8 +117,13 @@ describe("voice acceptance boundary", () => {
       durationMs: 1_200.4,
       mimeType: "audio/webm",
       manualText: "The overlap became visible while drawing.",
-      fieldTargetId: null,
-      sessionId: "practice-one",
+      captureMode: "debrief",
+      requestedDurationMinutes: null,
+      completedByDurationLimit: false,
+      context: {
+        type: "practice-debrief",
+        practiceSessionId: "practice-one",
+      },
       queueLocalTranscription: true,
     };
     const result = await acceptVoiceCapture(repository, capture);
@@ -152,6 +192,15 @@ describe("voice acceptance boundary", () => {
   });
 
   it("rolls the entire acceptance bundle back when its practice link is missing", async () => {
+    await createFinalizedRecording(repository, {
+      recordingId: "voice-one",
+      captureMode: "debrief",
+      requestedDurationMs: null,
+      captureContext: {
+        type: "practice-debrief",
+        practiceSessionId: "missing-practice",
+      },
+    });
     await expect(
       acceptVoiceCapture(repository, {
         recordingId: "voice-one",
@@ -161,8 +210,13 @@ describe("voice acceptance boundary", () => {
         durationMs: 1_200,
         mimeType: "audio/webm",
         manualText: "A direct observation.",
-        fieldTargetId: null,
-        sessionId: "missing-practice",
+        captureMode: "debrief",
+        requestedDurationMinutes: null,
+        completedByDurationLimit: false,
+        context: {
+          type: "practice-debrief",
+          practiceSessionId: "missing-practice",
+        },
         queueLocalTranscription: true,
       }),
     ).rejects.toThrow("Practice session not found");
@@ -173,10 +227,51 @@ describe("voice acceptance boundary", () => {
     expect(await repository.listTranscriptionQueue()).toEqual([]);
   });
 
+  it("rejects caller-inflated duration before mutating the finalized recording", async () => {
+    await createFinalizedRecording(repository, {
+      recordingId: "duration-integrity",
+      captureMode: "quick",
+      requestedDurationMs: null,
+      captureContext: { type: "global" },
+      durationMs: 1_200,
+    });
+    const before = await repository.getRecording("duration-integrity");
+
+    await expect(
+      acceptVoiceCapture(repository, {
+        recordingId: "duration-integrity",
+        title: "Inflated duration",
+        destination: "codex",
+        tags: [],
+        durationMs: 1_200_000,
+        mimeType: "audio/webm",
+        manualText: "Must not be saved.",
+        captureMode: "quick",
+        requestedDurationMinutes: null,
+        completedByDurationLimit: false,
+        context: { type: "global" },
+        queueLocalTranscription: true,
+      }),
+    ).rejects.toThrow(/does not match the finalized local recording/u);
+
+    expect(await repository.getRecording("duration-integrity")).toEqual(before);
+    expect(await repository.listRecords()).toEqual([]);
+    expect(await repository.listTranscriptionQueue()).toEqual([]);
+  });
+
   it("does not override a terminal skipped debrief", async () => {
     await repository.savePracticeSession(
       practiceSession("practice-skipped", "skipped"),
     );
+    await createFinalizedRecording(repository, {
+      recordingId: "voice-one",
+      captureMode: "debrief",
+      requestedDurationMs: null,
+      captureContext: {
+        type: "practice-debrief",
+        practiceSessionId: "practice-skipped",
+      },
+    });
     await expect(
       acceptVoiceCapture(repository, {
         recordingId: "voice-one",
@@ -186,8 +281,13 @@ describe("voice acceptance boundary", () => {
         durationMs: 1_200,
         mimeType: "audio/webm",
         manualText: "A direct observation.",
-        fieldTargetId: null,
-        sessionId: "practice-skipped",
+        captureMode: "debrief",
+        requestedDurationMinutes: null,
+        completedByDurationLimit: false,
+        context: {
+          type: "practice-debrief",
+          practiceSessionId: "practice-skipped",
+        },
         queueLocalTranscription: true,
       }),
     ).rejects.toThrow("cannot transition from skipped to completed");
@@ -200,4 +300,149 @@ describe("voice acceptance boundary", () => {
       await repository.getPracticeSession("practice-skipped"),
     ).toMatchObject({ debrief: { status: "skipped", recordId: null } });
   });
+
+  it("preserves global timed metadata as a separate raw Auto-Dictation record", async () => {
+    await createFinalizedRecording(repository, {
+      recordingId: "global-timed-ten",
+      captureMode: "auto-dictation",
+      requestedDurationMs: 600_000,
+      captureContext: { type: "global" },
+      durationMs: 600_000,
+      completedByDurationLimit: true,
+    });
+
+    const accepted = await acceptVoiceCapture(repository, {
+      recordingId: "global-timed-ten",
+      title: "Ten-minute raw observation",
+      destination: "codex",
+      tags: ["Morning"],
+      durationMs: 600_000,
+      mimeType: "audio/webm",
+      manualText: "A direct raw observation without later analysis.",
+      captureMode: "auto-dictation",
+      requestedDurationMinutes: 10,
+      completedByDurationLimit: true,
+      context: { type: "global" },
+      queueLocalTranscription: true,
+    });
+
+    expect(await repository.getRecording("global-timed-ten")).toMatchObject({
+      durationMs: 600_000,
+      captureMode: "auto-dictation",
+      requestedDurationMs: 600_000,
+      captureContext: { type: "global" },
+      completedByDurationLimit: true,
+      status: "TRANSCRIPTION_QUEUED",
+      provider: null,
+      model: null,
+    });
+    expect(accepted.record).toMatchObject({
+      kind: "auto_dictation",
+      interpretation: null,
+      sessionId: null,
+      tags: ["voice", "auto-dictation", "Morning"],
+      fields: {
+        captureModality: "voice",
+        captureMode: "auto-dictation",
+        captureContext: { type: "global" },
+        requestedDurationMinutes: 10,
+        actualDurationMs: 600_000,
+        completedByDurationLimit: true,
+        voiceRecordingId: "global-timed-ten",
+        destination: "codex",
+        fieldTargetId: null,
+        practiceSessionId: null,
+        layerStatus: {
+          rawAudio: "preserved",
+          verbatimTranscript: "pending_or_not_requested",
+          correctedTranscript: "not_created",
+          cleanNote: "not_created",
+          interpretation: "not_created",
+        },
+      },
+    });
+    expect(await repository.listTranscriptionQueue()).toEqual([
+      expect.objectContaining({ recordingId: "global-timed-ten" }),
+    ]);
+  });
+
+  it.each([
+    {
+      label: "mode",
+      recordingMode: "quick" as const,
+      recordingDurationMs: null,
+      recordingContext: { type: "global" } as const,
+      captureMode: "auto-dictation" as const,
+      captureDurationMinutes: 5 as const,
+      captureContext: { type: "global" } as const,
+      expectedError: "saved recording mode does not match",
+    },
+    {
+      label: "duration",
+      recordingMode: "auto-dictation" as const,
+      recordingDurationMs: 300_000 as const,
+      recordingContext: { type: "global" } as const,
+      captureMode: "auto-dictation" as const,
+      captureDurationMinutes: 10 as const,
+      captureContext: { type: "global" } as const,
+      expectedError: "saved recording duration limit does not match",
+    },
+    {
+      label: "context",
+      recordingMode: "auto-dictation" as const,
+      recordingDurationMs: 300_000 as const,
+      recordingContext: {
+        type: "field",
+        fieldTargetId: "workbook-answer-one",
+      } as const,
+      captureMode: "auto-dictation" as const,
+      captureDurationMinutes: 5 as const,
+      captureContext: { type: "global" } as const,
+      expectedError: "saved recording context does not match",
+    },
+  ])(
+    "atomically rejects a persisted $label mismatch before record or queue mutation",
+    async ({
+      label,
+      recordingMode,
+      recordingDurationMs,
+      recordingContext,
+      captureMode,
+      captureDurationMinutes,
+      captureContext,
+      expectedError,
+    }) => {
+      const recordingId = `mismatched-${label}`;
+      await createFinalizedRecording(repository, {
+        recordingId,
+        captureMode: recordingMode,
+        requestedDurationMs: recordingDurationMs,
+        captureContext: recordingContext,
+        durationMs: recordingDurationMs ?? 1_200,
+        completedByDurationLimit: recordingMode === "auto-dictation",
+      });
+      const before = await repository.getRecording(recordingId);
+
+      await expect(
+        acceptVoiceCapture(repository, {
+          recordingId,
+          title: "Must not be accepted",
+          destination: "codex",
+          tags: [],
+          durationMs: recordingDurationMs ?? 1_200,
+          mimeType: "audio/webm",
+          manualText: "This record must never be written.",
+          captureMode,
+          requestedDurationMinutes: captureDurationMinutes,
+          completedByDurationLimit: true,
+          context: captureContext,
+          queueLocalTranscription: true,
+        }),
+      ).rejects.toThrow(expectedError);
+
+      expect(await repository.getRecording(recordingId)).toEqual(before);
+      expect(await repository.listRecords()).toEqual([]);
+      expect(await repository.listTranscriptionQueue()).toEqual([]);
+    },
+  );
 });

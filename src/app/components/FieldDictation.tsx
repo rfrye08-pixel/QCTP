@@ -30,7 +30,7 @@ export function FieldDictation(props: FieldDictationProps) {
       await acceptVoiceCapture(runtime.repository, {
         ...capture,
         destination,
-        fieldTargetId,
+        context: { type: "field", fieldTargetId },
       });
       if (capture.manualText) {
         await props.onAppend(capture.manualText);
@@ -72,7 +72,7 @@ export function FieldDictation(props: FieldDictationProps) {
             persistence={persistence}
             mode="field"
             initialDestination={destination}
-            fieldTargetId={fieldTargetId}
+            captureContext={{ type: "field", fieldTargetId }}
             localTranscriptionAvailable={
               runtime.localTranscriptionStatus === "ready"
             }

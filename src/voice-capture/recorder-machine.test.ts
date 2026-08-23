@@ -95,4 +95,28 @@ describe("recorder state machine", () => {
     expect(saved.recordingId).toBe("recording-1");
     expect(saved.accumulatedMs).toBe(2_000);
   });
+
+  it("holds review behind an explicit microphone-off finalization phase", () => {
+    const finalizing = reduceRecorder(begin(), {
+      type: "BEGIN_FINALIZE",
+      nowMs: 2_100,
+      reason: "user",
+    }).state;
+    expect(finalizing).toMatchObject({
+      phase: "finalizing",
+      accumulatedMs: 2_000,
+      stopReason: "user",
+      level: 0,
+    });
+    expect(reduceRecorder(finalizing, { type: "SAVE" }).state).toEqual(
+      finalizing,
+    );
+    expect(
+      reduceRecorder(finalizing, {
+        type: "STOP",
+        nowMs: 2_100,
+        reason: "user",
+      }).state,
+    ).toMatchObject({ phase: "review", accumulatedMs: 2_000 });
+  });
 });

@@ -313,8 +313,8 @@ export async function migrateRev1Payload(
     warnings,
   };
   const snapshot = QctpExportDataSchema.parse({
-    schema: "qctp-export-v3",
-    schemaVersion: 3,
+    schema: "qctp-export-v4",
+    schemaVersion: 4,
     exportedAt: now,
     foundation,
     workbook,

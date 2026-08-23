@@ -5,7 +5,10 @@ import {
   type PauseReason,
   type RecorderEvent,
   type RecorderState,
+  type StopReason,
 } from "./recorder-machine";
+import type { RequestedAutoDictationDurationMs } from "../domain";
+import type { CaptureContext, CaptureMode } from "./capture-types";
 
 export interface CapturePersistence {
   begin(input: {
@@ -13,17 +16,28 @@ export interface CapturePersistence {
     mimeType: string;
     createdAt: string;
     append: boolean;
+    captureMode: CaptureMode;
+    requestedDurationMs: RequestedAutoDictationDurationMs | null;
+    captureContext: CaptureContext;
   }): Promise<number>;
-  appendChunk(recordingId: string, index: number, chunk: Blob): Promise<void>;
+  appendChunk(
+    recordingId: string,
+    index: number,
+    chunk: Blob,
+    activeDurationMs: number,
+  ): Promise<void>;
+  renewLease?(recordingId: string): Promise<void>;
   finalize(
     recordingId: string,
     durationMs: number,
     mimeType: string,
+    completedByDurationLimit?: boolean,
   ): Promise<Blob>;
   recoverInterrupted(
     recordingId: string,
     durationMs: number,
     mimeType: string,
+    completedByDurationLimit?: boolean,
   ): Promise<Blob | null>;
   discard(recordingId: string): Promise<void>;
 }
@@ -36,6 +50,9 @@ export interface BrowserRecorderOptions {
   append?: boolean;
   initialAccumulatedMs?: number;
   initialSizeBytes?: number;
+  captureMode?: CaptureMode;
+  captureContext?: CaptureContext;
+  onCaptureReady?: (blob: Blob, reason: StopReason) => void;
   now?: () => number;
   createId?: () => string;
 }
@@ -79,6 +96,7 @@ export class BrowserRecorderSession {
   private analyser: AnalyserNode | null = null;
   private levelSamples: Uint8Array<ArrayBuffer> | null = null;
   private tickHandle: number | null = null;
+  private leaseHandle: number | null = null;
   private nextChunkIndex = 0;
   private persistenceFailureHandled = false;
   private pendingWrites = new Set<Promise<void>>();
@@ -87,6 +105,7 @@ export class BrowserRecorderSession {
   private disposed = false;
   private startInFlight: Promise<void> | null = null;
   private settlementInFlight: Promise<Blob | null> | null = null;
+  private cancelling = false;
   private readonly hiddenHandler = () => {
     if (
       document.visibilityState === "hidden" &&
@@ -161,26 +180,38 @@ export class BrowserRecorderSession {
         }
         return;
       }
-      const mimeType = selectRecordingMimeType(MediaRecorder);
+      const requestedDurationMs = this.requestedDurationMs();
+      const requestedMimeType = selectRecordingMimeType(MediaRecorder);
+      const mediaRecorder = requestedMimeType
+        ? new MediaRecorder(this.stream, { mimeType: requestedMimeType })
+        : new MediaRecorder(this.stream);
+      const actualMimeType =
+        mediaRecorder.mimeType || requestedMimeType || "audio/webm";
       const recordingId = this.options.recordingId ?? this.createId();
       this.nextChunkIndex = await this.options.persistence.begin({
         recordingId,
-        mimeType: mimeType || "audio/webm",
+        mimeType: actualMimeType,
         createdAt: new Date().toISOString(),
         append: this.options.append ?? false,
+        captureMode: this.options.captureMode ?? "quick",
+        requestedDurationMs,
+        captureContext: this.options.captureContext ?? { type: "global" },
       });
       this.activeRecordingId = recordingId;
-      this.activeMimeType = mimeType || "audio/webm";
+      this.activeMimeType = actualMimeType;
       if (this.disposed || isDocumentHidden()) {
         this.cleanupMedia();
         await this.recoverActiveRecording();
+        if (!this.disposed) {
+          this.dispatch({
+            type: "FAIL",
+            message:
+              "Voice capture did not start because QCTP left the foreground while securing local audio.",
+          });
+        }
         return;
       }
-      this.mediaRecorder = mimeType
-        ? new MediaRecorder(this.stream, { mimeType })
-        : new MediaRecorder(this.stream);
-      this.activeMimeType =
-        this.mediaRecorder.mimeType || mimeType || "audio/webm";
+      this.mediaRecorder = mediaRecorder;
       this.installRecorderEvents(recordingId);
       this.setupLevelMeter();
       document.addEventListener("visibilitychange", this.hiddenHandler);
@@ -193,6 +224,7 @@ export class BrowserRecorderSession {
       });
       this.mediaRecorder.start(1_000);
       this.tickHandle = window.setInterval(() => this.tick(), 100);
+      this.startLeaseHeartbeat(recordingId);
     } catch (error) {
       this.cleanupMedia();
       if (this.activeRecordingId) await this.recoverActiveRecording();
@@ -218,16 +250,21 @@ export class BrowserRecorderSession {
     this.dispatch({ type: "RESUME", nowMs: this.now() });
   }
 
-  async stop(): Promise<Blob | null> {
-    return this.settleCapture(false);
+  async stop(reason: StopReason = "user"): Promise<Blob | null> {
+    return this.settleCapture(false, reason);
   }
 
   async cancel(): Promise<void> {
+    this.cancelling = true;
     const recordingId = this.activeRecordingId ?? this.state.recordingId;
     const stopped = this.stopMediaImmediately();
     if (this.settlementInFlight) await this.settlementInFlight;
     else await stopped;
     await Promise.allSettled([...this.pendingWrites]);
+    // A final dataavailable write can fail while stop is resolving and start a
+    // recovery after the first check above. Always serialize that recovery
+    // before discard so explicit user cancellation is the last durable write.
+    if (this.settlementInFlight) await this.settlementInFlight;
     if (recordingId) await this.options.persistence.discard(recordingId);
     this.dispatch({ type: "CANCEL" });
   }
@@ -240,6 +277,10 @@ export class BrowserRecorderSession {
    */
   async dispose(): Promise<void> {
     this.disposed = true;
+    if (this.settlementInFlight) {
+      await this.settlementInFlight;
+      return;
+    }
     if (
       this.activeRecordingId &&
       ["recording", "paused"].includes(this.state.phase)
@@ -249,6 +290,10 @@ export class BrowserRecorderSession {
     }
     await this.stopMediaImmediately();
     if (this.startInFlight) await this.startInFlight;
+    if (this.settlementInFlight) {
+      await Promise.resolve(this.settlementInFlight);
+      return;
+    }
     if (
       this.activeRecordingId &&
       this.state.phase === "requesting-permission"
@@ -268,23 +313,22 @@ export class BrowserRecorderSession {
       if (!event.data.size || this.persistenceFailureHandled) return;
       const chunkIndex = this.nextChunkIndex++;
       const write = this.options.persistence
-        .appendChunk(recordingId, chunkIndex, event.data)
+        .appendChunk(
+          recordingId,
+          chunkIndex,
+          event.data,
+          recorderElapsedMs(this.state, this.now()),
+        )
         .then(() => {
           this.dispatch({
             type: "CHUNK_PERSISTED",
             sizeBytes: event.data.size,
           });
         })
-        .catch((error: unknown) => {
+        .catch(() => {
+          if (this.cancelling) return;
           if (this.persistenceFailureHandled) return;
           this.persistenceFailureHandled = true;
-          if (["recording", "paused"].includes(this.state.phase)) {
-            this.dispatch({ type: "STOP", nowMs: this.now() });
-          }
-          this.dispatch({
-            type: "FAIL",
-            message: `Recording stopped because audio could not be kept safely on this device: ${errorMessage(error)}`,
-          });
           // Do not await here: this promise is itself part of pendingWrites.
           // Recovery drains the set after this rejection handler finishes.
           void this.settleCapture(true);
@@ -293,18 +337,15 @@ export class BrowserRecorderSession {
       this.pendingWrites.add(write);
     });
     this.mediaRecorder.addEventListener("error", () => {
-      if (["recording", "paused"].includes(this.state.phase)) {
-        this.dispatch({ type: "STOP", nowMs: this.now() });
-      }
-      this.dispatch({
-        type: "FAIL",
-        message: "The browser stopped the microphone unexpectedly.",
-      });
+      if (this.cancelling) return;
       void this.settleCapture(true);
     });
   }
 
-  private settleCapture(interrupted: boolean): Promise<Blob | null> {
+  private settleCapture(
+    interrupted: boolean,
+    stopReason: StopReason = interrupted ? "interrupted" : "user",
+  ): Promise<Blob | null> {
     if (this.settlementInFlight) return this.settlementInFlight;
     const recordingId = this.activeRecordingId ?? this.state.recordingId;
     const mimeType = this.activeMimeType ?? this.state.mimeType;
@@ -313,25 +354,31 @@ export class BrowserRecorderSession {
     }
 
     const stoppedAtMs = this.now();
+    const durationMs = recorderElapsedMs(this.state, stoppedAtMs);
+    if (["recording", "paused"].includes(this.state.phase)) {
+      this.dispatch({
+        type: "BEGIN_FINALIZE",
+        nowMs: stoppedAtMs,
+        reason: stopReason,
+      });
+    }
     const stopped = this.stopMediaImmediately();
     const operation = (async () => {
       await stopped;
       await Promise.allSettled([...this.pendingWrites]);
-      if (["recording", "paused"].includes(this.state.phase)) {
-        this.dispatch({ type: "STOP", nowMs: stoppedAtMs });
-      }
-      const durationMs = recorderElapsedMs(this.state, stoppedAtMs);
       try {
         return interrupted || this.persistenceFailureHandled
           ? await this.options.persistence.recoverInterrupted(
               recordingId,
               durationMs,
               mimeType,
+              stopReason === "duration-limit",
             )
           : await this.options.persistence.finalize(
               recordingId,
               durationMs,
               mimeType,
+              stopReason === "duration-limit",
             );
       } catch (error) {
         if (!interrupted && !this.persistenceFailureHandled) {
@@ -340,6 +387,7 @@ export class BrowserRecorderSession {
               recordingId,
               durationMs,
               mimeType,
+              stopReason === "duration-limit",
             );
           } catch {
             // Report the original finalization error below. Both durable
@@ -354,7 +402,28 @@ export class BrowserRecorderSession {
         }
         return null;
       }
-    })();
+    })().then((blob) => {
+      if (this.cancelling) return blob;
+      if (
+        blob &&
+        ["recording", "paused", "finalizing"].includes(this.state.phase)
+      ) {
+        this.dispatch({ type: "STOP", nowMs: stoppedAtMs, reason: stopReason });
+      } else if (
+        !blob &&
+        ["recording", "paused", "finalizing"].includes(this.state.phase)
+      ) {
+        this.dispatch({
+          type: "FAIL",
+          message:
+            "The microphone is off, but no durable audio was available to review.",
+        });
+      }
+      if (blob && !this.disposed) {
+        this.options.onCaptureReady?.(blob, stopReason);
+      }
+      return blob;
+    });
     this.settlementInFlight = operation;
     return operation;
   }
@@ -368,6 +437,7 @@ export class BrowserRecorderSession {
         recordingId,
         recorderElapsedMs(this.state, this.now()),
         mimeType,
+        false,
       );
     } catch {
       return null;
@@ -403,7 +473,40 @@ export class BrowserRecorderSession {
       nowMs: this.now(),
       level: this.readLevel(),
     });
-    if (transition.shouldStop) void this.stop();
+    if (transition.shouldStop) void this.stop("duration-limit");
+  }
+
+  private startLeaseHeartbeat(recordingId: string): void {
+    const renewLease = this.options.persistence.renewLease?.bind(
+      this.options.persistence,
+    );
+    if (!renewLease) return;
+    this.leaseHandle = window.setInterval(() => {
+      if (this.cancelling || this.persistenceFailureHandled) return;
+      const renewal = renewLease(recordingId)
+        .catch(() => {
+          if (this.cancelling || this.persistenceFailureHandled) return;
+          this.persistenceFailureHandled = true;
+          void this.settleCapture(true);
+        })
+        .finally(() => this.pendingWrites.delete(renewal));
+      this.pendingWrites.add(renewal);
+    }, 10_000);
+  }
+
+  private requestedDurationMs(): RequestedAutoDictationDurationMs | null {
+    if (this.options.captureMode !== "auto-dictation") return null;
+    const duration = this.options.durationLimitMs;
+    if (
+      duration === 300_000 ||
+      duration === 600_000 ||
+      duration === 1_200_000
+    ) {
+      return duration;
+    }
+    throw new Error(
+      "Auto-Dictation requires a controlled 5-, 10-, or 20-minute limit.",
+    );
   }
 
   private dispatch(event: RecorderEvent) {
@@ -438,6 +541,8 @@ export class BrowserRecorderSession {
     window.removeEventListener("pagehide", this.pageHideHandler);
     if (this.tickHandle !== null) window.clearInterval(this.tickHandle);
     this.tickHandle = null;
+    if (this.leaseHandle !== null) window.clearInterval(this.leaseHandle);
+    this.leaseHandle = null;
     this.mediaRecorder = null;
     for (const track of this.stream?.getTracks() ?? []) track.stop();
     this.stream = null;

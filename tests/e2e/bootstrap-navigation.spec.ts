@@ -234,7 +234,7 @@ test("Today is a mobile morning cockpit with local controls and explicit holds",
 
   await page.getByRole("button", { name: "Record voice note" }).click();
   await expect(
-    page.getByRole("dialog", { name: "Quick Capture" }),
+    page.getByRole("dialog", { name: "Voice Capture" }),
   ).toBeVisible();
   expect(paidCloudRequests).toEqual([]);
 });
@@ -531,7 +531,7 @@ test("critical iPhone controls meet the 44px tap-target floor", async ({
   await openQctp(page);
 
   const controls = [
-    page.getByRole("button", { name: "Open Quick Capture" }),
+    page.getByRole("button", { name: "Open Voice Capture" }),
     ...["Today", "Paths", "Practice", "Studio", "More"].map((name) =>
       page
         .getByRole("navigation", { name: "Primary navigation" })
@@ -546,7 +546,7 @@ test("critical iPhone controls meet the 44px tap-target floor", async ({
     expect(box!.height, "critical control height").toBeGreaterThanOrEqual(44);
   }
 
-  await page.getByRole("button", { name: "Open Quick Capture" }).click();
+  await page.getByRole("button", { name: "Open Voice Capture" }).click();
   const start = page.getByRole("button", { name: "Start recording" });
   const startBox = await start.boundingBox();
   expect(startBox).not.toBeNull();

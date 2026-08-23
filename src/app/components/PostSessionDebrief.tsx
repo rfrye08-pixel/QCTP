@@ -148,7 +148,10 @@ export function PostSessionDebrief({
           persistence={persistence}
           mode="debrief"
           initialDestination="codex"
-          sessionId={session.id}
+          captureContext={{
+            type: "practice-debrief",
+            practiceSessionId: session.id,
+          }}
           initialTitle="Day 1 raw observation"
           initialTags={[
             "foundation",

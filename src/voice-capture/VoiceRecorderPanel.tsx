@@ -22,17 +22,22 @@ import {
 } from "./recorder-machine";
 import {
   captureDestinations,
+  GLOBAL_CAPTURE_CONTEXT,
+  timedCaptureMinutes,
   type AcceptedCapture,
+  type CaptureContext,
   type CaptureDestination,
   type CaptureMode,
+  type TimedCaptureMinutes,
 } from "./capture-types";
 
 export interface VoiceRecorderPanelProps {
   persistence: CapturePersistence;
   mode?: CaptureMode;
+  allowModeSelection?: boolean;
   initialDestination?: CaptureDestination;
-  fieldTargetId?: string | null;
-  sessionId?: string | null;
+  captureContext?: CaptureContext;
+  fixedAutoDurationMinutes?: TimedCaptureMinutes | null;
   initialTitle?: string;
   initialTags?: readonly string[];
   defaultQueueLocalTranscription?: boolean;
@@ -43,15 +48,16 @@ export interface VoiceRecorderPanelProps {
   onClose: () => void;
 }
 
-const timedDurations = [
-  [5, "5 minutes"],
-  [10, "10 minutes"],
-  [20, "20 minutes"],
-] as const;
-
 function formatDuration(milliseconds: number): string {
   const seconds = Math.max(0, Math.floor(milliseconds / 1_000));
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
+function formatDurationForAssistiveTech(milliseconds: number): string {
+  const totalSeconds = Math.max(0, Math.ceil(milliseconds / 1_000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes} minute${minutes === 1 ? "" : "s"} ${seconds} second${seconds === 1 ? "" : "s"}`;
 }
 
 function playCaptureTone(): void {
@@ -74,15 +80,16 @@ function playCaptureTone(): void {
 export function VoiceRecorderPanel({
   persistence,
   mode = "quick",
+  allowModeSelection = false,
   initialDestination = "unclassified",
-  fieldTargetId = null,
-  sessionId = null,
+  captureContext = GLOBAL_CAPTURE_CONTEXT,
+  fixedAutoDurationMinutes = null,
   initialTitle = "",
   initialTags = [],
   defaultQueueLocalTranscription,
   localTranscriptionAvailable = false,
   allowPause = true,
-  allowAppend = true,
+  allowAppend = false,
   onAccept,
   onClose,
 }: VoiceRecorderPanelProps) {
@@ -90,21 +97,28 @@ export function VoiceRecorderPanel({
     INITIAL_RECORDER_STATE,
   );
   const [displayedElapsedMs, setDisplayedElapsedMs] = useState(0);
-  const [autoMinutes, setAutoMinutes] = useState<5 | 10 | 20>(5);
+  const [selectableMode, setSelectableMode] = useState<
+    "quick" | "auto-dictation"
+  >(mode === "auto-dictation" ? "auto-dictation" : "quick");
+  const [autoMinutes, setAutoMinutes] = useState<TimedCaptureMinutes>(
+    fixedAutoDurationMinutes ?? 5,
+  );
   const [destination, setDestination] =
     useState<CaptureDestination>(initialDestination);
   const [title, setTitle] = useState(initialTitle);
   const [tagText, setTagText] = useState(initialTags.join(", "));
   const [manualText, setManualText] = useState("");
   const [queueLocalTranscription, setQueueLocalTranscription] = useState(
-    defaultQueueLocalTranscription ?? localTranscriptionAvailable,
+    defaultQueueLocalTranscription ??
+      (mode === "auto-dictation" || localTranscriptionAvailable),
   );
   const [playbackUrl, setPlaybackUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const sessionRef = useRef<BrowserRecorderSession | null>(null);
   const acceptingRef = useRef(false);
-  const updateSafetyActivityId = `voice-capture-${useId()}`;
+  const recorderInstanceId = useId();
+  const updateSafetyActivityId = `voice-capture-${recorderInstanceId}`;
 
   useEffect(
     () => () => {
@@ -120,14 +134,24 @@ export function VoiceRecorderPanel({
     [playbackUrl],
   );
 
+  const captureMode = allowModeSelection ? selectableMode : mode;
+  const selectedAutoMinutes = fixedAutoDurationMinutes ?? autoMinutes;
   const durationLimitMs =
-    mode === "auto-dictation" ? autoMinutes * 60_000 : null;
+    captureMode === "auto-dictation" ? selectedAutoMinutes * 60_000 : null;
   const elapsedMs = displayedElapsedMs;
   const remainingMs =
     durationLimitMs === null ? null : Math.max(0, durationLimitMs - elapsedMs);
   const isActive =
     recorderState.phase === "recording" || recorderState.phase === "paused";
   const isReview = recorderState.phase === "review";
+  const completedByDurationLimit =
+    recorderState.stopReason === "duration-limit";
+  const mayAppend =
+    allowAppend &&
+    !(
+      captureMode === "auto-dictation" &&
+      (completedByDurationLimit || remainingMs === 0)
+    );
   const hasCapture =
     recorderState.recordingId !== null || recorderState.sizeBytes > 0;
   const updateCritical =
@@ -136,6 +160,7 @@ export function VoiceRecorderPanel({
       "requesting-permission",
       "recording",
       "paused",
+      "finalizing",
       "review",
       "saving",
     ].includes(recorderState.phase);
@@ -157,11 +182,33 @@ export function VoiceRecorderPanel({
         ? "Paused because QCTP left the foreground"
         : "Paused";
     }
-    if (recorderState.phase === "review")
+    if (recorderState.phase === "finalizing")
+      return "Microphone off — securing local audio";
+    if (recorderState.phase === "review") {
+      if (recorderState.stopReason === "interrupted") {
+        return captureMode === "auto-dictation"
+          ? `Recording interrupted at ${formatDuration(elapsedMs)} — recovered audio is safe locally and ready to review.`
+          : "Recording interrupted — recovered audio is safe locally and ready to review";
+      }
+      if (captureMode === "auto-dictation") {
+        return completedByDurationLimit
+          ? `Timer complete — the full ${selectedAutoMinutes}-minute recording is safe locally.`
+          : `Stopped early at ${formatDuration(elapsedMs)} — captured audio is safe locally.${mayAppend ? " You can append up to the selected limit." : ""}`;
+      }
       return "Stopped — locally safe and ready to review";
+    }
     if (recorderState.phase === "error") return "Recording needs attention";
     return "Ready — microphone is off";
-  }, [recorderState.pauseReason, recorderState.phase]);
+  }, [
+    captureMode,
+    completedByDurationLimit,
+    elapsedMs,
+    mayAppend,
+    recorderState.pauseReason,
+    recorderState.phase,
+    recorderState.stopReason,
+    selectedAutoMinutes,
+  ]);
 
   const createSession = useCallback(
     (append: boolean) => {
@@ -174,6 +221,14 @@ export function VoiceRecorderPanel({
           );
         },
         durationLimitMs,
+        captureMode,
+        captureContext,
+        onCaptureReady: (blob) => {
+          setPlaybackUrl((currentUrl) => {
+            if (currentUrl) URL.revokeObjectURL(currentUrl);
+            return URL.createObjectURL(blob);
+          });
+        },
         ...(append && recorderState.recordingId
           ? {
               recordingId: recorderState.recordingId,
@@ -187,6 +242,8 @@ export function VoiceRecorderPanel({
       return session;
     },
     [
+      captureContext,
+      captureMode,
       durationLimitMs,
       persistence,
       recorderState.accumulatedMs,
@@ -213,11 +270,8 @@ export function VoiceRecorderPanel({
   );
 
   const stop = useCallback(async () => {
-    const blob = await sessionRef.current?.stop();
-    if (!blob) return;
-    if (playbackUrl) URL.revokeObjectURL(playbackUrl);
-    setPlaybackUrl(URL.createObjectURL(blob));
-  }, [playbackUrl]);
+    await sessionRef.current?.stop();
+  }, []);
 
   const cancel = useCallback(async () => {
     if (
@@ -253,7 +307,11 @@ export function VoiceRecorderPanel({
     try {
       await onAccept({
         recordingId: recorderState.recordingId,
-        title: title.trim() || "Voice note",
+        title:
+          title.trim() ||
+          (captureMode === "auto-dictation"
+            ? `${selectedAutoMinutes}-minute Auto-Dictation`
+            : "Voice note"),
         destination,
         tags: tagText
           .split(",")
@@ -262,8 +320,11 @@ export function VoiceRecorderPanel({
         durationMs: Math.round(recorderState.accumulatedMs),
         mimeType: recorderState.mimeType,
         manualText: manualText.trim(),
-        fieldTargetId,
-        sessionId,
+        captureMode,
+        requestedDurationMinutes:
+          captureMode === "auto-dictation" ? selectedAutoMinutes : null,
+        completedByDurationLimit,
+        context: captureContext,
         queueLocalTranscription,
       });
       onClose();
@@ -278,8 +339,10 @@ export function VoiceRecorderPanel({
       setSaving(false);
     }
   }, [
+    captureContext,
+    captureMode,
+    completedByDurationLimit,
     destination,
-    fieldTargetId,
     isReview,
     manualText,
     onAccept,
@@ -288,14 +351,19 @@ export function VoiceRecorderPanel({
     recorderState.accumulatedMs,
     recorderState.mimeType,
     recorderState.recordingId,
-    sessionId,
+    selectedAutoMinutes,
     tagText,
     title,
   ]);
 
   return (
-    <section className="voice-recorder" aria-live="polite">
-      <div className="recorder-state-row">
+    <section className="voice-recorder">
+      <div
+        className="recorder-state-row"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         <span
           className={`recording-indicator phase-${recorderState.phase}`}
           aria-hidden="true"
@@ -303,30 +371,90 @@ export function VoiceRecorderPanel({
         <strong>{phaseLabel}</strong>
       </div>
 
-      {mode === "auto-dictation" && recorderState.phase === "idle" ? (
+      {allowModeSelection && recorderState.phase === "idle" ? (
+        <fieldset className="capture-mode-picker">
+          <legend>Capture mode</legend>
+          <label>
+            <input
+              type="radio"
+              name={`${recorderInstanceId}-capture-mode`}
+              value="quick"
+              checked={selectableMode === "quick"}
+              onChange={() => setSelectableMode("quick")}
+            />
+            <span>
+              Quick voice note
+              <small>Record until you choose Stop.</small>
+            </span>
+          </label>
+          <label>
+            <input
+              type="radio"
+              name={`${recorderInstanceId}-capture-mode`}
+              value="auto-dictation"
+              checked={selectableMode === "auto-dictation"}
+              onChange={() => {
+                setSelectableMode("auto-dictation");
+                if (defaultQueueLocalTranscription === undefined) {
+                  setQueueLocalTranscription(true);
+                }
+              }}
+            />
+            <span>
+              Timed Auto-Dictation
+              <small>Stops locally at the selected limit.</small>
+            </span>
+          </label>
+        </fieldset>
+      ) : null}
+
+      {captureMode === "auto-dictation" &&
+      recorderState.phase === "idle" &&
+      fixedAutoDurationMinutes === null ? (
         <fieldset className="duration-picker">
           <legend>Auto-Dictation duration</legend>
-          {timedDurations.map(([minutes, label]) => (
+          {timedCaptureMinutes.map((minutes) => (
             <label key={minutes}>
               <input
                 type="radio"
-                name="auto-duration"
+                name={`${recorderInstanceId}-auto-duration`}
                 value={minutes}
                 checked={autoMinutes === minutes}
                 onChange={() => setAutoMinutes(minutes)}
               />
-              {label}
+              {minutes} minutes
             </label>
           ))}
         </fieldset>
       ) : null}
 
-      <div className="recorder-clock" data-testid="recorder-clock">
+      {captureMode === "auto-dictation" &&
+      recorderState.phase === "idle" &&
+      fixedAutoDurationMinutes !== null ? (
+        <p className="controlled-duration">
+          Controlled duration: {fixedAutoDurationMinutes} minutes
+        </p>
+      ) : null}
+
+      <div
+        className="recorder-clock"
+        data-testid="recorder-clock"
+        role="timer"
+        aria-label={
+          remainingMs === null
+            ? `${formatDurationForAssistiveTech(elapsedMs)} elapsed`
+            : `${formatDurationForAssistiveTech(remainingMs)} remaining`
+        }
+      >
         <strong>{formatDuration(remainingMs ?? elapsedMs)}</strong>
         <small>{remainingMs === null ? "elapsed" : "remaining"}</small>
       </div>
       <div
         className="level-meter"
+        role="meter"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(recorderState.level * 100)}
         aria-label={`Input level ${Math.round(recorderState.level * 100)} percent`}
       >
         {Array.from({ length: 20 }, (_, index) => (
@@ -344,7 +472,10 @@ export function VoiceRecorderPanel({
             type="button"
             onClick={() => void start(false)}
           >
-            <span className="record-dot" aria-hidden="true" /> Start recording
+            <span className="record-dot" aria-hidden="true" />{" "}
+            {captureMode === "auto-dictation"
+              ? `Start ${selectedAutoMinutes}-minute Auto-Dictation`
+              : "Start recording"}
           </button>
           <button className="secondary-button" type="button" onClick={onClose}>
             Close
@@ -358,6 +489,12 @@ export function VoiceRecorderPanel({
       ) : null}
       {isActive ? (
         <div className="recorder-controls">
+          {captureMode === "auto-dictation" ? (
+            <p className="recorder-interruption-note">
+              Keep QCTP visible. If iPhone backgrounds or locks QCTP, recording
+              stops safely and captured audio remains recoverable.
+            </p>
+          ) : null}
           {allowPause ? (
             <button
               type="button"
@@ -404,7 +541,7 @@ export function VoiceRecorderPanel({
             </audio>
           ) : null}
           <div className="review-actions">
-            {allowAppend ? (
+            {mayAppend ? (
               <button type="button" onClick={() => void start(true)}>
                 Append segment
               </button>
@@ -416,7 +553,7 @@ export function VoiceRecorderPanel({
               Discard
             </button>
           </div>
-          {mode !== "debrief" ? (
+          {captureMode !== "debrief" ? (
             <label>
               Title
               <input
@@ -426,7 +563,7 @@ export function VoiceRecorderPanel({
               />
             </label>
           ) : null}
-          {mode !== "field" && mode !== "debrief" ? (
+          {captureMode !== "field" && captureMode !== "debrief" ? (
             <label>
               Destination
               <select
@@ -443,7 +580,7 @@ export function VoiceRecorderPanel({
               </select>
             </label>
           ) : null}
-          {mode !== "debrief" ? (
+          {captureMode !== "debrief" ? (
             <label>
               Tags
               <input
@@ -454,7 +591,7 @@ export function VoiceRecorderPanel({
             </label>
           ) : null}
           <label>
-            {mode === "debrief"
+            {captureMode === "debrief"
               ? "Optional typed raw observation"
               : "Manual text or correction (optional)"}
             <textarea

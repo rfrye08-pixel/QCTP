@@ -138,6 +138,29 @@ export interface AppendAudioChunkOptions {
   id?: string;
   sequence?: number;
   createdAt?: string;
+  activeDurationMs?: number;
+  captureOwnerId?: string;
+  captureLeaseExpiresAt?: string;
+}
+
+export interface RecordingRecoveryCandidates {
+  recordings: VoiceRecording[];
+  invalidRecordingIds: string[];
+}
+
+export interface FinalizeOwnedCaptureInput {
+  recordingId: string;
+  segmentId: string;
+  captureOwnerId: string;
+  durationMs: number;
+  mimeType: string;
+  completedByDurationLimit: boolean;
+  endedAt: string;
+}
+
+export interface CaptureDiscardProof {
+  updatedAt: string;
+  segmentIds: string[];
 }
 
 export interface DeleteRecordingSelection {
@@ -678,7 +701,8 @@ export class QctpRepository {
   }
 
   async getRecording(id: string): Promise<VoiceRecording | undefined> {
-    return this.database.get("recordings", id);
+    const value = await this.database.get("recordings", id);
+    return value === undefined ? undefined : VoiceRecordingSchema.parse(value);
   }
 
   async listRecordings(
@@ -687,9 +711,272 @@ export class QctpRepository {
     const values = status
       ? await this.database.getAllFromIndex("recordings", "status", status)
       : await this.database.getAll("recordings");
-    return values.sort((left, right) =>
-      right.createdAt.localeCompare(left.createdAt),
+    return values
+      .map((value) => VoiceRecordingSchema.parse(value))
+      .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+  }
+
+  async listRecordingRecoveryCandidates(): Promise<RecordingRecoveryCandidates> {
+    const values = await this.database.getAllFromIndex(
+      "recordings",
+      "status",
+      "CAPTURING",
     );
+    const recordings: VoiceRecording[] = [];
+    const invalidRecordingIds: string[] = [];
+    values.forEach((value, index) => {
+      const parsed = VoiceRecordingSchema.safeParse(value);
+      if (parsed.success) {
+        recordings.push(parsed.data);
+        return;
+      }
+      const candidateId = (value as { id?: unknown }).id;
+      invalidRecordingIds.push(
+        typeof candidateId === "string" && candidateId.trim()
+          ? candidateId
+          : `unparseable-capturing-recording-${String(index)}`,
+      );
+    });
+    return { recordings, invalidRecordingIds };
+  }
+
+  async renewRecordingCaptureLease(
+    recordingId: string,
+    captureOwnerId: string,
+    captureLeaseExpiresAt: string,
+  ): Promise<void> {
+    const transaction = this.database.transaction("recordings", "readwrite");
+    const store = transaction.objectStore("recordings");
+    const stored = await store.get(recordingId);
+    if (!stored) throw new Error(`Recording not found: ${recordingId}`);
+    const recording = VoiceRecordingSchema.parse(stored);
+    if (
+      recording.status !== "CAPTURING" ||
+      (recording.captureOwnerId ?? null) !== captureOwnerId
+    ) {
+      throw new Error(
+        "The active capture lease is no longer owned by this tab.",
+      );
+    }
+    await store.put(
+      VoiceRecordingSchema.parse({
+        ...recording,
+        captureOwnerId,
+        captureLeaseExpiresAt,
+      }),
+    );
+    await transaction.done;
+  }
+
+  async claimInterruptedRecording(input: {
+    recordingId: string;
+    expectedOwnerId: string | null;
+    expectedLeaseExpiresAt: string | null;
+    expectedUpdatedAt: string;
+    claimantOwnerId: string;
+    claimantLeaseExpiresAt: string;
+    claimAt: string;
+  }): Promise<boolean> {
+    const transaction = this.database.transaction("recordings", "readwrite");
+    const store = transaction.objectStore("recordings");
+    const stored = await store.get(input.recordingId);
+    if (!stored) {
+      await transaction.done;
+      return false;
+    }
+    const parsed = VoiceRecordingSchema.safeParse(stored);
+    if (!parsed.success) {
+      await transaction.done;
+      return false;
+    }
+    const recording = parsed.data;
+    const ownerId = recording.captureOwnerId ?? null;
+    const leaseExpiresAt = recording.captureLeaseExpiresAt ?? null;
+    const leaseExpiry =
+      leaseExpiresAt === null ? Number.NaN : Date.parse(leaseExpiresAt);
+    if (
+      recording.status !== "CAPTURING" ||
+      ownerId !== input.expectedOwnerId ||
+      leaseExpiresAt !== input.expectedLeaseExpiresAt ||
+      recording.updatedAt !== input.expectedUpdatedAt ||
+      (Number.isFinite(leaseExpiry) && leaseExpiry > Date.parse(input.claimAt))
+    ) {
+      await transaction.done;
+      return false;
+    }
+    await store.put(
+      VoiceRecordingSchema.parse({
+        ...recording,
+        captureOwnerId: input.claimantOwnerId,
+        captureLeaseExpiresAt: input.claimantLeaseExpiresAt,
+      }),
+    );
+    await transaction.done;
+    return true;
+  }
+
+  async finalizeOwnedCapture(
+    input: FinalizeOwnedCaptureInput,
+  ): Promise<VoiceRecording> {
+    const transaction = this.database.transaction("recordings", "readwrite");
+    const store = transaction.objectStore("recordings");
+    const stored = await store.get(input.recordingId);
+    if (!stored) throw new Error("The local recording could not be finalized.");
+    const recording = VoiceRecordingSchema.parse(stored);
+    if (
+      recording.status !== "CAPTURING" ||
+      (recording.captureOwnerId ?? null) !== input.captureOwnerId
+    ) {
+      throw new Error(
+        "This capture is owned by another QCTP tab and was preserved unchanged.",
+      );
+    }
+    const segmentIndex = recording.segments.findIndex(
+      (segment) => segment.id === input.segmentId,
+    );
+    if (segmentIndex < 0) {
+      throw new Error("The active recording segment is no longer available.");
+    }
+    const priorDurationMs = recording.segments.reduce(
+      (total, segment, index) =>
+        index === segmentIndex ? total : total + segment.durationMs,
+      0,
+    );
+    const normalizedDurationMs = Math.max(
+      recording.durationMs,
+      priorDurationMs,
+      Math.round(input.durationMs),
+    );
+    const finalized = VoiceRecordingSchema.parse({
+      ...recording,
+      durationMs: normalizedDurationMs,
+      mimeType: recording.mimeType || input.mimeType,
+      status: "LOCAL_ONLY",
+      completedByDurationLimit:
+        recording.captureMode === "auto-dictation"
+          ? input.completedByDurationLimit
+          : null,
+      captureOwnerId: null,
+      captureLeaseExpiresAt: null,
+      segments: recording.segments.map((segment, index) =>
+        index === segmentIndex
+          ? {
+              ...segment,
+              endedAt: input.endedAt,
+              durationMs: normalizedDurationMs - priorDurationMs,
+            }
+          : segment,
+      ),
+      updatedAt: input.endedAt,
+    });
+    await store.put(finalized);
+    await transaction.done;
+    return finalized;
+  }
+
+  async rollbackOwnedEmptyCapture(input: {
+    recordingId: string;
+    segmentId: string;
+    captureOwnerId: string;
+    recoveredAt: string;
+  }): Promise<VoiceRecording | null> {
+    const transaction = this.database.transaction(
+      ["recordings", "audioChunks"],
+      "readwrite",
+    );
+    const recordings = transaction.objectStore("recordings");
+    const stored = await recordings.get(input.recordingId);
+    if (!stored) {
+      await transaction.done;
+      return null;
+    }
+    const recording = VoiceRecordingSchema.parse(stored);
+    if (
+      recording.status !== "CAPTURING" ||
+      (recording.captureOwnerId ?? null) !== input.captureOwnerId
+    ) {
+      throw new Error(
+        "This capture is owned by another QCTP tab and was preserved unchanged.",
+      );
+    }
+    const activeSegment = recording.segments.at(-1);
+    if (!activeSegment || activeSegment.id !== input.segmentId) {
+      throw new Error("The active recording segment is no longer available.");
+    }
+    const chunks = await transaction
+      .objectStore("audioChunks")
+      .index("segmentId")
+      .getAll(input.segmentId);
+    if (activeSegment.chunkIds.length > 0 || chunks.length > 0) {
+      throw new Error(
+        "A capture with durable audio cannot be rolled back as empty.",
+      );
+    }
+    const remainingSegments = recording.segments.slice(0, -1);
+    if (remainingSegments.length === 0) {
+      await recordings.delete(input.recordingId);
+      await transaction.done;
+      return null;
+    }
+    const rolledBack = VoiceRecordingSchema.parse({
+      ...recording,
+      status: "LOCAL_ONLY",
+      durationMs: remainingSegments.reduce(
+        (total, segment) => total + segment.durationMs,
+        0,
+      ),
+      segments: remainingSegments,
+      captureOwnerId: null,
+      captureLeaseExpiresAt: null,
+      updatedAt: input.recoveredAt,
+    });
+    await recordings.put(rolledBack);
+    await transaction.done;
+    return rolledBack;
+  }
+
+  async discardCaptureWithProof(input: {
+    recordingId: string;
+    captureOwnerId: string;
+    finalizedProof?: CaptureDiscardProof;
+  }): Promise<void> {
+    const transaction = this.database.transaction(
+      ["recordings", "audioChunks"],
+      "readwrite",
+    );
+    const recordings = transaction.objectStore("recordings");
+    const stored = await recordings.get(input.recordingId);
+    if (!stored) {
+      await transaction.done;
+      return;
+    }
+    const recording = VoiceRecordingSchema.parse(stored);
+    const ownsActive =
+      recording.status === "CAPTURING" &&
+      (recording.captureOwnerId ?? null) === input.captureOwnerId;
+    const proof = input.finalizedProof;
+    const ownsFinalized =
+      recording.status === "LOCAL_ONLY" &&
+      proof !== undefined &&
+      recording.updatedAt === proof.updatedAt &&
+      JSON.stringify(recording.segments.map((segment) => segment.id)) ===
+        JSON.stringify(proof.segmentIds);
+    if (!ownsActive && !ownsFinalized) {
+      throw new Error(
+        "This capture changed in another QCTP tab and was preserved unchanged.",
+      );
+    }
+    const chunks = await transaction
+      .objectStore("audioChunks")
+      .index("recordingId")
+      .getAll(input.recordingId);
+    await Promise.all(
+      chunks.map((chunk) =>
+        transaction.objectStore("audioChunks").delete(chunk.id),
+      ),
+    );
+    await recordings.delete(input.recordingId);
+    await transaction.done;
   }
 
   async appendAudioChunk(
@@ -703,42 +990,73 @@ export class QctpRepository {
       "readwrite",
     );
     const recordings = transaction.objectStore("recordings");
-    const recording = await recordings.get(recordingId);
-    if (!recording) throw new Error(`Recording not found: ${recordingId}`);
+    const storedRecording = await recordings.get(recordingId);
+    if (!storedRecording)
+      throw new Error(`Recording not found: ${recordingId}`);
+    const recording = VoiceRecordingSchema.parse(storedRecording);
+    if (
+      options.captureOwnerId !== undefined &&
+      (recording.captureOwnerId ?? null) !== options.captureOwnerId
+    ) {
+      throw new Error("The active capture is owned by another QCTP tab.");
+    }
     const segmentIndex = recording.segments.findIndex(
       (segment) => segment.id === segmentId,
     );
     if (segmentIndex < 0)
       throw new Error(`Recording segment not found: ${segmentId}`);
-    const existingChunks = await transaction
-      .objectStore("audioChunks")
-      .index("recordingId")
-      .getAll(recordingId);
+    let sequence = options.sequence;
+    if (sequence === undefined) {
+      const existingChunks = await transaction
+        .objectStore("audioChunks")
+        .index("recordingId")
+        .getAll(recordingId);
+      sequence =
+        existingChunks.reduce(
+          (maximum, candidate) => Math.max(maximum, candidate.sequence),
+          -1,
+        ) + 1;
+    }
     const chunk: AudioChunk = {
       schemaVersion: 1,
       id: options.id ?? makeId("audio-chunk"),
       recordingId,
       segmentId,
-      sequence:
-        options.sequence ??
-        existingChunks.reduce(
-          (maximum, candidate) => Math.max(maximum, candidate.sequence),
-          -1,
-        ) + 1,
+      sequence,
       createdAt: options.createdAt ?? new Date().toISOString(),
       mimeType: blob.type || recording.mimeType,
       blob,
     };
     const segment = recording.segments[segmentIndex];
     if (!segment) throw new Error(`Recording segment not found: ${segmentId}`);
+    const priorSegmentDurationMs = recording.segments.reduce(
+      (total, candidate, index) =>
+        index === segmentIndex ? total : total + candidate.durationMs,
+      0,
+    );
+    const activeDurationMs =
+      options.activeDurationMs === undefined
+        ? recording.durationMs
+        : Math.max(recording.durationMs, Math.round(options.activeDurationMs));
     const nextSegment = {
       ...segment,
       sizeBytes: segment.sizeBytes + blob.size,
       chunkIds: [...segment.chunkIds, chunk.id],
+      durationMs: Math.max(
+        segment.durationMs,
+        activeDurationMs - priorSegmentDurationMs,
+      ),
     };
     const nextRecording = VoiceRecordingSchema.parse({
       ...recording,
+      durationMs: activeDurationMs,
       sizeBytes: recording.sizeBytes + blob.size,
+      ...(options.captureOwnerId === undefined
+        ? {}
+        : { captureOwnerId: options.captureOwnerId }),
+      ...(options.captureLeaseExpiresAt === undefined
+        ? {}
+        : { captureLeaseExpiresAt: options.captureLeaseExpiresAt }),
       segments: recording.segments.map((value, index) =>
         index === segmentIndex ? nextSegment : value,
       ),
@@ -771,10 +1089,42 @@ export class QctpRepository {
     const recording = await this.getRecording(recordingId);
     if (!recording) throw new Error(`Recording not found: ${recordingId}`);
     const chunks = await this.listAudioChunks(recordingId);
-    if (chunks.length === 0)
+    const declaredChunks = [...recording.segments]
+      .sort((left, right) => left.sequence - right.sequence)
+      .flatMap((segment) =>
+        segment.chunkIds.map((chunkId) => ({
+          chunkId,
+          segmentId: segment.id,
+        })),
+      );
+    if (declaredChunks.length === 0)
       throw new Error(`Recording has no local audio: ${recordingId}`);
+    const chunkById = new Map(chunks.map((chunk) => [chunk.id, chunk]));
+    if (
+      chunkById.size !== chunks.length ||
+      new Set(declaredChunks.map((entry) => entry.chunkId)).size !==
+        declaredChunks.length ||
+      chunks.length !== declaredChunks.length
+    ) {
+      throw new Error(
+        `Recording audio graph is inconsistent and was preserved unchanged: ${recordingId}`,
+      );
+    }
+    const orderedChunks = declaredChunks.map(({ chunkId, segmentId }) => {
+      const chunk = chunkById.get(chunkId);
+      if (
+        !chunk ||
+        chunk.recordingId !== recordingId ||
+        chunk.segmentId !== segmentId
+      ) {
+        throw new Error(
+          `Recording audio graph is inconsistent and was preserved unchanged: ${recordingId}`,
+        );
+      }
+      return chunk;
+    });
     const byteArrays = await Promise.all(
-      chunks.map(
+      orderedChunks.map(
         async (chunk) => new Uint8Array(await chunk.blob.arrayBuffer()),
       ),
     );
@@ -782,6 +1132,11 @@ export class QctpRepository {
       (total, bytes) => total + bytes.byteLength,
       0,
     );
+    if (totalBytes !== recording.sizeBytes) {
+      throw new Error(
+        `Recording audio byte count is inconsistent and was preserved unchanged: ${recordingId}`,
+      );
+    }
     const combined = new Uint8Array(totalBytes);
     let offset = 0;
     for (const bytes of byteArrays) {
@@ -2365,10 +2720,17 @@ export class QctpRepository {
       ],
       "readwrite",
     );
-    const recording = await transaction
+    const storedRecording = await transaction
       .objectStore("recordings")
       .get(recordingId);
-    if (!recording) throw new Error(`Recording not found: ${recordingId}`);
+    if (!storedRecording)
+      throw new Error(`Recording not found: ${recordingId}`);
+    const recording = VoiceRecordingSchema.parse(storedRecording);
+    if (recording.status === "CAPTURING") {
+      throw new Error(
+        "This recording is still active in a QCTP tab. Stop it or wait for safe recovery before deleting it.",
+      );
+    }
     const result: DeleteRecordingResult = {
       deletedChunkIds: [],
       deletedTranscriptIds: [],
@@ -2582,14 +2944,16 @@ export class QctpRepository {
       capabilities: stateCapabilities,
     });
     return QctpExportDataSchema.parse({
-      schema: "qctp-export-v3",
-      schemaVersion: 3,
+      schema: "qctp-export-v4",
+      schemaVersion: 4,
       exportedAt,
       foundation: foundation ?? null,
       workbook: workbook ?? null,
       settings: settings ?? null,
       records,
-      recordings,
+      recordings: recordings.map((recording) =>
+        VoiceRecordingSchema.parse(recording),
+      ),
       transcripts,
       derivedNotes,
       attachments,
@@ -2616,13 +2980,46 @@ export class QctpRepository {
     const snapshot = QctpImportDataSchema.parse(value);
     const mode = options.mode ?? "merge";
     const transaction = this.database.transaction(ALL_STORES, "readwrite");
-    const [storedSessions, storedCapabilities] =
+    const [
+      storedSessions,
+      storedCapabilities,
+      storedRecordingKeys,
+      storedAudioChunkKeys,
+      storedAttachmentBlobKeys,
+    ] =
       mode === "merge"
         ? await Promise.all([
             transaction.objectStore("stateSessions").getAll(),
             transaction.objectStore("stateCapabilities").getAll(),
+            transaction.objectStore("recordings").getAllKeys(),
+            transaction.objectStore("audioChunks").getAllKeys(),
+            transaction.objectStore("attachmentBlobs").getAllKeys(),
           ])
-        : [[], []];
+        : [[], [], [], [], []];
+    const storedRecordingIds = new Set(storedRecordingKeys);
+    for (const recording of snapshot.recordings) {
+      if (storedRecordingIds.has(recording.id)) {
+        throw new Error(
+          `Merge import would overwrite existing recording ${recording.id}. No data changed; use a replace restore only after preserving the current ledger.`,
+        );
+      }
+    }
+    const storedAudioChunkIds = new Set(storedAudioChunkKeys);
+    for (const chunk of options.binaries?.audioChunks ?? []) {
+      if (storedAudioChunkIds.has(chunk.id)) {
+        throw new Error(
+          `Merge import would overwrite existing audio chunk ${chunk.id}. No data changed.`,
+        );
+      }
+    }
+    const storedAttachmentBlobIds = new Set(storedAttachmentBlobKeys);
+    for (const blob of options.binaries?.attachmentBlobs ?? []) {
+      if (storedAttachmentBlobIds.has(blob.id)) {
+        throw new Error(
+          `Merge import would overwrite existing attachment binary ${blob.id}. No data changed.`,
+        );
+      }
+    }
     const finalSessions = new Map(
       storedSessions.map((session) => [session.id, session]),
     );

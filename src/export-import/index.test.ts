@@ -59,6 +59,10 @@ function createRecording(): VoiceRecording {
         chunkIds: [],
       },
     ],
+    captureMode: "auto-dictation",
+    requestedDurationMs: 300_000,
+    captureContext: { type: "global" },
+    completedByDurationLimit: false,
     transcriptionRoute: "local_only",
     provider: null,
     model: null,
@@ -155,16 +159,70 @@ afterEach(async () => {
 });
 
 describe("versioned export/import", () => {
-  it("emits a distinct Rev3 identity while safely upgrading Rev2 snapshots", async () => {
+  it("emits Rev4 and safely upgrades Rev3 and Rev2 recordings", async () => {
+    await source.saveRecording(createRecording());
     const current = await source.readSnapshot(now);
     expect(current).toMatchObject({
-      schema: "qctp-export-v3",
-      schemaVersion: 3,
+      schema: "qctp-export-v4",
+      schemaVersion: 4,
+      recordings: [
+        expect.objectContaining({
+          captureMode: "auto-dictation",
+          requestedDurationMs: 300_000,
+          captureContext: { type: "global" },
+          completedByDurationLimit: false,
+        }),
+      ],
     });
 
-    const legacy = { ...current } as Record<string, unknown>;
-    legacy.schema = "qctp-export-v2";
-    legacy.schemaVersion = 2;
+    const legacyV3 = JSON.parse(JSON.stringify(current)) as Record<
+      string,
+      unknown
+    >;
+    legacyV3.schema = "qctp-export-v3";
+    legacyV3.schemaVersion = 3;
+    const legacyRecording = (
+      legacyV3.recordings as Array<Record<string, unknown>>
+    )[0];
+    if (!legacyRecording)
+      throw new Error("Legacy recording fixture is missing");
+    for (const field of [
+      "captureMode",
+      "requestedDurationMs",
+      "captureContext",
+      "completedByDurationLimit",
+    ]) {
+      delete legacyRecording[field];
+    }
+    const migratedV3 = await parseQctpJson(JSON.stringify(legacyV3));
+    expect(migratedV3).toMatchObject({
+      schema: "qctp-export-v4",
+      schemaVersion: 4,
+      recordings: [
+        expect.objectContaining({
+          durationMs: 1_000,
+          captureMode: null,
+          requestedDurationMs: null,
+          captureContext: null,
+          completedByDurationLimit: null,
+        }),
+      ],
+    });
+    await importJson(target, JSON.stringify(legacyV3), { mode: "replace" });
+    expect(await target.getRecording("recording-archive")).toMatchObject({
+      durationMs: 1_000,
+      captureMode: null,
+      requestedDurationMs: null,
+      captureContext: null,
+      completedByDurationLimit: null,
+    });
+
+    const legacyV2 = JSON.parse(JSON.stringify(legacyV3)) as Record<
+      string,
+      unknown
+    >;
+    legacyV2.schema = "qctp-export-v2";
+    legacyV2.schemaVersion = 2;
     for (const field of [
       "practiceSessions",
       "breathProfiles",
@@ -172,18 +230,49 @@ describe("versioned export/import", () => {
       "stateSessions",
       "stateCapabilities",
     ]) {
-      delete legacy[field];
+      delete legacyV2[field];
     }
-    const migrated = await parseQctpJson(JSON.stringify(legacy));
-    expect(migrated).toMatchObject({
-      schema: "qctp-export-v3",
-      schemaVersion: 3,
+    const migratedV2 = await parseQctpJson(JSON.stringify(legacyV2));
+    expect(migratedV2).toMatchObject({
+      schema: "qctp-export-v4",
+      schemaVersion: 4,
       practiceSessions: [],
       breathProfiles: [],
       breathSessions: [],
       stateSessions: [],
       stateCapabilities: [],
+      recordings: [
+        expect.objectContaining({
+          captureMode: null,
+          requestedDurationMs: null,
+          captureContext: null,
+          completedByDurationLimit: null,
+        }),
+      ],
     });
+  });
+
+  it.each([
+    "captureMode",
+    "requestedDurationMs",
+    "captureContext",
+    "completedByDurationLimit",
+  ] as const)("rejects a Rev4 recording missing required %s", async (field) => {
+    await source.saveRecording(createRecording());
+    const current = JSON.parse(await exportJson(source)) as Record<
+      string,
+      unknown
+    >;
+    const currentRecording = (
+      current.recordings as Array<Record<string, unknown>>
+    )[0];
+    if (!currentRecording)
+      throw new Error("Current recording fixture is missing");
+    delete currentRecording[field];
+
+    await expect(parseQctpJson(current)).rejects.toBeInstanceOf(
+      QctpImportError,
+    );
   });
 
   it("normalizes trusted legacy content classes losslessly and atomically holds unknown values", async () => {
@@ -584,6 +673,7 @@ describe("versioned export/import", () => {
   });
 
   it("round-trips a complete JSON entity snapshot", async () => {
+    await source.saveRecording(createRecording());
     await source.saveRecord({
       schemaVersion: 1,
       id: "record-json",
@@ -624,6 +714,33 @@ describe("versioned export/import", () => {
       await source.getFoundationState(),
     );
     expect(await target.getSettings()).toEqual(await source.getSettings());
+    expect(await target.getRecording("recording-archive")).toMatchObject({
+      durationMs: 1_000,
+      captureMode: "auto-dictation",
+      requestedDurationMs: 300_000,
+      captureContext: { type: "global" },
+      completedByDurationLimit: false,
+    });
+  });
+
+  it("rejects a merge JSON recording-ID collision without changing local audio", async () => {
+    await source.saveRecording(createRecording());
+    await target.saveRecording(createRecording());
+    await target.appendAudioChunk(
+      "recording-archive",
+      "segment-archive",
+      await testBlob("local-before-merge", "audio/webm"),
+      { id: "target-json-chunk" },
+    );
+    const before = await target.getRecording("recording-archive");
+
+    await expect(importJson(target, await exportJson(source))).rejects.toThrow(
+      /would overwrite existing recording recording-archive.*No data changed/u,
+    );
+    expect(await target.getRecording("recording-archive")).toEqual(before);
+    expect(
+      await (await target.assembleRecordingBlob("recording-archive")).text(),
+    ).toBe("local-before-merge");
   });
 
   it("round-trips audio and attachment blobs through a checksummed ZIP manifest", async () => {
@@ -686,6 +803,13 @@ describe("versioned export/import", () => {
       await (await target.getAttachmentBlob("archive-photo"))?.text(),
     ).toBe("image-bytes");
     const snapshot = await target.readSnapshot();
+    expect(snapshot.recordings[0]).toMatchObject({
+      durationMs: 1_000,
+      captureMode: "auto-dictation",
+      requestedDurationMs: 300_000,
+      captureContext: { type: "global" },
+      completedByDurationLimit: false,
+    });
     expect(snapshot.attachments).toEqual([attachment]);
     expect(snapshot.practiceSessions[0]?.debrief).toMatchObject({
       status: "completed",
@@ -697,6 +821,139 @@ describe("versioned export/import", () => {
       sessionId: "practice-archive",
       fields: { voiceRecordingId: "recording-archive" },
     });
+  });
+
+  it("rejects a merge ZIP recording-ID collision without mixing old and incoming chunks", async () => {
+    await source.saveRecording(createRecording());
+    await source.appendAudioChunk(
+      "recording-archive",
+      "segment-archive",
+      await testBlob("incoming-audio", "audio/webm"),
+      { id: "incoming-recording-chunk" },
+    );
+    await target.saveRecording(createRecording());
+    await target.appendAudioChunk(
+      "recording-archive",
+      "segment-archive",
+      await testBlob("preserved-local-audio", "audio/webm"),
+      { id: "preserved-recording-chunk" },
+    );
+    const before = await target.getRecording("recording-archive");
+
+    await expect(
+      importArchive(target, await exportArchive(source)),
+    ).rejects.toThrow(
+      /would overwrite existing recording recording-archive.*No data changed/u,
+    );
+    expect(await target.getRecording("recording-archive")).toEqual(before);
+    expect(
+      await (await target.assembleRecordingBlob("recording-archive")).text(),
+    ).toBe("preserved-local-audio");
+    expect(
+      await target.getAudioChunk("incoming-recording-chunk"),
+    ).toBeUndefined();
+  });
+
+  it("rejects a cross-recording audio-chunk key collision before any merge writes", async () => {
+    const incomingRecording: VoiceRecording = {
+      ...createRecording(),
+      id: "incoming-recording",
+      localBlobRef: "incoming-recording",
+      segments: [
+        {
+          ...createRecording().segments[0]!,
+          id: "incoming-segment",
+          chunkIds: [],
+        },
+      ],
+    };
+    const localRecording: VoiceRecording = {
+      ...createRecording(),
+      id: "local-recording",
+      localBlobRef: "local-recording",
+      segments: [
+        {
+          ...createRecording().segments[0]!,
+          id: "local-segment",
+          chunkIds: [],
+        },
+      ],
+    };
+    await source.saveRecording(incomingRecording);
+    await source.appendAudioChunk(
+      "incoming-recording",
+      "incoming-segment",
+      await testBlob("incoming-bytes", "audio/webm"),
+      { id: "shared-binary-key" },
+    );
+    await target.saveRecording(localRecording);
+    await target.appendAudioChunk(
+      "local-recording",
+      "local-segment",
+      await testBlob("local-bytes", "audio/webm"),
+      { id: "shared-binary-key" },
+    );
+    const before = await target.getRecording("local-recording");
+
+    await expect(
+      importArchive(target, await exportArchive(source)),
+    ).rejects.toThrow(
+      /would overwrite existing audio chunk shared-binary-key.*No data changed/u,
+    );
+    expect(await target.getRecording("local-recording")).toEqual(before);
+    expect(await target.getRecording("incoming-recording")).toBeUndefined();
+    expect(
+      await (await target.assembleRecordingBlob("local-recording")).text(),
+    ).toBe("local-bytes");
+  });
+
+  it("rejects an attachment binary key collision before any merge writes", async () => {
+    const incoming = await testBlob("incoming-image", "image/jpeg");
+    const local = await testBlob("local-image", "image/jpeg");
+    await source.saveAttachment(
+      {
+        schemaVersion: 1,
+        id: "incoming-attachment",
+        parentId: "incoming-parent",
+        kind: "image",
+        filename: "incoming.jpg",
+        mimeType: incoming.type,
+        sizeBytes: incoming.size,
+        localBlobRef: "shared-attachment-key",
+        remoteObjectRef: null,
+        checksumSha256: null,
+        createdAt: now,
+        deletedAt: null,
+      },
+      incoming,
+    );
+    await target.saveAttachment(
+      {
+        schemaVersion: 1,
+        id: "local-attachment",
+        parentId: "local-parent",
+        kind: "image",
+        filename: "local.jpg",
+        mimeType: local.type,
+        sizeBytes: local.size,
+        localBlobRef: "shared-attachment-key",
+        remoteObjectRef: null,
+        checksumSha256: null,
+        createdAt: now,
+        deletedAt: null,
+      },
+      local,
+    );
+
+    await expect(
+      importArchive(target, await exportArchive(source)),
+    ).rejects.toThrow(
+      /would overwrite existing attachment binary shared-attachment-key.*No data changed/u,
+    );
+    expect(await target.getAttachment("incoming-attachment")).toBeUndefined();
+    expect(
+      await (await target.getAttachmentBlob("local-attachment"))?.text(),
+    ).toBe("local-image");
   });
 
   it("validates every archive artifact before the atomic database import starts", async () => {

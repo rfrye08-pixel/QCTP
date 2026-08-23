@@ -19,7 +19,7 @@ import {
 } from "../state-atlas/types";
 
 export const CURRENT_DOMAIN_VERSION = 1 as const;
-export const CURRENT_EXPORT_VERSION = 3 as const;
+export const CURRENT_EXPORT_VERSION = 4 as const;
 
 export const EntityIdSchema = z.string().trim().min(1).max(240);
 export const IsoDateTimeSchema = z.string().datetime({ offset: true });
@@ -474,6 +474,31 @@ export const RecordingStatusSchema = z.enum([
   "DELETED",
 ]);
 
+export const VoiceCaptureModeSchema = z.enum([
+  "quick",
+  "field",
+  "auto-dictation",
+  "experiment",
+  "debrief",
+]);
+
+export const VoiceCaptureContextSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("global") }),
+  z.object({ type: z.literal("field"), fieldTargetId: EntityIdSchema }),
+  z.object({
+    type: z.literal("practice-debrief"),
+    practiceSessionId: EntityIdSchema,
+  }),
+  z.object({ type: z.literal("reg-session"), regSessionId: EntityIdSchema }),
+  z.object({ type: z.literal("experiment"), experimentId: EntityIdSchema }),
+]);
+
+export const RequestedAutoDictationDurationMsSchema = z.union([
+  z.literal(300_000),
+  z.literal(600_000),
+  z.literal(1_200_000),
+]);
+
 export const RecordingSegmentSchema = z.object({
   id: EntityIdSchema,
   sequence: z.number().int().nonnegative(),
@@ -485,34 +510,160 @@ export const RecordingSegmentSchema = z.object({
   chunkIds: z.array(EntityIdSchema),
 });
 
-export const VoiceRecordingSchema = z.object({
-  schemaVersion: z.literal(CURRENT_DOMAIN_VERSION),
-  id: EntityIdSchema,
-  createdAt: IsoDateTimeSchema,
-  updatedAt: IsoDateTimeSchema,
-  acceptedAt: IsoDateTimeSchema.nullable().default(null),
-  durationMs: z.number().int().nonnegative(),
-  mimeType: z.string().trim().min(1),
-  sizeBytes: z.number().int().nonnegative(),
-  localBlobRef: EntityIdSchema,
-  remoteObjectRef: z.string().trim().min(1).nullable().default(null),
-  destinationType: VoiceDestinationSchema,
-  destinationId: EntityIdSchema.nullable().default(null),
-  status: RecordingStatusSchema,
-  segments: z.array(RecordingSegmentSchema),
-  transcriptionRoute: z.enum(["local_only", "server_openai", "server_custom"]),
-  provider: z.string().trim().min(1).nullable().default(null),
-  model: z.string().trim().min(1).nullable().default(null),
-  checksumSha256: z
-    .string()
-    .regex(/^[a-f0-9]{64}$/i)
-    .nullable()
-    .default(null),
-  retentionPolicy: z.enum(["keep", "delete_after_export", "manual"]),
-  failureCode: z.string().trim().min(1).nullable().default(null),
-  failureMessage: z.string().trim().min(1).nullable().default(null),
-  deletedAt: IsoDateTimeSchema.nullable().default(null),
-});
+export const VoiceRecordingSchema = z
+  .object({
+    schemaVersion: z.literal(CURRENT_DOMAIN_VERSION),
+    id: EntityIdSchema,
+    createdAt: IsoDateTimeSchema,
+    updatedAt: IsoDateTimeSchema,
+    acceptedAt: IsoDateTimeSchema.nullable().default(null),
+    durationMs: z.number().int().nonnegative(),
+    mimeType: z.string().trim().min(1),
+    sizeBytes: z.number().int().nonnegative(),
+    localBlobRef: EntityIdSchema,
+    remoteObjectRef: z.string().trim().min(1).nullable().default(null),
+    destinationType: VoiceDestinationSchema,
+    destinationId: EntityIdSchema.nullable().default(null),
+    status: RecordingStatusSchema,
+    segments: z.array(RecordingSegmentSchema),
+    captureMode: VoiceCaptureModeSchema.nullable().default(null),
+    requestedDurationMs:
+      RequestedAutoDictationDurationMsSchema.nullable().default(null),
+    captureContext: VoiceCaptureContextSchema.nullable().default(null),
+    completedByDurationLimit: z.boolean().nullable().default(null),
+    captureOwnerId: EntityIdSchema.nullable().optional(),
+    captureLeaseExpiresAt: IsoDateTimeSchema.nullable().optional(),
+    transcriptionRoute: z.enum([
+      "local_only",
+      "server_openai",
+      "server_custom",
+    ]),
+    provider: z.string().trim().min(1).nullable().default(null),
+    model: z.string().trim().min(1).nullable().default(null),
+    checksumSha256: z
+      .string()
+      .regex(/^[a-f0-9]{64}$/i)
+      .nullable()
+      .default(null),
+    retentionPolicy: z.enum(["keep", "delete_after_export", "manual"]),
+    failureCode: z.string().trim().min(1).nullable().default(null),
+    failureMessage: z.string().trim().min(1).nullable().default(null),
+    deletedAt: IsoDateTimeSchema.nullable().default(null),
+  })
+  .superRefine((recording, context) => {
+    const captureOwnerId = recording.captureOwnerId ?? null;
+    const captureLeaseExpiresAt = recording.captureLeaseExpiresAt ?? null;
+    if ((captureOwnerId === null) !== (captureLeaseExpiresAt === null)) {
+      context.addIssue({
+        code: "custom",
+        path: ["captureLeaseExpiresAt"],
+        message: "Capture ownership and lease expiry must be stored together.",
+      });
+    }
+    if (
+      recording.status !== "CAPTURING" &&
+      (captureOwnerId !== null || captureLeaseExpiresAt !== null)
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["captureOwnerId"],
+        message: "Only an active capture may retain a capture lease.",
+      });
+    }
+    if (recording.captureMode === null && recording.captureContext !== null) {
+      context.addIssue({
+        code: "custom",
+        path: ["captureMode"],
+        message: "A typed capture context requires a classified recording.",
+      });
+    }
+    if (recording.captureMode !== null && recording.captureContext === null) {
+      context.addIssue({
+        code: "custom",
+        path: ["captureContext"],
+        message: "A classified recording requires a typed capture context.",
+      });
+    }
+    if (
+      recording.captureMode === "auto-dictation" &&
+      recording.requestedDurationMs === null
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["requestedDurationMs"],
+        message: "Auto-Dictation requires a controlled duration limit.",
+      });
+    }
+    if (
+      recording.captureMode === "auto-dictation" &&
+      recording.requestedDurationMs !== null &&
+      recording.durationMs > recording.requestedDurationMs
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["durationMs"],
+        message:
+          "Auto-Dictation actual duration cannot exceed its controlled limit.",
+      });
+    }
+    if (
+      recording.completedByDurationLimit === true &&
+      recording.requestedDurationMs !== null &&
+      recording.durationMs !== recording.requestedDurationMs
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["durationMs"],
+        message:
+          "Duration-limit completion requires the exact controlled duration.",
+      });
+    }
+    if (
+      recording.captureMode !== "auto-dictation" &&
+      recording.requestedDurationMs !== null
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["requestedDurationMs"],
+        message: "Only Auto-Dictation may carry a requested duration limit.",
+      });
+    }
+    if (
+      recording.completedByDurationLimit !== null &&
+      recording.captureMode !== "auto-dictation"
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["completedByDurationLimit"],
+        message: "Only Auto-Dictation tracks duration-limit completion.",
+      });
+    }
+    if (
+      recording.captureMode === "auto-dictation" &&
+      recording.status !== "CAPTURING" &&
+      recording.completedByDurationLimit === null
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["completedByDurationLimit"],
+        message: "A finalized Auto-Dictation must record how it stopped.",
+      });
+    }
+  });
+
+// Rev4 made capture classification part of the portable recording contract.
+// Keep defaults on the runtime schema so pre-Rev4 IndexedDB rows remain
+// readable, but require every current export to state all four values
+// explicitly. Legacy v2/v3 import schemas below intentionally use the runtime
+// schema and therefore normalize absent values to null.
+const VoiceRecordingExportV4Schema = VoiceRecordingSchema.and(
+  z.object({
+    captureMode: VoiceCaptureModeSchema.nullable(),
+    requestedDurationMs: RequestedAutoDictationDurationMsSchema.nullable(),
+    captureContext: VoiceCaptureContextSchema.nullable(),
+    completedByDurationLimit: z.boolean().nullable(),
+  }),
+);
 
 export const TranscriptTimestampSchema = z.object({
   startMs: z.number().int().nonnegative(),
@@ -816,14 +967,14 @@ export const MirrorInsightFeedbackSchema = z.object({
 });
 
 export const QctpExportDataSchema = z.object({
-  schema: z.literal("qctp-export-v3"),
+  schema: z.literal("qctp-export-v4"),
   schemaVersion: z.literal(CURRENT_EXPORT_VERSION),
   exportedAt: IsoDateTimeSchema,
   foundation: FoundationStateSchema.nullable(),
   workbook: WorkbookStateSchema.nullable(),
   settings: AppSettingsSchema.nullable(),
   records: z.array(RecoverableCodexRecordSchema),
-  recordings: z.array(VoiceRecordingSchema),
+  recordings: z.array(VoiceRecordingExportV4Schema),
   transcripts: z.array(TranscriptSchema),
   derivedNotes: z.array(DerivedNoteSchema),
   attachments: z.array(AttachmentSchema),
@@ -846,16 +997,30 @@ export const QctpImportDataSchema = QctpExportDataSchema.extend({
   records: z.array(CodexRecordSchema),
 });
 
-const QctpLegacyExportV2Schema = QctpImportDataSchema.extend({
+const QctpLegacyImportDataSchema = QctpImportDataSchema.extend({
+  recordings: z.array(VoiceRecordingSchema),
+});
+
+const QctpLegacyExportV2Schema = QctpLegacyImportDataSchema.extend({
   schema: z.literal("qctp-export-v2"),
   schemaVersion: z.literal(2),
 });
 
+const QctpLegacyExportV3Schema = QctpLegacyImportDataSchema.extend({
+  schema: z.literal("qctp-export-v3"),
+  schemaVersion: z.literal(3),
+});
+
 export const QctpExportImportSchema = z.union([
   QctpImportDataSchema,
+  QctpLegacyExportV3Schema.transform((legacy) => ({
+    ...legacy,
+    schema: "qctp-export-v4" as const,
+    schemaVersion: CURRENT_EXPORT_VERSION,
+  })),
   QctpLegacyExportV2Schema.transform((legacy) => ({
     ...legacy,
-    schema: "qctp-export-v3" as const,
+    schema: "qctp-export-v4" as const,
     schemaVersion: CURRENT_EXPORT_VERSION,
   })),
 ]);
@@ -904,6 +1069,11 @@ export type ReminderReceipt = z.infer<typeof ReminderReceiptSchema>;
 export type AppSettings = z.infer<typeof AppSettingsSchema>;
 export type VoiceDestination = z.infer<typeof VoiceDestinationSchema>;
 export type RecordingStatus = z.infer<typeof RecordingStatusSchema>;
+export type VoiceCaptureMode = z.infer<typeof VoiceCaptureModeSchema>;
+export type VoiceCaptureContext = z.infer<typeof VoiceCaptureContextSchema>;
+export type RequestedAutoDictationDurationMs = z.infer<
+  typeof RequestedAutoDictationDurationMsSchema
+>;
 export type RecordingSegment = z.infer<typeof RecordingSegmentSchema>;
 export type VoiceRecording = z.infer<typeof VoiceRecordingSchema>;
 export type Transcript = z.infer<typeof TranscriptSchema>;

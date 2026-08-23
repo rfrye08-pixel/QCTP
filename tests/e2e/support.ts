@@ -179,10 +179,16 @@ export async function installFakeMicrophone(page: Page): Promise<void> {
       getUserMediaCalls: 0,
       trackStops: 0,
       playbackCalls: 0,
+      monotonicOffsetMs: 0,
     };
     Object.defineProperty(window, "__qctpMediaTest", {
       configurable: true,
       value: state,
+    });
+    const originalPerformanceNow = performance.now.bind(performance);
+    Object.defineProperty(performance, "now", {
+      configurable: true,
+      value: () => originalPerformanceNow() + state.monotonicOffsetMs,
     });
 
     const track = {
@@ -355,6 +361,20 @@ export async function mediaTestState(page: Page): Promise<{
     ).__qctpMediaTest;
     return { ...state };
   });
+}
+
+export async function advanceFakeRecorderTime(
+  page: Page,
+  milliseconds: number,
+): Promise<void> {
+  await page.evaluate((elapsedMs) => {
+    const state = (
+      window as unknown as Window & {
+        __qctpMediaTest: { monotonicOffsetMs: number };
+      }
+    ).__qctpMediaTest;
+    state.monotonicOffsetMs += elapsedMs;
+  }, milliseconds);
 }
 
 export async function readAudioChunkFacts(

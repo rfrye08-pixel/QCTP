@@ -290,6 +290,82 @@ describe("versioned domain schemas", () => {
     });
     expect(recording.transcriptionRoute).toBe("local_only");
     expect(recording.provider).toBeNull();
+    expect(recording).toMatchObject({
+      captureMode: null,
+      requestedDurationMs: null,
+      captureContext: null,
+      completedByDurationLimit: null,
+    });
+  });
+
+  it("enforces typed Auto-Dictation metadata without changing legacy rows", () => {
+    const base = {
+      schemaVersion: 1,
+      id: "recording-auto",
+      createdAt: now,
+      updatedAt: now,
+      acceptedAt: now,
+      durationMs: 300_000,
+      mimeType: "audio/webm",
+      sizeBytes: 12,
+      localBlobRef: "recording-auto",
+      remoteObjectRef: null,
+      destinationType: "codex" as const,
+      destinationId: "voice-record:recording-auto",
+      status: "LOCAL_ONLY" as const,
+      segments: [],
+      captureMode: "auto-dictation" as const,
+      requestedDurationMs: 300_000 as const,
+      captureContext: { type: "global" as const },
+      completedByDurationLimit: true,
+      transcriptionRoute: "local_only" as const,
+      provider: null,
+      model: null,
+      checksumSha256: null,
+      retentionPolicy: "keep" as const,
+      failureCode: null,
+      failureMessage: null,
+      deletedAt: null,
+    };
+
+    expect(VoiceRecordingSchema.parse(base)).toMatchObject({
+      captureMode: "auto-dictation",
+      requestedDurationMs: 300_000,
+      captureContext: { type: "global" },
+      completedByDurationLimit: true,
+    });
+    expect(() =>
+      VoiceRecordingSchema.parse({ ...base, requestedDurationMs: null }),
+    ).toThrow(/requires a controlled duration limit/u);
+    expect(() =>
+      VoiceRecordingSchema.parse({
+        ...base,
+        captureMode: "quick",
+        requestedDurationMs: null,
+        completedByDurationLimit: false,
+      }),
+    ).toThrow(/Only Auto-Dictation tracks duration-limit completion/u);
+    expect(() =>
+      VoiceRecordingSchema.parse({
+        ...base,
+        captureMode: null,
+        requestedDurationMs: null,
+        completedByDurationLimit: null,
+      }),
+    ).toThrow(/typed capture context requires a classified recording/u);
+    expect(() =>
+      VoiceRecordingSchema.parse({ ...base, completedByDurationLimit: null }),
+    ).toThrow(/finalized Auto-Dictation must record how it stopped/u);
+    expect(() =>
+      VoiceRecordingSchema.parse({ ...base, durationMs: 299_999 }),
+    ).toThrow(/requires the exact controlled duration/u);
+    expect(() =>
+      VoiceRecordingSchema.parse({
+        ...base,
+        durationMs: 300_001,
+        completedByDurationLimit: false,
+      }),
+    ).toThrow(/cannot exceed its controlled limit/u);
   });
 
   it("upgrades legacy local Mirror results with safe review defaults", () => {

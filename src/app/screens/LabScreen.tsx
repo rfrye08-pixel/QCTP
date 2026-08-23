@@ -391,7 +391,14 @@ export function LabScreen() {
               : undefined,
           fields: {
             voiceRecordingId: capture.recordingId,
-            fieldTargetId: capture.fieldTargetId,
+            fieldTargetId:
+              capture.context.type === "field"
+                ? capture.context.fieldTargetId
+                : null,
+            captureMode: capture.captureMode,
+            captureContext: capture.context,
+            requestedDurationMinutes: capture.requestedDurationMinutes,
+            actualDurationMs: capture.durationMs,
             destinationId,
             transcriptState: capture.queueLocalTranscription
               ? "queued-local"
@@ -740,7 +747,10 @@ export function LabScreen() {
               persistence={capturePersistence}
               mode="field"
               initialDestination="codex"
-              fieldTargetId={`lab-${dictationField}`}
+              captureContext={{
+                type: "field",
+                fieldTargetId: `lab-${dictationField}`,
+              }}
               localTranscriptionAvailable={
                 runtime.localTranscriptionStatus === "ready"
               }

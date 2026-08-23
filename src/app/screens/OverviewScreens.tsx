@@ -60,7 +60,7 @@ export function TodayOverview({
   onNavigate: (route: AppRoute) => void;
   voiceFreeSession: VoiceFreeDay1SessionController;
   onStartVoiceFreeDay1: () => void;
-  onQuickCapture: () => void;
+  onQuickCapture: (trigger: HTMLButtonElement) => void;
   unresolvedDebriefSession: PracticeSession | null;
   onOpenDebrief: () => void;
 }) {
@@ -419,7 +419,7 @@ export function TodayOverview({
         <button
           className="secondary-button"
           type="button"
-          onClick={onQuickCapture}
+          onClick={(event) => onQuickCapture(event.currentTarget)}
         >
           Record voice note
         </button>

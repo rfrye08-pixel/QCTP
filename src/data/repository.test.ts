@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   createEvidenceLayer,
@@ -49,6 +49,10 @@ function recording(id = "recording-1", accepted = true): VoiceRecording {
         chunkIds: [],
       },
     ],
+    captureMode: null,
+    requestedDurationMs: null,
+    captureContext: null,
+    completedByDurationLimit: null,
     transcriptionRoute: "local_only",
     provider: null,
     model: null,
@@ -89,6 +93,74 @@ afterEach(async () => {
 });
 
 describe("QctpRepository", () => {
+  it("normalizes pre-Rev4 recording rows before emitting a strict Rev4 snapshot", async () => {
+    const legacy = { ...recording("legacy-export-row") } as Record<
+      string,
+      unknown
+    >;
+    for (const field of [
+      "captureMode",
+      "requestedDurationMs",
+      "captureContext",
+      "completedByDurationLimit",
+    ]) {
+      delete legacy[field];
+    }
+    const raw = await openQctpDatabase({ name: databaseName });
+    try {
+      await raw.put("recordings", legacy as never);
+    } finally {
+      raw.close();
+    }
+
+    const snapshot = await repository.readSnapshot(now);
+    expect(snapshot.recordings).toEqual([
+      expect.objectContaining({
+        id: "legacy-export-row",
+        captureMode: null,
+        requestedDurationMs: null,
+        captureContext: null,
+        completedByDurationLimit: null,
+      }),
+    ]);
+  });
+
+  it("writes 1,200 explicitly sequenced chunks without rescanning prior audio", async () => {
+    const recordingId = "long-explicit-sequence";
+    await repository.saveRecording(recording(recordingId, false));
+    const getAll = vi.spyOn(IDBIndex.prototype, "getAll");
+    const blob = await testBlob("x", "audio/webm");
+    for (let sequence = 0; sequence < 1_200; sequence += 1) {
+      await repository.appendAudioChunk(
+        recordingId,
+        `${recordingId}-segment-1`,
+        blob,
+        {
+          id: `${recordingId}-chunk-${String(sequence).padStart(4, "0")}`,
+          sequence,
+          activeDurationMs: 1_001 + sequence,
+        },
+      );
+    }
+    expect(getAll).not.toHaveBeenCalled();
+    getAll.mockRestore();
+
+    const chunks = await repository.listAudioChunks(recordingId);
+    expect(chunks).toHaveLength(1_200);
+    expect(chunks[0]?.sequence).toBe(0);
+    expect(chunks.at(-1)?.sequence).toBe(1_199);
+    const saved = await repository.getRecording(recordingId);
+    expect(saved).toMatchObject({
+      durationMs: 2_200,
+      sizeBytes: 1_200,
+      segments: [{ durationMs: 2_200 }],
+    });
+    expect(saved?.segments[0]?.chunkIds[0]).toBe(`${recordingId}-chunk-0000`);
+    expect(saved?.segments[0]?.chunkIds.at(-1)).toBe(
+      `${recordingId}-chunk-1199`,
+    );
+  }, 15_000);
+
   it("provides typed CRUD APIs for every persisted foundation", async () => {
     await repository.initializeDefaults(now);
     await repository.initializeDefaults(now);
@@ -243,6 +315,30 @@ describe("QctpRepository", () => {
     });
   });
 
+  it("normalizes additive voice metadata when reading legacy recording rows", async () => {
+    const legacyRecording = recording("legacy-recording");
+    Reflect.deleteProperty(legacyRecording, "captureMode");
+    Reflect.deleteProperty(legacyRecording, "requestedDurationMs");
+    Reflect.deleteProperty(legacyRecording, "captureContext");
+    Reflect.deleteProperty(legacyRecording, "completedByDurationLimit");
+    const rawDatabase = await openQctpDatabase({ name: databaseName });
+    await rawDatabase.put("recordings", legacyRecording);
+    rawDatabase.close();
+
+    const expectedMetadata = {
+      captureMode: null,
+      requestedDurationMs: null,
+      captureContext: null,
+      completedByDurationLimit: null,
+    };
+    expect(await repository.getRecording(legacyRecording.id)).toMatchObject(
+      expectedMetadata,
+    );
+    expect(await repository.listRecordings()).toEqual([
+      expect.objectContaining(expectedMetadata),
+    ]);
+  });
+
   it("rejects missing parents and mismatched binary metadata", async () => {
     await expect(
       repository.appendAudioChunk(
@@ -351,6 +447,38 @@ describe("QctpRepository", () => {
     const audio = await repository.assembleRecordingBlob("recording-1");
     expect(await audio.text()).toBe("first-second");
     expect((await repository.getRecording("recording-1"))?.sizeBytes).toBe(12);
+  });
+
+  it("rejects stale audio chunks outside the recording segment graph", async () => {
+    await repository.saveRecording(recording("graph-recording"));
+    await repository.appendAudioChunk(
+      "graph-recording",
+      "graph-recording-segment-1",
+      await testBlob("declared", "audio/webm"),
+      { id: "declared-chunk", sequence: 0 },
+    );
+    const raw = await openQctpDatabase({ name: databaseName });
+    try {
+      await raw.put("audioChunks", {
+        schemaVersion: 1,
+        id: "stale-chunk",
+        recordingId: "graph-recording",
+        segmentId: "graph-recording-segment-1",
+        sequence: 1,
+        createdAt: now,
+        mimeType: "audio/webm",
+        blob: await testBlob("must-not-append", "audio/webm"),
+      });
+    } finally {
+      raw.close();
+    }
+
+    await expect(
+      repository.assembleRecordingBlob("graph-recording"),
+    ).rejects.toThrow(/audio graph is inconsistent/u);
+    expect(
+      await (await repository.getAudioChunk("declared-chunk"))?.blob.text(),
+    ).toBe("declared");
   });
 
   it("requires explicit acceptance before queueing and preserves audio on transcription failure", async () => {

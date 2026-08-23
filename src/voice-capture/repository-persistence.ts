@@ -1,25 +1,46 @@
-import { VoiceRecordingSchema } from "../domain";
-import type { QctpRepository } from "../data";
+import { VoiceRecordingSchema, type VoiceRecording } from "../domain";
+import type { CaptureDiscardProof, QctpRepository } from "../data";
 
 import type { CapturePersistence } from "./browser-recorder";
 
 interface ActiveSegment {
   id: string;
   startedAt: string;
-  priorDurationMs: number;
 }
 
 export interface InterruptedCaptureRecoveryResult {
   recoveredRecordingIds: string[];
   discardedEmptyRecordingIds: string[];
   failedRecordingIds: string[];
+  activeRecordingIds: string[];
+}
+
+export const CAPTURE_LEASE_DURATION_MS = 60_000;
+export const CAPTURE_RECOVERY_RETRY_MS = 15_000;
+export const LEGACY_CAPTURE_ORPHAN_GRACE_MS = 60_000;
+
+interface RepositoryCapturePersistenceOptions {
+  ownerId?: string;
+  now?: () => Date;
+  leaseDurationMs?: number;
+}
+
+interface InterruptedCaptureRecoveryOptions {
+  now?: () => Date;
 }
 
 function inferredInterruptedDurationMs(
-  priorDurationMs: number,
-  startedAt: string,
-  lastPersistedAt: string,
+  recording: VoiceRecording,
+  activeSegment: VoiceRecording["segments"][number],
 ): number {
+  if (recording.captureMode !== null || activeSegment.durationMs > 0) {
+    return recording.requestedDurationMs === null
+      ? recording.durationMs
+      : Math.min(recording.durationMs, recording.requestedDurationMs);
+  }
+  const priorDurationMs = recording.durationMs;
+  const startedAt = activeSegment.startedAt;
+  const lastPersistedAt = recording.updatedAt;
   const started = Date.parse(startedAt);
   const persisted = Date.parse(lastPersistedAt);
   const activeDurationMs =
@@ -41,31 +62,59 @@ function inferredInterruptedDurationMs(
  */
 export async function recoverInterruptedCaptures(
   repository: QctpRepository,
+  options: InterruptedCaptureRecoveryOptions = {},
 ): Promise<InterruptedCaptureRecoveryResult> {
+  const now = options.now?.() ?? new Date();
   const result: InterruptedCaptureRecoveryResult = {
     recoveredRecordingIds: [],
     discardedEmptyRecordingIds: [],
     failedRecordingIds: [],
+    activeRecordingIds: [],
   };
-  const persistence = new RepositoryCapturePersistence(repository);
-  const interrupted = await repository.listRecordings("CAPTURING");
+  const persistence = new RepositoryCapturePersistence(repository, {
+    now: () => now,
+  });
+  const candidates = await repository.listRecordingRecoveryCandidates();
+  result.failedRecordingIds.push(...candidates.invalidRecordingIds);
 
-  for (const recording of interrupted) {
+  for (const recording of candidates.recordings) {
     const activeSegment = recording.segments.at(-1);
     if (!activeSegment) {
       result.failedRecordingIds.push(recording.id);
       continue;
     }
-    const durationMs = inferredInterruptedDurationMs(
-      recording.durationMs,
-      activeSegment.startedAt,
-      recording.updatedAt,
-    );
+    const durationMs = inferredInterruptedDurationMs(recording, activeSegment);
     try {
+      const ownerId = recording.captureOwnerId ?? null;
+      const leaseExpiresAt = recording.captureLeaseExpiresAt ?? null;
+      const leaseExpiry =
+        leaseExpiresAt === null ? Number.NaN : Date.parse(leaseExpiresAt);
+      const legacyLastWrite = Date.parse(recording.updatedAt);
+      const leaseActive =
+        Number.isFinite(leaseExpiry) && leaseExpiry > now.getTime();
+      const legacyStillFresh =
+        ownerId === null &&
+        leaseExpiresAt === null &&
+        Number.isFinite(legacyLastWrite) &&
+        now.getTime() - legacyLastWrite < LEGACY_CAPTURE_ORPHAN_GRACE_MS;
+      if (leaseActive || legacyStillFresh) {
+        result.activeRecordingIds.push(recording.id);
+        continue;
+      }
+      const claimed = await persistence.claimInterrupted(recording, now);
+      if (!claimed) {
+        result.activeRecordingIds.push(recording.id);
+        continue;
+      }
+      const completedByDurationLimit =
+        recording.captureMode === "auto-dictation" &&
+        recording.requestedDurationMs !== null &&
+        durationMs === recording.requestedDurationMs;
       const recovered = await persistence.recoverInterrupted(
         recording.id,
         durationMs,
         activeSegment.mimeType || recording.mimeType,
+        completedByDurationLimit,
       );
       if (recovered) result.recoveredRecordingIds.push(recording.id);
       else result.discardedEmptyRecordingIds.push(recording.id);
@@ -83,14 +132,53 @@ export async function recoverInterruptedCaptures(
  */
 export class RepositoryCapturePersistence implements CapturePersistence {
   private readonly activeSegments = new Map<string, ActiveSegment>();
+  private readonly discardProofs = new Map<string, CaptureDiscardProof>();
+  private readonly ownerId: string;
+  private readonly now: () => Date;
+  private readonly leaseDurationMs: number;
 
-  constructor(private readonly repository: QctpRepository) {}
+  constructor(
+    private readonly repository: QctpRepository,
+    options: RepositoryCapturePersistenceOptions = {},
+  ) {
+    this.ownerId = options.ownerId ?? `capture-owner-${crypto.randomUUID()}`;
+    this.now = options.now ?? (() => new Date());
+    this.leaseDurationMs = options.leaseDurationMs ?? CAPTURE_LEASE_DURATION_MS;
+  }
+
+  private leaseExpiresAt(): string {
+    return new Date(this.now().getTime() + this.leaseDurationMs).toISOString();
+  }
+
+  async claimInterrupted(
+    recording: VoiceRecording,
+    claimAt: Date,
+  ): Promise<boolean> {
+    return this.repository.claimInterruptedRecording({
+      recordingId: recording.id,
+      expectedOwnerId: recording.captureOwnerId ?? null,
+      expectedLeaseExpiresAt: recording.captureLeaseExpiresAt ?? null,
+      expectedUpdatedAt: recording.updatedAt,
+      claimantOwnerId: this.ownerId,
+      claimantLeaseExpiresAt: new Date(
+        claimAt.getTime() + this.leaseDurationMs,
+      ).toISOString(),
+      claimAt: claimAt.toISOString(),
+    });
+  }
 
   async begin(input: {
     recordingId: string;
     mimeType: string;
     createdAt: string;
     append: boolean;
+    captureMode: Parameters<CapturePersistence["begin"]>[0]["captureMode"];
+    requestedDurationMs: Parameters<
+      CapturePersistence["begin"]
+    >[0]["requestedDurationMs"];
+    captureContext: Parameters<
+      CapturePersistence["begin"]
+    >[0]["captureContext"];
   }): Promise<number> {
     const existing = await this.repository.getRecording(input.recordingId);
     if (input.append && !existing) {
@@ -100,6 +188,17 @@ export class RepositoryCapturePersistence implements CapturePersistence {
     }
     if (!input.append && existing) {
       throw new Error("A recording with this identifier already exists.");
+    }
+    if (
+      existing &&
+      (existing.captureMode !== input.captureMode ||
+        existing.requestedDurationMs !== input.requestedDurationMs ||
+        JSON.stringify(existing.captureContext) !==
+          JSON.stringify(input.captureContext))
+    ) {
+      throw new Error(
+        "An appended segment must keep the original capture mode, duration, and context.",
+      );
     }
 
     const segmentSequence = existing?.segments.length ?? 0;
@@ -122,6 +221,8 @@ export class RepositoryCapturePersistence implements CapturePersistence {
             segments: [...existing.segments, segment],
             failureCode: null,
             failureMessage: null,
+            captureOwnerId: this.ownerId,
+            captureLeaseExpiresAt: this.leaseExpiresAt(),
             updatedAt: input.createdAt,
           }
         : {
@@ -139,6 +240,12 @@ export class RepositoryCapturePersistence implements CapturePersistence {
             destinationId: null,
             status: "CAPTURING",
             segments: [segment],
+            captureMode: input.captureMode,
+            requestedDurationMs: input.requestedDurationMs,
+            captureContext: input.captureContext,
+            completedByDurationLimit: null,
+            captureOwnerId: this.ownerId,
+            captureLeaseExpiresAt: this.leaseExpiresAt(),
             transcriptionRoute: "local_only",
             provider: null,
             model: null,
@@ -153,7 +260,6 @@ export class RepositoryCapturePersistence implements CapturePersistence {
     this.activeSegments.set(input.recordingId, {
       id: segmentId,
       startedAt: input.createdAt,
-      priorDurationMs: existing?.durationMs ?? 0,
     });
     return (await this.repository.listAudioChunks(input.recordingId)).length;
   }
@@ -162,46 +268,49 @@ export class RepositoryCapturePersistence implements CapturePersistence {
     recordingId: string,
     index: number,
     chunk: Blob,
+    activeDurationMs = 0,
   ): Promise<void> {
     const active = this.activeSegments.get(recordingId);
     if (!active) throw new Error("The recording segment is not active.");
     await this.repository.appendAudioChunk(recordingId, active.id, chunk, {
       sequence: index,
+      activeDurationMs,
+      captureOwnerId: this.ownerId,
+      captureLeaseExpiresAt: this.leaseExpiresAt(),
     });
+  }
+
+  async renewLease(recordingId: string): Promise<void> {
+    await this.repository.renewRecordingCaptureLease(
+      recordingId,
+      this.ownerId,
+      this.leaseExpiresAt(),
+    );
   }
 
   async finalize(
     recordingId: string,
     durationMs: number,
     mimeType: string,
+    completedByDurationLimit = false,
   ): Promise<Blob> {
     const active = this.activeSegments.get(recordingId);
-    const recording = await this.repository.getRecording(recordingId);
-    if (!active || !recording)
-      throw new Error("The local recording could not be finalized.");
+    if (!active) throw new Error("The local recording could not be finalized.");
     const endedAt = new Date().toISOString();
-    // performance.now() is intentionally monotonic but may be fractional. The
-    // durable schema uses integer milliseconds so every browser records the
-    // same portable representation.
-    const normalizedDurationMs = Math.max(
-      active.priorDurationMs,
-      Math.round(durationMs),
-    );
-    const segmentDurationMs = normalizedDurationMs - active.priorDurationMs;
-    const finalized = VoiceRecordingSchema.parse({
-      ...recording,
-      durationMs: normalizedDurationMs,
-      mimeType: recording.mimeType || mimeType,
-      status: "LOCAL_ONLY",
-      segments: recording.segments.map((segment) =>
-        segment.id === active.id
-          ? { ...segment, endedAt, durationMs: segmentDurationMs }
-          : segment,
-      ),
-      updatedAt: endedAt,
+    const finalized = await this.repository.finalizeOwnedCapture({
+      recordingId,
+      segmentId: active.id,
+      captureOwnerId: this.ownerId,
+      durationMs,
+      mimeType,
+      completedByDurationLimit,
+      endedAt,
     });
-    await this.repository.saveRecording(finalized);
     this.activeSegments.delete(recordingId);
+    this.discardProofs.set(recordingId, {
+      updatedAt: finalized.updatedAt,
+      segmentIds: finalized.segments.map((segment) => segment.id),
+    });
     return this.repository.assembleRecordingBlob(recordingId);
   }
 
@@ -214,6 +323,7 @@ export class RepositoryCapturePersistence implements CapturePersistence {
     recordingId: string,
     durationMs: number,
     mimeType: string,
+    completedByDurationLimit = false,
   ): Promise<Blob | null> {
     const recording = await this.repository.getRecording(recordingId);
     if (!recording) {
@@ -229,7 +339,6 @@ export class RepositoryCapturePersistence implements CapturePersistence {
               ? {
                   id: segment.id,
                   startedAt: segment.startedAt,
-                  priorDurationMs: recording.durationMs,
                 }
               : undefined;
           })()
@@ -250,35 +359,38 @@ export class RepositoryCapturePersistence implements CapturePersistence {
     }
     if (activeSegment.chunkIds.length > 0) {
       this.activeSegments.set(recordingId, active);
-      return this.finalize(recordingId, durationMs, mimeType);
+      return this.finalize(
+        recordingId,
+        durationMs,
+        mimeType,
+        completedByDurationLimit,
+      );
     }
 
-    this.activeSegments.delete(recordingId);
-    const remainingSegments = recording.segments.filter(
-      (segment) => segment.id !== active.id,
-    );
-    if (remainingSegments.length === 0) {
-      await this.repository.deleteRecording(recordingId, { metadata: true });
-      return null;
-    }
     const recoveredAt = new Date().toISOString();
-    await this.repository.saveRecording(
-      VoiceRecordingSchema.parse({
-        ...recording,
-        status: "LOCAL_ONLY",
-        durationMs: active.priorDurationMs,
-        mimeType: recording.mimeType || mimeType,
-        segments: remainingSegments,
-        updatedAt: recoveredAt,
-      }),
-    );
+    const rolledBack = await this.repository.rollbackOwnedEmptyCapture({
+      recordingId,
+      segmentId: active.id,
+      captureOwnerId: this.ownerId,
+      recoveredAt,
+    });
+    this.activeSegments.delete(recordingId);
+    if (!rolledBack) return null;
+    this.discardProofs.set(recordingId, {
+      updatedAt: rolledBack.updatedAt,
+      segmentIds: rolledBack.segments.map((segment) => segment.id),
+    });
     return this.repository.assembleRecordingBlob(recordingId);
   }
 
   async discard(recordingId: string): Promise<void> {
     this.activeSegments.delete(recordingId);
-    const recording = await this.repository.getRecording(recordingId);
-    if (!recording) return;
-    await this.repository.deleteRecording(recordingId, { metadata: true });
+    const proof = this.discardProofs.get(recordingId);
+    await this.repository.discardCaptureWithProof({
+      recordingId,
+      captureOwnerId: this.ownerId,
+      ...(proof ? { finalizedProof: proof } : {}),
+    });
+    this.discardProofs.delete(recordingId);
   }
 }

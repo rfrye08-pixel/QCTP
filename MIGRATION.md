@@ -4,7 +4,7 @@
 
 **Rev1 source key:** `localStorage["qctp-state"]`
 
-**Rev2 target:** IndexedDB `qctp-rev2`, database version 3
+**Current target:** IndexedDB `qctp-rev2`, database version 5
 
 **Release status:** implementation candidate; `ZERO_RELEASE`
 
@@ -72,17 +72,21 @@ Because the ledger contains the original local state, it can contain private jou
 
 ## IndexedDB schema upgrade
 
-Fresh Rev2 databases create all version-1 stores, the version-2 generated-Mirror stores, and the version-3 deterministic-insight feedback store. Upgrading an existing Rev2 database from IndexedDB version 1 creates:
+Fresh databases create the version-1 platform stores, version-2 generated-Mirror stores, version-3 deterministic-insight feedback store, version-4 practice-session store, and version-5 Breath/State stores. Upgrading an existing database preserves all existing rows while adding:
 
 - `mirrorRequests`, indexed by status, remote job ID, and update time;
 - `mirrorResults`, uniquely indexed by request ID and remote job ID, plus creation time.
 - `mirrorInsightFeedback`, uniquely indexed by insight key and additionally indexed by kind, disposition, and update time.
+- `practiceSessions`, indexed by Foundation day, completion mode, and start time;
+- `breathProfiles`, `breathSessions`, `stateSessions`, and `stateCapabilities`, with their controlled lookup indexes.
 
 Existing Foundation, workbook, settings, records, recordings, binary chunks, transcripts, notes, attachments, paths, REG sessions, queues, search documents, revisions, and migration-ledger stores are not rebuilt by either upgrade.
 
 ## Export/import compatibility
 
-The structured format is `qctp-export-v2`, schema version 2. It includes Foundation/workbook/settings, Codex records, voice metadata, transcripts, derived notes, attachments, revisions, paths, REG sessions, transcription queue, migration ledger, Mirror requests/results, and deterministic Mirror insight feedback. Older valid Rev2 exports that lack these Mirror arrays parse with empty defaults.
+The current structured format is `qctp-export-v4`, schema version 4. It includes Foundation/workbook/settings, Codex records, typed voice-capture metadata, transcripts, derived notes, attachments, revisions, paths, REG and practice sessions, Breath/State data, transcription queue, migration ledger, Mirror requests/results, and deterministic Mirror insight feedback. Valid `qctp-export-v2` and `qctp-export-v3` files are normalized to the v4 shape; recording mode, duration, context, and completion metadata that did not exist in an older file remain explicitly `null` rather than being inferred.
+
+The v4 envelope prevents an older runtime from accepting a backup and silently stripping the new recording metadata. Consequently, older runtimes reject v4 JSON/ZIP backups. Retain a pre-upgrade v3 backup before downgrade testing; this export-format change does not change the product revision or IndexedDB version.
 
 The complete archive format uses `qctp-archive-manifest-v1` and adds:
 
