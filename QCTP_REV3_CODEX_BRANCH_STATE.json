@@ -1,19 +1,20 @@
 {
   "schema": "qctp-rev3-codex-branch-state-v2",
   "branch": "qctp-platform-rev3-codex",
-  "updated_at": "2026-08-22T18:44:13-05:00",
-  "status": "LARGEST_SAFE_MACHINE_VERIFIED_CHECKPOINT_PRESERVED_PHYSICAL_SELECTION_OPEN",
+  "updated_at": "2026-08-22T19:14:04-05:00",
+  "status": "EXACT_REMOTE_CANDIDATE_VERIFIED_DRAFT_PR_OPEN_PHYSICAL_GATES_REMAIN",
   "release_authority": "ZERO_RELEASE",
   "actual_shas": {
     "main": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
     "rev2": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
     "rev3_start": "a2093caa714332313fa7196f3dc58a67a2d721d2",
     "preflight_state": "695b2798ed94b6574e35f5ffa26c3c4de2013fd2",
-    "implementation_checkpoint": "7f03ec5a7822aefb05ffb50ee16a7453d84a31e4",
+    "implementation_checkpoint": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "implementation_tree": "d59bbfee998d2dd51c38d437bb91b862601893d6",
     "voice_free_evidence_checkpoint": "dbe7aa8341107c5b3ed2884dd73e605c17b151dd",
     "ux_evidence_checkpoint": "511860e1bae0d8693c5b220d46a9a17e8f68135c",
     "state_checkpoint": null,
-    "origin_rev3_at_state_write": "a2093caa714332313fa7196f3dc58a67a2d721d2"
+    "origin_rev3_at_state_write": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35"
   },
   "starting_baseline": {
     "required_rev2_commit": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
@@ -30,6 +31,15 @@
     "starting_working_tree_status": "CLEAN",
     "isolated_from_protected_rev2_checkout": true,
     "protected_main_rev2_pr2_mutation": "NONE"
+  },
+  "remote_publish_provenance": {
+    "source_worktree": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\work\\QCTP-rev3",
+    "verified_source_tree": "d59bbfee998d2dd51c38d437bb91b862601893d6",
+    "remote_commit": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "remote_parent": "a2093caa714332313fa7196f3dc58a67a2d721d2",
+    "fresh_verification_clone": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\work\\QCTP-rev3-pushed",
+    "tree_identity_verification": "PASS_EXACT",
+    "protected_refs_mutated": false
   },
   "preserved_preflight_state": {
     "original_checkout": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\work\\QCTP",
@@ -98,12 +108,42 @@
     "backup_hash_match": true,
     "identity_reveal_authority": "WITHHELD_UNTIL_PHYSICAL_SELECTION"
   },
+  "exact_candidate": {
+    "source_checkpoint": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "candidate_directory": "C:\\QCTP-Rev3-Private-Candidates\\qctp-rev3-5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "content_file_count": 53,
+    "content_bytes": 53880106,
+    "content_manifest_sha256": "50eb39512e7159fbc36dfd86692184d2ba9a41b47c58048b87d223bc9fc05c49",
+    "package_manifest_sha256": "11c4e49816b19667ce5c17d5d05d83c4a02625bd90591c231880cf66c9ec4d85",
+    "loopback_evidence": {
+      "path": "C:\\QCTP-Rev3-Private-Evidence\\loopback-5a884ae9eb3195a32039b5d6780bf2a4d89dfb35.json",
+      "sha256": "735871bad47001dac6afbbf834a36ae3195f19fb091f2fcd2cf0d2741f5322fc",
+      "result": "PASS"
+    },
+    "private_https_evidence": {
+      "path": "C:\\QCTP-Rev3-Private-Evidence\\private-https-final-5a884ae9eb3195a32039b5d6780bf2a4d89dfb35.json",
+      "sha256": "9244c2b3672e26295dcab1215cd5c29ffbc5a58c8b5212626bad4da31992039e",
+      "result": "PASS_TAILNET_ONLY_API_FAIL_CLOSED_401"
+    }
+  },
+  "private_preview": {
+    "url": "https://reos.tail6ed282.ts.net:8443/",
+    "visibility": "TAILNET_ONLY_FUNNEL_OFF",
+    "static_origin": "http://127.0.0.1:4179",
+    "api_origin": "http://127.0.0.1:8787/api",
+    "unauthenticated_api_probe": "/api/mirror/jobs?requestIds=connectivity-probe",
+    "unauthenticated_api_status": 401,
+    "existing_443_handler": "UNCHANGED_HTTP_127_0_0_1_8787",
+    "existing_443_runtime_identity_sha256": "72242dd73e9cb5e204f8c8feb54d8276489b470199eeb9130f515451d28d9f04",
+    "existing_443_index_sha256": "e7eb713893b385dd4822a5903830026a72b0368ce80040a55b019e390f567809",
+    "existing_443_health_status": 200
+  },
   "closeout": {
-    "pushed_to_origin": false,
-    "exact_candidate_staged": false,
-    "isolated_loopback_preview_verified": false,
-    "private_remote_preview": null,
-    "draft_pull_request": null,
+    "pushed_to_origin": true,
+    "exact_candidate_staged": true,
+    "isolated_loopback_preview_verified": true,
+    "private_remote_preview": "https://reos.tail6ed282.ts.net:8443/",
+    "draft_pull_request": "https://github.com/rfrye08-pixel/QCTP/pull/4",
     "merge_performed": false,
     "deployment_performed": false
   },
@@ -119,5 +159,5 @@
     "Foundation Days 2 through 112 remain unauthored and must not be fabricated.",
     "Required paid API keys and recurring paid cloud paths remain prohibited."
   ],
-  "next_controlled_action": "Ryan opens the exact blind Rev3 iPhone/PWA audition, listens to A, B, and C at one unchanged volume, and reports Best: A, B, C, or NONE plus one short naturalness observation."
+  "next_controlled_action": "Ryan performs one complete Voice-Free Day 1 morning session from the exact private Rev3 preview on iPhone, including a cold-offline launch, and reports whether launch, continuous support audio, nonverbal phase markers, and the complete return all worked."
 }

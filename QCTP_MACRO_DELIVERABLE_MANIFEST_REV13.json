@@ -1,12 +1,12 @@
 {
   "schema": "qctp-macro-deliverable-manifest-v13",
   "manifest_id": "QCTP-PLATFORM-REV13-REV3-CANDIDATE-CHECKPOINT",
-  "updated_at": "2026-08-22T18:44:13-05:00",
+  "updated_at": "2026-08-22T19:14:04-05:00",
   "status": "CANDIDATE_CHECKPOINT_MACHINE_VERIFIED_PHYSICAL_GATES_OPEN_ZERO_RELEASE",
   "supersedes": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV12.json",
   "north_star": "A source-grounded, natural-sounding, one-tap morning consciousness training platform that works reliably on iPhone with zero recurring API cost and preserves user data and evidence.",
   "execution_branch": "qctp-platform-rev3-codex",
-  "source_checkpoint": "7f03ec5a7822aefb05ffb50ee16a7453d84a31e4",
+  "source_checkpoint": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
   "deliverables": [
     {
       "id": "QCTP-R13-D01",
@@ -94,11 +94,17 @@
     {
       "id": "QCTP-R13-D09",
       "name": "Rev3 verification and deployment package",
-      "status": "TOOLING_IMPLEMENTED_SOURCE_CHECKPOINT_PRESERVED_PUSH_STAGE_PRIVATE_PREVIEW_PR_AND_PHYSICAL_GATES_IN_PROGRESS",
-      "evidence": ["tools/rev3-runtime/", "CODEX_EXECUTION_REPORT.md"],
-      "acceptance_remaining": "Exact pushed candidate staging, isolated private preview, draft PR, physical gates, and explicit release authority."
+      "status": "EXACT_REMOTE_CHECKPOINT_STAGED_LOOPBACK_AND_TAILNET_HTTPS_VERIFIED_DRAFT_PR_OPEN_ZERO_RELEASE",
+      "evidence": [
+        "tools/rev3-runtime/",
+        "CODEX_EXECUTION_REPORT.md",
+        "C:\\QCTP-Rev3-Private-Evidence\\loopback-5a884ae9eb3195a32039b5d6780bf2a4d89dfb35.json",
+        "C:\\QCTP-Rev3-Private-Evidence\\private-https-final-5a884ae9eb3195a32039b5d6780bf2a4d89dfb35.json",
+        "https://github.com/rfrye08-pixel/QCTP/pull/4"
+      ],
+      "acceptance_remaining": "Physical iPhone gates and explicit merge and deployment authority."
     }
   ],
   "release_authority": "ZERO_RELEASE",
-  "next_controlled_action": "Ryan listens blind to the exact A, B, and C short samples on iPhone at one unchanged volume and reports Best: A, B, C, or NONE plus one short observation."
+  "next_controlled_action": "Ryan performs one complete Voice-Free Day 1 morning session from the exact private Rev3 preview on iPhone, including a cold-offline launch, and reports whether launch, continuous support audio, nonverbal phase markers, and the complete return all worked."
 }

@@ -1,9 +1,12 @@
 # QCTP Rev3 Codex Execution Report
 
-**Result:** `PARTIAL — LARGEST SAFE MACHINE-VERIFIED PACKAGE DELIVERED; PHYSICAL VOICE SELECTION OPEN`  
-**Branch:** `qctp-platform-rev3-codex`  
-**Release authority:** `ZERO_RELEASE`  
-**Source checkpoint:** `7f03ec5a7822aefb05ffb50ee16a7453d84a31e4`
+**Result:** `PARTIAL — LARGEST SAFE VERIFIED PACKAGE DELIVERED; PHYSICAL ACCEPTANCE GATES OPEN`
+
+**Branch:** `qctp-platform-rev3-codex`
+
+**Release authority:** `ZERO_RELEASE`
+
+**Source checkpoint:** `5a884ae9eb3195a32039b5d6780bf2a4d89dfb35`
 
 ## Delivered
 
@@ -108,11 +111,24 @@ reconnect, long-recording, quota, and interruption tests remain physical holds.
 
 ## Preview and draft PR locations
 
-- Exact Rev3 candidate staging: `PENDING_FINAL_CLEAN_PUSH`
-- Isolated loopback preview: `PENDING_FINAL_CLEAN_PUSH`
-- Private alternate-port preview: `PENDING_SAFE_CLOSEOUT_CONFIGURATION`
-- Draft Rev3 PR to `main`: `PENDING_BRANCH_PUSH_AND_CREATION`
-- Existing Rev2 live root and PR #2: untouched.
+- Exact Rev3 candidate staging:
+  `C:\QCTP-Rev3-Private-Candidates\qctp-rev3-5a884ae9eb3195a32039b5d6780bf2a4d89dfb35`
+  — 53 files / 53,880,106 bytes; content manifest SHA-256
+  `50eb39512e7159fbc36dfd86692184d2ba9a41b47c58048b87d223bc9fc05c49`.
+- Isolated loopback evidence:
+  `C:\QCTP-Rev3-Private-Evidence\loopback-5a884ae9eb3195a32039b5d6780bf2a4d89dfb35.json`
+  — SHA-256
+  `735871bad47001dac6afbbf834a36ae3195f19fb091f2fcd2cf0d2741f5322fc`.
+- Tailnet-only private preview: <https://reos.tail6ed282.ts.net:8443/>.
+- Private HTTPS evidence:
+  `C:\QCTP-Rev3-Private-Evidence\private-https-final-5a884ae9eb3195a32039b5d6780bf2a4d89dfb35.json`
+  — SHA-256
+  `9244c2b3672e26295dcab1215cd5c29ffbc5a58c8b5212626bad4da31992039e`.
+- Draft Rev3 PR to `main`: <https://github.com/rfrye08-pixel/QCTP/pull/4>.
+- The preview API route fails closed with unauthenticated HTTP 401 at
+  `/api/mirror/jobs?requestIds=connectivity-probe`. Funnel is off. The existing
+  443 Rev2 handler, runtime identity, index, health endpoint, and PR #2 remain
+  unchanged.
 
 ## Remaining holds
 
@@ -124,7 +140,7 @@ reconnect, long-recording, quota, and interruption tests remain physical holds.
 5. Actual-origin migration and existing-data preservation comparison.
 6. Physical microphone, offline/reconnect, lifecycle, quota, long-binary, and
    recovery acceptance.
-7. Exact pushed private-runtime candidate and remote-iPhone acceptance.
+7. Physical remote-iPhone acceptance against the exact private Rev3 preview.
 8. Explicit merge and deployment authority.
 
 ## Release authority
@@ -134,7 +150,7 @@ paid-cloud dependency, or selected-voice integration is authorized or claimed.
 
 ## Exactly one next controlled action
 
-Ryan opens the exact private Rev3 blind audition on iPhone, listens to A, B,
-and C at one unchanged volume, and reports:
-
-`Best: A | B | C | NONE — <one short naturalness observation>`
+Ryan performs one complete Voice-Free Day 1 morning session from the exact
+private Rev3 preview on iPhone, including a cold-offline launch, and reports
+whether launch, continuous support audio, nonverbal phase markers, and the
+complete return all worked.
