@@ -2,7 +2,7 @@
   "schema": "qctp-rev3-controlled-feature-backlog-v1",
   "branch": "qctp-platform-rev3-codex",
   "created_at": "2026-08-22T20:42:00-05:00",
-  "updated_at": "2026-08-23T00:06:00-05:00",
+  "updated_at": "2026-08-23T00:14:00-05:00",
   "status": "ACTIVE_ZERO_RELEASE",
   "authority_snapshot": {
     "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -97,6 +97,8 @@
       "local_implementation_commit": "b6810a3f85f9c21e04d0db88c13300f4754f6028",
       "implementation_tree": "61f52c534710bbf0fbc887a326dc48b93b900286",
       "local_metadata_commit": "583f9ebc04008ea3dc9ecfa8ce8a9f3e460604ad",
+      "remote_commit": "0a0f395f00428ffe3459689077321fa61160c1ee",
+      "remote_tree": "440bc44788a8dbec85cd4a9cf34223169f8f702c",
       "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_AND_DURABLE_ACTIVATION_GATES_OPEN_ZERO_RELEASE",
       "delivered": "Prompt-controlled exact-candidate PWA updates, cross-tab critical-work locks, A to B to A data/schema/blob preservation, Chromium cold-offline rollback, WebKit online lifecycle, immutable preview integrity, and no-mutation runtime activation holds",
       "verification": "npm run check PASS with 66 files and 390 tests; npm run test:e2e PASS with 30 passes and 16 intentional project/platform skips; dedicated PWA gate PASS with 2 governing passes and 6 intentional project/platform skips; preview server 8 of 8 PASS; runtime no-mutation self-test PASS",

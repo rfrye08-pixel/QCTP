@@ -1,7 +1,7 @@
 {
   "schema": "qctp-rev3-codex-branch-state-v3",
   "branch": "qctp-platform-rev3-codex",
-  "updated_at": "2026-08-23T00:08:00-05:00",
+  "updated_at": "2026-08-23T00:14:00-05:00",
   "status": "CONTROLLED_REV3_PWA_UPGRADE_ROLLBACK_VERTICAL_SLICE_MACHINE_BROWSER_PASS_PHYSICAL_IPHONE_AND_DURABLE_ACTIVATION_GATES_OPEN_ZERO_RELEASE",
   "release_authority": "ZERO_RELEASE",
   "actual_shas": {
@@ -27,8 +27,10 @@
     "pwa_upgrade_rollback_local_implementation_checkpoint": "b6810a3f85f9c21e04d0db88c13300f4754f6028",
     "pwa_upgrade_rollback_implementation_tree": "61f52c534710bbf0fbc887a326dc48b93b900286",
     "pwa_upgrade_rollback_local_metadata_checkpoint": "583f9ebc04008ea3dc9ecfa8ce8a9f3e460604ad",
-    "state_checkpoint": "15b79177f58b85ea0e9d5a27e3c979b02b11e947",
-    "origin_rev3_at_state_write": "15b79177f58b85ea0e9d5a27e3c979b02b11e947"
+    "pwa_upgrade_rollback_remote_checkpoint": "0a0f395f00428ffe3459689077321fa61160c1ee",
+    "pwa_upgrade_rollback_remote_tree": "440bc44788a8dbec85cd4a9cf34223169f8f702c",
+    "state_checkpoint": "0a0f395f00428ffe3459689077321fa61160c1ee",
+    "origin_rev3_at_state_write": "0a0f395f00428ffe3459689077321fa61160c1ee"
   },
   "starting_baseline": {
     "required_rev2_commit": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
@@ -104,7 +106,10 @@
     "local_implementation_commit": "b6810a3f85f9c21e04d0db88c13300f4754f6028",
     "implementation_tree": "61f52c534710bbf0fbc887a326dc48b93b900286",
     "metadata_commit": "583f9ebc04008ea3dc9ecfa8ce8a9f3e460604ad",
-    "origin_publication": "PENDING_REV3_ONLY_PUBLICATION",
+    "remote_commit": "0a0f395f00428ffe3459689077321fa61160c1ee",
+    "remote_tree": "440bc44788a8dbec85cd4a9cf34223169f8f702c",
+    "origin_publication": "PASS_EXACT_TREE_REV3_ONLY",
+    "tree_identity_verification": "PASS_EXACT",
     "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_AND_DURABLE_ACTIVATION_GATES_OPEN_ZERO_RELEASE",
     "local_history_backup_branch": "backup/rev3-pwa-inflight-20260822-230405",
     "local_history_backup_commit": "8e5bb135458d0354223abea46e16bd8daea51c87",
@@ -201,7 +206,9 @@
       "standard_browser_gate": "30_PASS_16_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS",
       "dedicated_pwa_gate": "2_GOVERNING_CHROMIUM_WEBKIT_PASSES_6_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS",
       "runtime_gate": "INFERRED_ONLY_DATA_CONTRACT_AND_INSTALL_NORMAL_ROLLBACK_EMERGENCY_ROLLBACK_NO_MUTATION_HOLDS_PASS",
-      "publication_status": "PENDING_REV3_ONLY_PUBLICATION",
+      "remote_commit": "0a0f395f00428ffe3459689077321fa61160c1ee",
+      "remote_tree": "440bc44788a8dbec85cd4a9cf34223169f8f702c",
+      "publication_status": "PASS_EXACT_TREE_REV3_ONLY",
       "deployment_status": "NOT_STAGED_NOT_DEPLOYED_LIVE_PREVIEW_REMAINS_5A884AE9"
     },
     "voice_free_machine": {
