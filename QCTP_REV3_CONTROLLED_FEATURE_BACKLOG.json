@@ -2,7 +2,7 @@
   "schema": "qctp-rev3-controlled-feature-backlog-v1",
   "branch": "qctp-platform-rev3-codex",
   "created_at": "2026-08-22T20:42:00-05:00",
-  "updated_at": "2026-08-23T04:17:09-05:00",
+  "updated_at": "2026-08-23T04:27:30-05:00",
   "status": "ACTIVE_ZERO_RELEASE",
   "authority_snapshot": {
     "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -146,6 +146,9 @@
         "7afddf50dcfb1ef68ba28b74ccde4c9e9873973e"
       ],
       "implementation_tree": "fcc0bc94a060bbd192e71d9728f04659cfadd1e0",
+      "local_metadata_commit": "94d627a86472ac328ce8fdb16b19673a27bc745a",
+      "remote_commit": "f5b5c9606c3266f465e0d787d41bd77f9cc6a918",
+      "remote_tree": "865e00a3c3307a47c6f6da1d1e26f15361add914",
       "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
       "delivered": "Deep-frozen source registry; canonical parent-bound references; fail-closed source route actions; bounded Campbell, Grant, State, QR, psionics, and Day 1 scope; lossless held State source evidence; least-fixed-point active capability projection; strict prerequisite chronology; semantic replay; and transactionally serialized session, capability, and merge-import final unions",
       "verification": "npm run check PASS with 76 files and 458 tests, coverage, preview server 8 of 8, 23-file audio pack, and production build; full Playwright matrix PASS with 36 passes and 16 intentional project/platform skips; fresh State source integrity judgement PASS with no high or medium findings",

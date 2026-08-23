@@ -1,7 +1,7 @@
 {
   "schema": "qctp-rev3-codex-branch-state-v3",
   "branch": "qctp-platform-rev3-codex",
-  "updated_at": "2026-08-23T04:17:09-05:00",
+  "updated_at": "2026-08-23T04:27:30-05:00",
   "status": "CONTROLLED_REV3_SOURCE_TRACK_REGISTRY_AND_STATE_SOURCE_EVIDENCE_INTEGRITY_MACHINE_BROWSER_PASS_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
   "release_authority": "ZERO_RELEASE",
   "actual_shas": {
@@ -33,7 +33,9 @@
     "controlled_content_implementation_tree": "54b391d81ce1d4cb4868455186eb4ccb4544c45a",
     "controlled_source_track_local_implementation_checkpoint": "7afddf50dcfb1ef68ba28b74ccde4c9e9873973e",
     "controlled_source_track_implementation_tree": "fcc0bc94a060bbd192e71d9728f04659cfadd1e0",
-    "controlled_source_track_metadata_checkpoint": null,
+    "controlled_source_track_metadata_checkpoint": "94d627a86472ac328ce8fdb16b19673a27bc745a",
+    "controlled_source_track_remote_checkpoint": "f5b5c9606c3266f465e0d787d41bd77f9cc6a918",
+    "controlled_source_track_remote_tree": "865e00a3c3307a47c6f6da1d1e26f15361add914",
     "origin_rev3_before_source_track_publication": "de973ae6ad56b2394e7aa3c15c22bdfc04894c40",
     "state_checkpoint": "21a03b936bf797b15a298ca717789dff889508f9",
     "state_checkpoint_scope": "PRIOR_PUBLISHED_CONTROLLED_CONTENT_CHECKPOINT",
@@ -176,10 +178,10 @@
       "b63e43fc8e12c12abf6e2dd40758ff248c21bd62",
       "cca7fe162d6a70c74135d9500b7f80625ea16e21"
     ],
-    "metadata_commit": null,
-    "remote_commit": null,
-    "remote_tree": null,
-    "origin_publication": "PENDING_REV3_ONLY",
+    "metadata_commit": "94d627a86472ac328ce8fdb16b19673a27bc745a",
+    "remote_commit": "f5b5c9606c3266f465e0d787d41bd77f9cc6a918",
+    "remote_tree": "865e00a3c3307a47c6f6da1d1e26f15361add914",
+    "origin_publication": "PASS_EXACT_TREE_REV3_ONLY",
     "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
     "local_history_backup_branch": "backup/rev3-source-registry-preedit-20260823-021738",
     "local_history_backup_commit": "11ba99b6d429c61a0350f547c7a9739f02da7ab2",
@@ -312,7 +314,9 @@
       "state_source_integrity_gate": "PASS_LEAST_FIXED_POINT_STRICT_TEMPORAL_PREREQUISITES_TRANSITIVE_HELD_EVIDENCE_ACTIVE_PROJECTION_AND_SEMANTIC_REPLAY",
       "concurrent_final_union_gate": "PASS_SHARED_INDEXEDDB_TRANSACTIONS_FOR_SESSION_CAPABILITY_AND_MERGE_IMPORT_WRITES",
       "independent_judgement": "PASS_NO_HIGH_OR_MEDIUM_FINDINGS",
-      "publication_status": "PENDING_REV3_ONLY",
+      "remote_commit": "f5b5c9606c3266f465e0d787d41bd77f9cc6a918",
+      "remote_tree": "865e00a3c3307a47c6f6da1d1e26f15361add914",
+      "publication_status": "PASS_EXACT_TREE_REV3_ONLY",
       "deployment_status": "NOT_STAGED_NOT_DEPLOYED_LIVE_PREVIEW_REMAINS_5A884AE9"
     },
     "voice_free_machine": {
