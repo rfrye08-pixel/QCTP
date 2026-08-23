@@ -49,38 +49,12 @@ if (Test-QctpPathWithin -Path $live -Root $repoRoot -AllowEqual) {
     }
 }
 
-if (
-    [IO.Path]::GetPathRoot($live).ToLowerInvariant() -ne
-    [IO.Path]::GetPathRoot($backupRootPath).ToLowerInvariant()
-) {
-    throw 'Atomic install requires the live root and backup root to be on the same filesystem volume.'
-}
-
 $rejectedHashes = Get-QctpRejectedA03Hashes -RepositoryRoot $repoRoot
 $candidateIdentity = Assert-QctpRev3CandidatePackage `
     -CandidateDirectory $candidate `
     -ExpectedHead $ExpectedHead `
     -RejectedHashes $rejectedHashes
-
-if (-not (Test-Path -LiteralPath $backupRootPath)) {
-    New-Item -ItemType Directory -Path $backupRootPath | Out-Null
-}
-$backupRootPath = Resolve-QctpAbsolutePath -Path $backupRootPath -MustExist
-
-$liveParent = Split-Path -Parent $live
-$liveLeaf = Split-Path -Leaf $live
-$nonce = [Guid]::NewGuid().ToString('N')
-$nextRoot = Join-Path $liveParent ".$liveLeaf.qctp-rev3-next-$nonce"
-$timestamp = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ')
-$backupDirectory = Join-Path $backupRootPath "backup-$timestamp-before-$($ExpectedHead.Substring(0, 12))-$($nonce.Substring(0, 8))"
-$backupSite = Join-Path $backupDirectory 'site'
-
-if (
-    (Test-Path -LiteralPath $nextRoot) -or
-    (Test-Path -LiteralPath $backupDirectory)
-) {
-    throw 'A generated install staging or backup destination unexpectedly already exists.'
-}
+$candidateCompatibility = Get-QctpRuntimeCompatibilityContract -SiteRoot (Join-Path $candidate 'site')
 
 $oldTree = New-QctpTreeManifestObject `
     -Root $live `
@@ -93,74 +67,8 @@ $oldTreeCheck = New-QctpTreeManifestObject `
 if (($oldTree | ConvertTo-Json -Depth 12) -ne ($oldTreeCheck | ConvertTo-Json -Depth 12)) {
     throw 'The live root changed during install preflight; no files were changed.'
 }
+$previousCompatibility = Get-QctpRuntimeCompatibilityContract -SiteRoot $live
 
-Write-Host 'Copying and verifying the candidate beside the live root before the swap.' -ForegroundColor Cyan
-Copy-Item -LiteralPath (Join-Path $candidate 'site') -Destination $nextRoot -Recurse
-Assert-QctpRev3CandidateSite `
-    -SiteRoot $nextRoot `
-    -ExpectedHead $ExpectedHead `
-    -RejectedHashes $rejectedHashes | Out-Null
-Assert-QctpTreeManifest `
-    -Root $live `
-    -Manifest $oldTree `
-    -ExpectedSchema 'qctp-rev3-runtime-backup-tree-v1' | Out-Null
-
-$backupManifest = [ordered]@{
-    schema = 'qctp-rev3-runtime-backup-manifest-v1'
-    createdAt = (Get-Date).ToUniversalTime().ToString('o')
-    liveRoot = $live
-    installedCandidateSha = $ExpectedHead.ToLowerInvariant()
-    installedIdentitySha256 = Get-QctpSha256 -Path (Join-Path $nextRoot $script:QctpRev3IdentityName)
-    releaseAuthority = 'ZERO_RELEASE'
-    serviceRestarted = $false
-    routeModified = $false
-    previousTree = $oldTree
-}
-$backupManifestPath = Join-Path $backupDirectory $script:QctpRev3BackupManifestName
-
-New-Item -ItemType Directory -Path $backupDirectory | Out-Null
-$oldMoved = $false
-$newMoved = $false
-try {
-    Move-Item -LiteralPath $live -Destination $backupSite
-    $oldMoved = $true
-    Assert-QctpTreeManifest `
-        -Root $backupSite `
-        -Manifest $oldTree `
-        -ExpectedSchema 'qctp-rev3-runtime-backup-tree-v1' | Out-Null
-    Write-QctpJsonFile -Value $backupManifest -Path $backupManifestPath
-    Move-Item -LiteralPath $nextRoot -Destination $live
-    $newMoved = $true
-}
-catch {
-    if ($oldMoved -and -not $newMoved -and -not (Test-Path -LiteralPath $live) -and (Test-Path -LiteralPath $backupSite)) {
-        Move-Item -LiteralPath $backupSite -Destination $live
-    }
-    throw "Atomic install swap failed; the previous live root was restored when possible. $($_.Exception.Message)"
-}
-
-try {
-    Assert-QctpRev3CandidateSite `
-        -SiteRoot $live `
-        -ExpectedHead $ExpectedHead `
-        -RejectedHashes $rejectedHashes | Out-Null
-}
-catch {
-    $failedSite = Join-Path $backupDirectory 'failed-candidate-site'
-    if ((Test-Path -LiteralPath $live) -and -not (Test-Path -LiteralPath $failedSite)) {
-        Move-Item -LiteralPath $live -Destination $failedSite
-    }
-    if (-not (Test-Path -LiteralPath $live) -and (Test-Path -LiteralPath $backupSite)) {
-        Move-Item -LiteralPath $backupSite -Destination $live
-    }
-    throw "Post-swap verification failed; the previous live root was restored and the failed candidate was retained. $($_.Exception.Message)"
-}
-
-Write-Host ''
-Write-Host 'QCTP REV3 PRIVATE RUNTIME INSTALL: PASS' -ForegroundColor Green
-Write-Host "Installed candidate: $($candidateIdentity.candidateSha)"
-Write-Host "Live root: $live"
-Write-Host "Recoverable backup: $backupDirectory"
-Write-Host "Backup manifest SHA-256: $(Get-QctpSha256 -Path $backupManifestPath)"
-Write-Host 'No process, scheduled task, Tailscale route, Funnel, or public deployment was changed.'
-Write-Host 'Release authority: ZERO_RELEASE'
+$candidateDiagnostic = $candidateCompatibility | ConvertTo-Json -Depth 8 -Compress
+$previousDiagnostic = $previousCompatibility | ConvertTo-Json -Depth 8 -Compress
+throw "IMMUTABLE_ACTIVATION_REQUIRED: mutable live-root installation is disabled under ZERO_RELEASE because a two-directory swap has a crash window and the IndexedDB downgrade contract is unproven. The verified candidate remains unchanged at $candidate (candidate $($candidateIdentity.candidateSha)); the live root, backup root, process, route, and scheduled tasks were not changed. Start the immutable candidate directly with Start-QctpRev3PrivatePreview.ps1. Candidate diagnostic: $candidateDiagnostic Previous diagnostic: $previousDiagnostic"

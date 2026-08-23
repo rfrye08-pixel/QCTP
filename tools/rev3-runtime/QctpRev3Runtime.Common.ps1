@@ -320,6 +320,122 @@ function Assert-QctpSameOriginEntryDocument {
     return $true
 }
 
+function Assert-QctpEmbeddedCandidateSha {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)][string]$SiteRoot,
+        [Parameter(Mandatory = $true)][ValidatePattern('^[0-9a-fA-F]{40}$')][string]$ExpectedHead
+    )
+
+    $indexPath = Join-Path $SiteRoot 'index.html'
+    if (-not (Test-Path -LiteralPath $indexPath -PathType Leaf)) {
+        throw 'The PWA candidate entry document is missing.'
+    }
+    $index = Get-Content -LiteralPath $indexPath -Raw
+    $candidateTags = @(
+        [regex]::Matches($index, '(?is)<meta\b[^>]*>') |
+            Where-Object { $_.Value -match '(?is)\bname\s*=\s*["'']qctp-candidate-sha["'']' }
+    )
+    if ($candidateTags.Count -ne 1) {
+        throw 'The PWA entry document must contain exactly one candidate-SHA marker.'
+    }
+    $contentPattern = '(?is)\bcontent\s*=\s*["'']' +
+        [regex]::Escape($ExpectedHead.ToLowerInvariant()) + '["'']'
+    if ($candidateTags[0].Value -notmatch $contentPattern) {
+        throw 'The embedded PWA candidate SHA does not match the requested candidate head.'
+    }
+    return $true
+}
+
+function Get-QctpRuntimeCompatibilityContract {
+    [CmdletBinding()]
+    param([Parameter(Mandatory = $true)][string]$SiteRoot)
+
+    $site = Resolve-QctpAbsolutePath -Path $SiteRoot -MustExist
+    $databaseName = 'qctp-rev2'
+    $databasePattern = '(?is)["''`]' + [regex]::Escape($databaseName) +
+        '["''`]\s*,\s*(?<version>[0-9]+)\s*,\s*\{'
+    $databaseVersions = @(
+        Get-ChildItem -LiteralPath $site -Filter '*.js' -File -Recurse | ForEach-Object {
+            $source = Get-Content -LiteralPath $_.FullName -Raw
+            [regex]::Matches($source, $databasePattern) | ForEach-Object {
+                [int]$_.Groups['version'].Value
+            }
+        } | Sort-Object -Unique
+    )
+
+    $dataStatus = if ($databaseVersions.Count -eq 1) { 'INFERRED_ONLY' } else { 'UNKNOWN_LEGACY' }
+    $databaseVersion = if ($databaseVersions.Count -eq 1) { $databaseVersions[0] } else { $null }
+
+    $serviceWorkerPath = Join-Path $site 'sw.js'
+    $serviceWorkerStatus = 'UNKNOWN_LEGACY'
+    $updateMode = 'MISSING_OR_UNKNOWN'
+    $skipWaitingCallCount = 0
+    $skipWaitingCallPresent = $false
+    $skipWaitingMessageGatePresent = $false
+    $skipWaitingOnInstall = $false
+    $clientsClaimPresent = $false
+    if (Test-Path -LiteralPath $serviceWorkerPath -PathType Leaf) {
+        $serviceWorker = Get-Content -LiteralPath $serviceWorkerPath -Raw
+        $skipWaitingCallCount = @(
+            [regex]::Matches($serviceWorker, '(?i)(?:self\.)?skipWaiting\s*\(')
+        ).Count
+        $skipWaitingCallPresent = $skipWaitingCallCount -gt 0
+        $skipWaitingMessageGatePresent =
+            $skipWaitingCallPresent -and
+            $serviceWorker -match '(?is)addEventListener\s*\(\s*["'']message["''][\s\S]{0,1000}["'']SKIP_WAITING["''][\s\S]{0,1000}(?:self\.)?skipWaiting\s*\('
+        $skipWaitingOnInstall =
+            $skipWaitingCallPresent -and
+            (-not $skipWaitingMessageGatePresent -or $skipWaitingCallCount -gt 1)
+        $clientsClaimPresent = $serviceWorker -match '(?i)(?:[A-Za-z_$][A-Za-z0-9_$]*\.)?clientsClaim\s*\('
+        $updateMode = if ($skipWaitingOnInstall -or $clientsClaimPresent) {
+            'AUTO_ACTIVATE_LEGACY'
+        }
+        elseif ($skipWaitingMessageGatePresent) {
+            'PROMPT_CONTROLLED'
+        }
+        else {
+            'PASSIVE_OR_UNKNOWN'
+        }
+        $serviceWorkerStatus = if ($updateMode -eq 'PROMPT_CONTROLLED') {
+            'CONTROLLED'
+        }
+        else {
+            'UNKNOWN_LEGACY'
+        }
+    }
+
+    # A bundled openDB(name, version, ...) signature is useful diagnostic evidence,
+    # but it does not prove store/index/key-path compatibility or downgrade safety.
+    # Normal rollback remains held until a candidate-bound schema/migration contract
+    # is generated from source and accepted by its own machine and physical gates.
+    $normalRollbackEligible = $false
+
+    return [ordered]@{
+        schema = 'qctp-rev3-runtime-compatibility-contract-v2'
+        dataContract = [ordered]@{
+            schema = 'qctp-rev3-indexeddb-contract-v2'
+            status = $dataStatus
+            databaseName = $databaseName
+            databaseVersion = $databaseVersion
+            rollbackCompatibility = 'UNPROVEN'
+            source = 'BUNDLED_RUNTIME_OPEN_SIGNATURE_DIAGNOSTIC_ONLY'
+        }
+        serviceWorkerPolicy = [ordered]@{
+            schema = 'qctp-rev3-service-worker-policy-v1'
+            status = $serviceWorkerStatus
+            updateMode = $updateMode
+            skipWaitingCallCount = $skipWaitingCallCount
+            skipWaitingCallPresent = $skipWaitingCallPresent
+            skipWaitingMessageGatePresent = $skipWaitingMessageGatePresent
+            skipWaitingOnInstall = $skipWaitingOnInstall
+            clientsClaimPresent = $clientsClaimPresent
+            source = '/sw.js'
+        }
+        normalRollbackEligible = $normalRollbackEligible
+    }
+}
+
 function New-QctpRev3CandidateMetadata {
     [CmdletBinding()]
     param(
@@ -344,6 +460,7 @@ function New-QctpRev3CandidateMetadata {
 
     Assert-QctpNoRejectedA03Assets -SiteRoot $site -RejectedHashes $RejectedHashes | Out-Null
     Assert-QctpSameOriginEntryDocument -SiteRoot $site | Out-Null
+    Assert-QctpEmbeddedCandidateSha -SiteRoot $site -ExpectedHead $CandidateSha | Out-Null
 
     $contentManifest = New-QctpTreeManifestObject `
         -Root $site `
@@ -370,6 +487,7 @@ function New-QctpRev3CandidateMetadata {
         paidCloudCriticalPath = $false
         installRequiresExplicitOptIn = $true
         publicDeploymentAuthorized = $false
+        pwaCandidateShaEmbedded = $true
         generatedAt = (Get-Date).ToUniversalTime().ToString('o')
     }
     $identityPath = Join-Path $site $script:QctpRev3IdentityName
@@ -455,6 +573,13 @@ function Assert-QctpRev3CandidateSite {
         -not [bool]$identity.installRequiresExplicitOptIn
     ) {
         throw "Runtime identity violates the Rev3 ZERO_RELEASE/private/local-only policy."
+    }
+    $embeddedMarkerProperty = $identity.PSObject.Properties['pwaCandidateShaEmbedded']
+    if ($null -ne $embeddedMarkerProperty) {
+        if ($embeddedMarkerProperty.Value -isnot [bool] -or -not [bool]$embeddedMarkerProperty.Value) {
+            throw 'Runtime identity candidate-marker policy must be the boolean true when present.'
+        }
+        Assert-QctpEmbeddedCandidateSha -SiteRoot $site -ExpectedHead $ExpectedHead | Out-Null
     }
 
     $manifestHash = Get-QctpSha256 -Path $contentManifestPath

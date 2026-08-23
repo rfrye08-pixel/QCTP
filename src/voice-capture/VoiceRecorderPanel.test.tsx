@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { getPwaUpdateActivationSafety } from "../app/pwa-update-safety";
 import type { CapturePersistence } from "./browser-recorder";
 import { VoiceRecorderPanel } from "./VoiceRecorderPanel";
 
@@ -99,6 +100,10 @@ describe("VoiceRecorderPanel lifecycle controls", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /start recording/i }));
     const cancel = await screen.findByRole("button", { name: "Cancel" });
+    expect(getPwaUpdateActivationSafety()).toMatchObject({
+      blocked: true,
+      reason: "current-tab-critical-activity",
+    });
     fireEvent.click(cancel);
     expect(confirm).toHaveBeenCalledOnce();
     expect(discard).not.toHaveBeenCalled();
@@ -107,6 +112,9 @@ describe("VoiceRecorderPanel lifecycle controls", () => {
     confirm.mockReturnValue(true);
     fireEvent.click(cancel);
     await waitFor(() => expect(discard).toHaveBeenCalledOnce());
+    await waitFor(() =>
+      expect(getPwaUpdateActivationSafety().blocked).toBe(false),
+    );
     expect(stopTrack).toHaveBeenCalledOnce();
     expect(onClose).toHaveBeenCalledOnce();
   });

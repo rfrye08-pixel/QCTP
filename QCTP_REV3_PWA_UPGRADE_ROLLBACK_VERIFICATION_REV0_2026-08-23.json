@@ -1,0 +1,94 @@
+{
+  "schema": "qctp-rev3-pwa-upgrade-rollback-verification-v1",
+  "document_id": "QCTP-REV3-PWA-UPGRADE-ROLLBACK-A01",
+  "recorded_at": "2026-08-23T00:06:00-05:00",
+  "branch": "qctp-platform-rev3-codex",
+  "starting_commit": "15b79177f58b85ea0e9d5a27e3c979b02b11e947",
+  "implementation_commit": "b6810a3f85f9c21e04d0db88c13300f4754f6028",
+  "implementation_tree": "61f52c534710bbf0fbc887a326dc48b93b900286",
+  "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_AND_DURABLE_ACTIVATION_GATES_OPEN_ZERO_RELEASE",
+  "release_authority": "ZERO_RELEASE",
+  "delivered": {
+    "prompt_update_lifecycle": "EXACT_COMPILED_CANDIDATE_IDENTITY_WAITING_WORKER_IDENTIFICATION_EXPLICIT_APPLY_RETRYABLE_FAILURE_AND_USER_CONTROLLED_RELOAD",
+    "cross_tab_safety": "LOCALSTORAGE_LEASES_PLUS_SHARED_EXCLUSIVE_WEB_LOCKS_FAIL_CLOSED_ACROSS_DAY1_RECORDING_IMPORT_EXPORT_AND_SAVE_OPERATIONS",
+    "day1_fetch_release": "IDLE_METADATA_PRELOAD_AND_EARLY_END_SOURCE_RELEASE_PREVENT_OLD_WORKER_FETCH_STARVATION_WITHOUT_CHANGING_THE_1500_SECOND_SEQUENCE",
+    "data_preservation": "INDEXEDDB_V5_DATABASE_SCHEMA_ALL_STORES_KEYS_VALUES_BINARY_BLOBS_AND_LOCALSTORAGE_FINGERPRINTED_ACROSS_A_TO_B_TO_A",
+    "offline_lifecycle": "CHROMIUM_COLD_OFFLINE_RELAUNCH_VERIFIES_B_THEN_A_FROM_SEPARATE_REAL_CANDIDATE_BUNDLES_WITH_NETWORK_ORIGIN_UNAVAILABLE",
+    "webkit_lifecycle": "WINDOWS_WEBKIT_ONLINE_A_TO_B_TO_A_EXPLICIT_APPLY_AND_INDEXEDDB_PRESERVATION",
+    "runtime_integrity": "IMMUTABLE_EXACT_SHA_PACKAGE_FULL_STARTUP_MANIFEST_VERIFICATION_PER_REQUEST_IDENTITY_MANIFEST_AND_FILE_SIGNATURE_CHECKS_AND_LATCHED_503_UNTIL_RESTART",
+    "runtime_mutation_policy": "DATABASE_NAME_VERSION_IS_INFERRED_ONLY_NORMAL_AND_EMERGENCY_LIVE_ROOT_INSTALL_OR_ROLLBACK_MUTATION_HELD_WITH_NO_FILESYSTEM_CHANGE",
+    "cost": "ZERO_RECURRING_API_COST_NO_PAID_CLOUD_CRITICAL_PATH"
+  },
+  "verification": {
+    "repository_gate": {
+      "command": "npm run check",
+      "result": "PASS",
+      "test_files": 66,
+      "tests": 390,
+      "coverage": {
+        "statements_percent": 87.5,
+        "branches_percent": 78.95,
+        "functions_percent": 92.25,
+        "lines_percent": 88.97
+      },
+      "audio_pack": "PASS_23_MP3_13340411_BYTES",
+      "production_build": "PASS_55_PRECACHE_ENTRIES_52646_92_KIB",
+      "preview_server": "PASS_8_OF_8"
+    },
+    "standard_browser_gate": {
+      "command": "npm run test:e2e",
+      "result": "PASS",
+      "passed": 30,
+      "intentional_project_or_platform_skips": 16,
+      "projects": ["chromium", "iphone-portrait-webkit"]
+    },
+    "dedicated_pwa_gate": {
+      "command": "npx playwright test --config tests/e2e/pwa-upgrade/playwright.config.ts",
+      "result": "PASS",
+      "passed": 2,
+      "intentional_project_or_platform_skips": 6,
+      "assertions": [
+        "Candidate A and B contain different application JavaScript asset hashes and exact compiled candidate identities.",
+        "Candidate B remains installed and waiting while a real Voice-Free Day 1 session continues under candidate A.",
+        "A second tab cannot activate B while Day 1 is active, even when the fallback lease is deliberately removed, because the shared Web Lock remains held.",
+        "Explicit apply activates B only after critical work ends and presents the controlled reload action.",
+        "Chromium cold-offline B and rolled-back A launch while the origin server is stopped and an unprecached network probe fails.",
+        "IndexedDB database version, object-store key paths, auto-increment flags, indexes, records, binary Blob hashes, and localStorage remain exact across A to B to A.",
+        "Windows WebKit completes the online prompt lifecycle and preserves its IndexedDB fingerprint."
+      ]
+    },
+    "runtime_tool_gate": {
+      "command": "pwsh -NoProfile -File tools/rev3-runtime/Test-QctpRev3RuntimeTools.ps1",
+      "result": "PASS",
+      "assertions": [
+        "Bundled database signatures remain INFERRED_ONLY and never authorize normal rollback.",
+        "Install, normal rollback, and acknowledged emergency rollback refuse before staging, backup, retention, or live-root mutation.",
+        "Same-identity asset tamper, content-manifest tamper, and a full root swap latch the preview into 503 without a candidate header until a verified restart."
+      ]
+    }
+  },
+  "scope_boundaries": {
+    "migration": "This is representative current IndexedDB v5 same-source preservation evidence, not actual-origin Rev1 migration evidence.",
+    "rollback": "The browser gate proves service-worker code/package rollback between two real same-source builds. Mutable Windows live-root rollback remains deliberately disabled.",
+    "webkit": "WebKit evidence is online and non-binary. Physical installed-iPhone cold-offline, binary, microphone, and background lifecycle acceptance remain open.",
+    "legacy_transition": "The deployed legacy autoUpdate worker to prompt-mode transition was not executed and remains an idle-client controlled hold."
+  },
+  "deployment_status": {
+    "new_candidate_staged": false,
+    "new_candidate_deployed": false,
+    "live_private_preview_candidate": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "main_modified": false,
+    "rev2_modified": false,
+    "pr2_modified": false
+  },
+  "remaining_holds": [
+    "Installed iPhone prompt-mode A to B to A, cold-offline launch, and local-data retention remain open.",
+    "The one-time deployed legacy autoUpdate to prompt-mode transition remains open and requires every QCTP client idle or closed plus a recoverable actual-data archive.",
+    "Mutable runtime activation and rollback remain held until an immutable candidate pointer and verified stopped-listener restart transaction are controlled.",
+    "Actual-origin Rev1 migration, physical microphone/background interruption, supervised PX13 reboot/reconnect, and long-recording archive acceptance remain open.",
+    "Blind physical natural-voice selection remains open; no selected-voice five-minute or full 25-minute render is authorized.",
+    "Foundation Days 2 through 112 remain unauthored and must not be fabricated.",
+    "No merge, public deployment, main mutation, Rev2 mutation, or PR #2 mutation is authorized."
+  ],
+  "next_controlled_action": "Implement canonical controlled-content class identity and preserve explicit PWA physical and durable-activation holds."
+}

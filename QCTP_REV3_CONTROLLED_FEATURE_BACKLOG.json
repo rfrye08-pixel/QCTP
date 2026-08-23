@@ -2,7 +2,7 @@
   "schema": "qctp-rev3-controlled-feature-backlog-v1",
   "branch": "qctp-platform-rev3-codex",
   "created_at": "2026-08-22T20:42:00-05:00",
-  "updated_at": "2026-08-22T22:22:00-05:00",
+  "updated_at": "2026-08-23T00:06:00-05:00",
   "status": "ACTIVE_ZERO_RELEASE",
   "authority_snapshot": {
     "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -90,6 +90,17 @@
       "delivered": "Voice-Free post-session raw-observation debrief with typed or offline voice capture, atomic evidence linkage, durable defer/skip states, export validation, non-white startup recovery, and resilient ranged preview media serving",
       "verification": "npm run check PASS with 64 files and 378 tests; npm run test:e2e PASS with 28 passes and 8 intentional project/platform skips; forced app-bundle failure recovery PASS in Chromium and iPhone portrait; preview server 4 of 4 PASS",
       "evidence": "QCTP_REV3_POST_SESSION_DEBRIEF_AND_STARTUP_RECOVERY_VERIFICATION_REV0_2026-08-22.json",
+      "release_authority": "ZERO_RELEASE"
+    },
+    {
+      "checkpoint_id": "QCTP-REV3-PWA-UPGRADE-ROLLBACK-001",
+      "local_implementation_commit": "b6810a3f85f9c21e04d0db88c13300f4754f6028",
+      "implementation_tree": "61f52c534710bbf0fbc887a326dc48b93b900286",
+      "local_metadata_commit": "583f9ebc04008ea3dc9ecfa8ce8a9f3e460604ad",
+      "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_AND_DURABLE_ACTIVATION_GATES_OPEN_ZERO_RELEASE",
+      "delivered": "Prompt-controlled exact-candidate PWA updates, cross-tab critical-work locks, A to B to A data/schema/blob preservation, Chromium cold-offline rollback, WebKit online lifecycle, immutable preview integrity, and no-mutation runtime activation holds",
+      "verification": "npm run check PASS with 66 files and 390 tests; npm run test:e2e PASS with 30 passes and 16 intentional project/platform skips; dedicated PWA gate PASS with 2 governing passes and 6 intentional project/platform skips; preview server 8 of 8 PASS; runtime no-mutation self-test PASS",
+      "evidence": "QCTP_REV3_PWA_UPGRADE_ROLLBACK_VERIFICATION_REV0_2026-08-23.json",
       "release_authority": "ZERO_RELEASE"
     }
   ],
@@ -193,7 +204,8 @@
       "evidence_produced": [
         "src/app/screens/OverviewScreens.tsx",
         "tests/e2e/bootstrap-navigation.spec.ts",
-        "controlled-artifacts/rev3-ux/01-today-morning-cockpit-iphone13-webkit.png"
+        "controlled-artifacts/rev3-ux/01-today-morning-cockpit-iphone13-webkit.png",
+        "tests/e2e/pwa-upgrade/pwa-upgrade-rollback.spec.ts proves a real 25-minute Day 1 remains active while the next candidate waits"
       ],
       "deferral": {
         "reason": null,
@@ -228,7 +240,8 @@
         "src/practice/voice-free-day1.ts",
         "src/app/screens/VoiceFreeDay1Screen.tsx",
         "QCTP_REV3_VOICE_FREE_DAY1_MACHINE_VERIFICATION_REV0_2026-08-22.json",
-        "QCTP_REV3_VOICE_FREE_DAY1_BROWSER_VERIFICATION_REV0_2026-08-22.json"
+        "QCTP_REV3_VOICE_FREE_DAY1_BROWSER_VERIFICATION_REV0_2026-08-22.json",
+        "QCTP_REV3_PWA_UPGRADE_ROLLBACK_VERIFICATION_REV0_2026-08-23.json preserves the running session across a waiting service-worker update"
       ],
       "deferral": {
         "reason": null,
@@ -1430,7 +1443,8 @@
         "src/data/migrate-rev1.ts",
         "src/data/db-migration.test.ts",
         "src/data/migrate-rev1.test.ts",
-        "QCTP_REV3_MIGRATION_AND_DATA_PRESERVATION_REV0_2026-08-22.json"
+        "QCTP_REV3_MIGRATION_AND_DATA_PRESERVATION_REV0_2026-08-22.json",
+        "Representative current IndexedDB v5 schema, all-store, value, and Blob fingerprints preserved across same-source A to B to A; actual-origin status remains BLOCKED"
       ],
       "deferral": {
         "reason": "Actual-origin acceptance requires private installed user data and cannot be simulated as equivalent evidence.",
@@ -1468,7 +1482,8 @@
         "src/data/repository.ts",
         "src/mirror/deletion.ts",
         "export/import and deletion tests",
-        "typed and voice debrief relationship, queue uniqueness, recording linkage, and ZIP binary round-trip tests"
+        "typed and voice debrief relationship, queue uniqueness, recording linkage, and ZIP binary round-trip tests",
+        "PWA A to B to A browser gate preserves recording and attachment Blob SHA-256 fingerprints"
       ],
       "deferral": {
         "reason": null,
@@ -1500,7 +1515,8 @@
         "public/audio/day1-source-rev0/voice-free-manifest.json",
         "tools/cache-day1-audio.mjs",
         "tools/verify-local-audio-dist.mjs",
-        "Voice-Free verification JSONs"
+        "Voice-Free verification JSONs",
+        "Chromium candidate-marker precache replacement and cold-offline candidate B then candidate A relaunch PASS"
       ],
       "deferral": {
         "reason": null,
@@ -1540,13 +1556,17 @@
         "src/startup/mount-qctp.tsx",
         "vite.config.ts",
         "tests/e2e/bootstrap-navigation.spec.ts",
+        "src/app/pwa-update-safety.ts",
+        "src/app/pwa-update-safety.test.ts",
+        "tests/e2e/pwa-upgrade/pwa-upgrade-rollback.spec.ts",
         "tools/rev3-runtime/preview-server.test.mjs",
         "QCTP_REV3_POST_SESSION_DEBRIEF_AND_STARTUP_RECOVERY_VERIFICATION_REV0_2026-08-22.json",
-        "QCTP_REV3_PRIVATE_PREVIEW_STARTUP_RECOVERY_REV0_2026-08-22.json"
+        "QCTP_REV3_PRIVATE_PREVIEW_STARTUP_RECOVERY_REV0_2026-08-22.json",
+        "QCTP_REV3_PWA_UPGRADE_ROLLBACK_VERIFICATION_REV0_2026-08-23.json"
       ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Add an explicit two-version service-worker regression and run installed-iPhone upgrade/rollback acceptance."
+        "next_executable_step": "Run installed-iPhone exact-candidate A to B to A, cold-offline launch, local-data retention, and the controlled legacy autoUpdate transition with every client idle or closed."
       }
     },
     {
@@ -1580,7 +1600,8 @@
         "server/auth.ts",
         "server/app.ts",
         "tools/rev3-runtime/",
-        "QCTP_REV3_PRIVATE_PREVIEW_STARTUP_RECOVERY_REV0_2026-08-22.json"
+        "QCTP_REV3_PRIVATE_PREVIEW_STARTUP_RECOVERY_REV0_2026-08-22.json",
+        "Immutable preview identity, manifest, file signature, root-swap, and restart-required tests PASS as supporting local transport evidence"
       ],
       "deferral": {
         "reason": null,
@@ -1616,7 +1637,8 @@
         "tests/e2e/voice-offline.spec.ts",
         "post-session offline voice acceptance with preserved playback chunks and queued local transcription",
         "QCTP_REV3_MIGRATION_AND_DATA_PRESERVATION_REV0_2026-08-22.json",
-        "runtime rollback tools"
+        "runtime rollback tools",
+        "Practice and voice-capture critical activities hold shared Web Locks; explicit update activation requires an exclusive lock and fails closed across tabs"
       ],
       "deferral": {
         "reason": null,
@@ -1826,11 +1848,13 @@
       "evidence_produced": [
         "tools/rev3-runtime/",
         "QCTP_REV3_PRIVATE_PREVIEW_STARTUP_RECOVERY_REV0_2026-08-22.json",
-        "private evidence directories recorded in branch state"
+        "private evidence directories recorded in branch state",
+        "Runtime compatibility is INFERRED_ONLY; live-root install, normal rollback, and emergency rollback refuse without mutation under ZERO_RELEASE",
+        "Preview server verifies the immutable full manifest at startup and latches 503 on identity, manifest, asset, or root changes until restart"
       ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Perform one supervised Windows reboot and private-iPhone reconnect, then exercise controlled rollback."
+        "next_executable_step": "Implement a durable immutable-candidate pointer and stopped-listener verified restart transaction, then perform one supervised Windows reboot, private-iPhone reconnect, and rollback."
       }
     },
     {
@@ -1859,10 +1883,12 @@
       ],
       "release_authority": "AUTOMATED_VERIFICATION_AUTHORIZED_ZERO_RELEASE; draft PR only until separate release authority.",
       "evidence_produced": [
-        "341 repository tests recorded PASS",
-        "22 browser E2E PASS with 6 intentional project skips",
+        "390 repository tests in 66 files recorded PASS with coverage and production build",
+        "30 standard browser E2E PASS with 16 intentional project/platform skips",
+        "Dedicated PWA gate: 2 governing Chromium/WebKit passes and 6 intentional project/platform skips",
+        "Preview-server integrity gate 8 of 8 and runtime no-mutation self-test PASS",
         "44 Whisper tests PASS",
-        "Voice-Free, UX, migration, and runtime evidence artifacts"
+        "Voice-Free, UX, migration, runtime, and PWA upgrade/rollback evidence artifacts"
       ],
       "deferral": {
         "reason": null,
@@ -1939,7 +1965,8 @@
       "evidence_produced": [
         "src/app/screens/VoiceFreeDay1Screen.tsx",
         "src/practice/use-voice-free-day1-session.ts",
-        "legacy Practice audio-failure tests"
+        "legacy Practice audio-failure tests",
+        "A real Day 1 session continues while a second candidate waits; early end releases the old-worker media fetch before explicit activation"
       ],
       "deferral": {
         "reason": null,

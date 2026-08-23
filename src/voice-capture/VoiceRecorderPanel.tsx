@@ -1,5 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
+import {
+  markPwaCriticalActivityActive,
+  markPwaCriticalActivityIdle,
+} from "../app/pwa-update-safety";
 import {
   BrowserRecorderSession,
   type CapturePersistence,
@@ -93,6 +104,7 @@ export function VoiceRecorderPanel({
   const [saveError, setSaveError] = useState<string | null>(null);
   const sessionRef = useRef<BrowserRecorderSession | null>(null);
   const acceptingRef = useRef(false);
+  const updateSafetyActivityId = `voice-capture-${useId()}`;
 
   useEffect(
     () => () => {
@@ -118,6 +130,23 @@ export function VoiceRecorderPanel({
   const isReview = recorderState.phase === "review";
   const hasCapture =
     recorderState.recordingId !== null || recorderState.sizeBytes > 0;
+  const updateCritical =
+    saving ||
+    [
+      "requesting-permission",
+      "recording",
+      "paused",
+      "review",
+      "saving",
+    ].includes(recorderState.phase);
+  useEffect(() => {
+    if (updateCritical) {
+      markPwaCriticalActivityActive(updateSafetyActivityId);
+    } else {
+      markPwaCriticalActivityIdle(updateSafetyActivityId);
+    }
+    return () => markPwaCriticalActivityIdle(updateSafetyActivityId);
+  }, [updateCritical, updateSafetyActivityId]);
   const phaseLabel = useMemo(() => {
     if (recorderState.phase === "requesting-permission")
       return "Requesting microphone permission";

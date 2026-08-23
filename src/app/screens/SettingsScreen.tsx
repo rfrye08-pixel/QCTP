@@ -15,6 +15,10 @@ import {
 import type { AppSettings } from "../../domain";
 import { ScreenHeader } from "../components/ScreenHeader";
 import { StatusBadge } from "../components/StatusBadge";
+import {
+  markPwaCriticalActivityActive,
+  markPwaCriticalActivityIdle,
+} from "../pwa-update-safety";
 import { useQctp } from "../qctp-context";
 import "../platform-styles.css";
 
@@ -263,6 +267,8 @@ export function SettingsScreen() {
 
   const exportData = useCallback(
     async (format: "json" | "zip") => {
+      const activityId = `data-export-${format}`;
+      markPwaCriticalActivityActive(activityId);
       setBusy(`export-${format}`);
       setMessage(null);
       setError(null);
@@ -293,6 +299,7 @@ export function SettingsScreen() {
         );
       } finally {
         setBusy(null);
+        markPwaCriticalActivityIdle(activityId);
       }
     },
     [repository],
@@ -306,6 +313,7 @@ export function SettingsScreen() {
 
   const importData = useCallback(async () => {
     if (!selectedImport) return;
+    markPwaCriticalActivityActive("data-import");
     setBusy("import");
     setMessage(null);
     setError(null);
@@ -328,6 +336,7 @@ export function SettingsScreen() {
       );
     } finally {
       setBusy(null);
+      markPwaCriticalActivityIdle("data-import");
     }
   }, [repository, runtime, selectedImport]);
 

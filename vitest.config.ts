@@ -1,8 +1,19 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
+import { fileURLToPath } from "node:url";
 
 export default defineConfig({
+  define: {
+    __QCTP_BUILD_CANDIDATE_SHA__: JSON.stringify("a".repeat(40)),
+  },
   plugins: [react()],
+  resolve: {
+    alias: {
+      "virtual:pwa-register": fileURLToPath(
+        new URL("./src/test/pwa-register-stub.ts", import.meta.url),
+      ),
+    },
+  },
   test: {
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],

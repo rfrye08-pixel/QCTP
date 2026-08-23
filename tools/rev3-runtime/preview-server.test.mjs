@@ -1,6 +1,16 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  rename,
+  rm,
+  stat,
+  writeFile,
+} from "node:fs/promises";
 import { connect, createServer as createNetServer } from "node:net";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -12,7 +22,13 @@ const previewServerPath = fileURLToPath(
   new URL("./preview-server.mjs", import.meta.url),
 );
 const mediaBody = Buffer.from("0123456789abcdef", "utf8");
+const candidateA = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+const candidateB = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+const identityName = "QCTP_REV3_RUNTIME_IDENTITY.json";
+const manifestName = "QCTP_REV3_CONTENT_MANIFEST.json";
 
+let tempRoot;
+let candidateRoot;
 let siteRoot;
 let port;
 let serverProcess;
@@ -34,13 +50,100 @@ async function reservePort() {
   return reservedPort;
 }
 
-async function writeFixture(relativePath, content) {
-  const target = join(siteRoot, relativePath);
+async function writeFixture(root, relativePath, content) {
+  const target = join(root, relativePath);
   await mkdir(dirname(target), { recursive: true });
   await writeFile(target, content);
 }
 
+async function enumerateFiles(root, prefix = "") {
+  const files = [];
+  for (const entry of await readdir(root, { withFileTypes: true })) {
+    const relativePath = prefix === "" ? entry.name : `${prefix}/${entry.name}`;
+    if (entry.isDirectory()) {
+      files.push(
+        ...(await enumerateFiles(join(root, entry.name), relativePath)),
+      );
+    } else if (entry.isFile()) {
+      files.push(relativePath);
+    }
+  }
+  return files.sort();
+}
+
+async function writeControlledMetadata(root, candidateSha) {
+  const contentPaths = (await enumerateFiles(root)).filter(
+    (path) => path !== identityName && path !== manifestName,
+  );
+  const files = [];
+  let totalBytes = 0;
+  for (const path of contentPaths) {
+    const bytes = await readFile(join(root, ...path.split("/")));
+    files.push({
+      path,
+      bytes: bytes.length,
+      sha256: createHash("sha256").update(bytes).digest("hex"),
+    });
+    totalBytes += bytes.length;
+  }
+  const manifestBytes = Buffer.from(
+    JSON.stringify({
+      schema: "qctp-rev3-runtime-content-manifest-v1",
+      hashAlgorithm: "SHA-256",
+      candidateSha,
+      fileCount: files.length,
+      totalBytes,
+      files,
+    }),
+  );
+  await writeFixture(root, manifestName, manifestBytes);
+  await writeFixture(
+    root,
+    identityName,
+    JSON.stringify({
+      schema: "qctp-rev3-runtime-identity-v1",
+      candidateSha,
+      sourceBranch: "qctp-platform-rev3-codex",
+      packageKind: "PRIVATE_PREVIEW_CANDIDATE",
+      releaseAuthority: "ZERO_RELEASE",
+      contentManifestPath: `/${manifestName}`,
+      contentManifestSha256: createHash("sha256")
+        .update(manifestBytes)
+        .digest("hex"),
+      contentFileCount: files.length,
+      contentTotalBytes: totalBytes,
+      installRequiresExplicitOptIn: true,
+      publicDeploymentAuthorized: false,
+    }),
+  );
+}
+
+async function writeCompleteSite(root, candidateSha) {
+  await mkdir(root, { recursive: true });
+  await Promise.all([
+    writeFixture(root, "index.html", "<!doctype html><title>QCTP</title>"),
+    writeFixture(root, "sw.js", "self.addEventListener('fetch', () => {});"),
+    writeFixture(root, "manifest.webmanifest", "{}"),
+    writeFixture(root, "assets/app-0123456789abcdef.js", "export {};"),
+    writeFixture(root, "assets/app.js", "export {};"),
+    writeFixture(root, "audio/day-1.mp3", mediaBody),
+    writeFixture(
+      root,
+      "qctp-icon-180.png",
+      Buffer.from([0x89, 0x50, 0x4e, 0x47]),
+    ),
+    writeFixture(root, "voice-audition/sample-a.mp3", mediaBody),
+  ]);
+  await writeControlledMetadata(root, candidateSha);
+}
+
+async function resetExactSite() {
+  await rm(siteRoot, { recursive: true, force: true });
+  await writeCompleteSite(siteRoot, candidateA);
+}
+
 async function startServer() {
+  serverStderr = "";
   serverProcess = spawn(
     process.execPath,
     [
@@ -51,6 +154,8 @@ async function startServer() {
       "127.0.0.1",
       "--port",
       String(port),
+      "--candidate-sha",
+      candidateA,
     ],
     { windowsHide: true },
   );
@@ -108,6 +213,13 @@ async function stopServer() {
     await Promise.race([exited, delay(3_000)]);
     if (serverProcess.exitCode === null) serverProcess.kill("SIGKILL");
   }
+  serverProcess = undefined;
+}
+
+async function restartWithExactSite() {
+  await stopServer();
+  await resetExactSite();
+  await startServer();
 }
 
 function request(path, init) {
@@ -134,34 +246,33 @@ function rawHttpRequest(requestTarget) {
   });
 }
 
+async function assertIntegrityFailure(response) {
+  assert.equal(response.status, 503);
+  assert.equal(response.headers.get("x-qctp-candidate-sha"), null);
+  assert.equal(
+    response.headers.get("x-qctp-expected-candidate-sha"),
+    candidateA,
+  );
+  assert.deepEqual(await response.json(), {
+    schema: "qctp-rev3-preview-integrity-failure-v1",
+    status: "restart_required",
+    expectedCandidateSha: candidateA,
+    releaseAuthority: "ZERO_RELEASE",
+  });
+}
+
 before(async () => {
-  siteRoot = await mkdtemp(join(tmpdir(), "qctp-rev3-preview-server-"));
+  tempRoot = await mkdtemp(join(tmpdir(), "qctp-rev3-preview-server-"));
+  candidateRoot = join(tempRoot, `qctp-rev3-${candidateA}`);
+  siteRoot = join(candidateRoot, "site");
   port = await reservePort();
-  await Promise.all([
-    writeFixture(
-      "QCTP_REV3_RUNTIME_IDENTITY.json",
-      JSON.stringify({
-        schema: "qctp-rev3-runtime-identity-v1",
-        candidateSha: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        sourceBranch: "qctp-platform-rev3-codex",
-        releaseAuthority: "ZERO_RELEASE",
-      }),
-    ),
-    writeFixture("index.html", "<!doctype html><title>QCTP</title>"),
-    writeFixture("sw.js", "self.addEventListener('fetch', () => {});"),
-    writeFixture("manifest.webmanifest", "{}"),
-    writeFixture("assets/app-0123456789abcdef.js", "export {};"),
-    writeFixture("assets/app.js", "export {};"),
-    writeFixture("audio/day-1.mp3", mediaBody),
-    writeFixture("qctp-icon-180.png", Buffer.from([0x89, 0x50, 0x4e, 0x47])),
-    writeFixture("voice-audition/sample-a.mp3", mediaBody),
-  ]);
+  await writeCompleteSite(siteRoot, candidateA);
   await startServer();
 });
 
 after(async () => {
   await stopServer();
-  if (siteRoot) await rm(siteRoot, { recursive: true, force: true });
+  if (tempRoot) await rm(tempRoot, { recursive: true, force: true });
 });
 
 test("malformed escaped paths return 400 without killing the server", async () => {
@@ -171,6 +282,7 @@ test("malformed escaped paths return 400 without killing the server", async () =
   const health = await request("/__qctp_runtime/health");
   assert.equal(health.status, 200, serverStderr);
   assert.equal(serverProcess.exitCode, null, serverStderr);
+  assert.equal((await health.json()).immutablePackageVerified, true);
 });
 
 test("static media supports one bounded byte range", async () => {
@@ -216,6 +328,8 @@ test("only content-hashed build assets receive immutable caching", async () => {
     ["/index.html", "no-store"],
     ["/sw.js", "no-store"],
     ["/manifest.webmanifest", "no-store"],
+    [`/${identityName}`, "no-store"],
+    [`/${manifestName}`, "no-store"],
   ];
 
   for (const [path, expected] of expectations) {
@@ -223,4 +337,59 @@ test("only content-hashed build assets receive immutable caching", async () => {
     assert.equal(response.status, 200, path);
     assert.equal(response.headers.get("cache-control"), expected, path);
   }
+});
+
+test("unmanifested files are never served", async () => {
+  await writeFixture(siteRoot, "unmanifested.txt", "not controlled");
+  try {
+    const response = await request("/unmanifested.txt");
+    assert.equal(response.status, 404);
+    assert.equal(await response.text(), "Not found.");
+  } finally {
+    await rm(join(siteRoot, "unmanifested.txt"), { force: true });
+  }
+});
+
+test("same-identity asset tampering latches 503 until a verified restart", async () => {
+  await writeFixture(siteRoot, "assets/app.js", "export const changed = true;");
+  await assertIntegrityFailure(await request("/assets/app.js"));
+  await writeFixture(siteRoot, "assets/app.js", "export {};");
+  await assertIntegrityFailure(await request("/__qctp_runtime/health"));
+
+  await restartWithExactSite();
+  const recovered = await request("/__qctp_runtime/health");
+  assert.equal(recovered.status, 200);
+  assert.equal(recovered.headers.get("x-qctp-candidate-sha"), candidateA);
+});
+
+test("content-manifest tampering latches 503 until a verified restart", async () => {
+  await writeFixture(siteRoot, manifestName, "{}");
+  await assertIntegrityFailure(await request("/__qctp_runtime/health"));
+
+  await restartWithExactSite();
+  assert.equal((await request("/__qctp_runtime/health")).status, 200);
+});
+
+test("a full root swap fails closed and cannot recover without restart", async () => {
+  const replacement = join(candidateRoot, "replacement-site");
+  const displaced = join(candidateRoot, "displaced-site");
+  const rejected = join(candidateRoot, "rejected-site");
+  await writeCompleteSite(replacement, candidateB);
+  await rename(siteRoot, displaced);
+  await rename(replacement, siteRoot);
+  await assertIntegrityFailure(await request("/__qctp_runtime/health"));
+
+  await rename(siteRoot, rejected);
+  await rename(displaced, siteRoot);
+  await assertIntegrityFailure(await request("/__qctp_runtime/health"));
+
+  await stopServer();
+  await rm(rejected, { recursive: true, force: true });
+  await startServer();
+  const recovered = await request("/__qctp_runtime/health");
+  assert.equal(recovered.status, 200);
+  assert.equal(recovered.headers.get("x-qctp-candidate-sha"), candidateA);
+
+  const identityDetails = await stat(join(siteRoot, identityName));
+  assert.equal(identityDetails.isFile(), true);
 });

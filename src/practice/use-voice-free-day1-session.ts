@@ -187,7 +187,11 @@ export function useVoiceFreeDay1Session(
     const audioElement = new Audio();
     audioElementRef.current = audioElement;
 
-    audioElement.preload = "auto";
+    // Metadata is enough to prove the controlled 1,500-second package before
+    // the user's start gesture. Preloading the entire long response in every
+    // open QCTP tab can keep the current service worker busy indefinitely and
+    // block a later explicitly approved app update.
+    audioElement.preload = "metadata";
     audioElement.loop = false;
     audioElement.src = getVoiceFreeSupportUrl(supportMode);
     audioElement.load();
@@ -461,6 +465,12 @@ export function useVoiceFreeDay1Session(
       VOICE_FREE_DAY1_DURATION_SECONDS,
       audioElement.currentTime || 0,
     );
+    // Release the long same-origin response before marking the session idle.
+    // A paused media element can keep the controlling service worker's fetch
+    // event alive, which prevents an explicitly approved waiting update from
+    // activating even after the practice has ended.
+    audioElement.removeAttribute("src");
+    audioElement.load();
     setElapsedSeconds(endedAtSeconds);
     void releaseWakeLock();
     if (testMode) {

@@ -108,9 +108,10 @@ The built-in preview server binds only to loopback. Private iPhone access must
 remain a separate Tailscale HTTPS Serve route to loopback; this package never
 enables public Funnel.
 
-## 4. Explicit private install
+## 4. Immutable private activation hold
 
-This is intentionally not part of staging or testing:
+Mutable live-root installation is disabled under `ZERO_RELEASE`. The legacy
+command remains as a read-only fail-closed gate:
 
 ```powershell
 pwsh -NoProfile -File .\tools\rev3-runtime\Install-QctpRev3Candidate.ps1 `
@@ -122,18 +123,21 @@ pwsh -NoProfile -File .\tools\rev3-runtime\Install-QctpRev3Candidate.ps1 `
   -ConfirmZeroRelease
 ```
 
-If the exact live root is the current repository's ignored `dist`, the
-additional `-AllowWorktreeDist` switch is required. Other paths inside the
-source worktree are always refused. Live and backup roots must be on the same
-volume so directory swaps remain rename-based and recoverable.
+After exact package, source, live-tree, and compatibility diagnostics, this
+command returns `IMMUTABLE_ACTIVATION_REQUIRED` without creating a backup,
+staging a replacement, or changing the live root. A database name/version
+signature is recorded only as `INFERRED_ONLY`; it does not prove downgrade-safe
+stores, indexes, values, or migrations.
 
-After installation, run the exact served-origin test. A process holding the
-directory open can cause a Windows rename to fail; the script does not kill it
-and restores the old location when possible.
+The currently supported runtime path is `Stage-QctpRev3Candidate.ps1` followed
+by `Start-QctpRev3PrivatePreview.ps1` directly against the immutable
+`qctp-rev3-<full SHA>\site` package. A future controlled package must add a
+durable pointer/restart transaction before live activation can be enabled.
 
-## 5. Rollback
+## 5. Rollback hold
 
-Use the exact backup directory printed by the install command:
+The rollback command also remains available only as a read-only fail-closed
+gate for an existing historical backup:
 
 ```powershell
 pwsh -NoProfile -File .\tools\rev3-runtime\Rollback-QctpRev3Runtime.ps1 `
@@ -145,8 +149,9 @@ pwsh -NoProfile -File .\tools\rev3-runtime\Rollback-QctpRev3Runtime.ps1 `
   -ConfirmZeroRelease
 ```
 
-Rollback verifies the backup manifest, prepares the replacement beside the
-live root, retains the displaced Rev3 site, and keeps the original backup.
+Rollback verifies the installed candidate and backup manifest, then returns
+`IMMUTABLE_ACTIVATION_REQUIRED` before creating retention/staging material or
+moving either tree. Emergency acknowledgement switches do not bypass this hold.
 
 ## Tool self-test
 
@@ -155,15 +160,14 @@ pwsh -NoProfile -File .\tools\rev3-runtime\Test-QctpRev3RuntimeTools.ps1
 ```
 
 The self-test uses a uniquely named temporary tree. It proves manifest-tamper
-rejection, A03R-path rejection, exact loopback serving, atomic install with a
-recoverable backup, and rollback. It never touches a discovered or live QCTP
-root.
+rejection, A03R-path rejection, exact immutable loopback serving, inferred-only
+data compatibility, and no-mutation refusal for install, normal rollback, and
+emergency rollback. It never touches a discovered or live QCTP root.
 
 ## Holds
 
 This package is not by itself a production or release gate. Browser/WebKit,
 physical iPhone, long-practice, Windows process-interruption, Tailscale route,
-and release-authority gates remain separate controlled evidence. A power loss
-between the two same-volume renames may require using the retained `site`
-directory manually; no script can make two Windows directory renames a single
-filesystem transaction.
+durable activation, downgrade compatibility, and release-authority gates remain
+separate controlled evidence. No script in this checkpoint performs a
+two-directory live-root swap.

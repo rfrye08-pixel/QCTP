@@ -19,7 +19,7 @@ import { FieldDictation } from "../components/FieldDictation";
 import { CampbellTrackPanel } from "../components/CampbellTrackPanel";
 import { BreathFoundationsPanel } from "../components/BreathFoundationsPanel";
 import { StateAtlasTrainingPanel } from "../components/StateAtlasTrainingPanel";
-import { usePwaStatus } from "../pwa-status";
+import { applyPwaUpdate, usePwaStatus } from "../pwa-status";
 import { ScreenHeader } from "../components/ScreenHeader";
 import { StatusBadge } from "../components/StatusBadge";
 import { VoiceFreePhasePlan } from "../components/VoiceFreePhasePlan";
@@ -317,6 +317,25 @@ export function TodayOverview({
           <span>App package</span>
           <strong>{pwaStatus.installed ? "Installed" : "PWA available"}</strong>
           <small>{pwaStatus.message}</small>
+          {pwaStatus.candidateSha ? (
+            <small>Candidate {pwaStatus.candidateSha.slice(0, 10)}</small>
+          ) : null}
+          {pwaStatus.updateStatus === "update-available" ||
+          pwaStatus.updateStatus === "update-retry" ||
+          pwaStatus.updateStatus === "applying-update" ? (
+            <button
+              className="secondary-button status-update-button"
+              type="button"
+              disabled={pwaStatus.updateStatus === "applying-update"}
+              onClick={() => void applyPwaUpdate()}
+            >
+              {pwaStatus.updateStatus === "applying-update"
+                ? "Opening update…"
+                : pwaStatus.updateStatus === "update-retry"
+                  ? "Retry ready update"
+                  : "Apply ready update"}
+            </button>
+          ) : null}
         </article>
         <article>
           <span>Reminder delivery</span>

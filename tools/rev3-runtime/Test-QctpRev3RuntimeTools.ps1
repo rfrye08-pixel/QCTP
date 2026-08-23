@@ -34,7 +34,7 @@ function Assert-SelfTest {
 }
 
 try {
-    $candidate = Join-Path $tempRoot 'candidate'
+    $candidate = Join-Path $tempRoot "qctp-rev3-$head"
     $site = Join-Path $candidate 'site'
     $live = Join-Path $tempRoot 'live'
     $backupRoot = Join-Path $tempRoot 'backups'
@@ -43,9 +43,13 @@ try {
         New-Item -ItemType Directory -Path $path | Out-Null
     }
 
-    Write-SelfTestFile -Path (Join-Path $site 'index.html') -Content '<!doctype html><script type="module" src="/assets/app.js"></script>'
-    Write-SelfTestFile -Path (Join-Path $site 'assets\app.js') -Content 'document.body.dataset.qctp = "rev3";'
-    Write-SelfTestFile -Path (Join-Path $site 'sw.js') -Content 'self.addEventListener("fetch", () => {});'
+    Write-SelfTestFile -Path (Join-Path $site 'index.html') -Content "<!doctype html><meta name=`"qctp-candidate-sha`" content=`"$head`"><script type=`"module`" src=`"/assets/app.js`"></script>"
+    Write-SelfTestFile `
+        -Path (Join-Path $site 'assets\app.js') `
+        -Content 'function openDB() { return null; } openDB("qctp-rev2",5,{}); document.body.dataset.qctp = "rev3";'
+    Write-SelfTestFile `
+        -Path (Join-Path $site 'sw.js') `
+        -Content 'self.addEventListener("message", (event) => { if (event.data?.type === "SKIP_WAITING") { self.skipWaiting(); } }); self.addEventListener("fetch", () => {});'
     $rejected = @{ ('f' * 64 -join '') = 'self-test-quarantine-artifact' }
     New-QctpRev3CandidateMetadata `
         -CandidateDirectory $candidate `
@@ -124,9 +128,32 @@ try {
         throw 'The isolated exact-served-identity preview self-test failed.'
     }
 
-    Write-SelfTestFile -Path (Join-Path $live 'index.html') -Content '<!doctype html><title>previous runtime</title>'
+    Write-SelfTestFile `
+        -Path (Join-Path $live 'index.html') `
+        -Content '<!doctype html><script type="module" src="/assets/app.js"></script><title>previous runtime</title>'
+    Write-SelfTestFile `
+        -Path (Join-Path $live 'assets\app.js') `
+        -Content 'function openDB() { return null; } openDB("qctp-rev2",5,{});'
+    Write-SelfTestFile `
+        -Path (Join-Path $live 'sw.js') `
+        -Content 'self.addEventListener("message", (event) => { if (event.data?.type === "SKIP_WAITING") { self.skipWaiting(); } }); self.addEventListener("fetch", () => {});'
     Write-SelfTestFile -Path (Join-Path $live 'previous.txt') -Content 'recoverable previous tree'
-    & $powershell `
+
+    $candidateCompatibility = Get-QctpRuntimeCompatibilityContract -SiteRoot $site
+    Assert-SelfTest `
+        -Condition (
+            [string]$candidateCompatibility.schema -eq 'qctp-rev3-runtime-compatibility-contract-v2' -and
+            [string]$candidateCompatibility.dataContract.status -eq 'INFERRED_ONLY' -and
+            [string]$candidateCompatibility.dataContract.rollbackCompatibility -eq 'UNPROVEN' -and
+            -not [bool]$candidateCompatibility.normalRollbackEligible
+        ) `
+        -Message 'The runtime contract treated a bundled database signature as proven downgrade compatibility.'
+
+    $liveBeforeInstall = New-QctpTreeManifestObject `
+        -Root $live `
+        -Schema 'qctp-rev3-runtime-self-test-tree-v1' `
+        -CandidateSha $head
+    $installRefusalOutput = & $powershell `
         -NoProfile `
         -NonInteractive `
         -File (Join-Path $PSScriptRoot 'Install-QctpRev3Candidate.ps1') `
@@ -135,35 +162,114 @@ try {
         -BackupRoot $backupRoot `
         -ExpectedHead $head `
         -InstallPrivatePreview `
-        -ConfirmZeroRelease | Out-Host
-    if ($LASTEXITCODE -ne 0) {
-        throw 'The atomic private-install self-test failed.'
-    }
+        -ConfirmZeroRelease 2>&1 | Out-String
+    $installRefusalExitCode = $LASTEXITCODE
     Assert-SelfTest `
-        -Condition (Test-Path -LiteralPath (Join-Path $live $script:QctpRev3IdentityName) -PathType Leaf) `
-        -Message 'The self-test candidate was not installed.'
+        -Condition ($installRefusalExitCode -ne 0 -and $installRefusalOutput -match 'IMMUTABLE_ACTIVATION_REQUIRED') `
+        -Message 'Mutable private installation was not stopped by the immutable-activation hold.'
+    Assert-SelfTest `
+        -Condition (@(Get-ChildItem -LiteralPath $backupRoot -Force).Count -eq 0) `
+        -Message 'The refused install created backup or staging material.'
+    Assert-SelfTest `
+        -Condition ((New-QctpTreeManifestObject `
+            -Root $live `
+            -Schema 'qctp-rev3-runtime-self-test-tree-v1' `
+            -CandidateSha $head | ConvertTo-Json -Depth 12 -Compress) -eq
+            ($liveBeforeInstall | ConvertTo-Json -Depth 12 -Compress)) `
+        -Message 'The refused install changed the live tree.'
 
-    $backup = @(Get-ChildItem -LiteralPath $backupRoot -Directory)
-    Assert-SelfTest -Condition ($backup.Count -eq 1) -Message 'The install did not create exactly one recoverable backup.'
-    & $powershell `
+    $rollbackLive = Join-Path $tempRoot 'rollback-live'
+    $rollbackBackup = Join-Path $tempRoot 'rollback-backup'
+    $rollbackBackupSite = Join-Path $rollbackBackup 'site'
+    New-Item -ItemType Directory -Path $rollbackLive | Out-Null
+    New-Item -ItemType Directory -Path $rollbackBackupSite | Out-Null
+    Copy-Item -Path (Join-Path $candidate 'site\*') -Destination $rollbackLive -Recurse
+    Write-SelfTestFile -Path (Join-Path $rollbackBackupSite 'index.html') -Content '<!doctype html><title>held rollback target</title>'
+    Write-SelfTestFile -Path (Join-Path $rollbackBackupSite 'previous.txt') -Content 'recoverable previous tree'
+
+    $previousTree = New-QctpTreeManifestObject `
+        -Root $rollbackBackupSite `
+        -Schema 'qctp-rev3-runtime-backup-tree-v1' `
+        -CandidateSha ('0' * 40 -join '')
+    $installedCompatibility = Get-QctpRuntimeCompatibilityContract -SiteRoot $rollbackLive
+    $previousCompatibility = Get-QctpRuntimeCompatibilityContract -SiteRoot $rollbackBackupSite
+    $backupManifest = [ordered]@{
+        schema = 'qctp-rev3-runtime-backup-manifest-v2'
+        createdAt = (Get-Date).ToUniversalTime().ToString('o')
+        liveRoot = $rollbackLive
+        installedCandidateSha = $head
+        installedIdentitySha256 = Get-QctpSha256 -Path (Join-Path $rollbackLive $script:QctpRev3IdentityName)
+        releaseAuthority = 'ZERO_RELEASE'
+        compatibility = [ordered]@{
+            schema = 'qctp-rev3-runtime-install-compatibility-v1'
+            normalRollbackPolicy = 'UNPROVEN_IMMUTABLE_ACTIVATION_REQUIRED'
+            candidate = $installedCompatibility
+            previous = $previousCompatibility
+            previousNormalRollbackEligible = $false
+        }
+        previousTree = $previousTree
+    }
+    Write-QctpJsonFile `
+        -Value $backupManifest `
+        -Path (Join-Path $rollbackBackup $script:QctpRev3BackupManifestName)
+
+    $rollbackLiveBefore = New-QctpTreeManifestObject `
+        -Root $rollbackLive `
+        -Schema 'qctp-rev3-runtime-self-test-tree-v1' `
+        -CandidateSha $head
+    $rollbackBackupBefore = New-QctpTreeManifestObject `
+        -Root $rollbackBackup `
+        -Schema 'qctp-rev3-runtime-self-test-tree-v1' `
+        -CandidateSha $head
+    $rollbackRefusalOutput = & $powershell `
         -NoProfile `
         -NonInteractive `
         -File (Join-Path $PSScriptRoot 'Rollback-QctpRev3Runtime.ps1') `
-        -LiveRoot $live `
-        -BackupDirectory $backup[0].FullName `
+        -LiveRoot $rollbackLive `
+        -BackupDirectory $rollbackBackup `
         -RetentionRoot $retentionRoot `
         -ExpectedInstalledHead $head `
         -RollbackPrivatePreview `
-        -ConfirmZeroRelease | Out-Host
-    if ($LASTEXITCODE -ne 0) {
-        throw 'The atomic rollback self-test failed.'
-    }
+        -ConfirmZeroRelease 2>&1 | Out-String
+    $rollbackRefusalExitCode = $LASTEXITCODE
     Assert-SelfTest `
-        -Condition (Test-Path -LiteralPath (Join-Path $live 'previous.txt') -PathType Leaf) `
-        -Message 'The rollback did not restore the previous runtime tree.'
+        -Condition ($rollbackRefusalExitCode -ne 0 -and $rollbackRefusalOutput -match 'IMMUTABLE_ACTIVATION_REQUIRED') `
+        -Message 'Normal rollback did not stop at the immutable-activation hold.'
+
+    $emergencyRefusalOutput = & $powershell `
+        -NoProfile `
+        -NonInteractive `
+        -File (Join-Path $PSScriptRoot 'Rollback-QctpRev3Runtime.ps1') `
+        -LiveRoot $rollbackLive `
+        -BackupDirectory $rollbackBackup `
+        -RetentionRoot $retentionRoot `
+        -ExpectedInstalledHead $head `
+        -RollbackPrivatePreview `
+        -ConfirmZeroRelease `
+        -AllowLegacyEmergencyRollback `
+        -ConfirmAllQctpClientsClosed `
+        -ConfirmLegacyDataCompatibilityRisk 2>&1 | Out-String
+    $emergencyRefusalExitCode = $LASTEXITCODE
     Assert-SelfTest `
-        -Condition (-not (Test-Path -LiteralPath (Join-Path $live $script:QctpRev3IdentityName))) `
-        -Message 'The rollback left the candidate identity in the restored tree.'
+        -Condition ($emergencyRefusalExitCode -ne 0 -and $emergencyRefusalOutput -match 'IMMUTABLE_ACTIVATION_REQUIRED') `
+        -Message 'Emergency switches bypassed the immutable-activation hold.'
+    Assert-SelfTest `
+        -Condition (@(Get-ChildItem -LiteralPath $retentionRoot -Force).Count -eq 0) `
+        -Message 'A refused rollback created retention or staging material.'
+    Assert-SelfTest `
+        -Condition ((New-QctpTreeManifestObject `
+            -Root $rollbackLive `
+            -Schema 'qctp-rev3-runtime-self-test-tree-v1' `
+            -CandidateSha $head | ConvertTo-Json -Depth 12 -Compress) -eq
+            ($rollbackLiveBefore | ConvertTo-Json -Depth 12 -Compress)) `
+        -Message 'A refused rollback changed the live candidate.'
+    Assert-SelfTest `
+        -Condition ((New-QctpTreeManifestObject `
+            -Root $rollbackBackup `
+            -Schema 'qctp-rev3-runtime-self-test-tree-v1' `
+            -CandidateSha $head | ConvertTo-Json -Depth 12 -Compress) -eq
+            ($rollbackBackupBefore | ConvertTo-Json -Depth 12 -Compress)) `
+        -Message 'A refused rollback changed the recoverable backup.'
 
     [ordered]@{
         schema = 'qctp-rev3-runtime-tool-self-test-v1'
@@ -173,9 +279,11 @@ try {
         renamedA03HashBlocked = $true
         externalEntryDependencyBlocked = $true
         exactLoopbackPreviewPassed = $true
-        atomicInstallPassed = $true
-        recoverableBackupCreated = $true
-        rollbackPassed = $true
+        inferredDataContractHeld = $true
+        liveMutationHeld = $true
+        normalRollbackHeld = $true
+        emergencyMutationHeld = $true
+        noMutationOnRefusal = $true
         releaseAuthority = 'ZERO_RELEASE'
     } | ConvertTo-Json -Depth 4
 }

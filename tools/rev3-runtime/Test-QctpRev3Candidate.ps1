@@ -120,7 +120,9 @@ try {
             '--host',
             '127.0.0.1',
             '--port',
-            [string]$port
+            [string]$port,
+            '--candidate-sha',
+            $ExpectedHead.ToLowerInvariant()
         )
         $previewProcess = Start-Process `
             -FilePath $node `

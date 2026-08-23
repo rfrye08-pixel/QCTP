@@ -2114,6 +2114,13 @@
   font-size: 0.86rem;
 }
 
+.today-status-grid .status-update-button {
+  min-height: 44px;
+  margin-top: 6px;
+  padding: 8px 10px;
+  font-size: 0.75rem;
+}
+
 .secondary-link {
   display: inline-flex;
   align-items: center;

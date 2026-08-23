@@ -129,6 +129,7 @@ try {
 
     foreach ($name in @(
         'OPENAI_API_KEY',
+        'QCTP_BUILD_CANDIDATE_SHA',
         'QCTP_ENABLE_PAID_CLOUD',
         'QCTP_PAID_CLOUD_HARD_SPEND_LIMIT_USD',
         'QCTP_TRANSCRIPTION_PROVIDER'
@@ -136,6 +137,7 @@ try {
         $environmentBackup[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
     }
     [Environment]::SetEnvironmentVariable('OPENAI_API_KEY', $null, 'Process')
+    [Environment]::SetEnvironmentVariable('QCTP_BUILD_CANDIDATE_SHA', $ExpectedHead.ToLowerInvariant(), 'Process')
     [Environment]::SetEnvironmentVariable('QCTP_ENABLE_PAID_CLOUD', 'false', 'Process')
     [Environment]::SetEnvironmentVariable('QCTP_PAID_CLOUD_HARD_SPEND_LIMIT_USD', '0', 'Process')
     [Environment]::SetEnvironmentVariable('QCTP_TRANSCRIPTION_PROVIDER', 'local', 'Process')
@@ -156,8 +158,15 @@ try {
         -WorkingDirectory $stageRepo
 
     $dist = Join-Path $stageRepo 'dist'
-    if (-not (Test-Path -LiteralPath (Join-Path $dist 'index.html') -PathType Leaf)) {
+    $builtIndexPath = Join-Path $dist 'index.html'
+    if (-not (Test-Path -LiteralPath $builtIndexPath -PathType Leaf)) {
         throw "The exact-head build did not create dist\index.html."
+    }
+    $builtIndex = Get-Content -LiteralPath $builtIndexPath -Raw
+    $candidateMarkerPattern = '(?is)<meta\s+name=["'']qctp-candidate-sha["'']\s+content=["'']' +
+        [regex]::Escape($ExpectedHead.ToLowerInvariant()) + '["'']\s*/?>'
+    if ($builtIndex -notmatch $candidateMarkerPattern) {
+        throw 'The exact-head build did not embed its candidate SHA in the PWA entry document.'
     }
 
     New-Item -ItemType Directory -Path $packageWork | Out-Null

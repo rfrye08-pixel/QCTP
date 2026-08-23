@@ -42,6 +42,10 @@ import { SettingsScreen } from "./screens/SettingsScreen";
 import { useQctp } from "./qctp-context";
 import { routeFromHash, type AppRoute } from "./routes";
 import { PostSessionDebrief } from "./components/PostSessionDebrief";
+import {
+  markPwaCriticalActivityActive,
+  markPwaCriticalActivityIdle,
+} from "./pwa-update-safety";
 
 export function App() {
   const runtime = useQctp();
@@ -245,6 +249,16 @@ export function App() {
     "saving",
     "save_pending",
   ].includes(voiceFreeSession.status);
+
+  useEffect(() => {
+    const activityId = "foundation-day1-practice";
+    if (practiceActive) {
+      markPwaCriticalActivityActive(activityId);
+    } else {
+      markPwaCriticalActivityIdle(activityId);
+    }
+    return () => markPwaCriticalActivityIdle(activityId);
+  }, [practiceActive]);
 
   const screen = (() => {
     switch (route) {

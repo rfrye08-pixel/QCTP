@@ -55,6 +55,7 @@ describe("Voice-Free Day 1 session", () => {
     expect(audio.src).toMatch(
       /audio\/day1-source-rev0\/support-ambient-1500\.mp3$/,
     );
+    expect(audio.preload).toBe("metadata");
     void act(() => {
       audio.dispatchEvent(new Event("loadedmetadata"));
     });

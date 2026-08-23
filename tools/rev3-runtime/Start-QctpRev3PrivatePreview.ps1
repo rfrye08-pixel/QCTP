@@ -97,7 +97,9 @@ $arguments = @(
   "--host",
   "127.0.0.1",
   "--port",
-  $Port.ToString()
+  $Port.ToString(),
+  "--candidate-sha",
+  $ExpectedCandidateSha
 )
 
 function Write-SupervisorEvent {
