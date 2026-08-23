@@ -33,6 +33,7 @@ import {
 import { ScreenHeader } from "../components/ScreenHeader";
 import { ContentClassBadge } from "../components/ContentClassBadge";
 import { useQctp } from "../qctp-context";
+import { hashForCodexRecord } from "../routes";
 import "../platform-styles.css";
 
 interface CodexBundle {
@@ -64,6 +65,12 @@ interface DeleteSelectionDraft {
 interface UnlinkedDeleteDraft {
   recordingId: string;
   confirmation: string;
+}
+
+interface TargetRecordResolution {
+  targetRecordId: string | null;
+  outsideFilter: boolean;
+  unavailableReason: "deleted" | "missing" | null;
 }
 
 const emptyDeleteSelection: DeleteSelectionDraft = {
@@ -557,7 +564,11 @@ function LocalAudio({
   );
 }
 
-export function CodexScreen() {
+export function CodexScreen({
+  targetRecordId = null,
+}: {
+  targetRecordId?: string | null;
+}) {
   const runtime = useQctp();
   const { repository, revision } = runtime;
   const [query, setQuery] = useState("");
@@ -567,6 +578,8 @@ export function CodexScreen() {
     VoiceRecording[]
   >([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [targetResolution, setTargetResolution] =
+    useState<TargetRecordResolution | null>(null);
   const [correctionDraft, setCorrectionDraft] =
     useState<CorrectionDraft | null>(null);
   const [activeRecordDraft, setActiveRecordDraft] =
@@ -588,23 +601,52 @@ export function CodexScreen() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const loadSequence = useRef(0);
+  const detailRef = useRef<HTMLElement | null>(null);
+  const lastFocusedTargetId = useRef<string | null>(null);
+  const lastRequestedTargetId = useRef<string | null>(targetRecordId);
+  const [transientTargetId, setTransientTargetId] = useState<string | null>(
+    targetRecordId,
+  );
+
+  if (transientTargetId !== targetRecordId) {
+    setTransientTargetId(targetRecordId);
+    setCorrectionDraft(null);
+    setActiveRecordDraft(null);
+    setDerivedNoteDraft(null);
+    setDeleteSelection(null);
+    setUnlinkedDelete(null);
+    setMessage(null);
+    setError(null);
+  }
 
   const load = useCallback(async () => {
     const sequence = loadSequence.current + 1;
     loadSequence.current = sequence;
     const recordOptions = kind === "all" ? {} : { kinds: [kind] };
-    const [records, allRecords, recordings] = await Promise.all([
+    const [records, allRecords, recordings, targetRecord] = await Promise.all([
       query.trim()
         ? repository.searchRecords(query, recordOptions)
         : repository.listRecords(recordOptions),
       repository.listRecords(),
       repository.listRecordings(),
+      targetRecordId
+        ? repository.getRecord(targetRecordId)
+        : Promise.resolve(undefined),
     ]);
+    const activeTarget =
+      targetRecord && targetRecord.deletedAt === null ? targetRecord : null;
+    const targetInFilteredRecords = Boolean(
+      activeTarget && records.some((record) => record.id === activeTarget.id),
+    );
+    const displayRecords =
+      activeTarget && !targetInFilteredRecords
+        ? [activeTarget, ...records]
+        : records;
     const recordingMap = new Map(
       recordings.map((recording) => [recording.id, recording]),
     );
     const nextBundles = await Promise.all(
-      records.map(async (record): Promise<CodexBundle> => {
+      displayRecords.map(async (record): Promise<CodexBundle> => {
         const recordingId = voiceRecordingId(record);
         const recording = recordingId
           ? (recordingMap.get(recordingId) ?? null)
@@ -632,12 +674,24 @@ export function CodexScreen() {
           recording.deletedAt === null && !linkedIds.has(recording.id),
       ),
     );
-    setSelectedId((current) =>
-      nextBundles.some((bundle) => bundle.record.id === current)
+    setTargetResolution({
+      targetRecordId,
+      outsideFilter: Boolean(activeTarget && !targetInFilteredRecords),
+      unavailableReason: !targetRecordId
+        ? null
+        : !targetRecord
+          ? "missing"
+          : targetRecord.deletedAt !== null
+            ? "deleted"
+            : null,
+    });
+    setSelectedId((current) => {
+      if (targetRecordId) return current;
+      return nextBundles.some((bundle) => bundle.record.id === current)
         ? current
-        : (nextBundles[0]?.record.id ?? null),
-    );
-  }, [kind, query, repository]);
+        : (nextBundles[0]?.record.id ?? null);
+    });
+  }, [kind, query, repository, targetRecordId]);
 
   useEffect(() => {
     let active = true;
@@ -660,28 +714,44 @@ export function CodexScreen() {
     };
   }, [load, revision]);
 
+  const effectiveSelectedId = targetRecordId ?? selectedId;
   const selected = useMemo(
-    () => bundles.find((bundle) => bundle.record.id === selectedId) ?? null,
-    [bundles, selectedId],
+    () =>
+      bundles.find((bundle) => bundle.record.id === effectiveSelectedId) ??
+      null,
+    [bundles, effectiveSelectedId],
   );
+  const targetPending =
+    targetResolution === null ||
+    targetResolution.targetRecordId !== targetRecordId;
+  const displayLoading = loading || targetPending;
+  const targetOutsideFilter =
+    targetResolution?.targetRecordId === targetRecordId &&
+    targetResolution.outsideFilter;
+  const targetUnavailableReason =
+    targetResolution?.targetRecordId === targetRecordId
+      ? targetResolution.unavailableReason
+      : null;
 
-  const selectRecord = useCallback((bundle: CodexBundle) => {
-    setSelectedId(bundle.record.id);
-    setCorrectionDraft(
-      bundle.transcript
-        ? {
-            transcriptId: bundle.transcript.id,
-            text:
-              bundle.transcript.correctedText ?? bundle.transcript.originalText,
-          }
-        : null,
-    );
-    setActiveRecordDraft(null);
-    setDerivedNoteDraft(null);
-    setDeleteSelection(null);
-    setMessage(null);
-    setError(null);
-  }, []);
+  useEffect(() => {
+    if (lastRequestedTargetId.current !== targetRecordId) {
+      lastRequestedTargetId.current = targetRecordId;
+      lastFocusedTargetId.current = null;
+    }
+    if (
+      !targetRecordId ||
+      displayLoading ||
+      selected?.record.id !== targetRecordId ||
+      lastFocusedTargetId.current === targetRecordId
+    ) {
+      return;
+    }
+    const detail = detailRef.current;
+    if (!detail) return;
+    lastFocusedTargetId.current = targetRecordId;
+    detail.focus();
+    detail.scrollIntoView?.({ block: "start" });
+  }, [displayLoading, selected, targetRecordId]);
 
   const setRecordDraftValue: Dispatch<SetStateAction<CodexRecordDraft>> =
     useCallback((update) => {
@@ -728,6 +798,7 @@ export function CodexScreen() {
       setActiveRecordDraft(null);
       await load();
       setSelectedId(record.id);
+      if (!existing) window.location.hash = hashForCodexRecord(record.id);
       setMessage(
         existing
           ? "Record changes saved. Observation and interpretation remain separate layers."
@@ -1000,12 +1071,33 @@ export function CodexScreen() {
         </p>
       ) : null}
 
-      {loading ? (
+      {displayLoading ? (
         <section className="panel-card platform-empty" aria-live="polite">
           <strong>Opening the local index…</strong>
         </section>
       ) : null}
-      {!loading && bundles.length === 0 ? (
+      {!displayLoading && targetRecordId && targetUnavailableReason ? (
+        <section
+          className="panel-card platform-message warning record-link-hold"
+          role="status"
+          aria-labelledby="codex-record-unavailable-title"
+        >
+          <strong id="codex-record-unavailable-title">
+            This record is unavailable on this device.
+          </strong>
+          <p>
+            No records or filters were changed. Open the full index or
+            synchronize and retry.
+          </p>
+          <p className="fine-print">
+            {targetUnavailableReason === "deleted"
+              ? "A local tombstone confirms that this record was deleted."
+              : "No active record or deletion tombstone with this exact ID is stored locally."}
+          </p>
+          <a href="#/codex">Open the full Codex index</a>
+        </section>
+      ) : null}
+      {!displayLoading && !targetRecordId && bundles.length === 0 ? (
         <section className="panel-card platform-empty">
           <strong>
             {query || kind !== "all"
@@ -1020,7 +1112,7 @@ export function CodexScreen() {
         </section>
       ) : null}
 
-      {!loading && bundles.length > 0 ? (
+      {!displayLoading && bundles.length > 0 ? (
         <div className="codex-layout">
           <section
             className="panel-card codex-index"
@@ -1032,11 +1124,13 @@ export function CodexScreen() {
             </div>
             <div className="platform-record-list">
               {bundles.map((bundle) => (
-                <button
+                <a
                   key={bundle.record.id}
-                  type="button"
-                  className={`codex-index-button${selectedId === bundle.record.id ? " active" : ""}`}
-                  onClick={() => selectRecord(bundle)}
+                  href={hashForCodexRecord(bundle.record.id)}
+                  className={`codex-index-button${effectiveSelectedId === bundle.record.id ? " active" : ""}`}
+                  aria-current={
+                    targetRecordId === bundle.record.id ? "location" : undefined
+                  }
                 >
                   <span className="platform-kind">
                     {bundle.record.kind.replaceAll("_", " ")}
@@ -1046,16 +1140,23 @@ export function CodexScreen() {
                     {formatTimestamp(bundle.record.updatedAt)}
                     {bundle.recording ? " · audio" : ""}
                   </small>
-                </button>
+                </a>
               ))}
             </div>
           </section>
 
           {selected ? (
             <article
+              ref={detailRef}
+              tabIndex={-1}
               className="panel-card codex-detail"
               aria-labelledby="codex-record-title"
             >
+              {targetOutsideFilter ? (
+                <p className="record-link-context" role="status">
+                  Opened from link · outside current filter
+                </p>
+              ) : null}
               <p className="eyebrow">
                 {selected.record.kind.replaceAll("_", " ")}
               </p>
@@ -1327,11 +1428,13 @@ export function CodexScreen() {
                   </ul>
                 ) : null}
                 {selected.record.backlinks.length ? (
-                  <ul>
+                  <ul className="record-backlink-list">
                     {selected.record.backlinks.map((backlink) => (
                       <li key={`${backlink.recordId}:${backlink.relationship}`}>
                         {backlink.relationship}:{" "}
-                        <code>{backlink.recordId}</code>
+                        <a href={hashForCodexRecord(backlink.recordId)}>
+                          {backlink.recordId}
+                        </a>
                       </li>
                     ))}
                   </ul>

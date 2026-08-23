@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type {
   CodexRecord,
@@ -28,6 +28,7 @@ import { ContentClassBadge } from "../components/ContentClassBadge";
 import { StatusBadge } from "../components/StatusBadge";
 import { UserRecordStructuredFields } from "../components/UserRecordStructuredFields";
 import { useQctp, type MirrorClientJob } from "../qctp-context";
+import { hashForCodexRecord, hashForMirrorSource } from "../routes";
 import "../platform-styles.css";
 
 const statusLabels: Record<MirrorClientJob["status"], string> = {
@@ -66,22 +67,20 @@ interface ReviewableInsight {
   sourceRecordIds: string[];
 }
 
-function recordAnchorId(recordId: string): string {
-  return `mirror-source-${encodeURIComponent(recordId)}`;
+interface FocusedSourceResolution {
+  requestKey: string;
+  unavailableReason: "deleted" | "missing" | null;
+}
+
+function recordDomId(recordId: string): string {
+  return `mirror-source-${hashForMirrorSource(recordId).slice("#/mirror/source/".length)}`;
 }
 
 function RecordLinks({ recordIds }: { recordIds: readonly string[] }) {
   return (
     <span className="insight-record-links">
       {[...new Set(recordIds)].sort().map((recordId) => (
-        <a
-          key={recordId}
-          href={`#${recordAnchorId(recordId)}`}
-          onClick={() => {
-            const target = document.getElementById(recordAnchorId(recordId));
-            if (target instanceof HTMLDetailsElement) target.open = true;
-          }}
-        >
+        <a key={recordId} href={hashForMirrorSource(recordId)}>
           {recordId}
         </a>
       ))}
@@ -348,7 +347,11 @@ function purgePhrase(id: string): string {
   return `PURGE ${id}`;
 }
 
-export function MirrorScreen() {
+export function MirrorScreen({
+  focusedSourceRecordId = null,
+}: {
+  focusedSourceRecordId?: string | null;
+}) {
   const runtime = useQctp();
   const { repository, revision, mirror } = runtime;
   const capturePersistence = useMemo(
@@ -356,6 +359,8 @@ export function MirrorScreen() {
     [repository],
   );
   const [records, setRecords] = useState<CodexRecord[]>([]);
+  const [focusedSourceResolution, setFocusedSourceResolution] =
+    useState<FocusedSourceResolution | null>(null);
   const [sourceQuery, setSourceQuery] = useState("");
   const [selectedSourceIds, setSelectedSourceIds] = useState<string[]>([]);
   const [insightQuery, setInsightQuery] = useState("");
@@ -399,6 +404,8 @@ export function MirrorScreen() {
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const lastFocusedSourceId = useRef<string | null>(null);
+  const focusedSourceRequestKey = `${revision}:${focusedSourceRecordId ?? ""}`;
 
   useEffect(() => {
     let active = true;
@@ -408,6 +415,9 @@ export function MirrorScreen() {
       repository.listMirrorRequests(undefined, { includeDeleted: true }),
       repository.listMirrorResults({ includeDeleted: true }),
       repository.listMirrorInsightFeedback({ includeDeleted: true }),
+      focusedSourceRecordId
+        ? repository.getRecord(focusedSourceRecordId)
+        : Promise.resolve(undefined),
     ]).then(
       ([
         recordValues,
@@ -415,6 +425,7 @@ export function MirrorScreen() {
         requestValues,
         resultValues,
         allFeedbackValues,
+        focusedRecord,
       ]) => {
         if (active) {
           setRecords(recordValues);
@@ -428,6 +439,16 @@ export function MirrorScreen() {
           setDeletedInsightFeedback(
             allFeedbackValues.filter((feedback) => feedback.deletedAt !== null),
           );
+          setFocusedSourceResolution({
+            requestKey: focusedSourceRequestKey,
+            unavailableReason: !focusedSourceRecordId
+              ? null
+              : !focusedRecord
+                ? "missing"
+                : focusedRecord.deletedAt !== null
+                  ? "deleted"
+                  : null,
+          });
         }
       },
       () => {
@@ -441,7 +462,37 @@ export function MirrorScreen() {
     return () => {
       active = false;
     };
-  }, [repository, revision]);
+  }, [focusedSourceRecordId, focusedSourceRequestKey, repository, revision]);
+
+  const recordsLoaded =
+    focusedSourceResolution?.requestKey === focusedSourceRequestKey;
+  const focusedSourceUnavailableReason = recordsLoaded
+    ? focusedSourceResolution.unavailableReason
+    : null;
+
+  const focusedSourceAvailable =
+    focusedSourceRecordId === null ||
+    records.some((record) => record.id === focusedSourceRecordId);
+
+  useEffect(() => {
+    lastFocusedSourceId.current = null;
+  }, [focusedSourceRecordId]);
+
+  useEffect(() => {
+    if (!focusedSourceRecordId || !recordsLoaded || !focusedSourceAvailable) {
+      if (!focusedSourceRecordId) lastFocusedSourceId.current = null;
+      return;
+    }
+    if (lastFocusedSourceId.current === focusedSourceRecordId) return;
+    const details = document.getElementById(recordDomId(focusedSourceRecordId));
+    if (!(details instanceof HTMLDetailsElement)) return;
+    details.open = true;
+    const summary = details.querySelector("summary");
+    if (!(summary instanceof HTMLElement)) return;
+    lastFocusedSourceId.current = focusedSourceRecordId;
+    summary.focus();
+    summary.scrollIntoView?.({ block: "center" });
+  }, [focusedSourceAvailable, focusedSourceRecordId, recordsLoaded]);
 
   const refreshDeletedItems = useCallback(async () => {
     const [requestValues, resultValues, feedbackValues] = await Promise.all([
@@ -2058,12 +2109,52 @@ export function MirrorScreen() {
             observation, interpretation, structured fields, and links remain
             visibly separate.
           </p>
+          {recordsLoaded && focusedSourceRecordId && !focusedSourceAvailable ? (
+            <section
+              className="platform-message warning record-link-hold"
+              role="status"
+              aria-labelledby="mirror-source-unavailable-title"
+            >
+              <strong id="mirror-source-unavailable-title">
+                This record is unavailable on this device.
+              </strong>
+              <p>
+                No records or filters were changed. Open the full index or
+                synchronize and retry.
+              </p>
+              <p className="fine-print">
+                {focusedSourceUnavailableReason === "deleted"
+                  ? "A local tombstone confirms that this record was deleted."
+                  : "No active record or deletion tombstone with this exact ID is stored locally."}
+              </p>
+              <a href="#/codex">Open the full Codex index</a>
+            </section>
+          ) : null}
           {records.map((record) => (
-            <details key={record.id} id={recordAnchorId(record.id)}>
-              <summary>
+            <details
+              key={record.id}
+              id={recordDomId(record.id)}
+              className={
+                focusedSourceRecordId === record.id
+                  ? "record-link-target"
+                  : undefined
+              }
+            >
+              <summary
+                tabIndex={0}
+                aria-current={
+                  focusedSourceRecordId === record.id ? "location" : undefined
+                }
+              >
                 <b>{record.title}</b> · {record.kind.replaceAll("_", " ")} ·{" "}
                 <code>{record.id}</code>
               </summary>
+              <a
+                className="record-route-link record-route-link-primary"
+                href={hashForCodexRecord(record.id)}
+              >
+                Open full record in Codex
+              </a>
               <dl>
                 <div>
                   <dt>Observation</dt>
@@ -2081,9 +2172,19 @@ export function MirrorScreen() {
                 <div>
                   <dt>Backlinks</dt>
                   <dd>
-                    {record.backlinks
-                      .map((link) => `${link.relationship}: ${link.recordId}`)
-                      .join("; ") || "None"}
+                    {record.backlinks.length
+                      ? record.backlinks.map((link) => (
+                          <span
+                            className="record-backlink"
+                            key={`${link.relationship}:${link.recordId}`}
+                          >
+                            {link.relationship}:{" "}
+                            <a href={hashForMirrorSource(link.recordId)}>
+                              {link.recordId}
+                            </a>
+                          </span>
+                        ))
+                      : "None"}
                   </dd>
                 </div>
                 <div>
@@ -2657,10 +2758,10 @@ export function MirrorScreen() {
                         <article key={snapshot.recordId}>
                           <b>{snapshot.title}</b>
                           <small>
-                            {snapshot.kind.replaceAll("_", " ")} ·{" "}
-                            {snapshot.recordId} · source updated{" "}
-                            {formatTimestamp(snapshot.recordUpdatedAt)}
+                            {snapshot.kind.replaceAll("_", " ")} · source
+                            updated {formatTimestamp(snapshot.recordUpdatedAt)}
                           </small>
+                          <RecordLinks recordIds={[snapshot.recordId]} />
                           <p>{snapshot.excerpt}</p>
                         </article>
                       ))}
@@ -2690,8 +2791,8 @@ export function MirrorScreen() {
                         <strong>Citations</strong>
                         {result.citations.map((citation) => (
                           <p key={`${result.id}:${citation.recordId}`}>
-                            {citation.title} · {citation.recordId}:{" "}
-                            {citation.excerpt}
+                            {citation.title}: {citation.excerpt}
+                            <RecordLinks recordIds={[citation.recordId]} />
                           </p>
                         ))}
                         <ol>
@@ -2800,8 +2901,8 @@ export function MirrorScreen() {
                       {feedback.revisionHistory.map((revision) => (
                         <li key={revision.id}>
                           {revision.action} · {revision.disposition} ·{" "}
-                          {formatTimestamp(revision.createdAt)} · sources{" "}
-                          {revision.sourceRecordIds.join(", ")}
+                          {formatTimestamp(revision.createdAt)} · sources
+                          <RecordLinks recordIds={revision.sourceRecordIds} />
                         </li>
                       ))}
                     </ol>

@@ -103,15 +103,154 @@ afterEach(async () => {
   await deleteQctpDatabase(databaseName);
 });
 
-function renderCodex() {
+function renderCodex(targetRecordId: string | null = null) {
   return render(
     <QctpContext.Provider value={runtime}>
-      <CodexScreen />
+      <CodexScreen targetRecordId={targetRecordId} />
     </QctpContext.Provider>,
   );
 }
 
 describe("CodexScreen local workflows", () => {
+  it("keeps an exact linked record selected outside the current filter", async () => {
+    const target = buildRecord(
+      {
+        ...draftFromRecord(),
+        title: "Linked dream evidence",
+        kind: "dream",
+        observation: "Exact linked observation.",
+      },
+      null,
+      now,
+      () => "linked-dream",
+    );
+    await repository.saveRecord(target);
+
+    const user = userEvent.setup();
+    renderCodex(target.id);
+    await screen.findByRole("heading", { name: target.title });
+    await user.selectOptions(
+      screen.getByLabelText(/^Record type$/u),
+      "lab_result",
+    );
+
+    expect(
+      await screen.findByText("Opened from link · outside current filter"),
+    ).toBeVisible();
+    expect(screen.getByLabelText(/^Record type$/u)).toHaveValue("lab_result");
+    expect(screen.getByRole("heading", { name: target.title })).toBeVisible();
+    expect(
+      screen.getByRole("link", { name: new RegExp(target.title, "u") }),
+    ).toHaveAttribute("aria-current", "location");
+  });
+
+  it("preserves a missing target without substituting the first record", async () => {
+    const existing = buildRecord(
+      {
+        ...draftFromRecord(),
+        title: "Unrelated local record",
+        observation: "Must not be opened as a fallback.",
+      },
+      null,
+      now,
+      () => "unrelated-record",
+    );
+    await repository.saveRecord(existing);
+
+    const before = await repository.listRecords();
+    const { container } = renderCodex("missing-record");
+    expect(
+      await screen.findByText("This record is unavailable on this device."),
+    ).toBeVisible();
+    expect(container.querySelector(".codex-detail")).toBeNull();
+    expect(screen.getByText("Unrelated local record")).toBeVisible();
+    expect(await repository.listRecords()).toEqual(before);
+  });
+
+  it("keeps a deleted deep-link target on its exact unavailable hold", async () => {
+    const target = buildRecord(
+      {
+        ...draftFromRecord(),
+        title: "Delete exact target",
+        observation: "The route must remain exact after deletion.",
+      },
+      null,
+      now,
+      () => "delete-exact-target",
+    );
+    await repository.saveRecord(target);
+    window.location.hash = "#/codex/record/delete-exact-target";
+
+    const user = userEvent.setup();
+    renderCodex(target.id);
+    await screen.findByRole("heading", { name: target.title });
+    await user.click(
+      screen.getByRole("button", { name: "Open deletion controls" }),
+    );
+    await user.click(
+      screen.getByRole("checkbox", { name: /Linked Codex record/u }),
+    );
+    await user.type(screen.getByLabelText(/Type DELETE to confirm/u), "DELETE");
+    await user.click(
+      screen.getByRole("button", { name: "Delete selected layers" }),
+    );
+
+    expect(
+      await screen.findByText("This record is unavailable on this device."),
+    ).toBeVisible();
+    expect(window.location.hash).toBe("#/codex/record/delete-exact-target");
+    expect(await repository.getRecord(target.id)).toBeUndefined();
+  });
+
+  it("uses canonical backlinks and resets transient drafts when the target changes", async () => {
+    const recordB = buildRecord(
+      {
+        ...draftFromRecord(),
+        title: "Record B",
+        observation: "Second exact record.",
+      },
+      null,
+      now,
+      () => "record-b",
+    );
+    const recordA = {
+      ...buildRecord(
+        {
+          ...draftFromRecord(),
+          title: "Record A",
+          observation: "First exact record.",
+        },
+        null,
+        now,
+        () => "record-a",
+      ),
+      backlinks: [{ recordId: recordB.id, relationship: "supports" }],
+    };
+    await repository.saveRecord(recordB);
+    await repository.saveRecord(recordA);
+
+    const user = userEvent.setup();
+    const view = renderCodex(recordA.id);
+    await screen.findByRole("heading", { name: "Record A" });
+    expect(screen.getByRole("link", { name: recordB.id })).toHaveAttribute(
+      "href",
+      "#/codex/record/record-b",
+    );
+    await user.click(screen.getByRole("button", { name: "Edit record" }));
+    expect(screen.getByRole("heading", { name: "Edit record" })).toBeVisible();
+
+    view.rerender(
+      <QctpContext.Provider value={runtime}>
+        <CodexScreen targetRecordId={recordB.id} />
+      </QctpContext.Provider>,
+    );
+    await screen.findByRole("heading", { name: "Record B" });
+    await waitFor(() =>
+      expect(view.container.querySelector(".codex-detail")).toHaveFocus(),
+    );
+    expect(screen.queryByRole("heading", { name: "Edit record" })).toBeNull();
+  });
+
   it("creates a manual record with separate evidence and interpretation", async () => {
     const user = userEvent.setup();
     renderCodex();

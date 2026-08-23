@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   acceptVoiceCapture,
@@ -41,7 +41,13 @@ import { CodexScreen } from "./screens/CodexScreen";
 import { MirrorScreen } from "./screens/MirrorScreen";
 import { SettingsScreen } from "./screens/SettingsScreen";
 import { useQctp } from "./qctp-context";
-import { routeFromHash, type AppRoute } from "./routes";
+import {
+  hashForAppLocation,
+  isLegacyMirrorSourceHash,
+  parseAppLocation,
+  type AppLocation,
+  type AppRoute,
+} from "./routes";
 import { PostSessionDebrief } from "./components/PostSessionDebrief";
 import {
   markPwaCriticalActivityActive,
@@ -50,9 +56,10 @@ import {
 
 export function App() {
   const runtime = useQctp();
-  const [route, setRoute] = useState<AppRoute>(() =>
-    routeFromHash(window.location.hash),
+  const [location, setLocation] = useState<AppLocation>(() =>
+    parseAppLocation(window.location.hash),
   );
+  const initialHashSynchronized = useRef(false);
   const [quickCaptureOpen, setQuickCaptureOpen] = useState(false);
   const [unresolvedDebriefSession, setUnresolvedDebriefSession] =
     useState<PracticeSession | null>(null);
@@ -62,7 +69,31 @@ export function App() {
   );
 
   useEffect(() => {
-    const handleHash = () => setRoute(routeFromHash(window.location.hash));
+    const handleHash = () => {
+      const requestedHash = window.location.hash;
+      const nextLocation = parseAppLocation(requestedHash);
+      if (
+        nextLocation.invalidLink !== null ||
+        isLegacyMirrorSourceHash(requestedHash) ||
+        (nextLocation.kind !== "base" &&
+          requestedHash !== hashForAppLocation(nextLocation))
+      ) {
+        const canonicalHash = hashForAppLocation(nextLocation);
+        window.history.replaceState(
+          window.history.state,
+          "",
+          `${window.location.pathname}${window.location.search}${canonicalHash}`,
+        );
+      }
+      setLocation(nextLocation);
+      window.scrollTo({ top: 0, behavior: "instant" });
+    };
+    // React Strict Mode replays effects. Keep a rejected link's alert visible
+    // after its URL is safely replaced instead of reparsing the fallback URL.
+    if (!initialHashSynchronized.current) {
+      initialHashSynchronized.current = true;
+      handleHash();
+    }
     window.addEventListener("hashchange", handleHash);
     return () => window.removeEventListener("hashchange", handleHash);
   }, []);
@@ -85,9 +116,16 @@ export function App() {
   }, [runtime.repository, runtime.revision]);
 
   const navigate = useCallback((next: AppRoute) => {
-    window.location.hash = `/${next}`;
-    setRoute(next);
-    window.scrollTo({ top: 0, behavior: "instant" });
+    const nextHash = hashForAppLocation({
+      kind: "base",
+      route: next,
+      invalidLink: null,
+    });
+    if (window.location.hash === nextHash) {
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+      return;
+    }
+    window.location.hash = nextHash;
   }, []);
 
   const saveVoiceFreeCompletion = useCallback(
@@ -262,7 +300,7 @@ export function App() {
   }, [practiceActive]);
 
   const screen = (() => {
-    switch (route) {
+    switch (location.route) {
       case "today":
         return (
           <TodayOverview
@@ -313,9 +351,21 @@ export function App() {
       case "lab":
         return <LabScreen />;
       case "codex":
-        return <CodexScreen />;
+        return (
+          <CodexScreen
+            targetRecordId={
+              location.kind === "codex-record" ? location.recordId : null
+            }
+          />
+        );
       case "mirror":
-        return <MirrorScreen />;
+        return (
+          <MirrorScreen
+            focusedSourceRecordId={
+              location.kind === "mirror-source" ? location.recordId : null
+            }
+          />
+        );
       case "settings":
         return <SettingsScreen />;
     }
@@ -323,12 +373,18 @@ export function App() {
 
   return (
     <Shell
-      route={route}
+      route={location.route}
       foundationDay={runtime.foundation.currentDay}
       onNavigate={navigate}
       onQuickCapture={() => setQuickCaptureOpen(true)}
       practiceActive={practiceActive}
     >
+      {location.invalidLink ? (
+        <p className="platform-message warning" role="alert">
+          That record link is invalid. QCTP opened the nearest safe page and did
+          not change any local records.
+        </p>
+      ) : null}
       {screen}
       {quickCaptureOpen ? (
         <div className="modal-backdrop" role="presentation">

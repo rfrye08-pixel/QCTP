@@ -1,0 +1,118 @@
+{
+  "schema": "qctp-rev3-source-linked-workflow-verification-v1",
+  "document_id": "QCTP-REV3-SOURCE-LINKED-WORKFLOW-VERIFICATION-REV0",
+  "evidence_id": "QCTP-REV3-SOURCE-LINKED-WORKFLOW-001",
+  "created_at": "2026-08-23T05:02:47-05:00",
+  "updated_at": "2026-08-23T05:02:47-05:00",
+  "branch": "qctp-platform-rev3-codex",
+  "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_TRACE_AND_VOICEOVER_GATE_OPEN_ZERO_RELEASE",
+  "release_authority": "ZERO_RELEASE",
+  "protected_refs": {
+    "main": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
+    "qctp_platform_rev2_codex": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
+    "pr_2_mutated": false
+  },
+  "checkpoint": {
+    "starting_commit": "bdeb27909da404e917ccaa6c00ef9ecc9f11dc4b",
+    "local_implementation_commit": "0721b68f4563445c7be4428b3ec69614fef83100",
+    "local_implementation_commits": [
+      "e4d98c475eed45db273f3e2b23d92d883ad7a607",
+      "0721b68f4563445c7be4428b3ec69614fef83100"
+    ],
+    "implementation_tree": "dcaca97cac4257b21699370612058f6e18dcc31e",
+    "origin_rev3_before_publication": "f19a13ba8271fc78ee7a61e640d6a793df907b49",
+    "origin_rev3_before_publication_tree": "32d656a2f0f17b36612076913c63c8571288c78d",
+    "local_metadata_commit": "PENDING",
+    "remote_checkpoint": "PENDING",
+    "remote_tree": "PENDING",
+    "publication_status": "PENDING_CONTROLLED_REV3_ONLY"
+  },
+  "recovery": {
+    "backup_branch": "backup/rev3-f034-preedit-20260823-044900",
+    "backup_commit": "bdeb27909da404e917ccaa6c00ef9ecc9f11dc4b",
+    "recoverable_bundle": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\backups\\rev3-f034-preedit-20260823-044900.bundle",
+    "bundle_verification": "PASS_COMPLETE_HISTORY"
+  },
+  "canonical_contract": {
+    "mirror_source_route": "#/mirror/source/<encoded exact EntityId>",
+    "codex_record_route": "#/codex/record/<encoded exact EntityId>",
+    "encoding": "REVERSIBLE_UTF16_WITH_STANDARD_URI_ENCODING_AND_PERCENT_U_FALLBACK_FOR_SCHEMA_VALID_UNPAIRED_CODE_UNITS",
+    "decoding": "EXACTLY_ONE_PASS_NO_TRIM",
+    "invalid_or_extra_path": "VISIBLE_ACCESSIBLE_HOLD_NO_RECORD_SUBSTITUTION",
+    "missing_or_deleted_target": "EXACT_URL_AND_EXPLICIT_UNAVAILABLE_HOLD_PRESERVED",
+    "filter_behavior": "EXACT_LINKED_TARGET_VISIBLE_WITHOUT_CLEARING_USER_FILTERS",
+    "legacy_route": "HASH_REPLACED_WITH_CANONICAL_MIRROR_SOURCE_ROUTE",
+    "database_migration_required": false
+  },
+  "delivered": [
+    "Typed AppLocation routing makes exact record identity part of the canonical Mirror and Codex URLs.",
+    "Mirror citations open and focus the exact cited source and provide an exact full-record handoff to Codex.",
+    "Codex opens the exact linked record even outside the current filter and preserves the user's filter state.",
+    "Missing, deleted, malformed, and extra-segment targets fail visibly without selecting the first available record.",
+    "Deleting the currently linked Codex record preserves the exact URL and exposes an unavailable hold.",
+    "Valid but noncanonical deep links and legacy Mirror source hashes normalize through replaceState without duplicate history entries.",
+    "Hash changes are the single navigation truth, including browser back and forward behavior.",
+    "Exact target changes reset only record-specific drafts; global search and filter state remain intact.",
+    "Raw request, result, deleted-record, and revision source IDs use exact trace links.",
+    "Focus management, aria-current state, visible focus styling, and 44-pixel mobile touch targets support keyboard and mobile navigation.",
+    "A StrictMode-safe initial hash guard keeps invalid-link recovery visible instead of losing it during effect replay."
+  ],
+  "verification": {
+    "repository_gate": {
+      "command": "npm run check",
+      "result": "PASS",
+      "test_files": 77,
+      "tests": 477,
+      "coverage_percent": {
+        "statements": 87.97,
+        "branches": 80.21,
+        "functions": 93.28,
+        "lines": 89.37
+      },
+      "preview_server_tests": "8_OF_8_PASS",
+      "audio_pack": "23_MP3_13340411_BYTES_VERIFIED",
+      "production_build": "PASS",
+      "build_warning": "EXISTING_MAIN_CHUNK_OVER_500_KB_WARNING_NON_BLOCKING"
+    },
+    "focused_gate": "24_OF_24_ROUTE_MIRROR_AND_CODEX_TESTS_PASS",
+    "browser_gate": {
+      "command": "npm run test:e2e",
+      "result": "38_PASS_16_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS",
+      "profiles": ["Chromium desktop", "iPhone portrait"],
+      "deep_link_gate": "2_OF_2_CHROMIUM_AND_IPHONE_PORTRAIT_PASS",
+      "expected_optional_companion_note": "127.0.0.1:8787 policy proxy refusals occurred because the optional PX13 companion was deliberately absent; Free Local Mode and all applicable acceptance tests passed."
+    },
+    "diff_check": "PASS",
+    "independent_judgement": "PASS_AFTER_TWO_MEDIUM_FINDINGS_RESOLVED_NO_REMAINING_HIGH_OR_MEDIUM_FINDINGS"
+  },
+  "migration_status": {
+    "database_version": 5,
+    "export_schema_version": 3,
+    "strategy": "ROUTING_AND_VIEW_STATE_ONLY_NO_DATABASE_OR_EXPORT_SCHEMA_CHANGE",
+    "raw_database_rewrite": false,
+    "actual_origin_archive_gate": "OPEN"
+  },
+  "physical_acceptance": {
+    "status": "OPEN",
+    "gates": [
+      "On the physical iPhone, create one source record and follow one exact Mirror citation through the full Codex record and browser back path.",
+      "Confirm VoiceOver announces the exact selected source, unavailable hold, current navigation state, and outside-filter marker clearly.",
+      "Confirm one-handed touch targets and scroll-to-focus behavior in the installed PWA."
+    ],
+    "machine_or_emulator_results_do_not_substitute": true
+  },
+  "deployment": {
+    "staged": false,
+    "deployed": false,
+    "live_private_candidate": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "draft_pr": "https://github.com/rfrye08-pixel/QCTP/pull/4"
+  },
+  "holds": [
+    "This checkpoint is not installed on the private iPhone preview.",
+    "Physical iPhone exact-source trace, one-handed focus, and VoiceOver acceptance remain open.",
+    "Actual-origin archive import and comparison remain open.",
+    "Blind physical natural-voice selection remains open; no full narration was rendered.",
+    "No merge, staging, or deployment is authorized."
+  ],
+  "next_controlled_action": "Continue the next non-user-dependent global voice-capture hardening package while physical voice and iPhone gates remain open."
+}

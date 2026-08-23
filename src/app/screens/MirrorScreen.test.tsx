@@ -134,10 +134,10 @@ async function seedDeletedItems(): Promise<void> {
   await repository.deleteMirrorInsightFeedback(feedback.id, deletedAt);
 }
 
-function renderMirror(): void {
-  render(
+function renderMirror(focusedSourceRecordId: string | null = null) {
+  return render(
     <QctpContext.Provider value={runtime}>
-      <MirrorScreen />
+      <MirrorScreen focusedSourceRecordId={focusedSourceRecordId} />
     </QctpContext.Provider>,
   );
 }
@@ -238,6 +238,38 @@ afterEach(async () => {
 });
 
 describe("Mirror deleted-items management", () => {
+  it("opens and focuses the exact routed source with canonical trace links", async () => {
+    const { container } = renderMirror("source-1");
+    const detail = await waitFor(() => {
+      const candidate = container.querySelector("#mirror-source-source-1");
+      expect(candidate).toBeInstanceOf(HTMLDetailsElement);
+      expect(candidate).toHaveAttribute("open");
+      return candidate as HTMLDetailsElement;
+    });
+    const summary = detail.querySelector("summary");
+    expect(summary).toHaveAttribute("aria-current", "location");
+    expect(summary).toHaveFocus();
+    expect(
+      screen.getByRole("link", { name: "Open full record in Codex" }),
+    ).toHaveAttribute("href", "#/codex/record/source-1");
+    const sourceLinks = screen.getAllByRole("link", { name: "source-1" });
+    expect(
+      sourceLinks.some(
+        (link) => link.getAttribute("href") === "#/mirror/source/source-1",
+      ),
+    ).toBe(true);
+  });
+
+  it("keeps a missing routed source as a non-mutating hold", async () => {
+    const before = await repository.listRecords();
+    const { container } = renderMirror("missing-record");
+    expect(
+      await screen.findByText("This record is unavailable on this device."),
+    ).toBeVisible();
+    expect(container.querySelector("[aria-current='location']")).toBeNull();
+    expect(await repository.listRecords()).toEqual(before);
+  });
+
   it("shows preserved layers and restores each deleted artifact type", async () => {
     const user = userEvent.setup();
     renderMirror();

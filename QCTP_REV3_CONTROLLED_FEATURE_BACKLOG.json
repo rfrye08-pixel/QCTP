@@ -2,7 +2,7 @@
   "schema": "qctp-rev3-controlled-feature-backlog-v1",
   "branch": "qctp-platform-rev3-codex",
   "created_at": "2026-08-22T20:42:00-05:00",
-  "updated_at": "2026-08-23T04:27:30-05:00",
+  "updated_at": "2026-08-23T05:02:47-05:00",
   "status": "ACTIVE_ZERO_RELEASE",
   "authority_snapshot": {
     "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -153,6 +153,20 @@
       "delivered": "Deep-frozen source registry; canonical parent-bound references; fail-closed source route actions; bounded Campbell, Grant, State, QR, psionics, and Day 1 scope; lossless held State source evidence; least-fixed-point active capability projection; strict prerequisite chronology; semantic replay; and transactionally serialized session, capability, and merge-import final unions",
       "verification": "npm run check PASS with 76 files and 458 tests, coverage, preview server 8 of 8, 23-file audio pack, and production build; full Playwright matrix PASS with 36 passes and 16 intentional project/platform skips; fresh State source integrity judgement PASS with no high or medium findings",
       "evidence": "QCTP_REV3_SOURCE_TRACK_REGISTRY_VERIFICATION_REV0_2026-08-23.json",
+      "release_authority": "ZERO_RELEASE"
+    },
+    {
+      "checkpoint_id": "QCTP-REV3-SOURCE-LINKED-WORKFLOW-001",
+      "local_implementation_commit": "0721b68f4563445c7be4428b3ec69614fef83100",
+      "local_implementation_commits": [
+        "e4d98c475eed45db273f3e2b23d92d883ad7a607",
+        "0721b68f4563445c7be4428b3ec69614fef83100"
+      ],
+      "implementation_tree": "dcaca97cac4257b21699370612058f6e18dcc31e",
+      "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
+      "delivered": "Canonical exact-ID Mirror and Codex deep links, safe one-pass routing, legacy normalization, exact citation and backlink tracing, filter-preserving record selection, visible missing/deleted holds, history and focus behavior, and mobile-accessible trace controls",
+      "verification": "npm run check PASS with 77 files and 477 tests, coverage, preview server 8 of 8, 23-file audio pack, and production build; full Playwright matrix PASS with 38 passes and 16 intentional project/platform skips; exact deep-link gate PASS in Chromium and iPhone portrait; fresh judgement PASS with no high or medium findings",
+      "evidence": "QCTP_REV3_SOURCE_LINKED_WORKFLOW_VERIFICATION_REV0_2026-08-23.json",
       "release_authority": "ZERO_RELEASE"
     }
   ],
@@ -1464,14 +1478,21 @@
       "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
       "evidence_produced": [
         "src/app/screens/StudioScreen.tsx",
+        "src/app/App.tsx",
+        "src/app/routes.ts",
+        "src/app/routes.test.ts",
         "src/codex/",
         "src/insights/",
         "src/app/screens/MirrorScreen.tsx",
-        "repository and E2E tests"
+        "src/app/screens/MirrorScreen.test.tsx",
+        "src/codex/CodexScreen.test.tsx",
+        "tests/e2e/record-deep-links.spec.ts",
+        "QCTP_REV3_SOURCE_LINKED_WORKFLOW_VERIFICATION_REV0_2026-08-23.json",
+        "implementation commits e4d98c475eed45db273f3e2b23d92d883ad7a607 and 0721b68f4563445c7be4428b3ec69614fef83100"
       ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Add missing controlled views and simplify source-linked backlink navigation on mobile."
+        "next_executable_step": "Machine and browser exact-source navigation is delivered; run the physical iPhone record-to-Mirror-to-Codex trace and VoiceOver gate when an installation is explicitly authorized, and continue remaining controlled Studio and Insights views as separate vertical slices."
       }
     },
     {
