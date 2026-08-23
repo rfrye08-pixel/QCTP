@@ -3,7 +3,7 @@
   "document_id": "QCTP-REV3-SOURCE-LINKED-WORKFLOW-VERIFICATION-REV0",
   "evidence_id": "QCTP-REV3-SOURCE-LINKED-WORKFLOW-001",
   "created_at": "2026-08-23T05:02:47-05:00",
-  "updated_at": "2026-08-23T05:02:47-05:00",
+  "updated_at": "2026-08-23T05:10:00-05:00",
   "branch": "qctp-platform-rev3-codex",
   "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_TRACE_AND_VOICEOVER_GATE_OPEN_ZERO_RELEASE",
   "release_authority": "ZERO_RELEASE",
@@ -22,10 +22,10 @@
     "implementation_tree": "dcaca97cac4257b21699370612058f6e18dcc31e",
     "origin_rev3_before_publication": "f19a13ba8271fc78ee7a61e640d6a793df907b49",
     "origin_rev3_before_publication_tree": "32d656a2f0f17b36612076913c63c8571288c78d",
-    "local_metadata_commit": "PENDING",
-    "remote_checkpoint": "PENDING",
-    "remote_tree": "PENDING",
-    "publication_status": "PENDING_CONTROLLED_REV3_ONLY"
+    "local_metadata_commit": "43fb3fcb4760086bcd1f08f6df3d531513426c6c",
+    "remote_checkpoint": "db26273e024ddac3dc9a10c0591522de3c61153d",
+    "remote_tree": "3217db97581d14d15da2f6ca86b4ff492ab1ba6b",
+    "publication_status": "PASS_EXACT_TREE_CONTROLLED_REV3_ONLY"
   },
   "recovery": {
     "backup_branch": "backup/rev3-f034-preedit-20260823-044900",

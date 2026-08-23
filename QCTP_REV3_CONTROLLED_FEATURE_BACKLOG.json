@@ -2,7 +2,7 @@
   "schema": "qctp-rev3-controlled-feature-backlog-v1",
   "branch": "qctp-platform-rev3-codex",
   "created_at": "2026-08-22T20:42:00-05:00",
-  "updated_at": "2026-08-23T05:02:47-05:00",
+  "updated_at": "2026-08-23T05:10:00-05:00",
   "status": "ACTIVE_ZERO_RELEASE",
   "authority_snapshot": {
     "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -163,6 +163,9 @@
         "0721b68f4563445c7be4428b3ec69614fef83100"
       ],
       "implementation_tree": "dcaca97cac4257b21699370612058f6e18dcc31e",
+      "local_metadata_commit": "43fb3fcb4760086bcd1f08f6df3d531513426c6c",
+      "remote_commit": "db26273e024ddac3dc9a10c0591522de3c61153d",
+      "remote_tree": "3217db97581d14d15da2f6ca86b4ff492ab1ba6b",
       "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
       "delivered": "Canonical exact-ID Mirror and Codex deep links, safe one-pass routing, legacy normalization, exact citation and backlink tracing, filter-preserving record selection, visible missing/deleted holds, history and focus behavior, and mobile-accessible trace controls",
       "verification": "npm run check PASS with 77 files and 477 tests, coverage, preview server 8 of 8, 23-file audio pack, and production build; full Playwright matrix PASS with 38 passes and 16 intentional project/platform skips; exact deep-link gate PASS in Chromium and iPhone portrait; fresh judgement PASS with no high or medium findings",

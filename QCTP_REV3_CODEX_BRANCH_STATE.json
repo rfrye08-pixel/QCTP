@@ -1,7 +1,7 @@
 {
   "schema": "qctp-rev3-codex-branch-state-v3",
   "branch": "qctp-platform-rev3-codex",
-  "updated_at": "2026-08-23T05:02:47-05:00",
+  "updated_at": "2026-08-23T05:10:00-05:00",
   "status": "CONTROLLED_REV3_SOURCE_LINKED_WORKFLOW_MACHINE_BROWSER_PASS_PHYSICAL_IPHONE_TRACE_AND_VOICEOVER_GATE_OPEN_ZERO_RELEASE",
   "release_authority": "ZERO_RELEASE",
   "actual_shas": {
@@ -42,6 +42,9 @@
     "origin_rev3_at_state_write": "de973ae6ad56b2394e7aa3c15c22bdfc04894c40",
     "source_linked_workflow_local_implementation_checkpoint": "0721b68f4563445c7be4428b3ec69614fef83100",
     "source_linked_workflow_implementation_tree": "dcaca97cac4257b21699370612058f6e18dcc31e",
+    "source_linked_workflow_metadata_checkpoint": "43fb3fcb4760086bcd1f08f6df3d531513426c6c",
+    "source_linked_workflow_remote_checkpoint": "db26273e024ddac3dc9a10c0591522de3c61153d",
+    "source_linked_workflow_remote_tree": "3217db97581d14d15da2f6ca86b4ff492ab1ba6b",
     "origin_rev3_before_source_linked_workflow_publication": "f19a13ba8271fc78ee7a61e640d6a793df907b49"
   },
   "starting_baseline": {
@@ -207,10 +210,10 @@
       "0721b68f4563445c7be4428b3ec69614fef83100"
     ],
     "implementation_tree": "dcaca97cac4257b21699370612058f6e18dcc31e",
-    "metadata_commit": "PENDING",
-    "remote_commit": "PENDING",
-    "remote_tree": "PENDING",
-    "origin_publication": "PENDING_CONTROLLED_REV3_ONLY",
+    "metadata_commit": "43fb3fcb4760086bcd1f08f6df3d531513426c6c",
+    "remote_commit": "db26273e024ddac3dc9a10c0591522de3c61153d",
+    "remote_tree": "3217db97581d14d15da2f6ca86b4ff492ab1ba6b",
+    "origin_publication": "PASS_EXACT_TREE_REV3_ONLY",
     "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_TRACE_AND_VOICEOVER_GATE_OPEN_ZERO_RELEASE",
     "local_history_backup_branch": "backup/rev3-f034-preedit-20260823-044900",
     "local_history_backup_commit": "bdeb27909da404e917ccaa6c00ef9ecc9f11dc4b",
@@ -359,9 +362,10 @@
       "dedicated_deep_link_gate": "2_OF_2_CHROMIUM_AND_IPHONE_PORTRAIT_PASS",
       "focused_route_mirror_codex_gate": "24_OF_24_PASS",
       "independent_judgement": "PASS_NO_HIGH_OR_MEDIUM_FINDINGS_AFTER_EDGE_FIXES",
-      "remote_commit": "PENDING",
-      "remote_tree": "PENDING",
-      "publication_status": "PENDING_CONTROLLED_REV3_ONLY",
+      "local_metadata_commit": "43fb3fcb4760086bcd1f08f6df3d531513426c6c",
+      "remote_commit": "db26273e024ddac3dc9a10c0591522de3c61153d",
+      "remote_tree": "3217db97581d14d15da2f6ca86b4ff492ab1ba6b",
+      "publication_status": "PASS_EXACT_TREE_REV3_ONLY",
       "deployment_status": "NOT_STAGED_NOT_DEPLOYED_LIVE_PREVIEW_REMAINS_5A884AE9"
     },
     "voice_free_machine": {
