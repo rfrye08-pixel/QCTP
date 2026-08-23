@@ -23,9 +23,9 @@
     "debrief_recovery_implementation_checkpoint": "84042dd0d95a8d4f028138bdd2d284c97417deeb",
     "debrief_recovery_local_implementation_checkpoint": "36849d82f1dd79fc17296bee2d0b34edb4a06b9c",
     "debrief_recovery_implementation_tree": "e1cced628e665e645319a334f2d69b252c7c7333",
-    "debrief_recovery_metadata_checkpoint": "PENDING_PUBLICATION_STATE",
-    "state_checkpoint": "PENDING_PUBLICATION_STATE",
-    "origin_rev3_at_state_write": "84042dd0d95a8d4f028138bdd2d284c97417deeb"
+    "debrief_recovery_metadata_checkpoint": "2a7e9187d808abc18eac06d80f63696c2fab49fb",
+    "state_checkpoint": "2a7e9187d808abc18eac06d80f63696c2fab49fb",
+    "origin_rev3_at_state_write": "2a7e9187d808abc18eac06d80f63696c2fab49fb"
   },
   "starting_baseline": {
     "required_rev2_commit": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
@@ -87,11 +87,13 @@
   },
   "debrief_recovery_publish": {
     "local_implementation_commit": "36849d82f1dd79fc17296bee2d0b34edb4a06b9c",
+    "local_metadata_commit": "59a94cf94fc1baaed28c2d8e87d44d7618ed4346",
     "remote_implementation_commit": "84042dd0d95a8d4f028138bdd2d284c97417deeb",
+    "remote_metadata_commit": "2a7e9187d808abc18eac06d80f63696c2fab49fb",
     "remote_parent": "ca0cf36b5cab8c59d24eb3bdda8a723751e0d399",
     "implementation_tree": "e1cced628e665e645319a334f2d69b252c7c7333",
+    "metadata_tree": "a10b57683df63bd546ed3c6671e19a6fe9399505",
     "tree_identity_verification": "PASS_EXACT",
-    "metadata_commit": "PENDING_PUBLICATION_STATE",
     "protected_refs_mutated": false
   },
   "preserved_preflight_state": {
@@ -168,7 +170,7 @@
       "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN",
       "repository_gate": "64_TEST_FILES_378_TESTS_PASS_COVERAGE_BUILD_AUDIO_PACK_PREVIEW_SERVER",
       "browser_gate": "30_PASS_8_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS_INCLUDING_FORCED_BUNDLE_FAILURE_CHROMIUM_AND_IPHONE_PORTRAIT",
-      "publication_status": "IMPLEMENTATION_PASS_EXACT_TREE_METADATA_PENDING"
+      "publication_status": "PASS_EXACT_TREE_REV3_ONLY"
     },
     "voice_free_machine": {
       "path": "QCTP_REV3_VOICE_FREE_DAY1_MACHINE_VERIFICATION_REV0_2026-08-22.json",

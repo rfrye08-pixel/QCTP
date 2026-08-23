@@ -7,7 +7,7 @@
   "implementation_commit": "84042dd0d95a8d4f028138bdd2d284c97417deeb",
   "local_implementation_commit": "36849d82f1dd79fc17296bee2d0b34edb4a06b9c",
   "implementation_tree": "e1cced628e665e645319a334f2d69b252c7c7333",
-  "metadata_commit": "PENDING_PUBLICATION_STATE",
+  "metadata_commit": "2a7e9187d808abc18eac06d80f63696c2fab49fb",
   "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
   "release_authority": "ZERO_RELEASE",
   "delivered": {

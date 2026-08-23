@@ -84,6 +84,7 @@
       "checkpoint_id": "QCTP-REV3-DEBRIEF-RECOVERY-001",
       "commit": "84042dd0d95a8d4f028138bdd2d284c97417deeb",
       "local_commit": "36849d82f1dd79fc17296bee2d0b34edb4a06b9c",
+      "metadata_commit": "2a7e9187d808abc18eac06d80f63696c2fab49fb",
       "tree": "e1cced628e665e645319a334f2d69b252c7c7333",
       "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN",
       "delivered": "Voice-Free post-session raw-observation debrief with typed or offline voice capture, atomic evidence linkage, durable defer/skip states, export validation, non-white startup recovery, and resilient ranged preview media serving",
