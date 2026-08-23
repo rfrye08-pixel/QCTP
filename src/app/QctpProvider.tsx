@@ -28,6 +28,7 @@ import {
   type AppSettings,
   type FoundationState,
   type MirrorRequest,
+  type ReminderPreferences,
   type WorkbookState,
 } from "../domain";
 import {
@@ -50,6 +51,14 @@ import {
 } from "../mirror";
 import { recoverInterruptedCaptures } from "../voice-capture/repository-persistence";
 import type { StateCapabilityRecord, StateSessionRecord } from "../state-atlas";
+import {
+  deriveControlledSchedule,
+  retainRecentReminderReceipts,
+} from "../schedule";
+import {
+  SCHEDULE_NOTIFICATION_COPY,
+  showBestEffortLocalNotification,
+} from "../notifications";
 
 import {
   QctpContext,
@@ -142,35 +151,11 @@ async function readMirrorJobs(
 async function showMirrorCompletionNotification(
   completedCount: number,
 ): Promise<void> {
-  if (
-    typeof Notification === "undefined" ||
-    Notification.permission !== "granted"
-  )
-    return;
-  const options: NotificationOptions = {
-    body: `${String(completedCount)} local PX13 result${completedCount === 1 ? "" : "s"} synchronized.`,
-    tag: "qctp-mirror-complete",
-  };
-  if ("serviceWorker" in navigator) {
-    try {
-      const registration = await navigator.serviceWorker.getRegistration();
-      if (registration) {
-        await registration.showNotification(
-          "QCTP Local AI Mirror result ready",
-          options,
-        );
-        return;
-      }
-    } catch {
-      // A synchronized result must never be downgraded when notification
-      // delivery is unavailable. The durable Mirror ledger is the fallback.
-    }
-  }
-  try {
-    new Notification("QCTP Local AI Mirror result ready", options);
-  } catch {
-    // Later retrieval from IndexedDB remains available.
-  }
+  await showBestEffortLocalNotification(
+    "QCTP Local AI Mirror result ready",
+    `${String(completedCount)} local PX13 result${completedCount === 1 ? "" : "s"} synchronized.`,
+    "qctp-mirror-complete",
+  );
 }
 
 export function QctpProvider({ children }: { children: ReactNode }) {
@@ -199,6 +184,7 @@ export function QctpProvider({ children }: { children: ReactNode }) {
   const mirrorRunRef = useRef<Promise<void> | null>(null);
   const mirrorConsecutiveFailuresRef = useRef(0);
   const sessionRestoreAttemptedRef = useRef(false);
+  const providerActiveRef = useRef(true);
   const [notificationPermission, setNotificationPermission] = useState<
     NotificationPermission | "unsupported"
   >(() =>
@@ -206,6 +192,13 @@ export function QctpProvider({ children }: { children: ReactNode }) {
       ? "unsupported"
       : Notification.permission,
   );
+
+  useEffect(() => {
+    providerActiveRef.current = true;
+    return () => {
+      providerActiveRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     let disposed = false;
@@ -363,6 +356,18 @@ export function QctpProvider({ children }: { children: ReactNode }) {
       await refresh();
     },
     [ready, refresh],
+  );
+
+  const updateReminderPreferences = useCallback(
+    async (changes: Partial<ReminderPreferences>) => {
+      if (!ready) return;
+      const settings = await ready.repository.updateReminderPreferences(
+        (current) => ({ ...current, ...changes }),
+      );
+      setReady((current) => (current ? { ...current, settings } : current));
+      setRevision((value) => value + 1);
+    },
+    [ready],
   );
 
   const updateWorkbookAnswer = useCallback(
@@ -596,8 +601,13 @@ export function QctpProvider({ children }: { children: ReactNode }) {
   );
 
   const refreshMirror = useCallback(async () => {
-    if (!ready) return;
-    setMirrorJobs(await readMirrorJobs(ready.repository));
+    if (!ready || !providerActiveRef.current) return;
+    try {
+      const jobs = await readMirrorJobs(ready.repository);
+      if (providerActiveRef.current) setMirrorJobs(jobs);
+    } catch (error) {
+      if (providerActiveRef.current) throw error;
+    }
   }, [ready]);
 
   const connectMirror = useCallback(() => {
@@ -827,6 +837,165 @@ export function QctpProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    const synchronizePermission = () => {
+      setNotificationPermission(
+        typeof Notification === "undefined"
+          ? "unsupported"
+          : Notification.permission,
+      );
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") synchronizePermission();
+    };
+    window.addEventListener("pageshow", synchronizePermission);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("pageshow", synchronizePermission);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!ready) return;
+    let disposed = false;
+    let running = false;
+    const checkSchedule = async () => {
+      if (running || disposed) return;
+      running = true;
+      try {
+        const [foundation, settings] = await Promise.all([
+          ready.repository.getFoundationState(),
+          ready.repository.getSettings(),
+        ]);
+        if (!foundation || !settings) return;
+        const snapshot = deriveControlledSchedule({
+          now: new Date(),
+          foundationDay: foundation.currentDay,
+          completion: foundation.completion["1"] ?? {
+            morning: false,
+            midday: false,
+            evening: false,
+          },
+          reminders: settings.reminderPreferences,
+        });
+        const observedAt = new Date().toISOString();
+        let nextReminders = {
+          ...settings.reminderPreferences,
+          highestObservedProgramDate: snapshot.programDate,
+        };
+        for (const assignment of snapshot.assignments) {
+          const scheduledLocalTime = assignment.scheduledLocalTime;
+          if (
+            assignment.status !== "ready" ||
+            !assignment.reminderKey ||
+            !scheduledLocalTime
+          )
+            continue;
+          const existing = nextReminders.receipts.find(
+            (receipt) => receipt.id === assignment.reminderKey,
+          );
+          if (existing) continue;
+          nextReminders = {
+            ...nextReminders,
+            receipts: retainRecentReminderReceipts(nextReminders.receipts, {
+              id: assignment.reminderKey,
+              assignmentId: assignment.id,
+              programDate: snapshot.programDate,
+              scheduledLocalTime,
+              firstSeenAt: observedAt,
+              notificationAttemptedAt: null,
+              outcome:
+                notificationPermission === "denied" ||
+                notificationPermission === "unsupported"
+                  ? "IN_APP_FALLBACK"
+                  : "DUE_VISIBLE",
+            }),
+          };
+        }
+        const candidate = snapshot.notificationCandidates[0];
+        let notificationAt = settings.reminderPreferences.lastNotificationAt;
+        if (
+          candidate?.reminderKey &&
+          notificationPermission === "granted" &&
+          settings.reminderPreferences.deviceNotificationsEnabled
+        ) {
+          const delivered = await showBestEffortLocalNotification(
+            SCHEDULE_NOTIFICATION_COPY.title,
+            SCHEDULE_NOTIFICATION_COPY.body,
+            `qctp-schedule-${candidate.id}`,
+          );
+          if (disposed) return;
+          notificationAt = delivered
+            ? new Date().toISOString()
+            : notificationAt;
+          const receipt = nextReminders.receipts.find(
+            (item) => item.id === candidate.reminderKey,
+          );
+          if (receipt) {
+            nextReminders = {
+              ...nextReminders,
+              receipts: retainRecentReminderReceipts(nextReminders.receipts, {
+                ...receipt,
+                notificationAttemptedAt: observedAt,
+                outcome: delivered ? "DEVICE_NOTIFIED" : "IN_APP_FALLBACK",
+              }),
+            };
+          }
+        }
+        nextReminders = {
+          ...nextReminders,
+          lastNotificationAt: notificationAt,
+        };
+        if (
+          JSON.stringify(nextReminders) ===
+          JSON.stringify(settings.reminderPreferences)
+        )
+          return;
+        const next = await ready.repository.updateReminderPreferences(
+          (current) => {
+            let receipts = current.receipts;
+            for (const receipt of nextReminders.receipts) {
+              receipts = retainRecentReminderReceipts(receipts, receipt);
+            }
+            return {
+              ...current,
+              highestObservedProgramDate:
+                current.highestObservedProgramDate &&
+                current.highestObservedProgramDate > snapshot.programDate
+                  ? current.highestObservedProgramDate
+                  : snapshot.programDate,
+              receipts,
+              lastNotificationAt: notificationAt ?? current.lastNotificationAt,
+            };
+          },
+          observedAt,
+        );
+        if (disposed) return;
+        setReady((current) =>
+          current ? { ...current, settings: next } : current,
+        );
+        setRevision((value) => value + 1);
+      } catch {
+        // Reconciliation is additive. A closing database or unavailable
+        // notification surface must never block the local-first application.
+      } finally {
+        running = false;
+      }
+    };
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void checkSchedule();
+    };
+    void checkSchedule();
+    const interval = window.setInterval(() => void checkSchedule(), 30_000);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      disposed = true;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [notificationPermission, ready]);
+
+  useEffect(() => {
     if (!ready || !deviceSessionActive) return;
     const synchronize = () => void connectMirror();
     const onVisibility = () => {
@@ -881,6 +1050,15 @@ export function QctpProvider({ children }: { children: ReactNode }) {
     ],
   );
 
+  const notifications = useMemo<QctpRuntime["notifications"]>(
+    () => ({
+      permission: notificationPermission,
+      deliveryMode: "BEST_EFFORT_WHILE_APP_ACTIVE_WITH_DURABLE_IN_APP_FALLBACK",
+      requestPermission: requestMirrorNotifications,
+    }),
+    [notificationPermission, requestMirrorNotifications],
+  );
+
   const runtime = useMemo<QctpRuntime | null>(
     () =>
       ready
@@ -890,10 +1068,12 @@ export function QctpProvider({ children }: { children: ReactNode }) {
             localTranscriptionStatus,
             localTranscriptionMessage,
             localTranscriptionPolicy,
+            notifications,
             mirror,
             refresh,
             markFoundationComponent,
             updateSettings,
+            updateReminderPreferences,
             updateWorkbookAnswer,
             updateQuickBreathPreferences,
             saveBreathSession,
@@ -913,6 +1093,7 @@ export function QctpProvider({ children }: { children: ReactNode }) {
       localTranscriptionStatus,
       markFoundationComponent,
       mirror,
+      notifications,
       processTranscriptionQueue,
       deleteVoiceRecording,
       ready,
@@ -922,6 +1103,7 @@ export function QctpProvider({ children }: { children: ReactNode }) {
       saveStateSession,
       saveStateCapability,
       updateSettings,
+      updateReminderPreferences,
       updateQuickBreathPreferences,
       updateWorkbookAnswer,
     ],

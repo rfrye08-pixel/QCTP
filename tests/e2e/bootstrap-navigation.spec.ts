@@ -142,12 +142,24 @@ test("boots the PWA into IndexedDB-backed Free Local Mode", async ({
 
 test("Today is a mobile morning cockpit with local controls and explicit holds", async ({
   page,
-}) => {
+}, testInfo) => {
   const paidCloudRequests = auditPaidCloudRequests(page);
   await openQctp(page);
 
   await expect(
     page.getByRole("heading", { name: "Voice-Free Day 1 · 25 minutes" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Scheduled readiness: 4:00 a.m. local"),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Later today" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Available · no source clock time", { exact: true }).first(),
+  ).toBeVisible();
+  await expect(
+    page.getByText(/Anything due or unfinished stays here/u),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Choose the safest useful pattern" }),
@@ -163,6 +175,16 @@ test("Today is a mobile morning cockpit with local controls and explicit holds",
   ).toHaveAttribute("href", "./voice-audition/");
   await expect(page.getByText("PX13 companion", { exact: true })).toBeVisible();
   await expect(page.getByText("App package", { exact: true })).toBeVisible();
+
+  if (testInfo.project.name === "iphone-portrait") {
+    const begin = page.getByRole("button", { name: "Begin Voice-Free Day 1" });
+    const [box, viewport] = await Promise.all([
+      begin.boundingBox(),
+      page.evaluate(() => ({ height: window.innerHeight })),
+    ]);
+    expect(box).not.toBeNull();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height);
+  }
 
   const [settings] = await readStore<Record<string, unknown>>(page, "settings");
   if (!settings) throw new Error("Default settings were not initialized.");

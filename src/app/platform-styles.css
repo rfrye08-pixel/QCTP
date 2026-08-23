@@ -1993,6 +1993,85 @@
   gap: 18px;
 }
 
+.schedule-readiness {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding: 11px 13px;
+  border: 1px solid color-mix(in srgb, var(--cyan) 28%, transparent);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--cyan) 7%, transparent);
+}
+
+.schedule-readiness strong {
+  color: var(--cyan);
+  font-size: 0.78rem;
+}
+
+.schedule-readiness span {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.phase-plan-details {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.phase-plan-details summary {
+  min-height: 44px;
+  color: var(--blue);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.today-schedule-card {
+  display: grid;
+  gap: 13px;
+}
+
+.schedule-assignment-list {
+  display: grid;
+  gap: 8px;
+}
+
+.schedule-assignment-list article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--panel) 86%, transparent);
+}
+
+.schedule-assignment-list article > div {
+  display: grid;
+  gap: 3px;
+}
+
+.schedule-assignment-list small,
+.schedule-assignment-list article > span {
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.schedule-assignment-list article > span {
+  max-width: 170px;
+  color: var(--blue);
+  font-weight: 750;
+  text-align: right;
+}
+
+.personal-reminder-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
 .morning-support-select {
   max-width: 420px;
 }
@@ -2067,9 +2146,56 @@
 }
 
 @media (max-width: 520px) {
+  .today-screen-header {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .today-screen-header h1 {
+    margin: 3px 0 0;
+    font-size: clamp(1.55rem, 8vw, 2rem);
+  }
+
+  .today-screen-header .screen-intro {
+    display: none;
+  }
+
+  .morning-mission {
+    gap: 10px;
+  }
+
+  .morning-mission .metric-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+    margin: 3px 0;
+  }
+
+  .morning-mission .metric {
+    display: grid;
+    align-content: start;
+    padding: 8px 7px;
+  }
+
+  .morning-mission .metric strong {
+    margin-top: 3px;
+    font-size: 0.68rem;
+    line-height: 1.25;
+    text-align: left;
+  }
+
   .today-status-grid,
-  .today-voice-note {
+  .today-voice-note,
+  .personal-reminder-grid {
     grid-template-columns: 1fr;
+  }
+
+  .schedule-assignment-list article {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-assignment-list article > span {
+    max-width: none;
+    text-align: left;
   }
 
   .today-voice-note .secondary-button {

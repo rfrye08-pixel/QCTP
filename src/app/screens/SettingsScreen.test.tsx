@@ -1,4 +1,10 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
@@ -225,6 +231,11 @@ beforeEach(async () => {
       paidCloudEnabled: false,
       hardSpendLimitUsd: 0,
     },
+    notifications: {
+      permission: "default",
+      deliveryMode: "BEST_EFFORT_WHILE_APP_ACTIVE_WITH_DURABLE_IN_APP_FALLBACK",
+      requestPermission: () => Promise.resolve(),
+    },
     mirror: {
       connectivity: "online",
       coreStatus: "ready",
@@ -252,6 +263,7 @@ beforeEach(async () => {
     refresh: () => Promise.resolve(),
     markFoundationComponent: () => Promise.resolve(),
     updateSettings: () => Promise.resolve(),
+    updateReminderPreferences: () => Promise.resolve(),
     updateWorkbookAnswer: () => Promise.resolve(),
     updateQuickBreathPreferences: () => Promise.resolve(),
     saveBreathSession: () => Promise.resolve(),
@@ -283,9 +295,36 @@ afterEach(async () => {
   } else {
     Reflect.deleteProperty(navigator, "storage");
   }
+  vi.unstubAllGlobals();
 });
 
 describe("SettingsScreen controlled local runtime status", () => {
+  it("requests notification permission only after the explicit reminder button", async () => {
+    const requestPermission = vi.fn(() => Promise.resolve());
+    const updateReminderPreferences = vi.fn(() => Promise.resolve());
+    vi.stubGlobal("Notification", { permission: "granted" });
+    renderSettings({
+      ...runtimeFixture,
+      notifications: {
+        ...runtimeFixture.notifications,
+        permission: "default",
+        requestPermission,
+      },
+      updateReminderPreferences,
+    });
+
+    expect(requestPermission).not.toHaveBeenCalled();
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Enable best-effort device alerts",
+      }),
+    );
+    await waitFor(() => expect(requestPermission).toHaveBeenCalledTimes(1));
+    expect(updateReminderPreferences).toHaveBeenCalledWith({
+      deviceNotificationsEnabled: true,
+    });
+  });
+
   it("shows the Free Local baseline, local Mirror identity, queue counts, and storage without API-key UI", async () => {
     renderSettings(
       runtimeWithMirror("online", [

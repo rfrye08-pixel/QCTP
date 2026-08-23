@@ -236,6 +236,46 @@ export const PracticeAttemptIssueSchema = z.object({
   stateCapabilityCreditGranted: z.literal(false),
 });
 
+export const LocalReminderTimeSchema = z
+  .string()
+  .regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/u);
+
+export const ReminderReceiptSchema = z.object({
+  id: z.string().trim().min(1).max(160),
+  assignmentId: z.enum([
+    "foundation-day1-morning",
+    "foundation-day1-midday",
+    "foundation-day1-evening",
+  ]),
+  programDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/u),
+  scheduledLocalTime: LocalReminderTimeSchema,
+  firstSeenAt: IsoDateTimeSchema,
+  notificationAttemptedAt: IsoDateTimeSchema.nullable(),
+  outcome: z.enum(["DUE_VISIBLE", "DEVICE_NOTIFIED", "IN_APP_FALLBACK"]),
+});
+
+export const ReminderPreferencesSchema = z
+  .object({
+    deviceNotificationsEnabled: z.boolean().default(false),
+    middayLocalTime: LocalReminderTimeSchema.nullable().default(null),
+    eveningLocalTime: LocalReminderTimeSchema.nullable().default(null),
+    highestObservedProgramDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/u)
+      .nullable()
+      .default(null),
+    receipts: z.array(ReminderReceiptSchema).max(128).default([]),
+    lastNotificationAt: IsoDateTimeSchema.nullable().default(null),
+  })
+  .default({
+    deviceNotificationsEnabled: false,
+    middayLocalTime: null,
+    eveningLocalTime: null,
+    highestObservedProgramDate: null,
+    receipts: [],
+    lastNotificationAt: null,
+  });
+
 export const AppSettingsSchema = z.object({
   schemaVersion: z.literal(CURRENT_DOMAIN_VERSION),
   id: z.literal("settings"),
@@ -252,6 +292,7 @@ export const AppSettingsSchema = z.object({
   transcriptionRoute: z.enum(["local_only", "server_openai", "server_custom"]),
   audioRetention: z.enum(["keep", "delete_after_export", "manual"]),
   lastVoiceFreeIssue: PracticeAttemptIssueSchema.nullable().default(null),
+  reminderPreferences: ReminderPreferencesSchema,
   updatedAt: IsoDateTimeSchema,
 });
 
@@ -701,6 +742,8 @@ export type PracticeSupportMode = z.infer<typeof PracticeSupportModeSchema>;
 export type PracticeSession = z.infer<typeof PracticeSessionSchema>;
 export type WorkbookState = z.infer<typeof WorkbookStateSchema>;
 export type PracticeAttemptIssue = z.infer<typeof PracticeAttemptIssueSchema>;
+export type ReminderPreferences = z.infer<typeof ReminderPreferencesSchema>;
+export type ReminderReceipt = z.infer<typeof ReminderReceiptSchema>;
 export type AppSettings = z.infer<typeof AppSettingsSchema>;
 export type VoiceDestination = z.infer<typeof VoiceDestinationSchema>;
 export type RecordingStatus = z.infer<typeof RecordingStatusSchema>;

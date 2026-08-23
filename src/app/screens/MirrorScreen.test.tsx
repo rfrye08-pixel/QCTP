@@ -174,6 +174,11 @@ beforeEach(async () => {
     localTranscriptionStatus: "not-configured",
     localTranscriptionMessage: "Not connected",
     localTranscriptionPolicy: null,
+    notifications: {
+      permission: "unsupported",
+      deliveryMode: "BEST_EFFORT_WHILE_APP_ACTIVE_WITH_DURABLE_IN_APP_FALLBACK",
+      requestPermission: () => Promise.resolve(),
+    },
     mirror: {
       connectivity: "offline",
       coreStatus: "ready",
@@ -203,6 +208,7 @@ beforeEach(async () => {
     refresh: () => Promise.resolve(),
     markFoundationComponent: () => Promise.resolve(),
     updateSettings: () => Promise.resolve(),
+    updateReminderPreferences: () => Promise.resolve(),
     updateWorkbookAnswer: () => Promise.resolve(),
     updateQuickBreathPreferences: () => Promise.resolve(),
     saveBreathSession: () => Promise.resolve(),

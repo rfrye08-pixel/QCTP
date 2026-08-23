@@ -18,6 +18,7 @@ import type {
   MirrorDisposition,
   MirrorProviderType,
   MirrorResultRevision,
+  ReminderPreferences,
   WorkbookState,
 } from "../domain";
 import type { MirrorServicePolicy } from "../mirror";
@@ -39,12 +40,16 @@ export interface QctpRuntime {
     "not-configured" | "checking" | "ready" | "unavailable";
   localTranscriptionMessage: string;
   localTranscriptionPolicy: LocalTranscriptionPolicy | null;
+  notifications: NotificationRuntime;
   mirror: MirrorRuntime;
   refresh(): Promise<void>;
   markFoundationComponent(
     component: "morning" | "midday" | "evening",
   ): Promise<void>;
   updateSettings(changes: Partial<AppSettings>): Promise<void>;
+  updateReminderPreferences(
+    changes: Partial<ReminderPreferences>,
+  ): Promise<void>;
   updateWorkbookAnswer(
     day: number,
     promptId: string,
@@ -72,6 +77,12 @@ export interface QctpRuntime {
     local: DeleteRecordingResult;
     remote: "deleted" | "not_found" | null;
   }>;
+}
+
+export interface NotificationRuntime {
+  permission: NotificationPermission | "unsupported";
+  deliveryMode: "BEST_EFFORT_WHILE_APP_ACTIVE_WITH_DURABLE_IN_APP_FALLBACK";
+  requestPermission(): Promise<void>;
 }
 
 export interface MirrorClientJob {

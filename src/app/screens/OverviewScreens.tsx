@@ -14,6 +14,7 @@ import {
 import type { PracticeSession } from "../../domain";
 import { StateAtlasProgress } from "../../state-atlas";
 import { CONTROLLED_SOURCE_ARCHITECTURE } from "../../source-tracks";
+import { deriveControlledSchedule } from "../../schedule";
 import { FieldDictation } from "../components/FieldDictation";
 import { CampbellTrackPanel } from "../components/CampbellTrackPanel";
 import { BreathFoundationsPanel } from "../components/BreathFoundationsPanel";
@@ -24,6 +25,25 @@ import { StatusBadge } from "../components/StatusBadge";
 import { VoiceFreePhasePlan } from "../components/VoiceFreePhasePlan";
 import { useQctp } from "../qctp-context";
 import type { AppRoute } from "../routes";
+
+const NETWORK_OFFLINE_HINT = "qctp-network-offline-hint";
+
+function hasNetworkOfflineHint(): boolean {
+  try {
+    return sessionStorage.getItem(NETWORK_OFFLINE_HINT) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function setNetworkOfflineHint(offline: boolean): void {
+  try {
+    if (offline) sessionStorage.setItem(NETWORK_OFFLINE_HINT, "true");
+    else sessionStorage.removeItem(NETWORK_OFFLINE_HINT);
+  } catch {
+    // The visible state still updates even when sessionStorage is unavailable.
+  }
+}
 
 export function TodayOverview({
   onNavigate,
@@ -38,9 +58,12 @@ export function TodayOverview({
 }) {
   const runtime = useQctp();
   const pwaStatus = usePwaStatus();
-  const [online, setOnline] = useState(() => navigator.onLine);
+  const [online, setOnline] = useState(
+    () => navigator.onLine && !hasNetworkOfflineHint(),
+  );
   const [lastPracticeSession, setLastPracticeSession] =
     useState<PracticeSession | null>(null);
+  const [scheduleNow, setScheduleNow] = useState(() => new Date());
   const [answers, setAnswers] = useState<Record<string, string>>(
     () => runtime.workbook.answers["1"] ?? {},
   );
@@ -50,13 +73,39 @@ export function TodayOverview({
     evening: false,
   };
   const completedCount = Object.values(completion).filter(Boolean).length;
+  const schedule = deriveControlledSchedule({
+    now: scheduleNow,
+    foundationDay: runtime.foundation.currentDay,
+    completion,
+    reminders: runtime.settings.reminderPreferences,
+  });
+  const laterAssignments = schedule.assignments.slice(1);
   useEffect(() => {
-    const update = () => setOnline(navigator.onLine);
-    window.addEventListener("online", update);
-    window.addEventListener("offline", update);
+    const markOnline = () => {
+      setNetworkOfflineHint(false);
+      setOnline(true);
+    };
+    const markOffline = () => {
+      setNetworkOfflineHint(true);
+      setOnline(false);
+    };
+    window.addEventListener("online", markOnline);
+    window.addEventListener("offline", markOffline);
     return () => {
-      window.removeEventListener("online", update);
-      window.removeEventListener("offline", update);
+      window.removeEventListener("online", markOnline);
+      window.removeEventListener("offline", markOffline);
+    };
+  }, []);
+  useEffect(() => {
+    const update = () => setScheduleNow(new Date());
+    const interval = window.setInterval(update, 30_000);
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") update();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
   useEffect(() => {
@@ -80,6 +129,7 @@ export function TodayOverview({
   return (
     <>
       <ScreenHeader
+        className="today-screen-header"
         eyebrow="Foundation path · Week 1"
         title="Day 1 — Baseline Awareness"
       >
@@ -88,6 +138,117 @@ export function TodayOverview({
           held until a new voice passes Ryan’s blind physical audition.
         </p>
       </ScreenHeader>
+      <section className="hero-card protected-card morning-mission">
+        <div className="card-heading">
+          <div>
+            <p className="eyebrow">Morning practice ready now</p>
+            <h2>Voice-Free Day 1 · 25 minutes</h2>
+          </div>
+          <StatusBadge status="ready" />
+        </div>
+        <div className="metric-grid">
+          <div className="metric">
+            <span>Guidance</span>
+            <strong>Nonverbal</strong>
+          </div>
+          <div className="metric">
+            <span>Timeline</span>
+            <strong>25:00 exact</strong>
+          </div>
+          <div className="metric">
+            <span>Breath</span>
+            <strong>5 in / 5 out or comfortable</strong>
+          </div>
+        </div>
+        <p className="schedule-readiness" role="status">
+          <strong>Scheduled readiness: 4:00 a.m. local</strong>
+          <span>{schedule.readinessLabel}</span>
+        </p>
+        <button
+          className="primary-button"
+          type="button"
+          onClick={onStartVoiceFreeDay1}
+          disabled={voiceFreeSession.readiness !== "ready"}
+        >
+          Begin Voice-Free Day 1
+        </button>
+        <label className="compact-field morning-support-select">
+          Continuous support
+          <select
+            value={voiceFreeSession.supportMode}
+            disabled={
+              voiceFreeSession.status === "running" ||
+              voiceFreeSession.status === "paused" ||
+              voiceFreeSession.status === "starting" ||
+              voiceFreeSession.status === "recording_issue" ||
+              voiceFreeSession.status === "saving" ||
+              voiceFreeSession.status === "save_pending"
+            }
+            onChange={(event) =>
+              voiceFreeSession.setSupportMode(
+                event.target.value as VoiceFreeSupportMode,
+              )
+            }
+          >
+            {Object.values(VOICE_FREE_SUPPORT_MODES).map((mode) => (
+              <option key={mode.id} value={mode.id}>
+                {mode.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <p className="fine-print" role="status">
+          {voiceFreeSession.offlinePackageReady
+            ? "Selected 25-minute support is verified in the offline cache."
+            : "Audio can play when ready; the selected offline support package is still being verified."}
+        </p>
+        <p className="fine-print">
+          One tap starts the selected same-origin support track and opens the
+          practice cockpit. The full return must finish before a
+          VOICE_FREE_FALLBACK completion is saved. State attainment and voice
+          acceptance remain separate.
+        </p>
+        <details className="phase-plan-details">
+          <summary>Review the six source-grounded phases</summary>
+          <VoiceFreePhasePlan compact />
+        </details>
+      </section>
+      <section
+        className="panel-card today-schedule-card"
+        aria-labelledby="later-today-title"
+      >
+        <div className="card-heading">
+          <div>
+            <p className="eyebrow">Visible in-app schedule</p>
+            <h2 id="later-today-title">Later today</h2>
+          </div>
+          <StatusBadge status="ready" />
+        </div>
+        <div className="schedule-assignment-list">
+          {laterAssignments.map((assignment) => (
+            <article key={assignment.id}>
+              <div>
+                <strong>{assignment.label}</strong>
+                <small>{assignment.summary}</small>
+              </div>
+              <span>
+                {assignment.status === "complete"
+                  ? "Complete"
+                  : assignment.scheduledLocalTime
+                    ? assignment.status === "ready"
+                      ? `Personal reminder passed · ${assignment.scheduledLocalTime}`
+                      : `Personal reminder · ${assignment.scheduledLocalTime}`
+                    : "Available · no source clock time"}
+              </span>
+            </article>
+          ))}
+        </div>
+        <p className="fine-print">
+          Device alerts are best effort while an iPhone PWA is active. Anything
+          due or unfinished stays here even when iOS does not deliver an alert.
+          Personal times can be set in Settings.
+        </p>
+      </section>
       <section className="today-status-grid" aria-label="Today readiness">
         <article>
           <span>Local use</span>
@@ -117,6 +278,22 @@ export function TodayOverview({
           <small>{pwaStatus.message}</small>
         </article>
         <article>
+          <span>Reminder delivery</span>
+          <strong>
+            {runtime.notifications.permission === "granted" &&
+            runtime.settings.reminderPreferences.deviceNotificationsEnabled
+              ? "Best effort on"
+              : "Today fallback on"}
+          </strong>
+          <small>
+            {runtime.notifications.permission === "denied"
+              ? "Alerts are blocked; the in-app schedule remains reliable."
+              : runtime.notifications.permission === "unsupported"
+                ? "This browser cannot alert; due work stays visible here."
+                : "No closed-app delivery guarantee is claimed."}
+          </small>
+        </article>
+        <article>
           <span>Last morning result</span>
           <strong>
             {lastPracticeSession?.naturalCompletion
@@ -141,74 +318,6 @@ export function TodayOverview({
               "A future interruption or audio failure will remain visible here until a full return is saved."}
           </small>
         </article>
-      </section>
-      <section className="hero-card protected-card morning-mission">
-        <div className="card-heading">
-          <div>
-            <p className="eyebrow">Morning practice ready now</p>
-            <h2>Voice-Free Day 1 · 25 minutes</h2>
-          </div>
-          <StatusBadge status="ready" />
-        </div>
-        <div className="metric-grid">
-          <div className="metric">
-            <span>Guidance</span>
-            <strong>Nonverbal</strong>
-          </div>
-          <div className="metric">
-            <span>Timeline</span>
-            <strong>25:00 exact</strong>
-          </div>
-          <div className="metric">
-            <span>Breath</span>
-            <strong>5 in / 5 out or comfortable</strong>
-          </div>
-        </div>
-        <VoiceFreePhasePlan />
-        <label className="compact-field morning-support-select">
-          Continuous support
-          <select
-            value={voiceFreeSession.supportMode}
-            disabled={
-              voiceFreeSession.status === "running" ||
-              voiceFreeSession.status === "paused" ||
-              voiceFreeSession.status === "starting" ||
-              voiceFreeSession.status === "recording_issue" ||
-              voiceFreeSession.status === "saving" ||
-              voiceFreeSession.status === "save_pending"
-            }
-            onChange={(event) =>
-              voiceFreeSession.setSupportMode(
-                event.target.value as VoiceFreeSupportMode,
-              )
-            }
-          >
-            {Object.values(VOICE_FREE_SUPPORT_MODES).map((mode) => (
-              <option key={mode.id} value={mode.id}>
-                {mode.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button
-          className="primary-button"
-          type="button"
-          onClick={onStartVoiceFreeDay1}
-          disabled={voiceFreeSession.readiness !== "ready"}
-        >
-          Begin Voice-Free Day 1
-        </button>
-        <p className="fine-print" role="status">
-          {voiceFreeSession.offlinePackageReady
-            ? "Selected 25-minute support is verified in the offline cache."
-            : "Audio can play when ready; the selected offline support package is still being verified."}
-        </p>
-        <p className="fine-print">
-          One tap starts the selected same-origin support track and opens the
-          practice cockpit. The full return must finish before a
-          VOICE_FREE_FALLBACK completion is saved. State attainment and voice
-          acceptance remain separate.
-        </p>
       </section>
       <section className="notice-card voice-hold-card">
         <strong>Narrated Day 1 is held</strong>
@@ -272,7 +381,7 @@ export function TodayOverview({
       </section>
       <section className="panel-card day1-integration">
         <p className="eyebrow">Midday integration</p>
-        <h2>Five safe eyes-open micro-entries</h2>
+        <h2>At least three safe eyes-open micro-entries</h2>
         <ol className="instruction-list">
           {DAY1_MICRO_PRACTICE.map((instruction) => (
             <li key={instruction}>{instruction}</li>
@@ -346,7 +455,7 @@ export function TodayOverview({
             <span className="component-dot" />
             <p>
               <strong>Midday integration</strong>
-              <small>Five safe eyes-open micro-entries</small>
+              <small>At least three safe eyes-open micro-entries</small>
             </p>
             <button
               type="button"

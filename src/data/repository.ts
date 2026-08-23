@@ -11,6 +11,7 @@ import {
   PathStateSchema,
   PracticeSessionSchema,
   QctpExportDataSchema,
+  ReminderPreferencesSchema,
   RegSessionSchema,
   RevisionSchema,
   SearchDocumentSchema,
@@ -40,6 +41,7 @@ import {
   type PracticeSession,
   type Provenance,
   type QctpExportData,
+  type ReminderPreferences,
   type RecordKind,
   type RegSession,
   type Revision,
@@ -378,6 +380,28 @@ export class QctpRepository {
     const parsed = AppSettingsSchema.parse(value);
     await this.database.put("settings", parsed);
     return parsed;
+  }
+
+  async updateReminderPreferences(
+    update: (current: ReminderPreferences) => ReminderPreferences,
+    now = new Date().toISOString(),
+  ): Promise<AppSettings> {
+    const transaction = this.database.transaction("settings", "readwrite");
+    const store = transaction.objectStore("settings");
+    const current = AppSettingsSchema.parse(
+      (await store.get("settings")) ?? createDefaultSettings(now),
+    );
+    const reminderPreferences = ReminderPreferencesSchema.parse(
+      update(current.reminderPreferences),
+    );
+    const next = AppSettingsSchema.parse({
+      ...current,
+      reminderPreferences,
+      updatedAt: now,
+    });
+    await store.put(next);
+    await transaction.done;
+    return next;
   }
 
   async saveRecord(value: CodexRecord): Promise<CodexRecord> {

@@ -17,6 +17,14 @@ describe("versioned domain schemas", () => {
     expect(settings.transcriptionRoute).toBe("local_only");
     expect(settings.neuralVoice).toBe("chill-brian");
     expect(settings.lastVoiceFreeIssue).toBeNull();
+    expect(settings.reminderPreferences).toEqual({
+      deviceNotificationsEnabled: false,
+      middayLocalTime: null,
+      eveningLocalTime: null,
+      highestObservedProgramDate: null,
+      receipts: [],
+      lastNotificationAt: null,
+    });
   });
 
   it("upgrades pre-Rev3 settings without inventing a practice issue", () => {
@@ -24,7 +32,29 @@ describe("versioned domain schemas", () => {
       ...createDefaultSettings(now),
     };
     delete legacy.lastVoiceFreeIssue;
+    delete legacy.reminderPreferences;
     expect(AppSettingsSchema.parse(legacy).lastVoiceFreeIssue).toBeNull();
+    expect(AppSettingsSchema.parse(legacy).reminderPreferences).toEqual({
+      deviceNotificationsEnabled: false,
+      middayLocalTime: null,
+      eveningLocalTime: null,
+      highestObservedProgramDate: null,
+      receipts: [],
+      lastNotificationAt: null,
+    });
+  });
+
+  it("rejects malformed local reminder times", () => {
+    const settings = createDefaultSettings(now);
+    expect(() =>
+      AppSettingsSchema.parse({
+        ...settings,
+        reminderPreferences: {
+          ...settings.reminderPreferences,
+          middayLocalTime: "25:90",
+        },
+      }),
+    ).toThrow();
   });
 
   it("keeps observation evidence and interpretation as separately identified layers", () => {

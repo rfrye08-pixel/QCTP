@@ -68,6 +68,14 @@ export function createDefaultSettings(
     transcriptionRoute: "local_only",
     audioRetention: "keep",
     lastVoiceFreeIssue: null,
+    reminderPreferences: {
+      deviceNotificationsEnabled: false,
+      middayLocalTime: null,
+      eveningLocalTime: null,
+      highestObservedProgramDate: null,
+      receipts: [],
+      lastNotificationAt: null,
+    },
     updatedAt: now,
   };
 }

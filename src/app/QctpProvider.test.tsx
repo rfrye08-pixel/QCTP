@@ -36,6 +36,16 @@ function MirrorConnectionProbe() {
   );
 }
 
+function ReminderProbe() {
+  const runtime = useQctp();
+  return (
+    <output aria-label="reminder status">
+      {runtime.notifications.permission}:
+      {runtime.settings.reminderPreferences.receipts[0]?.outcome ?? "none"}
+    </output>
+  );
+}
+
 function jsonResponse(value: unknown): Response {
   return new Response(JSON.stringify(value), {
     status: 200,
@@ -57,7 +67,31 @@ describe("QCTP private device-session restoration", () => {
   afterEach(async () => {
     cleanup();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
     await deleteQctpDatabase();
+  });
+
+  it("does not prompt at boot and persists the visible in-app fallback", async () => {
+    const requestPermission = vi.fn(() => Promise.resolve("granted" as const));
+    class TestNotification {
+      static permission: NotificationPermission = "default";
+      static requestPermission = requestPermission;
+    }
+    vi.stubGlobal("Notification", TestNotification);
+    localStorage.setItem("qctp-device-session-auto-restore-disabled", "true");
+
+    render(
+      <QctpProvider>
+        <ReminderProbe />
+      </QctpProvider>,
+    );
+
+    await screen.findByText("default:DUE_VISIBLE");
+    expect(requestPermission).not.toHaveBeenCalled();
+    TestNotification.permission = "denied";
+    document.dispatchEvent(new Event("visibilitychange"));
+    await screen.findByText("denied:DUE_VISIBLE");
+    expect(requestPermission).not.toHaveBeenCalled();
   });
 
   it("reconnects after a PWA close using only the HttpOnly cookie session", async () => {

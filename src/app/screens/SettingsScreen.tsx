@@ -201,6 +201,66 @@ export function SettingsScreen() {
     }
   }, [runtime]);
 
+  const configureDeviceNotifications = useCallback(
+    async (enabled: boolean) => {
+      setBusy("reminders");
+      setMessage(null);
+      setError(null);
+      try {
+        if (enabled) await runtime.notifications.requestPermission();
+        const permission =
+          typeof Notification === "undefined"
+            ? "unsupported"
+            : Notification.permission;
+        const deviceNotificationsEnabled = enabled && permission === "granted";
+        await runtime.updateReminderPreferences({ deviceNotificationsEnabled });
+        setMessage(
+          deviceNotificationsEnabled
+            ? "Best-effort device alerts enabled. Today remains the authoritative fallback."
+            : enabled
+              ? "Device alerts were not enabled. The complete schedule remains visible on Today."
+              : "Device alerts turned off. The in-app schedule remains active.",
+        );
+      } catch (cause) {
+        setError(
+          cause instanceof Error
+            ? cause.message
+            : "The reminder preference could not be saved.",
+        );
+      } finally {
+        setBusy(null);
+      }
+    },
+    [runtime],
+  );
+
+  const savePersonalReminder = useCallback(
+    async (field: "middayLocalTime" | "eveningLocalTime", value: string) => {
+      setBusy(`reminder-${field}`);
+      setMessage(null);
+      setError(null);
+      try {
+        await runtime.updateReminderPreferences({
+          [field]: value || null,
+        });
+        setMessage(
+          value
+            ? "Personal reminder time saved on this device."
+            : "Personal reminder time cleared; the assignment remains visible on Today.",
+        );
+      } catch (cause) {
+        setError(
+          cause instanceof Error
+            ? cause.message
+            : "The personal reminder time could not be saved.",
+        );
+      } finally {
+        setBusy(null);
+      }
+    },
+    [runtime],
+  );
+
   const exportData = useCallback(
     async (format: "json" | "zip") => {
       setBusy(`export-${format}`);
@@ -345,6 +405,111 @@ export function SettingsScreen() {
             </button>
           </div>
         ) : null}
+      </section>
+
+      <section className="panel-card reminder-settings-card">
+        <div className="card-heading">
+          <div>
+            <p className="eyebrow">Local schedule and recovery</p>
+            <h2>Reminders &amp; availability</h2>
+          </div>
+          <StatusBadge status="ready" />
+        </div>
+        <dl className="settings-definition-list">
+          <div>
+            <dt>Foundation readiness</dt>
+            <dd>4:00 a.m. local</dd>
+          </div>
+          <div>
+            <dt>This device time zone</dt>
+            <dd>
+              {Intl.DateTimeFormat().resolvedOptions().timeZone ||
+                "Browser local time"}
+            </dd>
+          </div>
+          <div>
+            <dt>Alert permission</dt>
+            <dd>{runtime.notifications.permission}</dd>
+          </div>
+          <div>
+            <dt>Durable reminder records</dt>
+            <dd>{settings.reminderPreferences.receipts.length}</dd>
+          </div>
+        </dl>
+        <p>
+          QCTP is ready at 4:00 a.m. on this iPhone. iOS may pause a local PWA
+          while it is closed, so an alert is best effort—not guaranteed.
+          Anything due or not completed stays visible on Today.
+        </p>
+        {runtime.notifications.permission === "denied" ? (
+          <p className="platform-message warning" role="note">
+            Alerts are blocked; Today remains the reliable schedule. Permission
+            can be changed in iPhone settings.
+          </p>
+        ) : runtime.notifications.permission === "unsupported" ? (
+          <p className="platform-message warning" role="note">
+            This browser cannot send QCTP alerts; Today still shows what is due.
+          </p>
+        ) : null}
+        {runtime.notifications.permission !== "denied" &&
+        runtime.notifications.permission !== "unsupported" ? (
+          <button
+            className="secondary-button"
+            type="button"
+            disabled={busy === "reminders"}
+            onClick={() =>
+              void configureDeviceNotifications(
+                !settings.reminderPreferences.deviceNotificationsEnabled,
+              )
+            }
+          >
+            {busy === "reminders"
+              ? "Updating reminder access…"
+              : settings.reminderPreferences.deviceNotificationsEnabled
+                ? "Turn off device alerts"
+                : "Enable best-effort device alerts"}
+          </button>
+        ) : null}
+        <div className="personal-reminder-grid">
+          <label className="platform-field">
+            <span>Daytime integration · personal time</span>
+            <input
+              type="time"
+              value={settings.reminderPreferences.middayLocalTime ?? ""}
+              disabled={busy === "reminder-middayLocalTime"}
+              onChange={(event) =>
+                void savePersonalReminder("middayLocalTime", event.target.value)
+              }
+            />
+            <small>
+              Optional. Day 1 requires daytime micro-entries but does not
+              authorize a fixed clock time.
+            </small>
+          </label>
+          <label className="platform-field">
+            <span>Evening close · personal time</span>
+            <input
+              type="time"
+              value={settings.reminderPreferences.eveningLocalTime ?? ""}
+              disabled={busy === "reminder-eveningLocalTime"}
+              onChange={(event) =>
+                void savePersonalReminder(
+                  "eveningLocalTime",
+                  event.target.value,
+                )
+              }
+            />
+            <small>
+              Optional. The controlled practice says evening, not a specific
+              hour.
+            </small>
+          </label>
+        </div>
+        <p className="fine-print">
+          Reminder state is stored in the same local settings record included in
+          QCTP exports. Scheduling never advances Foundation progress or awards
+          completion.
+        </p>
       </section>
 
       <section className="panel-card">
