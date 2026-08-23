@@ -10,6 +10,7 @@
     "dev": "vite",
     "server": "tsx server/index.ts",
     "audio:verify": "node tools/cache-day1-audio.mjs",
+    "backlog:verify": "node tools/verify-rev3-controlled-feature-backlog.mjs",
     "prebuild": "npm run audio:verify",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 127.0.0.1",
@@ -20,7 +21,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test:coverage && npm run build"
+    "check": "npm run backlog:verify && npm run format:check && npm run lint && npm run typecheck && npm run test:coverage && npm run build"
   },
   "dependencies": {
     "express": "5.2.1",

@@ -1,0 +1,2243 @@
+{
+  "schema": "qctp-rev3-controlled-feature-backlog-v1",
+  "branch": "qctp-platform-rev3-codex",
+  "created_at": "2026-08-22T20:42:00-05:00",
+  "updated_at": "2026-08-22T20:58:00-05:00",
+  "status": "ACTIVE_ZERO_RELEASE",
+  "authority_snapshot": {
+    "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
+    "rev2_sha": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
+    "rev3_sha_at_extraction": "712aeace2b981fa677c9be6b762f5903232835a9",
+    "rev3_tree_at_extraction": "cdb481af8ee7606747c6e7b9719e3037924fc373",
+    "starting_baseline": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3"
+  },
+  "authority_order": [
+    "QCTP_CODEX_REV3_FULL_UPGRADE_AND_NATURAL_VOICE_HANDOFF_REV0_2026-08-21.md from origin/qctp-platform-rev3-codex",
+    "QCTP_CURRENT_STATE.json from origin/main",
+    "QCTP_MACRO_DELIVERABLE_MANIFEST_REV12.json from origin/main",
+    "QCTP_DAY1_AUDIO_A04_PHYSICAL_VOICE_NATURALNESS_FAILURE_REV0_2026-08-21.md from origin/main",
+    "Every exact authority file named by QCTP_CURRENT_STATE.json from its named controlled ref",
+    "QCTP_REV2_CODEX_BRANCH_STATE.json from origin/qctp-platform-rev2-codex",
+    "QCTP_REV3_CODEX_BRANCH_BOOTSTRAP_REV0.json and actual Rev3 source and tests",
+    "Ryan controlled Rev3 scope clarification dated 2026-08-22"
+  ],
+  "source_extraction_scope": [
+    "QCTP_CURRENT_STATE.json",
+    "QCTP_MACRO_DELIVERABLE_MANIFEST_REV12.json",
+    "QCTP_CODEX_REV3_FULL_UPGRADE_AND_NATURAL_VOICE_HANDOFF_REV0_2026-08-21.md",
+    "every authority file named by QCTP_CURRENT_STATE.json",
+    "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+    "actual origin/qctp-platform-rev2-codex source and tests",
+    "QCTP_REV2_CODEX_BRANCH_STATE.json",
+    "QCTP_REV3_CODEX_BRANCH_BOOTSTRAP_REV0.json",
+    "actual qctp-platform-rev3-codex source and tests"
+  ],
+  "status_definitions": {
+    "EXISTING": "Implemented with durable automated evidence; any remaining release gate is explicitly recorded.",
+    "NEEDS_HARDENING": "A usable implementation exists, but controlled automated, physical, lifecycle, or UX acceptance remains incomplete.",
+    "NEW": "Controlled and independently executable implementation work is not yet present.",
+    "BLOCKED": "Further material progress requires an irreducible physical decision, private user data, or another named dependency.",
+    "DEFERRED": "Authority deliberately withholds implementation until the exact named source or control package exists."
+  },
+  "global_release_authority": {
+    "implementation": "AUTHORIZED_ONLY_ON_QCTP_PLATFORM_REV3_CODEX",
+    "release": "ZERO_RELEASE",
+    "merge_or_deploy": "REQUIRES_EXPLICIT_RYAN_AUTHORITY",
+    "protected_refs": ["main", "qctp-platform-rev2-codex", "PR #2"],
+    "paid_cloud": "NOT_AUTHORIZED",
+    "state_attainment_from_timer": "PROHIBITED",
+    "days_2_through_112_fabrication": "PROHIBITED"
+  },
+  "checkpoint_policy": [
+    "Implement verified vertical slices rather than waiting for the full backlog.",
+    "At each coherent checkpoint run applicable gates, update this backlog and QCTP_REV3_CODEX_BRANCH_STATE.json, commit to qctp-platform-rev3-codex, and retain ZERO_RELEASE.",
+    "Physical voice selection blocks only selected-voice narration work; independent packages continue.",
+    "Every DEFERRED or BLOCKED feature retains its reason and next executable action."
+  ],
+  "checkpoint_history": [
+    {
+      "checkpoint_id": "QCTP-REV3-CONTROL-001",
+      "commit": "b8fd95801613c4b6a5993612e221780fecb53e32",
+      "result": "PASS",
+      "delivered": "Initial complete controlled feature backlog and machine validator",
+      "verification": "Backlog validator PASS; format, lint, typecheck, 56 files and 341 tests with coverage, controlled audio verification, and production build PASS",
+      "release_authority": "ZERO_RELEASE"
+    }
+  ],
+  "summary": {
+    "feature_count": 61,
+    "EXISTING": 2,
+    "NEEDS_HARDENING": 42,
+    "NEW": 12,
+    "BLOCKED": 3,
+    "DEFERRED": 2
+  },
+  "minimum_scope_coverage": [
+    { "scope_item": 1, "feature_ids": ["QCTP-REV3-F001"] },
+    { "scope_item": 2, "feature_ids": ["QCTP-REV3-F002"] },
+    { "scope_item": 3, "feature_ids": ["QCTP-REV3-F003", "QCTP-REV3-F004"] },
+    { "scope_item": 4, "feature_ids": ["QCTP-REV3-F005"] },
+    { "scope_item": 5, "feature_ids": ["QCTP-REV3-F006"] },
+    { "scope_item": 6, "feature_ids": ["QCTP-REV3-F007"] },
+    { "scope_item": 7, "feature_ids": ["QCTP-REV3-F008"] },
+    { "scope_item": 8, "feature_ids": ["QCTP-REV3-F009"] },
+    { "scope_item": 9, "feature_ids": ["QCTP-REV3-F010"] },
+    { "scope_item": 10, "feature_ids": ["QCTP-REV3-F011", "QCTP-REV3-F055"] },
+    { "scope_item": 11, "feature_ids": ["QCTP-REV3-F012", "QCTP-REV3-F017"] },
+    {
+      "scope_item": 12,
+      "feature_ids": [
+        "QCTP-REV3-F013",
+        "QCTP-REV3-F014",
+        "QCTP-REV3-F015",
+        "QCTP-REV3-F016",
+        "QCTP-REV3-F059"
+      ]
+    },
+    { "scope_item": 13, "feature_ids": ["QCTP-REV3-F018"] },
+    { "scope_item": 14, "feature_ids": ["QCTP-REV3-F020", "QCTP-REV3-F021"] },
+    { "scope_item": 15, "feature_ids": ["QCTP-REV3-F022", "QCTP-REV3-F050"] },
+    { "scope_item": 16, "feature_ids": ["QCTP-REV3-F023", "QCTP-REV3-F024"] },
+    { "scope_item": 17, "feature_ids": ["QCTP-REV3-F025"] },
+    { "scope_item": 18, "feature_ids": ["QCTP-REV3-F026", "QCTP-REV3-F049"] },
+    { "scope_item": 19, "feature_ids": ["QCTP-REV3-F027"] },
+    { "scope_item": 20, "feature_ids": ["QCTP-REV3-F028"] },
+    { "scope_item": 21, "feature_ids": ["QCTP-REV3-F028"] },
+    { "scope_item": 22, "feature_ids": ["QCTP-REV3-F029"] },
+    { "scope_item": 23, "feature_ids": ["QCTP-REV3-F030"] },
+    { "scope_item": 24, "feature_ids": ["QCTP-REV3-F031"] },
+    { "scope_item": 25, "feature_ids": ["QCTP-REV3-F032", "QCTP-REV3-F033"] },
+    {
+      "scope_item": 26,
+      "feature_ids": [
+        "QCTP-REV3-F034",
+        "QCTP-REV3-F035",
+        "QCTP-REV3-F051",
+        "QCTP-REV3-F052",
+        "QCTP-REV3-F056",
+        "QCTP-REV3-F057",
+        "QCTP-REV3-F058"
+      ]
+    },
+    { "scope_item": 27, "feature_ids": ["QCTP-REV3-F036"] },
+    { "scope_item": 28, "feature_ids": ["QCTP-REV3-F037"] },
+    { "scope_item": 29, "feature_ids": ["QCTP-REV3-F038"] },
+    { "scope_item": 30, "feature_ids": ["QCTP-REV3-F039"] },
+    { "scope_item": 31, "feature_ids": ["QCTP-REV3-F040"] },
+    { "scope_item": 32, "feature_ids": ["QCTP-REV3-F041", "QCTP-REV3-F048"] },
+    {
+      "scope_item": 33,
+      "feature_ids": [
+        "QCTP-REV3-F042",
+        "QCTP-REV3-F051",
+        "QCTP-REV3-F052",
+        "QCTP-REV3-F053",
+        "QCTP-REV3-F054"
+      ]
+    },
+    { "scope_item": 34, "feature_ids": ["QCTP-REV3-F043", "QCTP-REV3-F060"] },
+    { "scope_item": 35, "feature_ids": ["QCTP-REV3-F044", "QCTP-REV3-F045"] }
+  ],
+  "features": [
+    {
+      "feature_id": "QCTP-REV3-F001",
+      "name": "One-tap morning practice",
+      "user_outcome": "Ryan can begin the ready practice from Today immediately after waking without visiting Settings or operating the PX13.",
+      "authority_sources": [
+        "QCTP_CODEX_REV3_FULL_UPGRADE_AND_NATURAL_VOICE_HANDOFF_REV0_2026-08-21.md P0/P5",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "QCTP_MACRO_DELIVERABLE_MANIFEST_REV12.json D01/D06"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": ["QCTP-REV3-F002", "QCTP-REV3-F038", "QCTP-REV3-F039"],
+      "implementation_package": "P0 Morning Continuity plus P5 Today cockpit",
+      "automated_acceptance_criteria": [
+        "Today exposes one enabled dominant start action without setup.",
+        "Early exit, test mode, and timer-only use cannot earn completion or state credit.",
+        "Start works from the exact same-origin candidate without a paid request."
+      ],
+      "physical_acceptance_criteria": [
+        "Installed iPhone cold launch is usable in a just-awake state.",
+        "Cold-offline start, wake behavior, phase support, and full return pass."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; physical morning iPhone acceptance required before release.",
+      "evidence_produced": [
+        "src/app/screens/OverviewScreens.tsx",
+        "tests/e2e/bootstrap-navigation.spec.ts",
+        "controlled-artifacts/rev3-ux/01-today-morning-cockpit-iphone13-webkit.png"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Run the shortest physical cold-offline morning acceptance on the exact candidate."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F002",
+      "name": "Voice-Free Day 1 normal-app fallback",
+      "user_outcome": "A reliable 25-minute Day 1 remains available without the rejected narration.",
+      "authority_sources": [
+        "Rev3 handoff P0",
+        "QCTP_DAY1_AUDIO_A04_PHYSICAL_VOICE_NATURALNESS_FAILURE_REV0_2026-08-21.md",
+        "QCTP_DAY1_SOURCE_FAITHFUL_BASELINE_REV0.md",
+        "QCTP_DAY1_QCTP_ENHANCEMENT_DELTA_REV0.md"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": ["QCTP-REV3-F005", "QCTP-REV3-F006", "QCTP-REV3-F007"],
+      "implementation_package": "P0 Morning Continuity",
+      "automated_acceptance_criteria": [
+        "Six controlled phases total exactly 1,500 seconds.",
+        "HeartMath rail, nonverbal markers, continuous support, and complete return are present.",
+        "A one-time concise phase card prepares the user without turning the session into a reading task.",
+        "Completion persists only as VOICE_FREE_FALLBACK after the natural full return."
+      ],
+      "physical_acceptance_criteria": [
+        "No support entrance or marker startles Ryan.",
+        "Breath rail and return are followable eyes closed on iPhone."
+      ],
+      "release_authority": "PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE; rejected A03R narration prohibited.",
+      "evidence_produced": [
+        "src/practice/voice-free-day1.ts",
+        "src/app/screens/VoiceFreeDay1Screen.tsx",
+        "QCTP_REV3_VOICE_FREE_DAY1_MACHINE_VERIFICATION_REV0_2026-08-22.json",
+        "QCTP_REV3_VOICE_FREE_DAY1_BROWSER_VERIFICATION_REV0_2026-08-22.json"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Perform physical iPhone morning, offline, audio, and return gate."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F003",
+      "name": "Blind natural-voice audition",
+      "user_outcome": "Ryan can select a genuinely natural voice without route-name bias from at least three legally usable zero-cost candidates.",
+      "authority_sources": [
+        "Rev3 handoff P1",
+        "QCTP_DAY1_AUDIO_A04_PHYSICAL_VOICE_NATURALNESS_FAILURE_REV0_2026-08-21.md",
+        "QCTP_CURRENT_STATE.json v19"
+      ],
+      "status": "BLOCKED",
+      "dependencies": ["Ryan physical A/B/C/NONE decision"],
+      "implementation_package": "P1 Natural Voice Recovery",
+      "automated_acceptance_criteria": [
+        "Candidates use identical representative text and materially different routes.",
+        "Model-native pacing and real silence are used without broad spectral time-stretch.",
+        "Blind labels are randomized or durably assigned without route leakage, and identity reveal is impossible before the recorded choice.",
+        "Any bounded timing adjustment remains within 0.97x to 1.03x unless separately accepted.",
+        "Licensing, checksums, loudness, offline packaging, and browser gates pass without revealing identities; NONE requires a materially changed route before retest."
+      ],
+      "physical_acceptance_criteria": [
+        "Ryan physically selects A, B, C, or NONE based on human naturalness and instructional usability."
+      ],
+      "release_authority": "SHORT_AUDITION_AUTHORIZED; identity reveal and full render withheld until physical PASS; ZERO_RELEASE.",
+      "evidence_produced": [
+        "public/voice-audition/",
+        "QCTP_REV3_NATURAL_VOICE_TRADE_AND_LICENSING_REV0_2026-08-22.json",
+        "QCTP_REV3_BLIND_VOICE_PHYSICAL_SELECTION_REV0_2026-08-22.json"
+      ],
+      "deferral": {
+        "reason": "Human naturalness is an irreducible physical gate; ASR and browser tests cannot pass the voice.",
+        "next_executable_step": "Ryan listens once and records A, B, C, or NONE with one brief observation."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F004",
+      "name": "Physically accepted narrated Day 1",
+      "user_outcome": "Day 1 can run with a natural selected guide, grounded wording, safe entries, synchronized support, and complete return.",
+      "authority_sources": [
+        "Rev3 handoff P2",
+        "QCTP_DAY1_SOURCE_GROUNDED_AUDIO_IMPLEMENTATION_HANDOFF_REV0_2026-08-20.md",
+        "QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json"
+      ],
+      "status": "BLOCKED",
+      "dependencies": [
+        "QCTP-REV3-F003 physical PASS",
+        "QCTP-REV3-F005",
+        "QCTP-REV3-F006",
+        "QCTP-REV3-F007"
+      ],
+      "implementation_package": "P2 selected-voice Day 1 integration",
+      "automated_acceptance_criteria": [
+        "Five-minute candidate precedes any full render.",
+        "All 35 locked cue hashes, timing windows, media checksums, ducking, fades, sync, and fallback pass.",
+        "The continuous-session player uses one authorized gesture, one authoritative clock, bounded drift handling, synchronized pause/resume, and fail-closed completion.",
+        "A pre-rendered composite fallback is selected automatically when dual-stem synchronization is not proven on iPhone.",
+        "No rejected A03R media is runtime-addressable."
+      ],
+      "physical_acceptance_criteria": [
+        "Selected voice passes a five-minute iPhone test before one natural 25-minute test.",
+        "Startle, breath usability, spatial attention, balance, continuity, and return all pass."
+      ],
+      "release_authority": "FULL_RENDER_WITHHELD_UNTIL_QCTP_REV3_F003_PHYSICAL_PASS; ZERO_RELEASE.",
+      "evidence_produced": [
+        "QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json",
+        "controlled-artifacts/a03r-rejected/ retained for rollback only"
+      ],
+      "deferral": {
+        "reason": "No candidate has yet received Ryan's physical naturalness PASS.",
+        "next_executable_step": "After PASS, render and verify only the selected route's five-minute acceptance candidate."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F005",
+      "name": "Continuous Ambient, Binaural, and Minimal support modes",
+      "user_outcome": "Ryan can choose an uninterrupted local support bed appropriate to comfort and headphones.",
+      "authority_sources": [
+        "QCTP_DAY1_QCTP_ENHANCEMENT_DELTA_REV0.md",
+        "QCTP_DAY1_SOURCE_GROUNDED_AUDIO_IMPLEMENTATION_HANDOFF_REV0_2026-08-20.md section 4.2",
+        "Rev3 handoff P0/P2"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": ["QCTP-REV3-F038"],
+      "implementation_package": "P0/P2 controlled media",
+      "automated_acceptance_criteria": [
+        "All three files are exactly 1,500 seconds within codec tolerance and checksum-manifested.",
+        "No external URL, dropout, melody, sharp transient, or unlabelled binaural claim is present."
+      ],
+      "physical_acceptance_criteria": [
+        "All three modes are audible, comfortable, non-masking, and switch predictably.",
+        "Headphone guidance appears for binaural mode."
+      ],
+      "release_authority": "PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE; final binaural preference remains physical.",
+      "evidence_produced": [
+        "public/audio/day1-source-rev0/support-ambient-1500.mp3",
+        "public/audio/day1-source-rev0/support-binaural-low-a-1500.mp3",
+        "public/audio/day1-source-rev0/support-minimal-1500.mp3",
+        "public/audio/day1-source-rev0/voice-free-manifest.json"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Complete comparative physical iPhone comfort and masking check."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F006",
+      "name": "Predictive anti-startle cue grammar and full return",
+      "user_outcome": "Upcoming changes are predictable, speech never enters abruptly, and every practice fully reorients the user.",
+      "authority_sources": [
+        "QCTP_DAY1_QCTP_ENHANCEMENT_DELTA_REV0.md",
+        "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
+        "Day 1 audio handoff sections 4.4 and 9"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F005",
+        "QCTP-REV3-F004 for narrated ducking and fades"
+      ],
+      "implementation_package": "P0 nonverbal markers plus P2 narrated mix",
+      "automated_acceptance_criteria": [
+        "Voice-Free phase markers precede controlled boundaries without speech.",
+        "Narrated build applies bounded bed ducking, marker lead, voice fades, and restoration.",
+        "Return covers body, room, movement, eyes, and orientation before completion."
+      ],
+      "physical_acceptance_criteria": [
+        "No entrance is sudden or alarming and the complete return feels sufficient."
+      ],
+      "release_authority": "VOICE_FREE_PRIVATE_TEST_AUTHORIZED; narrated acceptance withheld; ZERO_RELEASE.",
+      "evidence_produced": [
+        "tools/voice-free-day1/build_phase_marked_support.py",
+        "tools/voice-free-day1/phase-marker-build-record.json",
+        "src/practice/voice-free-day1.ts"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Preserve marker regression; add narrated duck/fade evidence after voice selection."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F007",
+      "name": "Source-grounded Bullard, HeartMath, Dispenza, and QCTP Day 1 sequence",
+      "user_outcome": "The practice performs the controlled source operations in the exact reviewed order without invented methods or attainment claims.",
+      "authority_sources": [
+        "QCTP_DAY1_PRIMARY_SOURCE_EVIDENCE_PACKET_REV0.md",
+        "QCTP_DAY1_SOURCE_PRACTICE_CROSSWALK_REV0.csv",
+        "QCTP_DAY1_SOURCE_FAITHFUL_BASELINE_REV0.md",
+        "QCTP_DAY1_QCTP_ENHANCEMENT_DELTA_REV0.md",
+        "QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json"
+      ],
+      "status": "EXISTING",
+      "dependencies": [
+        "Locked script SHA-256 2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555"
+      ],
+      "implementation_package": "P0/P2 Day 1 content lock",
+      "automated_acceptance_criteria": [
+        "The 1,500-second six-phase runtime and 35-cue lock retain exact phase boundaries and source IDs.",
+        "HeartMath is five-in/five-out-or-comfortable with no hold or nasal-only rule.",
+        "Completion remains separate from state attainment."
+      ],
+      "physical_acceptance_criteria": [
+        "Source actions, spatial attention, observation, and return are understandable without reading."
+      ],
+      "release_authority": "CONTENT_LOCKED_FOR_TEST; wording changes require new hash and source-fidelity review; ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/practice/voice-free-day1.ts",
+        "src/practice/voice-free-day1.test.ts",
+        "src/practice/voice-free-day1.evidence.test.ts",
+        "QCTP_DAY1_SOURCE_SCRIPT_MACHINE_VERIFICATION_REV0.json"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Retain exact content and timing regression in every slice."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F008",
+      "name": "Daily lesson and practice readiness at 4:00 a.m. local time",
+      "user_outcome": "The eligible controlled morning mission is ready before Ryan wakes, including offline and across timezone or daylight-saving changes.",
+      "authority_sources": [
+        "Ryan controlled Rev3 scope clarification dated 2026-08-22",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md"
+      ],
+      "status": "NEW",
+      "dependencies": [
+        "Controlled content eligibility",
+        "Local timezone and DST-safe scheduler",
+        "QCTP-REV3-F039"
+      ],
+      "implementation_package": "P5 Scheduling vertical slice",
+      "automated_acceptance_criteria": [
+        "Before, at, and after 04:00 local readiness transitions are deterministic.",
+        "DST, timezone change, reload, and offline tests do not double-release or calendar-advance content.",
+        "Reserved content is never made eligible."
+      ],
+      "physical_acceptance_criteria": [
+        "Installed iPhone Today shows the correct ready mission at actual morning wake."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Implement a local-first schedule ledger and 04:00 readiness selector."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F009",
+      "name": "Additional controlled practice reminders",
+      "user_outcome": "When a controlled program requires more than one daily practice, each assignment appears and reminds at its controlled time.",
+      "authority_sources": [
+        "Ryan controlled Rev3 scope clarification dated 2026-08-22",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md"
+      ],
+      "status": "NEW",
+      "dependencies": [
+        "QCTP-REV3-F008",
+        "Per-content controlled schedule metadata",
+        "QCTP-REV3-F010"
+      ],
+      "implementation_package": "P5 Scheduling vertical slice",
+      "automated_acceptance_criteria": [
+        "Multiple assignments schedule once at exact local times without duplicates.",
+        "Missed, snoozed, completed, timezone-change, and offline states are durable.",
+        "No future-day time is invented."
+      ],
+      "physical_acceptance_criteria": [
+        "iPhone presents controlled additional assignments at the correct times and supports missed recovery."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; unsourced future schedules withheld.",
+      "evidence_produced": [
+        "src/app/screens/OverviewScreens.tsx currently exposes static morning, midday, and evening component status only"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Add controlled schedule metadata for released Day 1 only and leave future schedules held."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F010",
+      "name": "Notification permission, status, missed recovery, and visible fallback",
+      "user_outcome": "Ryan always knows whether reminders/results can notify, what was missed, and where to retrieve work when iPhone delivery is unavailable.",
+      "authority_sources": [
+        "Ryan controlled Rev3 scope clarification dated 2026-08-22",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F008",
+        "QCTP-REV3-F009",
+        "Service worker and durable ledgers"
+      ],
+      "implementation_package": "P5/P7 notification center and fallback",
+      "automated_acceptance_criteria": [
+        "Default, granted, denied, and unsupported states are explicit and never block core use.",
+        "Missed reminders and completed jobs remain visible in a durable in-app ledger.",
+        "Notification bodies are privacy-safe and delivery is never falsely guaranteed."
+      ],
+      "physical_acceptance_criteria": [
+        "Installed-PWA foreground/background behavior is measured on iPhone.",
+        "When delivery fails or is unsupported, the visible fallback and later retrieval work."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; guaranteed iOS delivery cannot be claimed without physical proof.",
+      "evidence_produced": [
+        "src/app/QctpProvider.tsx Mirror completion notification",
+        "src/app/screens/MirrorScreen.tsx Result notifications"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Generalize Mirror-only notification state into a durable local notification and reminder center."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F011",
+      "name": "Detailed daily teaching separate from guided practice",
+      "user_outcome": "Ryan can learn Day 1 through controlled Listen, Read, and Deep Dive layers without starting the meditation.",
+      "authority_sources": [
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "QCTP_DAY1_SOURCE_FAITHFUL_BASELINE_REV0.md"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Canonical source labels",
+        "Offline text and accepted lesson audio"
+      ],
+      "implementation_package": "P5 Learning vertical slice",
+      "automated_acceptance_criteria": [
+        "Listen, Read, and optional Deep Dive are separate from guided practice.",
+        "Text and controlled source detail work offline and never auto-start practice.",
+        "Rejected narration is not resurfaced as lesson audio."
+      ],
+      "physical_acceptance_criteria": [
+        "Teaching is readable and navigable on iPhone; accepted audio is eyes-free when available."
+      ],
+      "release_authority": "TEXT_IMPLEMENTATION_AUTHORIZED; any narrated teaching requires accepted voice; ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/foundation/day1.ts controlled lesson paragraphs",
+        "src/app/screens/PracticeScreen.tsx legacy lesson component and tests"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Wire controlled Day 1 Read and Deep Dive into the normal Rev3 route while keeping rejected audio quarantined."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F012",
+      "name": "Workbook prompts with typed and voice responses",
+      "user_outcome": "Workbook answers can be typed or spoken while raw audio and raw observation remain separate from derived interpretation.",
+      "authority_sources": [
+        "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F014",
+        "QCTP-REV3-F018",
+        "QCTP-REV3-F019",
+        "QCTP-REV3-F036"
+      ],
+      "implementation_package": "P5 Workbook plus P7 voice persistence",
+      "automated_acceptance_criteria": [
+        "Typed answers and accepted dictation save, reload, migrate, and export exactly once.",
+        "Raw audio, transcript, answer text, and later interpretation retain separate linked identities.",
+        "Offline transcription failure never removes audio or typed content."
+      ],
+      "physical_acceptance_criteria": [
+        "iPhone permission, record, replay, append, reconnect, and correction flows pass on workbook fields."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/app/screens/OverviewScreens.tsx workbook",
+        "src/app/components/FieldDictation.tsx",
+        "src/data/migrate-rev1.test.ts"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Complete destination audit and physical workbook dictation lifecycle."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F013",
+      "name": "Global quick voice note",
+      "user_outcome": "Ryan can capture a recoverable raw voice note in one hand from every appropriate main surface.",
+      "authority_sources": [
+        "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md section 3.1",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "IndexedDB recorder",
+        "Microphone permission",
+        "QCTP-REV3-F019"
+      ],
+      "implementation_package": "P7 Voice Capture",
+      "automated_acceptance_criteria": [
+        "Every non-practice primary route exposes Quick Capture.",
+        "Recording starts only after a user gesture and accepted chunks are playable after reload and offline.",
+        "Interrupted unclassified recordings are recoverable or explicitly discarded."
+      ],
+      "physical_acceptance_criteria": [
+        "One-handed iPhone capture, permission denial, interruption, and replay pass."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/app/App.tsx",
+        "src/voice-capture/VoiceRecorderPanel.tsx",
+        "tests/e2e/voice-offline.spec.ts"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Run physical iPhone one-handed and interruption acceptance."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F014",
+      "name": "Field dictation beside applicable fields",
+      "user_outcome": "Ryan can speak directly into the intended workbook, Studio, Lab, Codex, Mirror, or source-track field without cross-field leakage.",
+      "authority_sources": [
+        "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md section 3.2",
+        "Rev3 handoff P7"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Field destination inventory",
+        "QCTP-REV3-F018",
+        "QCTP-REV3-F019"
+      ],
+      "implementation_package": "P7 Field Dictation",
+      "automated_acceptance_criteria": [
+        "Every applicable field has a local microphone action.",
+        "Accepted transcript appends once only to its exact field.",
+        "Raw audio and transcript remain linked regardless of append failure."
+      ],
+      "physical_acceptance_criteria": [
+        "Representative workbook, Studio, Lab, Mirror, and source-track fields pass on iPhone."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/app/components/FieldDictation.tsx",
+        "src/voice-capture/FieldDictation.test.tsx",
+        "partial field integrations"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Audit all applicable fields and add a coverage test for the missing destinations."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F015",
+      "name": "Five-, ten-, and twenty-minute auto-dictation",
+      "user_outcome": "Ryan can launch a bounded long observation that auto-stops safely while retaining pause, resume, playback, and recovery semantics.",
+      "authority_sources": [
+        "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md section 3.3",
+        "QCTP_ROBERT_EDWARD_GRANT_INTEGRATION_REV0_2026-08-17.md"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Recorder lifecycle",
+        "IndexedDB quota handling",
+        "QCTP-REV3-F041"
+      ],
+      "implementation_package": "P7 Timed Auto-Dictation",
+      "automated_acceptance_criteria": [
+        "5, 10, and 20-minute presets auto-stop at controlled durations.",
+        "Pause/resume, reload recovery, append-once, offline retention, and timer cleanup pass.",
+        "REG-01 still enforces its controlled five-minute gate."
+      ],
+      "physical_acceptance_criteria": [
+        "At least one real ten-minute and one real twenty-minute iPhone capture survive foreground/background handling."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/voice-capture/VoiceRecorderPanel.tsx duration picker",
+        "src/reg/reg01.ts five-minute mode"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Expose a general timed-capture route and verify all three durations."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F016",
+      "name": "Experiment voice logs",
+      "user_outcome": "A Lab session can receive rapid timestamped low-screen raw voice segments before classification or interpretation.",
+      "authority_sources": [
+        "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md section 3.4",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md"
+      ],
+      "status": "NEW",
+      "dependencies": [
+        "Lab session linkage",
+        "Segment timestamps",
+        "QCTP-REV3-F013",
+        "QCTP-REV3-F019"
+      ],
+      "implementation_package": "P7 Experiment Voice Log vertical slice",
+      "automated_acceptance_criteria": [
+        "One tap records a timestamped raw segment linked to the active experiment.",
+        "Segments can be classified later without mutating raw audio or raw transcript.",
+        "Confidence, interpretation, feedback, and score remain separate layers."
+      ],
+      "physical_acceptance_criteria": [
+        "Immediate dream, OBE, or blind-experiment recall can be captured on iPhone with minimal screen interaction."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; no unsourced experiment method may be invented.",
+      "evidence_produced": [
+        "Voice destination enum and generic Lab fields only"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Implement the session-linked timestamped raw-segment schema and first Lab launch control."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F017",
+      "name": "Voice-first post-session debrief",
+      "user_outcome": "Immediately after a complete return, Ryan can record raw experience before ratings, conclusions, or Mirror interpretation.",
+      "authority_sources": [
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
+        "QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json post_session_debrief"
+      ],
+      "status": "NEW",
+      "dependencies": [
+        "Practice completion flow",
+        "QCTP-REV3-F013",
+        "QCTP-REV3-F019"
+      ],
+      "implementation_package": "P2/P5 Debrief vertical slice",
+      "automated_acceptance_criteria": [
+        "Debrief appears only after full return and prompts raw voice before ratings or interpretation.",
+        "Skip and remind-later states are durable and do not alter completion.",
+        "Narrated-candidate debrief records startle, naturalness, breath usability, support, marker, return, state markers, and disruptions as separate review dimensions.",
+        "Narrated-candidate questions remain separate from Voice-Free observations."
+      ],
+      "physical_acceptance_criteria": [
+        "Debrief is low-friction after a waking-state practice and does not force visual classification first."
+      ],
+      "release_authority": "VOICE_FREE_DEBRIEF_IMPLEMENTATION_AUTHORIZED; narrated-specific integration waits for selected voice; ZERO_RELEASE.",
+      "evidence_produced": [
+        "Locked Day 1 debrief contract; no normal Voice-Free completion UI yet"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Add Voice-Free raw-first completion debrief without waiting for narration."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F018",
+      "name": "PX13 local Whisper and offline transcription queue",
+      "user_outcome": "Captured audio is transcribed at zero recurring cost when the PX13 is available and remains safely queued when it is not.",
+      "authority_sources": [
+        "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
+        "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
+        "Rev3 handoff P7"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Local Whisper companion",
+        "Private authenticated gateway",
+        "QCTP-REV3-F040"
+      ],
+      "implementation_package": "P7 Local Transcription Reliability",
+      "automated_acceptance_criteria": [
+        "Free Local policy rejects paid mode and requires no provider key.",
+        "Queue, idempotency, retry, authentication, and deletion survive reload and reconnect.",
+        "Every failure preserves local raw audio and exposes a non-key recovery message."
+      ],
+      "physical_acceptance_criteria": [
+        "Record offline on iPhone, reconnect through the private PX13 route, receive a transcript, and replay the original.",
+        "Long-recording transcription completes without manual file export."
+      ],
+      "release_authority": "FREE_LOCAL_IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; paid transcription may not enter the critical path.",
+      "evidence_produced": [
+        "src/transcription/local-client.ts",
+        "server/providers/local-whisper.ts",
+        "local-whisper-companion/",
+        "44 companion tests recorded PASS in branch state"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Run exact-candidate offline/reconnect and long-audio physical acceptance."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F019",
+      "name": "Separate linked audio, transcript, note, interpretation, and tag layers",
+      "user_outcome": "Raw audio, verbatim transcript, corrected transcript, clean note, interpretation, and tags remain independently inspectable and recoverable.",
+      "authority_sources": [
+        "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "QCTP_CURRENT_STATE.json v19"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F013",
+        "QCTP-REV3-F018",
+        "QCTP-REV3-F036",
+        "QCTP-REV3-F037"
+      ],
+      "implementation_package": "P7 Layered Record Review",
+      "automated_acceptance_criteria": [
+        "Verbatim transcript and raw audio are immutable source layers.",
+        "Corrections, clean notes, interpretations, and tags have distinct IDs and provenance links.",
+        "Every layer round-trips and supports controlled selective deletion."
+      ],
+      "physical_acceptance_criteria": [
+        "Ryan can replay, correct, derive, and selectively delete a layer on iPhone without losing its preserved source."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; silent source mutation or deletion prohibited.",
+      "evidence_produced": [
+        "src/domain/schemas.ts",
+        "src/data/repository.ts",
+        "src/codex/workflows.ts",
+        "repository and Codex tests"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Complete the layer-management UI audit and browser acceptance."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F020",
+      "name": "Deterministic Mirror Core",
+      "user_outcome": "Offline reflection, filtering, trends, backlinks, and exact evidence citations work even when the PX13 is unavailable.",
+      "authority_sources": [
+        "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "Rev3 handoff P7"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": ["Codex records", "QCTP-REV3-F049"],
+      "implementation_package": "P7 Mirror Core",
+      "automated_acceptance_criteria": [
+        "Counts, filters, trends, source IDs, corrections, dismissals, export, and deletion are deterministic and offline.",
+        "Every displayed claim traces to exact local record IDs.",
+        "PX13 absence never produces an API-key error or disables core reflection."
+      ],
+      "physical_acceptance_criteria": [
+        "With PX13 off, Ryan can find a known record and inspect every cited source from the iPhone."
+      ],
+      "release_authority": "FREE_LOCAL_CORE_IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/insights/analyzer.ts",
+        "src/insights/analyzer.test.ts",
+        "src/app/screens/MirrorScreen.tsx",
+        "tests/e2e/mirror-offline.spec.ts"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Finish controlled filter/backlink UX and repeat offline iPhone usability gate."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F021",
+      "name": "Optional PX13 generative Local AI Mirror",
+      "user_outcome": "The iPhone submits source-grounded generation to the PX13, queues offline, shows job status, synchronizes cited results, and retrieves them later without a paid key.",
+      "authority_sources": [
+        "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
+        "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
+        "Rev3 handoff P7"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F020",
+        "QCTP-REV3-F040",
+        "PX13 local model and worker"
+      ],
+      "implementation_package": "P7 Local AI Mirror",
+      "automated_acceptance_criteria": [
+        "Only explicit source IDs enter a request and returned excerpts are verified.",
+        "Offline queue, stable idempotency, leases, retries, job status, synchronization, review, and deletion pass.",
+        "Policy attests zero paid cloud and iPhone Core remains functional with PX13 unavailable."
+      ],
+      "physical_acceptance_criteria": [
+        "Same-network and private-remote iPhone requests complete with citations.",
+        "PX13-off requests queue without a key error and later result retrieval or notification works."
+      ],
+      "release_authority": "OPTIONAL_FREE_LOCAL_GENERATION_AUTHORIZED_ZERO_RELEASE; no required cloud AI.",
+      "evidence_produced": [
+        "server/mirror/",
+        "src/mirror/",
+        "tests/e2e/mirror-offline.spec.ts",
+        "first cited iPhone-to-PX13 result recorded in branch history"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Persist the selected-model benchmark and run reboot, disconnect, remote, and later-notification acceptance."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F022",
+      "name": "Complete Today morning cockpit",
+      "user_outcome": "One screen shows ready practice, duration, mode, last result, unresolved issue, Breath Director, voice note, next lesson, source-track next step, offline, PX13, and update state.",
+      "authority_sources": [
+        "Rev3 handoff P5",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "Ryan controlled Rev3 scope clarification dated 2026-08-22"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F008",
+        "QCTP-REV3-F010",
+        "QCTP-REV3-F011",
+        "QCTP-REV3-F026",
+        "QCTP-REV3-F030",
+        "QCTP-REV3-F039",
+        "QCTP-REV3-F050"
+      ],
+      "implementation_package": "P5 Morning Cockpit",
+      "automated_acceptance_criteria": [
+        "Every required datum is visible or explicitly held and the unresolved issue persists across reload.",
+        "Concise State Map progress, secondary controlled assignments, and interrupted-session Resume, Restart, and End-without-credit states are visible.",
+        "One dominant practice action and mobile navigation have no horizontal overflow.",
+        "Dynamic next lesson and source-track selector never expose uncontrolled content."
+      ],
+      "physical_acceptance_criteria": [
+        "Portrait iPhone use is clear, one-handed, and useful immediately after waking."
+      ],
+      "release_authority": "PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/app/screens/OverviewScreens.tsx",
+        "tests/e2e/bootstrap-navigation.spec.ts",
+        "QCTP_REV3_UX_ACCEPTANCE_REV0_2026-08-22.json"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Add dynamic schedule, notification, next-lesson, and source-track status without disturbing the working morning action."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F023",
+      "name": "Deterministic Breath Director",
+      "user_outcome": "Ryan receives the exact safe breathing method for goal, source, state, context, and personal comfort.",
+      "authority_sources": [
+        "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
+        "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
+        "Rev3 handoff P3"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Saved breath profile",
+        "Foreground lifecycle",
+        "QCTP-REV3-F025"
+      ],
+      "implementation_package": "P3 Breath Director",
+      "automated_acceptance_criteria": [
+        "Director evaluates contraindications, air hunger, posture, readiness, source method, cadence, and stop conditions.",
+        "No source method is silently replaced by a universal cadence.",
+        "Preferences and safe-stop recovery persist and export."
+      ],
+      "physical_acceptance_criteria": [
+        "Eyes-open and eyes-closed visual/audio cues, interruption, comfort override, stop, and recovery pass on iPhone."
+      ],
+      "release_authority": "PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE; safety language cannot be weakened without review.",
+      "evidence_produced": [
+        "src/breath/director.ts",
+        "src/breath/QuickBreathDirector.tsx",
+        "src/breath/breath.test.ts",
+        "src/app/components/rev3-training-panels.test.tsx"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Run physical iPhone safety, cue-channel, interruption, and recovery gate."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F024",
+      "name": "Seven-session Breath Foundations",
+      "user_outcome": "Ryan progresses from basic mechanics through comfortable personal calibration with checkpoints and no false state claims.",
+      "authority_sources": [
+        "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md sections 7 and 8",
+        "Rev3 handoff P3"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F023",
+        "Breath profile persistence",
+        "QCTP-REV3-F037"
+      ],
+      "implementation_package": "P3 Breath Foundations",
+      "automated_acceptance_criteria": [
+        "BREATH-01 through BREATH-07 use controlled steps, foreground-only active time, checkpoints, calibration, and no state credit.",
+        "Safe stop, resume, reload, migration, and export maintain exact evidence."
+      ],
+      "physical_acceptance_criteria": [
+        "Seven-session iPhone flow is understandable; tones, pace, pause, stop, and resume are comfortable."
+      ],
+      "release_authority": "PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/breath/catalog.ts",
+        "src/breath/foundation-protocol.ts",
+        "src/breath/recovery.ts",
+        "src/app/components/BreathFoundationsPanel.tsx",
+        "breath persistence tests"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Close BREATH-01 physical acceptance, then progress through the seven controlled sessions."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F025",
+      "name": "Source-specific breathing rules and accessible coaching",
+      "user_outcome": "Each practice preserves its source breathing instructions with visual/audio coaching, corrections, stop conditions, and saved preferences.",
+      "authority_sources": [
+        "QCTP_BREATHWORK_AND_RESPIRATORY_CONTROL_SPEC_REV0_2026-08-17.md",
+        "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md section 8",
+        "QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": ["QCTP-REV3-F023", "QCTP-REV3-F043"],
+      "implementation_package": "P3 Breath Coaching",
+      "automated_acceptance_criteria": [
+        "Day 1 returns five-in/five-out-or-comfortable with no hold or route mandate.",
+        "Every controlled method specifies posture, route, cadence, volume, hold/release if any, corrections, contraindications, and stop behavior.",
+        "Audio, visual, reduced-stimulation, and saved preference paths stay synchronized."
+      ],
+      "physical_acceptance_criteria": [
+        "Ryan can follow the selected cue channel comfortably and stop immediately without confusion."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; source breathing substitutions require fidelity review.",
+      "evidence_produced": [
+        "src/breath/director.ts",
+        "src/breath/catalog.ts",
+        "src/practice/voice-free-day1.ts",
+        "breath and Day 1 rail tests"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Complete global cue-channel and comfort-preference UI, then physical acceptance."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F026",
+      "name": "State Atlas, readiness, markers, troubleshooting, return, and evidence",
+      "user_outcome": "Ryan can learn and safely distinguish controlled states with prerequisites, recognizable markers, look-alikes, correction paths, and full return.",
+      "authority_sources": [
+        "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md",
+        "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
+        "Rev3 handoff P4"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "State evidence ledger",
+        "QCTP-REV3-F027",
+        "QCTP-REV3-F028",
+        "QCTP-REV3-F049"
+      ],
+      "implementation_package": "P4 State Atlas",
+      "automated_acceptance_criteria": [
+        "All twelve controlled definitions and recipes retain prerequisites, markers, look-alikes, corrections, stop rules, and return.",
+        "Process advances PREPARE through ADAPT from evidence, not elapsed time.",
+        "Imports cannot forge an unsupported final capability."
+      ],
+      "physical_acceptance_criteria": [
+        "Timed practice, cue comprehension, pause/resume, offline use, safe stop, return, and persistence pass on iPhone."
+      ],
+      "release_authority": "PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE; no advanced-state claim from software alone.",
+      "evidence_produced": [
+        "src/state-atlas/",
+        "src/app/components/StateAtlasTrainingPanel.tsx",
+        "src/app/components/rev3-training-panels.test.tsx"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Build the first controlled timed State practice controller and keep manual evidence entry intact."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F027",
+      "name": "Teach, Coach, Test, and Independent guidance tiers",
+      "user_outcome": "Instruction fades only when evidence shows that Ryan can perform safely with less guidance.",
+      "authority_sources": [
+        "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
+        "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
+        "Rev3 handoff P4"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F026",
+        "Accepted local voice or controlled nonverbal manifests"
+      ],
+      "implementation_package": "P4 Guidance Tier Runtime",
+      "automated_acceptance_criteria": [
+        "Tier recommendation is evidence-driven and cannot silently downgrade safety cues.",
+        "Each timed practice has explicit tier-specific cue membership and a full return.",
+        "Test and Independent never award state credit without the same evidence gates."
+      ],
+      "physical_acceptance_criteria": [
+        "Coach, Test, and Independent are usable with eyes closed and do not remove necessary corrections or return cues."
+      ],
+      "release_authority": "SCHEMA_IMPLEMENTATION_AUTHORIZED; narrated tier audio waits for selected voice; ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/state-atlas/types.ts",
+        "src/state-atlas/progression.ts",
+        "src/state-atlas/StateAtlasProgress.tsx"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Add tier-specific cue manifests for the first controlled State recipe."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F028",
+      "name": "Evidence-gated capability progression",
+      "user_outcome": "Introduced, Accessed, Stabilized, Functional, and Transferable reflect explicit repeatable evidence and can never be earned from a timer alone.",
+      "authority_sources": [
+        "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
+        "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md",
+        "Rev3 handoff P4"
+      ],
+      "status": "EXISTING",
+      "dependencies": ["Valid immutable session evidence", "QCTP-REV3-F049"],
+      "implementation_package": "P4 Capability Ledger",
+      "automated_acceptance_criteria": [
+        "Transitions are ordered, conjunctive, bounded, and recomputed from evidence.",
+        "Stabilized, Functional, and Transferable retain their controlled repeatability, feedback, reduced-guidance, and cross-context gates.",
+        "Timer completion and favorable defaults alone cannot advance capability."
+      ],
+      "physical_acceptance_criteria": [
+        "User-supplied evidence remains reviewable and software labels remain claims about records, not consciousness attainment."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; state attainment claim prohibited.",
+      "evidence_produced": [
+        "src/state-atlas/progression.ts",
+        "src/state-atlas/state-atlas.test.ts",
+        "src/state-atlas/StateAtlasProgress.test.tsx"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Preserve progression regressions while timed practice surfaces are added."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F029",
+      "name": "Canonical source-class labels",
+      "user_outcome": "Every lesson, practice, enhancement, synthesis, and original tool clearly displays SOURCE_FAITHFUL, SOURCE_ENHANCED, QCTP_SYNTHESIS, or QCTP_ORIGINAL.",
+      "authority_sources": [
+        "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "Rev3 handoff P4/P6"
+      ],
+      "status": "NEW",
+      "dependencies": ["Shared content schema", "Source registry"],
+      "implementation_package": "P4/P6 Source Label Normalization",
+      "automated_acceptance_criteria": [
+        "One canonical enum is used in persistence, source tracks, lessons, practices, Studio, Lab, and Mirror.",
+        "Legacy lowercase values migrate losslessly.",
+        "Every user-facing controlled content detail shows a human-readable badge without collapsing provenance."
+      ],
+      "physical_acceptance_criteria": [
+        "Labels are visible and understandable on iPhone without dominating the practice flow."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "Partial lowercase contentClass values in src/state-atlas and src/source-tracks",
+        "Source labels in current panels"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Introduce the canonical schema and additive migration, then apply badges to released surfaces."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F030",
+      "name": "Thomas Campbell controlled source-track MVP",
+      "user_outcome": "Ryan can use the controlled ten-module map and five original QCTP exercises with raw-first evidence and explicit prerequisite holds.",
+      "authority_sources": [
+        "QCTP_THOMAS_CAMPBELL_INTEGRATION_REV0_2026-08-18.md",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "Rev3 handoff P6"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F026",
+        "QCTP-REV3-F029",
+        "QCTP-REV3-F034",
+        "QCTP-REV3-F037"
+      ],
+      "implementation_package": "P6 Thomas Campbell MVP",
+      "automated_acceptance_criteria": [
+        "Ten controlled metadata modules and five MVP exercises retain source concept, original-QCTP status, safety, prerequisites, and completion gates.",
+        "Raw fields save before interpretation and no timer grants capability.",
+        "Records round-trip with voice and export links."
+      ],
+      "physical_acceptance_criteria": [
+        "Five MVP workflows are usable, persist, and export on iPhone; held modules remain visibly held."
+      ],
+      "release_authority": "PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE; proprietary course text or audio may not be copied.",
+      "evidence_produced": [
+        "src/source-tracks/catalog.ts",
+        "src/app/components/CampbellTrackPanel.tsx",
+        "src/source-tracks/source-tracks.test.ts"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Run end-to-end physical and archive acceptance for the five released exercises."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F031",
+      "name": "Robert Edward Grant REG-01 MVP",
+      "user_outcome": "Ryan completes the controlled geometry construction, photo, five-minute raw observation, precept, and linked evidence workflow.",
+      "authority_sources": [
+        "QCTP_ROBERT_EDWARD_GRANT_INTEGRATION_REV0_2026-08-17.md",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "Rev3 handoff P6"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Attachments",
+        "QCTP-REV3-F015",
+        "QCTP-REV3-F019",
+        "QCTP-REV3-F037"
+      ],
+      "implementation_package": "P6 REG-01",
+      "automated_acceptance_criteria": [
+        "Exactly nine controlled steps and the exact prompt/precept are exposed.",
+        "Completion requires the controlled artifact and accepted five-minute observation.",
+        "Atomic completion links Studio, Codex, Mirror, and path state and resumes after reload."
+      ],
+      "physical_acceptance_criteria": [
+        "Camera/photo, five-minute capture, reload, completion, export, and restore pass on iPhone."
+      ],
+      "release_authority": "PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/reg/reg01.ts",
+        "src/app/screens/StudioScreen.tsx",
+        "src/reg/reg01.test.ts",
+        "src/reg/StudioScreen.test.tsx",
+        "src/data/repository.test.ts"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Perform the physical REG-01 iPhone workflow and archive round trip."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F032",
+      "name": "Controlled source-track registry and infrastructure",
+      "user_outcome": "Every source track has validated authority, content class, prerequisites, status, safety, and evidence gates before it can become usable.",
+      "authority_sources": [
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
+        "Rev3 handoff P6"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": ["QCTP-REV3-F029", "Source records and crosswalks"],
+      "implementation_package": "P6 Generic Source Registry",
+      "automated_acceptance_criteria": [
+        "Validated registry distinguishes released, prerequisite, recipe-only, architecture-only, experimental-protocol, record-only, blocked, and deferred states.",
+        "A route cannot expose practice content without authority records and required gates.",
+        "Source links and labels propagate to Codex, Studio, Lab, Mirror, and export."
+      ],
+      "physical_acceptance_criteria": [
+        "Held and released states are plainly distinguishable on iPhone."
+      ],
+      "release_authority": "INFRASTRUCTURE_IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; content release remains per-source authority.",
+      "evidence_produced": [
+        "src/source-tracks/catalog.ts CONTROLLED_SOURCE_ARCHITECTURE"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Replace the hardcoded status list with a validated registry and route guard."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F033",
+      "name": "Controlled broader source recipe and experiment foundations",
+      "user_outcome": "Existing authority-backed state recipes, Day 1 source operations, and Campbell experimental foundations are surfaced without being mistaken for complete source tracks.",
+      "authority_sources": [
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "QCTP_STATE_ATLAS_AND_CORE_MEDITATION_RECIPES_REV0_2026-08-18.md",
+        "QCTP_DAY1_PRIMARY_SOURCE_EVIDENCE_PACKET_REV0.md",
+        "Rev3 handoff P6"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F032",
+        "Existing controlled State Atlas, Campbell, and Day 1 authorities"
+      ],
+      "implementation_package": "P6 Existing Broader Source Foundations",
+      "automated_acceptance_criteria": [
+        "Monroe/Buhlman-related and OBE recipes expose only their controlled State Atlas scope with prerequisites, stop rules, and full return.",
+        "Campbell remote-viewing foundations preserve target secrecy, raw immutability, feedback, and calibration.",
+        "Bullard, HeartMath, and Dispenza operations remain limited to their controlled Day 1 crosswalk unless new authority exists; Mossbridge and psionics remain architecture or record-only."
+      ],
+      "physical_acceptance_criteria": [
+        "Each separately released practice receives its own iPhone safety and usability gate."
+      ],
+      "release_authority": "EXISTING_CONTROLLED_FOUNDATIONS_ONLY_ZERO_RELEASE; no expansion beyond named authority.",
+      "evidence_produced": [
+        "State Atlas recipes",
+        "Day 1 source operations",
+        "source registry architecture statuses",
+        "generic Lab ledger"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Surface the already-controlled recipe and experiment foundations through the validated source registry while preserving their exact scope limits."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F034",
+      "name": "Studio, Codex, Insights, and source-linked observation workflows",
+      "user_outcome": "Ryan can create artifacts, preserve observation before interpretation, search records, follow backlinks, and trace patterns to exact sources.",
+      "authority_sources": [
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "Rev3 handoff P6/P7"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F019",
+        "QCTP-REV3-F020",
+        "QCTP-REV3-F029",
+        "QCTP-REV3-F049"
+      ],
+      "implementation_package": "P6/P7 Knowledge Workflows",
+      "automated_acceptance_criteria": [
+        "Create, edit, revision, source label, search, filter, backlink, correction, dismissal, selective deletion, and export tests pass.",
+        "Patterns expose exact contributing record IDs and never rewrite their source records.",
+        "Raw observation is required before interpretation where the controlled workflow demands it."
+      ],
+      "physical_acceptance_criteria": [
+        "On iPhone, Ryan can create one artifact/record and trace one known insight back to every exact source."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/app/screens/StudioScreen.tsx",
+        "src/codex/",
+        "src/insights/",
+        "src/app/screens/MirrorScreen.tsx",
+        "repository and E2E tests"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Add missing controlled views and simplify source-linked backlink navigation on mobile."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F035",
+      "name": "Controlled Lab experiments",
+      "user_outcome": "Ryan can run blind, locked, feedback-bearing experiments with immutable raw observation, scoring, and calibration.",
+      "authority_sources": [
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "QCTP_THOMAS_CAMPBELL_INTEGRATION_REV0_2026-08-18.md",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md"
+      ],
+      "status": "NEW",
+      "dependencies": [
+        "An authority-backed controlled protocol",
+        "Blind target generator",
+        "QCTP-REV3-F016",
+        "QCTP-REV3-F019"
+      ],
+      "implementation_package": "P6 Lab Vertical Slice",
+      "automated_acceptance_criteria": [
+        "Target assignment is concealed until immutable submission.",
+        "Protocol version, raw record, feedback, score, confidence, and revision remain distinct.",
+        "No uncontrolled experiment or fabricated source method is exposed."
+      ],
+      "physical_acceptance_criteria": [
+        "Ryan completes a real blind iPhone session without target leakage before submission."
+      ],
+      "release_authority": "INFRASTRUCTURE_IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; protocol release requires separate source authority.",
+      "evidence_produced": [
+        "src/app/screens/LabScreen.tsx basic protocol/result/revision ledger"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Implement the first authority-backed Campbell blind protocol without inventing target claims."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F036",
+      "name": "IndexedDB preservation and Rev1 migration lineage",
+      "user_outcome": "Existing QCTP data upgrades idempotently with its exact source snapshot and never disappears silently.",
+      "authority_sources": [
+        "QCTP_CURRENT_STATE.json v19",
+        "QCTP_REV2_CODEX_BRANCH_STATE.json",
+        "Rev3 handoff P7/P8",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md"
+      ],
+      "status": "BLOCKED",
+      "dependencies": [
+        "Ryan's private actual-origin installed data",
+        "Pre-upgrade archive",
+        "QCTP-REV3-F037"
+      ],
+      "implementation_package": "P8 Actual-Origin Migration Gate",
+      "automated_acceptance_criteria": [
+        "Rev1 wrapper/raw sources and IndexedDB v1 through v5 upgrade idempotently.",
+        "Exact legacy bytes, fingerprint, unknown fields, records, attachments, queues, settings, and failure rollback are preserved.",
+        "Corrupt or partial inputs write nothing."
+      ],
+      "physical_acceptance_criteria": [
+        "A pre/post archive and count/hash comparison passes on the actual installed origin with Ryan confirming recognizable data."
+      ],
+      "release_authority": "MACHINE_MIGRATION_IMPLEMENTATION_AUTHORIZED; actual-origin mutation requires protected backup and physical confirmation; ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/data/db.ts",
+        "src/data/migrate-rev1.ts",
+        "src/data/db-migration.test.ts",
+        "src/data/migrate-rev1.test.ts",
+        "QCTP_REV3_MIGRATION_AND_DATA_PRESERVATION_REV0_2026-08-22.json"
+      ],
+      "deferral": {
+        "reason": "Actual-origin acceptance requires private installed user data and cannot be simulated as equivalent evidence.",
+        "next_executable_step": "Create a recoverable pre-upgrade archive, migrate the actual origin, compare counts and hashes, and request one physical recognition check."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F037",
+      "name": "Binary export/import, selective deletion, recovery, and no silent data loss",
+      "user_outcome": "Recordings and linked records can be backed up, restored, selectively deleted, and recovered safely, including long binary data.",
+      "authority_sources": [
+        "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "Rev3 handoff P7/P8"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "IndexedDB capacity",
+        "iOS file picker",
+        "Remote deletion proof",
+        "QCTP-REV3-F041"
+      ],
+      "implementation_package": "P8 Data Recovery",
+      "automated_acceptance_criteria": [
+        "Archives use safe paths, SHA-256, ownership checks, and validation-before-atomic-import.",
+        "Selective deletion respects backlinks, remote state, tombstones, restore, purge confirmation, and rollback.",
+        "Near-quota, interrupted import, large blob, and corrupt archive tests preserve the prior database."
+      ],
+      "physical_acceptance_criteria": [
+        "A long-recording archive exports, imports, plays, and survives an interrupted operation on iPhone."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; destructive purge requires explicit confirmation and proof.",
+      "evidence_produced": [
+        "src/export-import/index.ts",
+        "src/data/repository.ts",
+        "src/mirror/deletion.ts",
+        "export/import and deletion tests"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Add quota-stressed large-binary gates and complete a physical archive round trip."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F038",
+      "name": "Same-origin offline audio packaging with checksums",
+      "user_outcome": "Controlled practice media is local, integrity-checked, cacheable, and independent of speech or cloud providers at runtime.",
+      "authority_sources": [
+        "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
+        "QCTP_DAY1_SOURCE_GROUNDED_AUDIO_IMPLEMENTATION_HANDOFF_REV0_2026-08-20.md",
+        "Rev3 handoff P0/P8"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": ["Versioned media manifest", "QCTP-REV3-F039"],
+      "implementation_package": "P0/P8 Controlled Media Packaging",
+      "automated_acceptance_criteria": [
+        "Every runtime media URL is same-origin and matches a duration, size, and SHA-256 manifest entry.",
+        "Build fails closed for missing, stale, rejected, unlisted, or hash-mismatched media.",
+        "Cold-offline playback uses only the controlled cached package."
+      ],
+      "physical_acceptance_criteria": [
+        "Installed iPhone plays selected support from cold offline without network, dropout, or stale media."
+      ],
+      "release_authority": "PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE; rejected A03R voice excluded.",
+      "evidence_produced": [
+        "public/audio/day1-source-rev0/voice-free-manifest.json",
+        "tools/cache-day1-audio.mjs",
+        "tools/verify-local-audio-dist.mjs",
+        "Voice-Free verification JSONs"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Close physical cold-offline and stale-cache replacement acceptance."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F039",
+      "name": "Service-worker update behavior and visible cache/update status",
+      "user_outcome": "Ryan can see offline readiness, current package, available update, and recovery status without a white screen or data loss.",
+      "authority_sources": [
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "Rev3 handoff P5/P8",
+        "QCTP_CURRENT_STATE.json v19"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Versioned candidate identity",
+        "Workbox",
+        "IndexedDB preservation",
+        "QCTP-REV3-F047"
+      ],
+      "implementation_package": "P8 Offline and Update Gate",
+      "automated_acceptance_criteria": [
+        "Checking, ready, offline-ready, update-available, and error states are visible and truthful.",
+        "Controller replacement, stale-cache cleanup, candidate identity, reload, and rollback preserve IndexedDB.",
+        "A stopped preview or failed update yields explicit recovery rather than an indefinite white page."
+      ],
+      "physical_acceptance_criteria": [
+        "Installed iPhone updates between exact candidates, cold-launches offline, and retains user data."
+      ],
+      "release_authority": "PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/app/pwa-status.ts",
+        "vite.config.ts",
+        "tests/e2e/bootstrap-navigation.spec.ts",
+        "QCTP_REV3_PRIVATE_PREVIEW_STARTUP_RECOVERY_REV0_2026-08-22.json"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Add an explicit two-version service-worker regression and run installed-iPhone upgrade/rollback acceptance."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F040",
+      "name": "Private Tailscale HTTPS operation on iPhone and PX13",
+      "user_outcome": "The complete QCTP client, Whisper, and Local AI Mirror operate privately over HTTPS on LAN or remote tailnet without public exposure.",
+      "authority_sources": [
+        "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
+        "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
+        "QCTP_CURRENT_STATE.json v19",
+        "Rev3 handoff P8"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Tailnet",
+        "Private certificate",
+        "Authenticated gateway",
+        "QCTP-REV3-F047"
+      ],
+      "implementation_package": "P8 Private Network Gate",
+      "automated_acceptance_criteria": [
+        "Non-TLS remote endpoints and unauthenticated API calls fail closed.",
+        "Secure device session, rate limit, idempotency, exact candidate identity, Funnel-off state, and service recovery pass.",
+        "The existing protected 443 runtime remains unchanged while Rev3 preview uses its isolated route."
+      ],
+      "physical_acceptance_criteria": [
+        "iPhone reconnects after PX13 and browser restart on both same-network and remote tailnet paths."
+      ],
+      "release_authority": "TAILNET_PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE; public Funnel and public deployment prohibited.",
+      "evidence_produced": [
+        "server/auth.ts",
+        "server/app.ts",
+        "tools/rev3-runtime/",
+        "QCTP_REV3_PRIVATE_PREVIEW_STARTUP_RECOVERY_REV0_2026-08-22.json"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Perform supervised PX13 reboot and remote-iPhone recovery test."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F041",
+      "name": "Microphone, lifecycle, reconnect, quota, deletion, and rollback acceptance",
+      "user_outcome": "Recording and local data remain recoverable through real mobile interruptions, storage pressure, backgrounding, reconnect, and controlled rollback.",
+      "authority_sources": [
+        "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md",
+        "Rev3 handoff P8",
+        "Ryan controlled Rev3 scope clarification dated 2026-08-22"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Physical iPhone WebKit",
+        "QCTP-REV3-F037",
+        "QCTP-REV3-F047"
+      ],
+      "implementation_package": "P8 Mobile Recovery Matrix",
+      "automated_acceptance_criteria": [
+        "Track stop, pagehide, foreground/background, interrupted append, offline/reconnect, quota failure, export/import, migration, deletion, and rollback paths all fail safely.",
+        "Every uncertain operation records recoverable state and never reports success prematurely."
+      ],
+      "physical_acceptance_criteria": [
+        "Call/interruption, lock, app switch, offline, reconnect, long capture, near-quota, archive, deletion, and rollback matrix passes on iPhone."
+      ],
+      "release_authority": "MACHINE_IMPLEMENTATION_AUTHORIZED; physical iPhone lifecycle gate required; ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/voice-capture/",
+        "tests/e2e/voice-offline.spec.ts",
+        "QCTP_REV3_MIGRATION_AND_DATA_PRESERVATION_REV0_2026-08-22.json",
+        "runtime rollback tools"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Run the controlled physical WebKit interruption and recovery matrix against the exact candidate."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F042",
+      "name": "User-friendly, visually engaging, mobile-first serious-instrument UX",
+      "user_outcome": "QCTP feels clear, calm, and rewarding on iPhone without false gamification, streak pressure, or unsupported state claims.",
+      "authority_sources": [
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "Rev3 handoff P5",
+        "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Coherent Today, Paths, Practice, Studio, and More surfaces",
+        "QCTP-REV3-F043"
+      ],
+      "implementation_package": "P5 Mobile UX",
+      "automated_acceptance_criteria": [
+        "Primary navigation remains simple, one dominant action is clear, touch targets are at least 44px, and no target screen overflows horizontally.",
+        "No streak, points, progress, or timer language implies unsupported capability or state attainment.",
+        "Empty and held states tell the truth and name the next available action."
+      ],
+      "physical_acceptance_criteria": [
+        "One-handed portrait navigation and qualitative ease, clarity, and engagement pass on Ryan's iPhone."
+      ],
+      "release_authority": "PRIVATE_UX_TEST_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/app/Shell.tsx",
+        "src/app/platform-styles.css",
+        "QCTP_REV3_UX_ACCEPTANCE_REV0_2026-08-22.json",
+        "eight WebKit iPhone screenshots"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Continue vertical-slice usability passes and close the physical iPhone verdict."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F043",
+      "name": "Accessible volume, text, pacing, display, and reduced-stimulation controls",
+      "user_outcome": "Ryan can tailor audio/visual intensity, text, motion, pace, and cue channel without losing safety or source fidelity.",
+      "authority_sources": [
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
+        "Rev3 handoff P3/P5"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Persisted preference profile",
+        "Practice and Breath renderers"
+      ],
+      "implementation_package": "P3/P5 Accessibility Vertical Slice",
+      "automated_acceptance_criteria": [
+        "Volume, text scale, pacing, contrast/display, motion, haptic, audio, visual, and reduced-stimulation preferences persist and export.",
+        "Labels, focus order, contrast, scalable text, captions, and touch targets pass automated checks.",
+        "Reduced stimulation never removes stop or return cues."
+      ],
+      "physical_acceptance_criteria": [
+        "VoiceOver, Dynamic Type, low-volume, dim/low-screen, reduced-motion, and alternate cue-channel use pass on iPhone."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "prefers-reduced-motion CSS",
+        "breath cue preferences",
+        "touch-target E2E coverage"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Add the global persisted accessibility profile and complete an iPhone accessibility audit."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F044",
+      "name": "Durable controlled Foundation day authoring mechanism",
+      "user_outcome": "A future Foundation day can be added only through source record, crosswalk, baseline, enhancement delta, script lock, machine review, and physical acceptance.",
+      "authority_sources": [
+        "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
+        "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "Rev3 handoff P6"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F029",
+        "Validated content registry and artifact validator"
+      ],
+      "implementation_package": "P6 Controlled Content Pipeline",
+      "automated_acceptance_criteria": [
+        "Reserved days cannot become authored or runnable without every controlled artifact and hash.",
+        "Unresolved fidelity or safety findings produce DO_NOT_RENDER.",
+        "New days receive regression, offline media, migration, and per-device acceptance gates without changing existing days."
+      ],
+      "physical_acceptance_criteria": [
+        "Each separately authorized day passes its own short then natural-duration iPhone acceptance."
+      ],
+      "release_authority": "PIPELINE_IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; individual day content requires separate authority.",
+      "evidence_produced": [
+        "src/foundation/catalog.ts 112-slot registry",
+        "src/foundation/catalog.test.ts no-fabrication guard",
+        "Day 1 controlled artifact chain"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Replace the hard-locked authoredDays tuple with a validated artifact-backed released-day registry while keeping only Day 1 released."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F045",
+      "name": "Foundation Days 2 through 112 controlled content",
+      "user_outcome": "Ryan sees truthful content holds until each future day is actually source-grounded and approved.",
+      "authority_sources": [
+        "Rev3 handoff P6",
+        "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
+        "Ryan controlled Rev3 scope clarification dated 2026-08-22"
+      ],
+      "status": "DEFERRED",
+      "dependencies": [
+        "QCTP-REV3-F044",
+        "A separate controlled source baseline and enhancement delta for each day"
+      ],
+      "implementation_package": "Future per-day controlled packages",
+      "automated_acceptance_criteria": [
+        "Days 2 through 112 remain reserved and contain no invented lesson, practice, schedule, narration, or completion credit.",
+        "UI names the content hold rather than presenting empty or fabricated material."
+      ],
+      "physical_acceptance_criteria": [
+        "A newly authorized day is tested only after its own controlled package exists."
+      ],
+      "release_authority": "DEFERRED_ZERO_RELEASE; no content authoring authority currently exists.",
+      "evidence_produced": [
+        "src/foundation/catalog.ts",
+        "src/foundation/catalog.test.ts"
+      ],
+      "deferral": {
+        "reason": "No controlled source baselines and enhancement deltas exist for Days 2 through 112, and fabrication is explicitly prohibited.",
+        "next_executable_step": "Keep the slots and visible holds; begin a future day only after its source package is separately controlled."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F046",
+      "name": "Zero recurring-cost Free Local runtime baseline",
+      "user_outcome": "Normal recording, playback, Day 1, storage, transcription queue, Mirror Core, and export work without an API key, credit, or internet.",
+      "authority_sources": [
+        "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md",
+        "QCTP_CURRENT_STATE.json v19",
+        "Rev3 handoff immutable controls and P7"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Exact candidate network gate",
+        "Local providers",
+        "QCTP-REV3-F018",
+        "QCTP-REV3-F020"
+      ],
+      "implementation_package": "P7 Free Local Reliability",
+      "automated_acceptance_criteria": [
+        "Unset every provider credential and block WAN; core workflows continue.",
+        "No paid-provider request, frontend secret, key prompt, or cloud critical-path dependency appears.",
+        "Optional paid adapters default off and policy rejects them in Free Local mode."
+      ],
+      "physical_acceptance_criteria": [
+        "With internet and PX13 unavailable, iPhone Core remains useful and generative/transcription requests queue without a key error."
+      ],
+      "release_authority": "FREE_LOCAL_BASELINE_REQUIRED_ZERO_RELEASE; required paid runtime prohibited.",
+      "evidence_produced": [
+        "server/config.ts",
+        "server/spend-limit.ts",
+        "src/domain/schemas.ts",
+        "Settings Free Local status",
+        "branch-state runtime evidence"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Add exact-candidate no-key/no-credit/no-egress browser and server regression."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F047",
+      "name": "Windows/PX13 startup, exact-candidate staging, rollback, and recovery",
+      "user_outcome": "The private app and companions restart predictably after Windows reboot or process failure and can roll back without touching user data or protected releases.",
+      "authority_sources": [
+        "Rev3 handoff P8",
+        "QCTP_CURRENT_STATE.json v19",
+        "QCTP_REV3_CODEX_BRANCH_BOOTSTRAP_REV0.json"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Signed exact candidate",
+        "Current-user supervisor",
+        "Private Tailscale route",
+        "Backup directory"
+      ],
+      "implementation_package": "P8 Windows Runtime and Rollback",
+      "automated_acceptance_criteria": [
+        "Staging verifies source SHA, tree, content manifest, media, ports, and protected runtime identity before install.",
+        "Supervisor recovers bounded process failure and rollback restores the previous candidate without deleting IndexedDB.",
+        "No main, Rev2, PR #2, production deploy, or existing 443 handler is changed."
+      ],
+      "physical_acceptance_criteria": [
+        "PX13 reboot, crash recovery, iPhone reconnect, and rollback are observed against the exact candidate."
+      ],
+      "release_authority": "PRIVATE_PREVIEW_ONLY_ZERO_RELEASE; merge and deployment prohibited.",
+      "evidence_produced": [
+        "tools/rev3-runtime/",
+        "QCTP_REV3_PRIVATE_PREVIEW_STARTUP_RECOVERY_REV0_2026-08-22.json",
+        "private evidence directories recorded in branch state"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Perform one supervised Windows reboot and private-iPhone reconnect, then exercise controlled rollback."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F048",
+      "name": "Automated repository, browser, WebKit, Windows, deployment, and rollback gates",
+      "user_outcome": "Every checkpoint has reproducible evidence for code quality, mobile behavior, exact media, migration, runtime recovery, and release holds.",
+      "authority_sources": [
+        "Rev3 handoff P8",
+        "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md",
+        "QCTP_CURRENT_STATE.json v19"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "All touched vertical slices",
+        "Exact candidate identity",
+        "Physical gate records"
+      ],
+      "implementation_package": "P8 Verification and Closeout",
+      "automated_acceptance_criteria": [
+        "Format, lint, typecheck, unit/integration coverage, build, Chromium, WebKit/iPhone profile, Whisper, media, migration, runtime, and rollback gates pass as applicable.",
+        "Evidence records exact SHAs, artifacts, environment, passes, skips, failures, and holds.",
+        "Skipped physical gates remain explicit and cannot be converted to PASS by machine tests."
+      ],
+      "physical_acceptance_criteria": [
+        "Voice, morning practice, Breath Director, migration, microphone lifecycle, update, reboot, and rollback gates are each recorded by the authorized human/device."
+      ],
+      "release_authority": "AUTOMATED_VERIFICATION_AUTHORIZED_ZERO_RELEASE; draft PR only until separate release authority.",
+      "evidence_produced": [
+        "341 repository tests recorded PASS",
+        "22 browser E2E PASS with 6 intentional project skips",
+        "44 Whisper tests PASS",
+        "Voice-Free, UX, migration, and runtime evidence artifacts"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Add gates for each new backlog slice and keep physical holds machine-readable."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F049",
+      "name": "Evidence classes, provenance, source citations, and raw-before-interpretation contract",
+      "user_outcome": "Every important observation, practice result, experiment, Mirror claim, and capability can be traced to its exact evidence class and source without overwriting raw experience.",
+      "authority_sources": [
+        "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
+        "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
+        "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Immutable record IDs",
+        "QCTP-REV3-F019",
+        "QCTP-REV3-F029"
+      ],
+      "implementation_package": "Cross-cutting Data Foundation",
+      "automated_acceptance_criteria": [
+        "Raw observation precedes interpretation in every implemented and newly added controlled workflow.",
+        "Evidence class, actor/method provenance, source IDs, citations, revisions, and backlinks round-trip exactly.",
+        "Mirror and progression reject missing, mismatched, fabricated, or mutated source evidence."
+      ],
+      "physical_acceptance_criteria": [
+        "Ryan can inspect an observation, its interpretation, a Mirror claim, and a capability label back to exact source records on iPhone."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; unsupported claims prohibited.",
+      "evidence_produced": [
+        "src/domain/schemas.ts",
+        "src/codex/workflows.ts",
+        "src/data/repository.ts",
+        "src/insights/analyzer.ts",
+        "src/state-atlas/progression.ts",
+        "cross-domain tests"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Extend the proven core schema contract to the new experiment log, post-session debrief, controlled Lab, schedule, and future source-track destinations."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F050",
+      "name": "Complete pre-start and active Practice cockpit",
+      "user_outcome": "Ryan can verify readiness, start confidently, understand the current phase with minimal visual demand, pause safely, and end without accidental credit.",
+      "authority_sources": [
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md section 7",
+        "Rev3 handoff P0/P2/P5",
+        "QCTP_MEDITATION_AUTHORING_AUDIO_ASSET_AND_QA_STANDARD_REV0_2026-08-18.md"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F002",
+        "QCTP-REV3-F005",
+        "QCTP-REV3-F038",
+        "QCTP-REV3-F043"
+      ],
+      "implementation_package": "P0/P5 Practice Cockpit vertical slice",
+      "automated_acceptance_criteria": [
+        "Pre-start shows identity, duration, support mode, source map, headphone rule, levels, marker sample, offline readiness, and one dominant Begin.",
+        "Active practice shows phase, elapsed/remaining time, next non-startling cue, progress, pause/resume, and explicit End-without-credit while hiding ordinary navigation.",
+        "Audio-only, Audio-plus-phase, and Full visual modes retain identical timing and safety.",
+        "Audio-ready preflight fails closed and the authoritative timer pauses whenever required audio is blocked or lost."
+      ],
+      "physical_acceptance_criteria": [
+        "Eyes-closed iPhone start, pause/resume, interruption, display-mode change, early end, and full return are understandable and non-startling."
+      ],
+      "release_authority": "PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "src/app/screens/VoiceFreeDay1Screen.tsx",
+        "src/practice/use-voice-free-day1-session.ts",
+        "legacy Practice audio-failure tests"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Reconcile the working Voice-Free screen with the complete controlled preflight, display-mode, and interruption contract."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F051",
+      "name": "Explore Expeditions",
+      "user_outcome": "Ryan can enter bounded, source-labeled exploratory sequences that connect Learn, Practice, Studio, Lab, Codex, and Mirror without claiming unsupported attainment.",
+      "authority_sources": [
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md section 10.2",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md"
+      ],
+      "status": "NEW",
+      "dependencies": [
+        "QCTP-REV3-F029",
+        "QCTP-REV3-F032",
+        "Released source and practice gates"
+      ],
+      "implementation_package": "P5/P6 Expeditions vertical slice",
+      "automated_acceptance_criteria": [
+        "An Expedition is a validated sequence of already-authorized activities with explicit prerequisites, duration, evidence outputs, stop conditions, and source labels.",
+        "Held or deferred content cannot enter a released Expedition.",
+        "Progress reflects completed evidence-bearing steps rather than decorative points or timer-only credit."
+      ],
+      "physical_acceptance_criteria": [
+        "A first controlled Expedition is understandable and navigable one-handed on iPhone without dead ends."
+      ],
+      "release_authority": "INFRASTRUCTURE_IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; each Expedition requires controlled content authority.",
+      "evidence_produced": [],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Define and implement one Expedition using only currently released Day 1, Breath, State, and recording capabilities."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F052",
+      "name": "Weekly synthesis and cited dismissible Discovery cards",
+      "user_outcome": "Ryan receives a restrained weekly review and optional discoveries that cite exact records, can be corrected or dismissed, and never invent patterns.",
+      "authority_sources": [
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md sections 15.2 and 15.3",
+        "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md"
+      ],
+      "status": "NEW",
+      "dependencies": [
+        "QCTP-REV3-F020",
+        "QCTP-REV3-F049",
+        "Local schedule periods"
+      ],
+      "implementation_package": "P5/P7 Weekly Synthesis vertical slice",
+      "automated_acceptance_criteria": [
+        "Weekly synthesis is deterministic by default and includes exact record citations, missing-data disclosure, and no unsupported causal claim.",
+        "Discovery cards expose evidence, mode, confidence limits, accept, correct, annotate, and dismiss actions.",
+        "Dismissal and correction never mutate the underlying records and round-trip through export/import."
+      ],
+      "physical_acceptance_criteria": [
+        "A weekly synthesis and Discovery card can be reviewed, traced, corrected, and dismissed comfortably on iPhone."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; generative enhancement remains optional Free Local.",
+      "evidence_produced": [
+        "Existing deterministic Mirror insight feedback and cited pattern analyzer foundations"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Build a deterministic seven-day synthesis from existing cited analyzers, then add the Discovery card review surface."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F053",
+      "name": "Constrained onboarding and durable Help",
+      "user_outcome": "First use explains local-first privacy, voice, sources, safety, notifications, and offline behavior briefly, while the same guidance remains available later without blocking normal use.",
+      "authority_sources": [
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md section 17",
+        "QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md"
+      ],
+      "status": "NEW",
+      "dependencies": [
+        "Persisted onboarding version",
+        "Settings and Help routes",
+        "QCTP-REV3-F010"
+      ],
+      "implementation_package": "P5 Onboarding and Help",
+      "automated_acceptance_criteria": [
+        "Onboarding is short, skippable, versioned, and never demands provider keys or PX13 setup for core use.",
+        "Permission prompts occur only in context after explicit gestures.",
+        "Help retains the same privacy, safety, source-label, offline, recovery, and notification-limitation guidance and can reset onboarding without deleting data."
+      ],
+      "physical_acceptance_criteria": [
+        "A new iPhone install reaches the morning practice without setup burden and can later find the relevant Help topic."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Implement a versioned three-screen maximum onboarding and indexed local Help surface."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F054",
+      "name": "Mobile performance and immediate-feedback targets",
+      "user_outcome": "The app feels responsive at waking, recording starts promptly after permission, and no local model load blocks the interface.",
+      "authority_sources": [
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md section 22",
+        "Rev3 handoff P5/P8"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "Exact production candidate",
+        "Representative PX13 and iPhone profiles"
+      ],
+      "implementation_package": "P5/P8 Performance Gate",
+      "automated_acceptance_criteria": [
+        "Today becomes usable within two seconds on the controlled profile.",
+        "Record acknowledges the gesture immediately and begins within one second after permission and recorder readiness.",
+        "Practice Start acknowledges immediately and no Whisper or Mirror model initialization blocks rendering or core actions.",
+        "Budgets record cold, warm, offline, and reconnect timings with regression thresholds."
+      ],
+      "physical_acceptance_criteria": [
+        "Ryan observes prompt Today, Start, and Record responses on the installed iPhone during a cold morning launch."
+      ],
+      "release_authority": "PERFORMANCE_VERIFICATION_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "Existing WebKit screenshots and functional navigation gates; no complete timing artifact"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Add browser performance marks and exact-candidate cold/warm timing evidence."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F055",
+      "name": "Learn source profiles, glossary, diagrams, timelines, and comparisons",
+      "user_outcome": "Ryan can understand a method's source, vocabulary, sequence, visuals, and cross-framework relationships without conflating traditions or claims.",
+      "authority_sources": [
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md Learn architecture",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md"
+      ],
+      "status": "NEW",
+      "dependencies": [
+        "QCTP-REV3-F029",
+        "QCTP-REV3-F032",
+        "Controlled source records"
+      ],
+      "implementation_package": "P5/P6 Learn Knowledge Objects",
+      "automated_acceptance_criteria": [
+        "Source profiles, glossary terms, diagrams, timelines, and comparisons are structured, cited, offline, searchable, and content-class labeled.",
+        "Comparisons distinguish functional analogy from source equivalence and expose disagreements or unknowns.",
+        "No held source track acquires invented teaching through a generic knowledge object."
+      ],
+      "physical_acceptance_criteria": [
+        "Representative knowledge objects are readable, zoomable, navigable, and source-clear on iPhone."
+      ],
+      "release_authority": "INFRASTRUCTURE_IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; each knowledge object requires source authority.",
+      "evidence_produced": [
+        "Controlled Day 1 paragraphs and source records only"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Build Day 1 source profiles and glossary from existing controlled evidence without authoring new lessons."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F056",
+      "name": "Studio construction, overlay, measurement, and gallery workflow",
+      "user_outcome": "Ryan can construct or photograph an artifact, add non-destructive overlays and measurements, compare iterations, and browse a source-linked gallery.",
+      "authority_sources": [
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md Studio architecture",
+        "QCTP_ROBERT_EDWARD_GRANT_INTEGRATION_REV0_2026-08-17.md",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F031",
+        "Binary attachments",
+        "Source labels and provenance"
+      ],
+      "implementation_package": "P6 Studio Vertical Slice",
+      "automated_acceptance_criteria": [
+        "Original image/artifact bytes remain immutable while overlays, guides, measurements, annotations, and revisions are separate linked layers.",
+        "Gallery filters by project, source, date, and tags and retains exact construction metadata.",
+        "Export/import and deletion preserve attachment ownership and revision history."
+      ],
+      "physical_acceptance_criteria": [
+        "iPhone camera/import, overlay manipulation, measurement readability, save/reload, and gallery navigation pass."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "REG-01 artifact and attachment workflow; no complete overlay/measurement/gallery tool"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Add a non-destructive overlay/measurement layer to REG-01, then expose the source-linked gallery."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F057",
+      "name": "Integrate concrete action routes",
+      "user_outcome": "Learning, practice, and reflection can end in a small explicit real-world action that is tracked separately from state claims or motivational points.",
+      "authority_sources": [
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md Integrate architecture",
+        "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
+        "QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md"
+      ],
+      "status": "NEW",
+      "dependencies": [
+        "Codex action records",
+        "QCTP-REV3-F020",
+        "QCTP-REV3-F049"
+      ],
+      "implementation_package": "P5/P7 Integrate Vertical Slice",
+      "automated_acceptance_criteria": [
+        "Actions have explicit source/evidence links, owner, due/next context, status, outcome, and revision history.",
+        "Mirror proposals remain proposals until Ryan accepts them and never silently become commitments.",
+        "Action completion cannot advance a state capability without the independent controlled evidence gate."
+      ],
+      "physical_acceptance_criteria": [
+        "Ryan can accept or create one action, retrieve it from Today, record its outcome, and trace its source on iPhone."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "Mirror proposed-action contract and Codex records only"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Create a local action record and Today next-action route using existing Mirror proposal review semantics."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F058",
+      "name": "Insights longitudinal metrics, calibration, and cautious correlations",
+      "user_outcome": "Ryan can inspect change over time and possible relationships while seeing sample size, missing data, contrary evidence, and exact citations.",
+      "authority_sources": [
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md Insights architecture",
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md",
+        "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "QCTP-REV3-F020",
+        "QCTP-REV3-F049",
+        "Sufficient dated evidence"
+      ],
+      "implementation_package": "P7 Insights Vertical Slice",
+      "automated_acceptance_criteria": [
+        "Longitudinal metrics expose denominator, date window, missingness, evidence class, and exact records.",
+        "Correlations are labeled descriptive, require a controlled minimum sample, show contrary/missing data, and never imply causation.",
+        "Calibration and feedback-bearing experiments distinguish hits, misses, confidence, and revisions."
+      ],
+      "physical_acceptance_criteria": [
+        "A trend and a cautious relationship can be inspected and traced to exact records on iPhone without misleading visual emphasis."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; causal or attainment claims prohibited.",
+      "evidence_produced": [
+        "src/insights/analyzer.ts chronological series and exact lexical/topology analysis"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Add denominator/missingness display and one controlled descriptive relationship view over existing evidence."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F059",
+      "name": "Editable smart destination routing for voice captures",
+      "user_outcome": "After recording, QCTP can suggest a likely destination while Ryan remains in control and the raw audio never changes.",
+      "authority_sources": [
+        "QCTP_USER_EXPERIENCE_EXPLORATION_AND_ENGAGEMENT_SPEC_REV0_2026-08-18.md section 9.2",
+        "QCTP_VOICE_CAPTURE_AND_TRANSCRIPTION_SPEC_REV0_2026-08-17.md"
+      ],
+      "status": "NEW",
+      "dependencies": [
+        "QCTP-REV3-F013",
+        "QCTP-REV3-F019",
+        "Local deterministic routing rules"
+      ],
+      "implementation_package": "P7 Voice Routing Vertical Slice",
+      "automated_acceptance_criteria": [
+        "Routing suggestions are deterministic/local by default, explain their basis, and never auto-commit.",
+        "Ryan can change, clear, or defer the destination before any derived record is created.",
+        "Suggestion, choice, and derived links are revisions; raw audio and verbatim transcript remain immutable."
+      ],
+      "physical_acceptance_criteria": [
+        "On iPhone, Ryan can accept, edit, or defer a destination one-handed after a Quick Capture."
+      ],
+      "release_authority": "IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; no paid classifier or required model.",
+      "evidence_produced": [
+        "Existing capture destination enum and layered record schema only"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Implement deterministic keyword/context suggestions with explicit confirmation and immutable-source tests."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F060",
+      "name": "Crystal gateway iPhone Home Screen icon",
+      "user_outcome": "The installed QCTP PWA uses Ryan's selected crystal-gateway image as a recognizable iPhone Home Screen icon.",
+      "authority_sources": [
+        "Ryan app-icon request dated 2026-08-22",
+        "QCTP_REV3_UX_ACCEPTANCE_REV0_2026-08-22.json",
+        "Rev3 handoff P5/P8"
+      ],
+      "status": "NEEDS_HARDENING",
+      "dependencies": [
+        "PWA manifest",
+        "Apple touch icon",
+        "Installed iPhone cache refresh"
+      ],
+      "implementation_package": "P5/P8 PWA Identity",
+      "automated_acceptance_criteria": [
+        "180, 192, and 512 PNG assets are same-origin, valid dimensions, checksumable, and wired into HTML and manifest.",
+        "Maskable and standard icon behavior does not crop the central gateway or reveal unintended transparency.",
+        "A service-worker update replaces stale icon metadata without clearing user data."
+      ],
+      "physical_acceptance_criteria": [
+        "After Remove/Add to Home Screen as required by iOS caching, the selected crystal-gateway icon is visibly correct on Ryan's iPhone."
+      ],
+      "release_authority": "PRIVATE_UI_TEST_AUTHORIZED_ZERO_RELEASE.",
+      "evidence_produced": [
+        "public/qctp-icon-180.png",
+        "public/qctp-icon-192.png",
+        "public/qctp-icon-512.png",
+        "vite.config.ts",
+        "index.html"
+      ],
+      "deferral": {
+        "reason": null,
+        "next_executable_step": "Close the open physical Home Screen icon acceptance on Ryan's iPhone."
+      }
+    },
+    {
+      "feature_id": "QCTP-REV3-F061",
+      "name": "Broader source-track lessons and sessions beyond controlled foundations",
+      "user_outcome": "Full source-specific teaching or practice appears only after that exact source receives a controlled baseline, QCTP delta, safety review, and acceptance package.",
+      "authority_sources": [
+        "QCTP_SOURCE_FIDELITY_AND_GUIDANCE_ENHANCEMENT_STANDARD_REV0_2026-08-20.md",
+        "QCTP_PRODUCT_ARCHITECTURE_REV2_2026-08-17.md",
+        "Rev3 handoff P6"
+      ],
+      "status": "DEFERRED",
+      "dependencies": [
+        "QCTP-REV3-F032",
+        "Per-source evidence packet, crosswalk, baseline, delta, locked content, machine review, and physical gate"
+      ],
+      "implementation_package": "Future per-source controlled slices",
+      "automated_acceptance_criteria": [
+        "The registry prevents a full lesson/session from being inferred from a recipe, concept, architecture slot, or Day 1 operation.",
+        "Each future source slice names its own permitted source material, QCTP enhancement, claims limits, safety, evidence, and acceptance."
+      ],
+      "physical_acceptance_criteria": [
+        "Each separately authorized source session receives a short then natural-duration iPhone gate."
+      ],
+      "release_authority": "DEFERRED_ZERO_RELEASE; current controlled foundations remain usable only within their existing scope.",
+      "evidence_produced": [
+        "Per-source status distinctions in QCTP-REV3-F033 and the source registry architecture"
+      ],
+      "deferral": {
+        "reason": "Monroe/Buhlman and OBE have controlled State recipes but not complete track lessons; Campbell has a controlled MVP and experiment foundations but not every module; Bullard, HeartMath, and Dispenza are controlled only for Day 1 operations; Mossbridge remains architecture-only; remote viewing requires a separately locked blind protocol; psionics remains record-architecture-only.",
+        "next_executable_step": "Advance exactly one source by creating its missing source record, crosswalk, baseline, QCTP delta, safety review, and locked implementation handoff."
+      }
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 {
-  "schema": "qctp-rev3-codex-branch-state-v2",
+  "schema": "qctp-rev3-codex-branch-state-v3",
   "branch": "qctp-platform-rev3-codex",
-  "updated_at": "2026-08-22T20:13:00-05:00",
-  "status": "PRIVATE_PREVIEW_RECOVERED_DURABLE_SUPERVISOR_VERIFIED_DRAFT_PR_OPEN_PHYSICAL_GATES_REMAIN",
+  "updated_at": "2026-08-22T20:58:00-05:00",
+  "status": "CONTROLLED_REV3_FEATURE_BACKLOG_CREATED_VALIDATED_FULL_SCOPE_INCREMENTAL_EXECUTION_ACTIVE_ZERO_RELEASE",
   "release_authority": "ZERO_RELEASE",
   "actual_shas": {
     "main": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -13,8 +13,11 @@
     "implementation_tree": "d59bbfee998d2dd51c38d437bb91b862601893d6",
     "voice_free_evidence_checkpoint": "dbe7aa8341107c5b3ed2884dd73e605c17b151dd",
     "ux_evidence_checkpoint": "511860e1bae0d8693c5b220d46a9a17e8f68135c",
-    "state_checkpoint": null,
-    "origin_rev3_at_state_write": "4dd19d9052a01e155fea753b3dd3ea70b1f6422f"
+    "private_preview_recovery_checkpoint": "712aeace2b981fa677c9be6b762f5903232835a9",
+    "controlled_backlog_baseline": "712aeace2b981fa677c9be6b762f5903232835a9",
+    "controlled_backlog_checkpoint": "b8fd95801613c4b6a5993612e221780fecb53e32",
+    "state_checkpoint": "b8fd95801613c4b6a5993612e221780fecb53e32",
+    "origin_rev3_at_state_write": "712aeace2b981fa677c9be6b762f5903232835a9"
   },
   "starting_baseline": {
     "required_rev2_commit": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
@@ -30,6 +33,14 @@
     "upstream": "origin/qctp-platform-rev3-codex",
     "starting_working_tree_status": "CLEAN",
     "isolated_from_protected_rev2_checkout": true,
+    "protected_main_rev2_pr2_mutation": "NONE"
+  },
+  "continuation_environment": {
+    "worktree": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\work\\QCTP-rev3-backlog",
+    "branch": "qctp-platform-rev3-codex",
+    "starting_head": "712aeace2b981fa677c9be6b762f5903232835a9",
+    "starting_tree": "cdb481af8ee7606747c6e7b9719e3037924fc373",
+    "starting_working_tree_status": "CLEAN",
     "protected_main_rev2_pr2_mutation": "NONE"
   },
   "remote_publish_provenance": {
@@ -63,6 +74,7 @@
     "Actual Rev3 source tree, tests, media manifests, and runtime tooling"
   ],
   "delivered": {
+    "controlled_feature_backlog": "61_FEATURES_ALL_35_MINIMUM_SCOPE_ITEMS_MACHINE_VALIDATED_WITH_STATUS_DEPENDENCIES_ACCEPTANCE_EVIDENCE_DEFERRALS_AND_ZERO_RELEASE",
     "voice_free_day1": "ONE_TAP_SIX_PHASE_1500_SECOND_SAME_ORIGIN_OFFLINE_THREE_SUPPORT_MODES_HEARTMATH_RAIL_NONVERBAL_MARKERS_COMPLETE_RETURN",
     "voice_audition": "THREE_MATERIALLY_DISTINCT_ZERO_COST_ROUTES_IDENTICAL_TEXT_NATIVE_PACING_REAL_SILENCE_BLIND_IPHONE_PWA",
     "breath": "SEVEN_SESSION_FOUNDATIONS_QUICK_DIRECTOR_SAFETY_STOP_RESUME_ACTIVE_FOREGROUND_EVIDENCE",
@@ -75,6 +87,23 @@
     "icon": "CRYSTAL_GATEWAY_APPLE_TOUCH_ICON_180_AND_PWA_ICONS_192_512_WIRED"
   },
   "evidence": {
+    "controlled_feature_backlog": {
+      "path": "QCTP_REV3_CONTROLLED_FEATURE_BACKLOG.json",
+      "schema": "qctp-rev3-controlled-feature-backlog-v1",
+      "feature_count": 61,
+      "minimum_scope_items": 35,
+      "status_counts": {
+        "EXISTING": 2,
+        "NEEDS_HARDENING": 42,
+        "NEW": 12,
+        "BLOCKED": 3,
+        "DEFERRED": 2
+      },
+      "validator": "tools/verify-rev3-controlled-feature-backlog.mjs",
+      "validator_result": "PASS",
+      "independent_omission_audit": "PASS_AFTER_TEN_FINDINGS_INTEGRATED",
+      "repository_gate": "PASS_FORMAT_LINT_TYPECHECK_56_FILES_341_TESTS_COVERAGE_BUILD_AUDIO_PACK"
+    },
     "voice_free_machine": {
       "path": "QCTP_REV3_VOICE_FREE_DAY1_MACHINE_VERIFICATION_REV0_2026-08-22.json",
       "result": "PASS_75_OF_75",
@@ -172,5 +201,5 @@
     "Foundation Days 2 through 112 remain unauthored and must not be fabricated.",
     "Required paid API keys and recurring paid cloud paths remain prohibited."
   ],
-  "next_controlled_action": "Ryan reloads https://reos.tail6ed282.ts.net:8443/ once on the iPhone and confirms that the Today screen renders instead of a white page."
+  "next_controlled_action": "Implement the independent local-first 4:00 a.m. readiness, additional-practice schedule, and honest reminder fallback vertical slice while physical voice selection remains open."
 }
