@@ -3,7 +3,7 @@
   "document_id": "QCTP-REV3-TIMED-VOICE-CAPTURE-AND-DATA-INTEGRITY-VERIFICATION-REV0",
   "evidence_id": "QCTP-REV3-TIMED-VOICE-CAPTURE-001",
   "created_at": "2026-08-23T06:34:21-05:00",
-  "updated_at": "2026-08-23T06:34:21-05:00",
+  "updated_at": "2026-08-23T06:45:38-05:00",
   "branch": "qctp-platform-rev3-codex",
   "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_LONG_CAPTURE_GATE_OPEN_ZERO_RELEASE",
   "release_authority": "ZERO_RELEASE",
@@ -17,10 +17,11 @@
     "local_implementation_commit": "8adc118903d1673d5abe6b77af461fa5df7eb615",
     "implementation_tree": "d771cfc9ae3f8411881e2577f4ddbf09d5da3ca4",
     "origin_rev3_before_publication": "62e10c97bb4d32f7183497afeee7dbc54289af6b",
-    "local_metadata_commit": null,
-    "remote_checkpoint": null,
-    "remote_tree": null,
-    "publication_status": "LOCAL_VERIFIED_NOT_YET_PUBLISHED"
+    "local_metadata_commit": "11aefa64ae4570a4fbe58c3fd13906a8de71bda5",
+    "remote_implementation_commit": "73012ac232dd374c12c706356a6d11d1f5958a1d",
+    "remote_checkpoint": "9d06b2153276284b387bd90403aaf6950ceac534",
+    "remote_tree": "f247f3d4ec698ad737953d507566e0665c894f50",
+    "publication_status": "PASS_EXACT_TREE_REV3_ONLY"
   },
   "recovery": {
     "backup_branch": "backup/rev3-timed-capture-preedit-20260823-051300",
@@ -109,5 +110,11 @@
     "Blind physical natural-voice selection remains open; no full narration was rendered.",
     "No merge, staging, or deployment is authorized."
   ],
-  "next_controlled_action": "Continue the next non-user-dependent F014 field-destination audit and F016 session-linked experiment voice-log vertical slice while physical voice and iPhone gates remain open."
+  "pause_control": {
+    "status": "FEATURE_UPGRADES_PAUSED_BY_RYAN",
+    "directed_at": "2026-08-23T06:45:38-05:00",
+    "resume_authority": "EXPLICIT_RYAN_REQUEST",
+    "live_candidate_changed": false
+  },
+  "next_controlled_action": "Keep feature upgrades paused and use the existing QCTP candidate; resume only after an explicit Ryan request."
 }

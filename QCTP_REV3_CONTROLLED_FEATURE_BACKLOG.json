@@ -2,8 +2,8 @@
   "schema": "qctp-rev3-controlled-feature-backlog-v1",
   "branch": "qctp-platform-rev3-codex",
   "created_at": "2026-08-22T20:42:00-05:00",
-  "updated_at": "2026-08-23T06:34:21-05:00",
-  "status": "ACTIVE_ZERO_RELEASE",
+  "updated_at": "2026-08-23T06:45:38-05:00",
+  "status": "PAUSED_AT_VERIFIED_CHECKPOINT_ZERO_RELEASE",
   "authority_snapshot": {
     "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
     "rev2_sha": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
@@ -47,6 +47,14 @@
     "paid_cloud": "NOT_AUTHORIZED",
     "state_attainment_from_timer": "PROHIBITED",
     "days_2_through_112_fabrication": "PROHIBITED"
+  },
+  "pause_control": {
+    "status": "FEATURE_UPGRADES_PAUSED_BY_RYAN",
+    "directed_at": "2026-08-23T06:45:38-05:00",
+    "resume_authority": "EXPLICIT_RYAN_REQUEST",
+    "latest_published_rev3_checkpoint": "9d06b2153276284b387bd90403aaf6950ceac534",
+    "live_candidate": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "staged_or_deployed": false
   },
   "checkpoint_policy": [
     "Implement verified vertical slices rather than waiting for the full backlog.",
@@ -170,6 +178,20 @@
       "delivered": "Canonical exact-ID Mirror and Codex deep links, safe one-pass routing, legacy normalization, exact citation and backlink tracing, filter-preserving record selection, visible missing/deleted holds, history and focus behavior, and mobile-accessible trace controls",
       "verification": "npm run check PASS with 77 files and 477 tests, coverage, preview server 8 of 8, 23-file audio pack, and production build; full Playwright matrix PASS with 38 passes and 16 intentional project/platform skips; exact deep-link gate PASS in Chromium and iPhone portrait; fresh judgement PASS with no high or medium findings",
       "evidence": "QCTP_REV3_SOURCE_LINKED_WORKFLOW_VERIFICATION_REV0_2026-08-23.json",
+      "release_authority": "ZERO_RELEASE"
+    },
+    {
+      "checkpoint_id": "QCTP-REV3-TIMED-VOICE-CAPTURE-001",
+      "local_implementation_commit": "8adc118903d1673d5abe6b77af461fa5df7eb615",
+      "local_metadata_commit": "11aefa64ae4570a4fbe58c3fd13906a8de71bda5",
+      "implementation_tree": "d771cfc9ae3f8411881e2577f4ddbf09d5da3ca4",
+      "remote_implementation_commit": "73012ac232dd374c12c706356a6d11d1f5958a1d",
+      "remote_commit": "9d06b2153276284b387bd90403aaf6950ceac534",
+      "remote_tree": "f247f3d4ec698ad737953d507566e0665c894f50",
+      "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_LONG_CAPTURE_GATE_OPEN_ZERO_RELEASE",
+      "delivered": "Global quick and 5-, 10-, and 20-minute local-first capture; typed destination metadata; renewable owner leases; atomic import collision rejection; declared-graph playback; recovery, accessibility, and REG-01 regression hardening",
+      "verification": "npm run check PASS with 77 files and 520 tests; npm run test:e2e PASS with 43 passes and 19 controlled skips; 103-test independent adversarial gate clean; exact-tree Rev3-only publication PASS",
+      "evidence": "QCTP_REV3_TIMED_VOICE_CAPTURE_AND_DATA_INTEGRITY_VERIFICATION_REV0_2026-08-23.json",
       "release_authority": "ZERO_RELEASE"
     }
   ],

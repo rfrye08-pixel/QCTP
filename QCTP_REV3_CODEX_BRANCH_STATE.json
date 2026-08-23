@@ -1,8 +1,8 @@
 {
   "schema": "qctp-rev3-codex-branch-state-v3",
   "branch": "qctp-platform-rev3-codex",
-  "updated_at": "2026-08-23T06:34:21-05:00",
-  "status": "CONTROLLED_REV3_TIMED_LOCAL_VOICE_AND_DATA_INTEGRITY_MACHINE_BROWSER_PASS_PHYSICAL_IPHONE_LONG_CAPTURE_GATE_OPEN_ZERO_RELEASE",
+  "updated_at": "2026-08-23T06:45:38-05:00",
+  "status": "CONTROLLED_REV3_VERIFIED_CHECKPOINT_FEATURE_UPGRADES_PAUSED_BY_RYAN_ZERO_RELEASE",
   "release_authority": "ZERO_RELEASE",
   "actual_shas": {
     "main": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -48,6 +48,10 @@
     "origin_rev3_before_source_linked_workflow_publication": "f19a13ba8271fc78ee7a61e640d6a793df907b49",
     "timed_voice_capture_local_implementation_checkpoint": "8adc118903d1673d5abe6b77af461fa5df7eb615",
     "timed_voice_capture_implementation_tree": "d771cfc9ae3f8411881e2577f4ddbf09d5da3ca4",
+    "timed_voice_capture_local_metadata_checkpoint": "11aefa64ae4570a4fbe58c3fd13906a8de71bda5",
+    "timed_voice_capture_remote_implementation_checkpoint": "73012ac232dd374c12c706356a6d11d1f5958a1d",
+    "timed_voice_capture_remote_checkpoint": "9d06b2153276284b387bd90403aaf6950ceac534",
+    "timed_voice_capture_remote_tree": "f247f3d4ec698ad737953d507566e0665c894f50",
     "origin_rev3_before_timed_voice_publication": "62e10c97bb4d32f7183497afeee7dbc54289af6b"
   },
   "starting_baseline": {
@@ -75,6 +79,8 @@
     "protected_main_rev2_pr2_mutation": "NONE",
     "current_local_implementation_head": "8adc118903d1673d5abe6b77af461fa5df7eb615",
     "current_local_implementation_tree": "d771cfc9ae3f8411881e2577f4ddbf09d5da3ca4",
+    "current_local_metadata_head": "11aefa64ae4570a4fbe58c3fd13906a8de71bda5",
+    "current_local_metadata_tree": "f247f3d4ec698ad737953d507566e0665c894f50",
     "working_tree_before_metadata": "CLEAN"
   },
   "remote_publish_provenance": {
@@ -232,15 +238,19 @@
     "starting_commit": "f640131ffcdf39da51111a203b574f149af0581a",
     "local_implementation_commit": "8adc118903d1673d5abe6b77af461fa5df7eb615",
     "implementation_tree": "d771cfc9ae3f8411881e2577f4ddbf09d5da3ca4",
-    "metadata_commit": null,
-    "remote_commit": null,
-    "remote_tree": null,
-    "origin_publication": "LOCAL_VERIFIED_NOT_YET_PUBLISHED",
+    "metadata_commit": "11aefa64ae4570a4fbe58c3fd13906a8de71bda5",
+    "remote_implementation_commit": "73012ac232dd374c12c706356a6d11d1f5958a1d",
+    "remote_commit": "9d06b2153276284b387bd90403aaf6950ceac534",
+    "remote_tree": "f247f3d4ec698ad737953d507566e0665c894f50",
+    "origin_publication": "PASS_EXACT_TREE_REV3_ONLY",
     "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_LONG_CAPTURE_GATE_OPEN_ZERO_RELEASE",
     "local_history_backup_branch": "backup/rev3-timed-capture-preedit-20260823-051300",
     "local_history_backup_commit": "f640131ffcdf39da51111a203b574f149af0581a",
     "recoverable_bundle": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\backups\\rev3-timed-capture-preedit-20260823-051300.bundle",
     "bundle_verification": "PASS_COMPLETE_HISTORY",
+    "verified_checkpoint_backup_branch": "backup/rev3-timed-capture-verified-20260823-064141",
+    "verified_checkpoint_bundle": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\backups\\rev3-timed-capture-verified-20260823-064141.bundle",
+    "verified_checkpoint_bundle_verification": "PASS_COMPLETE_HISTORY",
     "new_candidate_staged": false,
     "new_candidate_deployed": false,
     "protected_refs_mutated": false,
@@ -403,7 +413,11 @@
       "data_integrity_gate": "PASS_STRICT_V4_LEGACY_NORMALIZATION_ATOMIC_COLLISION_REJECTION_DECLARED_GRAPH_AND_BYTE_COUNT",
       "cross_tab_gate": "PASS_RENEWABLE_OWNER_LEASE_ATOMIC_CLAIM_CAS_FINALIZE_ROLLBACK_RECOVERY_DISCARD_AND_DELETE_LOCK",
       "independent_judgement": "CLEAN_NO_REMAINING_ACTIONABLE_HIGH_OR_MEDIUM_FINDINGS_103_FOCUSED_TESTS_PASS",
-      "publication_status": "LOCAL_VERIFIED_NOT_YET_PUBLISHED",
+      "local_metadata_commit": "11aefa64ae4570a4fbe58c3fd13906a8de71bda5",
+      "remote_implementation_commit": "73012ac232dd374c12c706356a6d11d1f5958a1d",
+      "remote_commit": "9d06b2153276284b387bd90403aaf6950ceac534",
+      "remote_tree": "f247f3d4ec698ad737953d507566e0665c894f50",
+      "publication_status": "PASS_EXACT_TREE_REV3_ONLY",
       "deployment_status": "NOT_STAGED_NOT_DEPLOYED_LIVE_PREVIEW_REMAINS_5A884AE9"
     },
     "voice_free_machine": {
@@ -492,7 +506,10 @@
     "private_remote_preview": "https://reos.tail6ed282.ts.net:8443/",
     "draft_pull_request": "https://github.com/rfrye08-pixel/QCTP/pull/4",
     "merge_performed": false,
-    "deployment_performed": false
+    "deployment_performed": false,
+    "feature_upgrades_paused_by_ryan": true,
+    "pause_recorded_at": "2026-08-23T06:45:38-05:00",
+    "resume_authority": "EXPLICIT_RYAN_REQUEST"
   },
   "release_holds": [
     "Do not modify, merge, reset, or rebase main, qctp-platform-rev2-codex, or PR #2.",
@@ -518,9 +535,10 @@
     "Tests and timer completion do not establish state attainment.",
     "Foundation Days 2 through 112 remain unauthored and must not be fabricated.",
     "Required paid API keys and recurring paid cloud paths remain prohibited.",
+    "Feature upgrades are paused at Ryan's direction; no further implementation package may begin without an explicit Ryan request.",
     "Installed-iPhone 04:00 actual-wake, notification default/granted/denied, background/lock, force-closed, and reopen reminder recovery remain open.",
     "Closed-PWA alert delivery is best effort and must not be described as guaranteed without separately controlled private Web Push architecture and physical proof.",
     "Day 1 daytime and evening clock times remain personal choices because no controlled source supplies exact times."
   ],
-  "next_controlled_action": "Continue the next non-user-dependent F014 field-destination audit and F016 session-linked experiment voice-log vertical slice while physical source-trace, long-capture, and blind voice gates remain open."
+  "next_controlled_action": "Keep feature upgrades paused and use the existing QCTP candidate; resume only after an explicit Ryan request."
 }
