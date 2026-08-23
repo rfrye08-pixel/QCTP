@@ -2008,6 +2008,88 @@
   background: #08151d;
 }
 
+.controlled-source-map article > header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 7px;
+}
+
+.source-lifecycle-badge {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 3px 7px;
+  border: 1px solid color-mix(in srgb, var(--mint) 38%, var(--line));
+  border-radius: 999px;
+  color: var(--mint);
+  font-size: max(0.68rem, 12px);
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.controlled-source-map article > p,
+.controlled-source-map article dt,
+.controlled-source-map article dd,
+.controlled-source-map details,
+.controlled-source-map li {
+  overflow-wrap: anywhere;
+  font-size: max(0.7rem, 12px);
+  line-height: 1.45;
+}
+
+.controlled-source-map article > p,
+.controlled-source-map article dl,
+.controlled-source-map article dd,
+.controlled-source-map article ul {
+  margin: 0;
+}
+
+.controlled-source-map article > p,
+.controlled-source-map article dd,
+.controlled-source-map li > span,
+.controlled-source-map li > small {
+  color: var(--muted);
+}
+
+.controlled-source-map article dl {
+  display: grid;
+  gap: 5px;
+}
+
+.controlled-source-map article dl > div {
+  display: grid;
+  gap: 2px;
+}
+
+.controlled-source-map article dt {
+  color: var(--mint);
+  font-weight: 750;
+}
+
+.controlled-source-map details > summary {
+  min-height: 44px;
+  cursor: pointer;
+  align-content: center;
+  color: var(--cyan);
+  font-weight: 750;
+}
+
+.controlled-source-map article ul {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.controlled-source-map article li {
+  display: grid;
+  gap: 2px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
 .controlled-source-map strong {
   font-size: 0.76rem;
 }
@@ -2016,6 +2098,16 @@
   color: var(--muted);
   font-size: 0.64rem;
   text-transform: capitalize;
+}
+
+.record-source-track-origin {
+  display: grid;
+  gap: 6px;
+}
+
+.record-source-track-origin dd,
+.record-source-track-origin dd > span {
+  display: block;
 }
 
 @media (max-width: 430px) {

@@ -12,8 +12,11 @@ import {
   type VoiceFreeSupportMode,
 } from "../../practice";
 import type { PracticeSession } from "../../domain";
-import { StateAtlasProgress } from "../../state-atlas";
-import { CONTROLLED_SOURCE_ARCHITECTURE } from "../../source-tracks";
+import { StateAtlasProgress, type StateId } from "../../state-atlas";
+import {
+  CONTROLLED_SOURCE_TRACK_REGISTRY,
+  SOURCE_TRACK_LIFECYCLE_DETAILS,
+} from "../../source-tracks";
 import { deriveControlledSchedule } from "../../schedule";
 import { FieldDictation } from "../components/FieldDictation";
 import { ContentClassBadge } from "../components/ContentClassBadge";
@@ -94,11 +97,21 @@ export function TodayOverview({
       setNetworkOfflineHint(true);
       setOnline(false);
     };
+    const reconcileNetworkState = () => {
+      const hintedOffline = hasNetworkOfflineHint();
+      if (!navigator.onLine && !hintedOffline) markOffline();
+    };
     window.addEventListener("online", markOnline);
     window.addEventListener("offline", markOffline);
+    const networkReconcileInterval = window.setInterval(
+      reconcileNetworkState,
+      500,
+    );
+    reconcileNetworkState();
     return () => {
       window.removeEventListener("online", markOnline);
       window.removeEventListener("offline", markOffline);
+      window.clearInterval(networkReconcileInterval);
     };
   }, []);
   useEffect(() => {
@@ -579,6 +592,17 @@ export function PathsOverview({
 }: {
   onNavigate: (route: AppRoute) => void;
 }) {
+  const [requestedStateId, setRequestedStateId] = useState<StateId | null>(
+    null,
+  );
+
+  const openStateRecipe = (stateId: "TC-PC" | "QI") => {
+    setRequestedStateId(stateId);
+    document.getElementById("state-atlas-training")?.scrollIntoView({
+      block: "start",
+    });
+  };
+
   return (
     <>
       <ScreenHeader eyebrow="Learning architecture" title="Paths">
@@ -653,8 +677,11 @@ export function PathsOverview({
         </button>
       </section>
       <BreathFoundationsPanel />
-      <StateAtlasTrainingPanel />
-      <CampbellTrackPanel onOpenPractice={() => onNavigate("practice")} />
+      <StateAtlasTrainingPanel
+        requestedStateId={requestedStateId}
+        onSelectionConsumed={() => setRequestedStateId(null)}
+      />
+      <CampbellTrackPanel onOpenStateRecipe={openStateRecipe} />
       <section className="panel-card controlled-source-map">
         <p className="eyebrow">Controlled source architecture</p>
         <h2>Authority and implementation stay separate</h2>
@@ -663,16 +690,56 @@ export function PathsOverview({
           status. An architecture slot is not presented as released content.
         </p>
         <div>
-          {CONTROLLED_SOURCE_ARCHITECTURE.map((source) => (
-            <article key={source.id}>
-              <strong>{source.label}</strong>
-              <small>{source.status.replaceAll("_", " ")}</small>
-              {["bullard", "heartmath", "dispenza"].includes(source.id) ? (
+          {CONTROLLED_SOURCE_TRACK_REGISTRY.map((source) => (
+            <article
+              key={source.id}
+              data-source-track={source.id}
+              data-source-track-status={source.status}
+            >
+              <header>
+                <strong>{source.label}</strong>
+                <span className="source-lifecycle-badge">
+                  {SOURCE_TRACK_LIFECYCLE_DETAILS[source.status].label}
+                </span>
+              </header>
+              <p>{source.scope}</p>
+              {source.profileAuthorityKey ? (
                 <ContentClassBadge
-                  authorityKey={`source.profile.${source.id}`}
+                  authorityKey={source.profileAuthorityKey}
                   scope="Source profile"
                 />
               ) : null}
+              {source.holdReason ? (
+                <p className="controlled-hold">
+                  <strong>Current hold:</strong> {source.holdReason}
+                </p>
+              ) : null}
+              <dl>
+                <div>
+                  <dt>Next</dt>
+                  <dd>{source.nextAction}</dd>
+                </div>
+                <div>
+                  <dt>Release authority</dt>
+                  <dd>{source.releaseAuthority}</dd>
+                </div>
+              </dl>
+              <details>
+                <summary>Controlled access points</summary>
+                <ul>
+                  {source.accessPoints.map((access) => (
+                    <li key={access.id}>
+                      <strong>{access.label}</strong>
+                      <span>
+                        {SOURCE_TRACK_LIFECYCLE_DETAILS[access.status].label}
+                      </span>
+                      {access.holdReason ? (
+                        <small>{access.holdReason}</small>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </details>
             </article>
           ))}
         </div>

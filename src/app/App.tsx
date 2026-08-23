@@ -27,6 +27,7 @@ import {
   type PracticeDebriefTransition,
   type VoiceFreeNaturalCompletion,
 } from "../practice";
+import { evaluateReg01SourceTrackAccess } from "../reg/reg01";
 import { Shell } from "./Shell";
 import {
   MoreOverview,
@@ -305,8 +306,10 @@ export function App() {
             ) : null}
           </>
         );
-      case "studio":
-        return <StudioScreen />;
+      case "studio": {
+        const navigationDecision = evaluateReg01SourceTrackAccess("start");
+        return <StudioScreen navigationDecision={navigationDecision} />;
+      }
       case "lab":
         return <LabScreen />;
       case "codex":

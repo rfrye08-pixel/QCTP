@@ -74,6 +74,7 @@ interface ReadyState {
   breathProfile: BreathProfile;
   breathSessions: BreathSessionRecord[];
   stateCapabilities: StateCapabilityRecord[];
+  stateCapabilityHolds: StateCapabilityRecord[];
   stateSessions: StateSessionRecord[];
   migration: Rev1MigrationResult;
 }
@@ -223,6 +224,7 @@ export function QctpProvider({ children }: { children: ReactNode }) {
           breathProfile,
           breathSessions,
           stateCapabilities,
+          stateCapabilityHolds,
           stateSessions,
           initialMirrorJobs,
         ] = await Promise.all([
@@ -231,7 +233,8 @@ export function QctpProvider({ children }: { children: ReactNode }) {
           repository.getWorkbookState(),
           repository.getBreathProfile("breath-profile"),
           repository.listBreathSessions(),
-          repository.listStateCapabilities(),
+          repository.listActiveStateCapabilities(),
+          repository.listHeldStateCapabilities(),
           repository.listStateSessions(),
           readMirrorJobs(repository),
         ]);
@@ -250,6 +253,7 @@ export function QctpProvider({ children }: { children: ReactNode }) {
           breathProfile,
           breathSessions,
           stateCapabilities,
+          stateCapabilityHolds,
           stateSessions,
           migration,
         });
@@ -278,6 +282,7 @@ export function QctpProvider({ children }: { children: ReactNode }) {
       breathProfile,
       breathSessions,
       stateCapabilities,
+      stateCapabilityHolds,
       stateSessions,
       nextMirrorJobs,
     ] = await Promise.all([
@@ -286,7 +291,8 @@ export function QctpProvider({ children }: { children: ReactNode }) {
       ready.repository.getWorkbookState(),
       ready.repository.getBreathProfile("breath-profile"),
       ready.repository.listBreathSessions(),
-      ready.repository.listStateCapabilities(),
+      ready.repository.listActiveStateCapabilities(),
+      ready.repository.listHeldStateCapabilities(),
       ready.repository.listStateSessions(),
       readMirrorJobs(ready.repository),
     ]);
@@ -302,6 +308,7 @@ export function QctpProvider({ children }: { children: ReactNode }) {
             breathProfile,
             breathSessions,
             stateCapabilities,
+            stateCapabilityHolds,
             stateSessions,
           }
         : current,

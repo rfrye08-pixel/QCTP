@@ -264,12 +264,33 @@ export const StateAttemptSchema = z
   .object(stateAttemptShape)
   .superRefine(validateAttemptEvidence);
 
+export const StateSourceTrackHoldCodeSchema = z.enum([
+  "SOURCE_TRACK_BINDING_REQUIRED",
+  "SOURCE_TRACK_BINDING_INVALID",
+  "SOURCE_TRACK_ROUTE_MISMATCH",
+  "SOURCE_TRACK_PARENT_MISMATCH",
+  "SOURCE_TRACK_ACCESS_DENIED",
+  "SOURCE_TRACK_UNEXPECTED_BINDING",
+  "SOURCE_TRACK_EVIDENCE_HELD",
+]);
+
+export const StateSourceTrackHoldSchema = z.object({
+  status: z.literal("HELD"),
+  code: StateSourceTrackHoldCodeSchema,
+  stateId: StateIdSchema,
+  trackId: z.string().trim().min(1).nullable(),
+  accessId: z.string().trim().min(1).nullable(),
+  message: z.string().trim().min(1),
+});
+
 const StateSessionRecordObjectSchema = z
   .object({
     schemaVersion: z.literal(1),
     ...stateAttemptShape,
     sessionRevision: z.string().trim().min(1),
     contentRef: ControlledContentRefSchema.optional(),
+    sourceTrackRef: z.unknown().optional(),
+    sourceTrackHold: StateSourceTrackHoldSchema.optional(),
     startedAt: z.string().datetime({ offset: true }),
     posture: z.string().trim().min(1),
     breathMethod: z.string().trim().min(1).nullable(),
@@ -281,6 +302,13 @@ const StateSessionRecordObjectSchema = z
   })
   .superRefine((value, context) => {
     validateAttemptEvidence(value, context);
+    if (Date.parse(value.startedAt) > Date.parse(value.endedAt)) {
+      context.addIssue({
+        code: "custom",
+        path: ["startedAt"],
+        message: "State session start must not follow its end.",
+      });
+    }
     const expectedAuthorityKey = `state.recipe.${value.stateId}`;
     if (
       value.contentRef &&
@@ -325,6 +353,7 @@ export const StateCapabilityRecordSchema = z.object({
   achievedAt: z.string().datetime({ offset: true }),
   evidenceAttemptIds: z.array(z.string().trim().min(1)).min(1),
   transitions: z.array(CapabilityTransitionSchema).min(1),
+  sourceTrackHold: StateSourceTrackHoldSchema.optional(),
   updatedAt: z.string().datetime({ offset: true }),
 });
 
@@ -343,3 +372,4 @@ export type StateDefinition = z.infer<typeof StateDefinitionSchema>;
 export type StateAttempt = z.infer<typeof StateAttemptSchema>;
 export type StateSessionRecord = z.infer<typeof StateSessionRecordSchema>;
 export type StateCapabilityRecord = z.infer<typeof StateCapabilityRecordSchema>;
+export type StateSourceTrackHold = z.infer<typeof StateSourceTrackHoldSchema>;

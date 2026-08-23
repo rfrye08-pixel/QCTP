@@ -2,7 +2,7 @@
   "schema": "qctp-rev3-controlled-feature-backlog-v1",
   "branch": "qctp-platform-rev3-codex",
   "created_at": "2026-08-22T20:42:00-05:00",
-  "updated_at": "2026-08-23T02:06:16-05:00",
+  "updated_at": "2026-08-23T04:17:09-05:00",
   "status": "ACTIVE_ZERO_RELEASE",
   "authority_snapshot": {
     "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -127,6 +127,29 @@
       "delivered": "Canonical authority-keyed source-class identity; phase-level Day 1 and transition provenance; separate State Atlas target and recipe provenance; readable scoped badges; strict writes and imports with recoverable held-row export; parent-bound persistence; lossless legacy enrichment; and preserved user provenance across Day 1, Breath, State Atlas, Campbell, REG, Lab, Codex, Mirror, Paths, Practice, and Studio",
       "verification": "npm run check PASS with 71 files and 413 tests, coverage, preview server 8 of 8, 23-file audio pack, and production build; full Playwright matrix PASS with 32 passes and 16 intentional project/platform skips; dedicated content gate PASS 2 of 2 including visible recoverable holds; provider stability test PASS 5 consecutive focused runs",
       "evidence": "QCTP_REV3_CONTROLLED_CONTENT_CLASS_VERIFICATION_REV0_2026-08-23.json",
+      "release_authority": "ZERO_RELEASE"
+    },
+    {
+      "checkpoint_id": "QCTP-REV3-SOURCE-TRACK-001",
+      "local_implementation_commit": "7afddf50dcfb1ef68ba28b74ccde4c9e9873973e",
+      "local_implementation_commits": [
+        "d2e27f682f311bb7ccdb704c6b007359c6bc40f2",
+        "512728945654c0a2c58c4e87d11905e0356e3b05",
+        "f2c8f11ad29d209af4f989f52e5eb73099b01144",
+        "2ad1b732e2c51ef31c23f364757b13f417e965d4",
+        "e5db02ce7048038f28b7ef858e2e1a00d9cb9be5",
+        "9abadeaa17f4899de5ed6dd80a0ccba3ddf947ee",
+        "0b9824ecc5d1f01753738938f338efcf92d6187a",
+        "2afe0c5023d5ab02aae095387045dcd40f14fac2",
+        "1c2622a09b1467433b29281f1cb7e89623340aeb",
+        "9447c1a292ee3f35a4251013cde44ec23a5537c8",
+        "7afddf50dcfb1ef68ba28b74ccde4c9e9873973e"
+      ],
+      "implementation_tree": "fcc0bc94a060bbd192e71d9728f04659cfadd1e0",
+      "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
+      "delivered": "Deep-frozen source registry; canonical parent-bound references; fail-closed source route actions; bounded Campbell, Grant, State, QR, psionics, and Day 1 scope; lossless held State source evidence; least-fixed-point active capability projection; strict prerequisite chronology; semantic replay; and transactionally serialized session, capability, and merge-import final unions",
+      "verification": "npm run check PASS with 76 files and 458 tests, coverage, preview server 8 of 8, 23-file audio pack, and production build; full Playwright matrix PASS with 36 passes and 16 intentional project/platform skips; fresh State source integrity judgement PASS with no high or medium findings",
+      "evidence": "QCTP_REV3_SOURCE_TRACK_REGISTRY_VERIFICATION_REV0_2026-08-23.json",
       "release_authority": "ZERO_RELEASE"
     }
   ],
@@ -1270,7 +1293,10 @@
       "evidence_produced": [
         "src/source-tracks/catalog.ts",
         "src/app/components/CampbellTrackPanel.tsx",
-        "src/source-tracks/source-tracks.test.ts"
+        "src/app/components/CampbellTrackPanel.test.tsx",
+        "src/source-tracks/registry.ts guarded TC-01 through TC-10 and exact TC-02 to TC-PC / TC-06 to QI bindings",
+        "tests/e2e/source-track-guards.spec.ts",
+        "commit 9abadeaa17f4899de5ed6dd80a0ccba3ddf947ee"
       ],
       "deferral": {
         "reason": null,
@@ -1304,11 +1330,14 @@
       ],
       "release_authority": "PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE.",
       "evidence_produced": [
+        "src/app/App.tsx pre-mount REG route decision",
         "src/reg/reg01.ts",
         "src/app/screens/StudioScreen.tsx",
         "src/reg/reg01.test.ts",
         "src/reg/StudioScreen.test.tsx",
-        "src/data/repository.test.ts"
+        "src/data/repository.ts pre-transaction completion guard and canonical sourceTrackRef persistence",
+        "src/data/repository.test.ts",
+        "commit 0b9824ecc5d1f01753738938f338efcf92d6187a"
       ],
       "deferral": {
         "reason": null,
@@ -1330,19 +1359,36 @@
       "automated_acceptance_criteria": [
         "Validated registry distinguishes released, prerequisite, recipe-only, architecture-only, experimental-protocol, record-only, blocked, and deferred states.",
         "A route cannot expose practice content without authority records and required gates.",
-        "Source links and labels propagate to Codex, Studio, Lab, Mirror, and export."
+        "Source links and labels propagate to Codex, Studio, Lab, Mirror, and export.",
+        "State source evidence is canonicalized or explicitly held, held evidence cannot advance capability, and session/capability/import final unions replay atomically under concurrent writes."
       ],
       "physical_acceptance_criteria": [
         "Held and released states are plainly distinguishable on iPhone."
       ],
       "release_authority": "INFRASTRUCTURE_IMPLEMENTATION_AUTHORIZED_ZERO_RELEASE; content release remains per-source authority.",
       "evidence_produced": [
-        "src/source-tracks/catalog.ts CONTROLLED_SOURCE_ARCHITECTURE",
-        "src/controlled-content/index.ts canonical identity registry (partial lifecycle coverage)"
+        "src/source-tracks/registry.ts validated lifecycle, authority, prerequisite, action, destination, safety, evidence, parent, and reference contracts",
+        "src/source-tracks/source-track-registry.test.ts",
+        "src/app/screens/OverviewScreens.tsx human lifecycle, scope, hold, next-action, and release-authority map",
+        "src/app/components/CampbellTrackPanel.tsx fail-closed open/save routes",
+        "src/app/components/StateAtlasTrainingPanel.tsx source-specific read/start routes",
+        "src/app/screens/LabScreen.tsx psionics record-only boundary and QR hold",
+        "src/app/App.tsx and src/app/screens/StudioScreen.tsx REG route boundary",
+        "src/data/repository.ts canonical sourceTrackRef persistence",
+        "src/source-tracks/state-session-integrity.ts least-fixed-point integrity reconciliation and explicit active/held projections",
+        "src/source-tracks/state-session-integrity.test.ts",
+        "src/data/repository.ts shared-store transactional State session, capability, export, and merge-import integrity boundaries",
+        "src/data/breath-state-persistence.test.ts lossless hold, semantic overwrite, concurrency, and import regression coverage",
+        "src/app/QctpProvider.tsx active capability projection and held capability loading",
+        "src/app/components/StateAtlasTrainingPanel.tsx visible held session and capability evidence",
+        "src/app/components/UserRecordStructuredFields.tsx validates registry identity plus matching controlled parent before provenance display; unbound imported fields remain raw user data",
+        "tests/e2e/source-track-guards.spec.ts Chromium and iPhone-portrait acceptance",
+        "QCTP_REV3_SOURCE_TRACK_REGISTRY_VERIFICATION_REV0_2026-08-23.json",
+        "commits d2e27f6, 5127289, f2c8f11, 2ad1b73, e5db02c, 9abadea, 0b9824e, 2afe0c5, 1c2622a, provenance hardening 9447c1a, and State source evidence integrity 7afddf5"
       ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Extend the canonical identity registry with lifecycle, prerequisite, safety, and evidence-gate metadata, then require the validated registry from every source-track route guard."
+        "next_executable_step": "Machine and browser implementation is delivered; run the physical iPhone held-versus-released comprehension, exact-route, provenance, export, and restore gate only after this candidate is explicitly authorized for installation."
       }
     },
     {
@@ -1371,14 +1417,20 @@
       ],
       "release_authority": "EXISTING_CONTROLLED_FOUNDATIONS_ONLY_ZERO_RELEASE; no expansion beyond named authority.",
       "evidence_produced": [
-        "State Atlas recipes",
-        "Day 1 source operations",
-        "source registry architecture statuses",
-        "generic Lab ledger"
+        "src/source-tracks/registry.ts bounded Day 1, State Atlas, Campbell, Grant, Monroe/Buhlman, remote-viewing, psionics, Mossbridge, and McTaggart scopes",
+        "src/app/components/StateAtlasTrainingPanel.tsx exact source-recipe routing and QR read-only protocol hold",
+        "src/source-tracks/state-session-integrity.ts canonical bindings, strict temporal prerequisites, lossless held evidence, and transitive capability holds",
+        "src/data/repository.ts serialized final-union integrity for normal writes and merge import",
+        "src/state-atlas/state-atlas-progress.css mobile-safe static holds",
+        "src/app/screens/LabScreen.tsx record-only psionics evidence route",
+        "src/app/screens/LabScreen.source-track.test.tsx",
+        "tests/e2e/source-track-guards.spec.ts",
+        "QCTP_REV3_SOURCE_TRACK_REGISTRY_VERIFICATION_REV0_2026-08-23.json",
+        "commit 7afddf50dcfb1ef68ba28b74ccde4c9e9873973e"
       ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Surface the already-controlled recipe and experiment foundations through the validated source registry while preserving their exact scope limits."
+        "next_executable_step": "Keep QR execution blocked until its separately locked blind-target/raw-lock/feedback/calibration protocol is controlled; perform per-practice physical iPhone safety and usability gates for each already-bounded route before release."
       }
     },
     {

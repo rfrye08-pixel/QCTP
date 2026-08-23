@@ -100,4 +100,26 @@ describe("StateAtlasProgress", () => {
       ),
     ).toBeVisible();
   });
+
+  it("does not present a held ledger claim as earned capability", () => {
+    render(
+      <StateAtlasProgress
+        capabilities={[
+          {
+            stateId: "M-F10",
+            level: "Stabilized",
+            sourceTrackHold: { status: "HELD" },
+          },
+        ]}
+        stateIds={["M-F10"]}
+      />,
+    );
+
+    expect(
+      screen.getByLabelText(
+        "Controlled capability levels. Current: Not introduced.",
+      ),
+    ).toBeVisible();
+    expect(screen.getByText("Teach guidance")).toBeVisible();
+  });
 });

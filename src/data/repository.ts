@@ -55,6 +55,17 @@ import {
 } from "../domain";
 import { contentRefFor } from "../controlled-content";
 import {
+  REG01_SOURCE_ACCESS_ID,
+  REG01_SOURCE_TRACK_ID,
+  evaluateReg01SourceTrackAccess,
+} from "../reg/reg01";
+import {
+  StateSourceTrackIntegrityError,
+  applyStateSourceTrackIntegrityLedger,
+  assertStateSessionSourceTrackWritable,
+  sourceTrackReferenceFor,
+} from "../source-tracks";
+import {
   BreathSessionRecordSchema,
   createDefaultBreathProfile,
   normalizeBreathProfile,
@@ -319,6 +330,19 @@ export class QctpRepository {
 
   constructor(database: QctpDatabase) {
     this.database = database;
+  }
+
+  private async readStateSourceTrackIntegrityLedger() {
+    const transaction = this.database.transaction(
+      ["stateSessions", "stateCapabilities"],
+      "readonly",
+    );
+    const [sessions, capabilities] = await Promise.all([
+      transaction.objectStore("stateSessions").getAll(),
+      transaction.objectStore("stateCapabilities").getAll(),
+    ]);
+    await transaction.done;
+    return applyStateSourceTrackIntegrityLedger({ sessions, capabilities });
   }
 
   close(): void {
@@ -1925,22 +1949,56 @@ export class QctpRepository {
   async saveStateSession(
     value: StateSessionRecord,
   ): Promise<StateSessionRecord> {
-    const parsed = StateSessionRecordSchema.parse(value);
-    await this.database.put("stateSessions", parsed);
-    return parsed;
+    const candidate = StateSessionRecordSchema.parse(value);
+    const transaction = this.database.transaction(
+      ["stateSessions", "stateCapabilities"],
+      "readwrite",
+    );
+    const [sessions, capabilities] = await Promise.all([
+      transaction.objectStore("stateSessions").getAll(),
+      transaction.objectStore("stateCapabilities").getAll(),
+    ]);
+    const integrity = applyStateSourceTrackIntegrityLedger({
+      sessions,
+      capabilities,
+    });
+    const parsed = assertStateSessionSourceTrackWritable({
+      session: candidate,
+      capabilities: integrity.activeCapabilities,
+    });
+    const nextIntegrity = applyStateSourceTrackIntegrityLedger({
+      sessions: [
+        ...integrity.sessions.filter((session) => session.id !== parsed.id),
+        parsed,
+      ],
+      capabilities: integrity.capabilities,
+    });
+    assertValidStateCapabilityLedger({
+      sessions: nextIntegrity.activeSessions,
+      capabilities: nextIntegrity.activeCapabilities,
+    });
+    const normalized = nextIntegrity.sessions.find(
+      (session) => session.id === parsed.id,
+    );
+    if (!normalized || normalized.sourceTrackHold) {
+      throw new Error(
+        `State session ${parsed.id} did not remain writable after final ledger reconciliation. No data changed.`,
+      );
+    }
+    await transaction.objectStore("stateSessions").put(normalized);
+    await transaction.done;
+    return normalized;
   }
 
   async getStateSession(id: string): Promise<StateSessionRecord | undefined> {
-    const value = await this.database.get("stateSessions", id);
-    return value ? StateSessionRecordSchema.parse(value) : undefined;
+    const integrity = await this.readStateSourceTrackIntegrityLedger();
+    return integrity.sessions.find((session) => session.id === id);
   }
 
   async listStateSessions(stateId?: StateId): Promise<StateSessionRecord[]> {
-    const sessions = stateId
-      ? await this.database.getAllFromIndex("stateSessions", "stateId", stateId)
-      : await this.database.getAll("stateSessions");
-    return sessions
-      .map((session) => StateSessionRecordSchema.parse(session))
+    const integrity = await this.readStateSourceTrackIntegrityLedger();
+    return integrity.sessions
+      .filter((session) => !stateId || session.stateId === stateId)
       .sort((left, right) => right.endedAt.localeCompare(left.endedAt));
   }
 
@@ -1961,61 +2019,96 @@ export class QctpRepository {
     value: StateCapabilityRecord,
   ): Promise<StateCapabilityRecord> {
     const parsed = StateCapabilityRecordSchema.parse(value);
-    const existing = await this.database.getFromIndex(
-      "stateCapabilities",
-      "stateId",
-      parsed.stateId,
+    const transaction = this.database.transaction(
+      ["stateSessions", "stateCapabilities"],
+      "readwrite",
+    );
+    const [sessions, capabilities] = await Promise.all([
+      transaction.objectStore("stateSessions").getAll(),
+      transaction.objectStore("stateCapabilities").getAll(),
+    ]);
+    const existing = capabilities.find(
+      (capability) => capability.stateId === parsed.stateId,
     );
     if (existing && existing.id !== parsed.id) {
       throw new Error(
         `State ${parsed.stateId} already has capability record ${existing.id}.`,
       );
     }
+    const sessionsById = new Map(
+      sessions.map((session) => [session.id, session] as const),
+    );
     for (const evidenceId of stateCapabilityEvidenceIds(parsed)) {
-      const session = await this.database.get("stateSessions", evidenceId);
+      const session = sessionsById.get(evidenceId);
       if (!session || session.stateId !== parsed.stateId) {
         throw new Error(
           `State capability ${parsed.id} requires matching session ${evidenceId}.`,
         );
       }
     }
-    const [sessions, capabilities] = await Promise.all([
-      this.database.getAll("stateSessions"),
-      this.database.getAll("stateCapabilities"),
-    ]);
     const nextCapabilities = capabilities.filter(
       (capability) => capability.id !== parsed.id,
     );
-    assertValidStateCapabilityLedger({
+    const integrity = applyStateSourceTrackIntegrityLedger({
       sessions,
       capabilities: [...nextCapabilities, parsed],
     });
-    await this.database.put("stateCapabilities", parsed);
-    return parsed;
+    const normalizedCandidate = integrity.capabilities.find(
+      (capability) => capability.id === parsed.id,
+    );
+    if (!normalizedCandidate) {
+      throw new Error(
+        `State capability ${parsed.id} was not preserved by integrity reconciliation. No data changed.`,
+      );
+    }
+    if (normalizedCandidate.sourceTrackHold) {
+      throw new StateSourceTrackIntegrityError(
+        normalizedCandidate.sourceTrackHold,
+      );
+    }
+    assertValidStateCapabilityLedger({
+      sessions: integrity.activeSessions,
+      capabilities: integrity.activeCapabilities,
+    });
+    await transaction.objectStore("stateCapabilities").put(normalizedCandidate);
+    await transaction.done;
+    return normalizedCandidate;
   }
 
   async getStateCapability(
     id: string,
   ): Promise<StateCapabilityRecord | undefined> {
-    const value = await this.database.get("stateCapabilities", id);
-    return value ? StateCapabilityRecordSchema.parse(value) : undefined;
+    const integrity = await this.readStateSourceTrackIntegrityLedger();
+    return integrity.capabilities.find((capability) => capability.id === id);
   }
 
   async getStateCapabilityByStateId(
     stateId: StateId,
   ): Promise<StateCapabilityRecord | undefined> {
-    const value = await this.database.getFromIndex(
-      "stateCapabilities",
-      "stateId",
-      stateId,
+    const integrity = await this.readStateSourceTrackIntegrityLedger();
+    return integrity.capabilities.find(
+      (capability) => capability.stateId === stateId,
     );
-    return value ? StateCapabilityRecordSchema.parse(value) : undefined;
   }
 
   async listStateCapabilities(): Promise<StateCapabilityRecord[]> {
-    const capabilities = await this.database.getAll("stateCapabilities");
-    return capabilities
-      .map((capability) => StateCapabilityRecordSchema.parse(capability))
+    const integrity = await this.readStateSourceTrackIntegrityLedger();
+    return integrity.capabilities.sort((left, right) =>
+      right.updatedAt.localeCompare(left.updatedAt),
+    );
+  }
+
+  async listActiveStateCapabilities(): Promise<StateCapabilityRecord[]> {
+    const integrity = await this.readStateSourceTrackIntegrityLedger();
+    return integrity.activeCapabilities.sort((left, right) =>
+      right.updatedAt.localeCompare(left.updatedAt),
+    );
+  }
+
+  async listHeldStateCapabilities(): Promise<StateCapabilityRecord[]> {
+    const integrity = await this.readStateSourceTrackIntegrityLedger();
+    return integrity.capabilities
+      .filter((capability) => capability.sourceTrackHold)
       .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
   }
 
@@ -2027,6 +2120,16 @@ export class QctpRepository {
     sessionId: string,
     now = new Date().toISOString(),
   ): Promise<CompleteReg01Result> {
+    const sourceAccess = evaluateReg01SourceTrackAccess("complete");
+    if (!sourceAccess.allowed) {
+      throw new RegCompletionError([
+        `controlled source access ${sourceAccess.code}: ${sourceAccess.message} Next controlled action: ${sourceAccess.nextAction}`,
+      ]);
+    }
+    const sourceTrackReference = sourceTrackReferenceFor(
+      REG01_SOURCE_TRACK_ID,
+      REG01_SOURCE_ACCESS_ID,
+    );
     const transaction = this.database.transaction(
       [
         "regSessions",
@@ -2040,8 +2143,9 @@ export class QctpRepository {
       "readwrite",
     );
     const sessions = transaction.objectStore("regSessions");
-    const session = await sessions.get(sessionId);
-    if (!session) throw new Error(`REG session not found: ${sessionId}`);
+    const storedSession = await sessions.get(sessionId);
+    if (!storedSession) throw new Error(`REG session not found: ${sessionId}`);
+    const session = RegSessionSchema.parse(storedSession);
 
     if (session.status !== "complete") {
       const issues = getReg01CompletionIssues(session);
@@ -2110,7 +2214,12 @@ export class QctpRepository {
       schemaVersion: 1 as const,
       createdAt: session.completedAt ?? now,
       updatedAt: now,
-      tags: ["reg-01", "geometry", "learn-to-see"],
+      tags: [
+        "reg-01",
+        "geometry",
+        "learn-to-see",
+        `source-track:${sourceTrackReference.trackId}`,
+      ],
       backlinks: [],
       sourceLinks: [
         {
@@ -2140,6 +2249,8 @@ export class QctpRepository {
         surface: "studio",
         moduleId: session.moduleId,
         controlledContentAuthorityKey: "grant.exercise.REG-01-A",
+        sourceTrackId: sourceTrackReference.trackId,
+        sourceTrackRef: sourceTrackReference,
         precept: session.precept,
       },
     });
@@ -2153,6 +2264,8 @@ export class QctpRepository {
       fields: {
         surface: "codex",
         controlledContentAuthorityKey: "grant.exercise.REG-01-A",
+        sourceTrackId: sourceTrackReference.trackId,
+        sourceTrackRef: sourceTrackReference,
         prompt:
           "What did the act of constructing reveal that looking at a finished image would not have revealed?",
       },
@@ -2167,6 +2280,8 @@ export class QctpRepository {
       fields: {
         surface: "mirror",
         controlledContentAuthorityKey: "grant.exercise.REG-01-A",
+        sourceTrackId: sourceTrackReference.trackId,
+        sourceTrackRef: sourceTrackReference,
         integrationAction: session.integrationAction,
         preceptReview: session.precept.review,
         evidenceRecordIds: [resultingIds.studio, resultingIds.codex],
@@ -2462,6 +2577,10 @@ export class QctpRepository {
       transaction.objectStore("mirrorInsightFeedback").getAll(),
     ]);
     await transaction.done;
+    const stateIntegrity = applyStateSourceTrackIntegrityLedger({
+      sessions: stateSessions,
+      capabilities: stateCapabilities,
+    });
     return QctpExportDataSchema.parse({
       schema: "qctp-export-v3",
       schemaVersion: 3,
@@ -2480,8 +2599,8 @@ export class QctpRepository {
       practiceSessions,
       breathProfiles,
       breathSessions,
-      stateSessions,
-      stateCapabilities,
+      stateSessions: stateIntegrity.sessions,
+      stateCapabilities: stateIntegrity.capabilities,
       transcriptionQueue,
       migrationLedger,
       mirrorRequests,
@@ -2496,28 +2615,12 @@ export class QctpRepository {
   ): Promise<void> {
     const snapshot = QctpImportDataSchema.parse(value);
     const mode = options.mode ?? "merge";
-    const importedStateSessions = new Map(
-      snapshot.stateSessions.map((session) => [session.id, session]),
-    );
-    for (const capability of snapshot.stateCapabilities) {
-      for (const evidenceId of stateCapabilityEvidenceIds(capability)) {
-        const session =
-          importedStateSessions.get(evidenceId) ??
-          (mode === "merge"
-            ? await this.database.get("stateSessions", evidenceId)
-            : undefined);
-        if (!session || session.stateId !== capability.stateId) {
-          throw new Error(
-            `State capability ${capability.id} requires matching session ${evidenceId}.`,
-          );
-        }
-      }
-    }
+    const transaction = this.database.transaction(ALL_STORES, "readwrite");
     const [storedSessions, storedCapabilities] =
       mode === "merge"
         ? await Promise.all([
-            this.database.getAll("stateSessions"),
-            this.database.getAll("stateCapabilities"),
+            transaction.objectStore("stateSessions").getAll(),
+            transaction.objectStore("stateCapabilities").getAll(),
           ])
         : [[], []];
     const finalSessions = new Map(
@@ -2542,11 +2645,24 @@ export class QctpRepository {
       }
       finalCapabilities.set(capability.id, capability);
     }
-    assertValidStateCapabilityLedger({
+    for (const capability of finalCapabilities.values()) {
+      for (const evidenceId of stateCapabilityEvidenceIds(capability)) {
+        const session = finalSessions.get(evidenceId);
+        if (!session || session.stateId !== capability.stateId) {
+          throw new Error(
+            `State capability ${capability.id} requires matching session ${evidenceId}.`,
+          );
+        }
+      }
+    }
+    const stateIntegrity = applyStateSourceTrackIntegrityLedger({
       sessions: [...finalSessions.values()],
       capabilities: [...finalCapabilities.values()],
     });
-    const transaction = this.database.transaction(ALL_STORES, "readwrite");
+    assertValidStateCapabilityLedger({
+      sessions: stateIntegrity.activeSessions,
+      capabilities: stateIntegrity.activeCapabilities,
+    });
     if (mode === "replace") {
       await Promise.all(
         ALL_STORES.map((storeName) =>
@@ -2597,10 +2713,10 @@ export class QctpRepository {
     for (const session of snapshot.breathSessions) {
       await transaction.objectStore("breathSessions").put(session);
     }
-    for (const session of snapshot.stateSessions) {
+    for (const session of stateIntegrity.sessions) {
       await transaction.objectStore("stateSessions").put(session);
     }
-    for (const capability of snapshot.stateCapabilities) {
+    for (const capability of stateIntegrity.capabilities) {
       await transaction.objectStore("stateCapabilities").put(capability);
     }
     for (const item of snapshot.transcriptionQueue) {

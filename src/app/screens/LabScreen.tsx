@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { contentRefFor } from "../../controlled-content";
 import {
   CodexRecordSchema,
   RevisionSchema,
@@ -8,6 +9,11 @@ import {
   type CodexRecord,
   type EvidenceClass,
 } from "../../domain";
+import {
+  SourceTrackReferenceSchema,
+  evaluateSourceTrackAccess,
+  sourceTrackReferenceFor,
+} from "../../source-tracks";
 import {
   RepositoryCapturePersistence,
   VoiceRecorderPanel,
@@ -21,6 +27,7 @@ import "../platform-styles.css";
 
 type LabRecordType = "lab_protocol" | "lab_result";
 type DictationField = "hypothesis" | "procedure" | "controls" | "outcome";
+type LabSourceScope = "general" | "psionics-record";
 
 const evidenceClasses: ReadonlyArray<{ value: EvidenceClass; label: string }> =
   [
@@ -57,6 +64,7 @@ export function LabScreen() {
   );
   const [records, setRecords] = useState<CodexRecord[]>([]);
   const [recordType, setRecordType] = useState<LabRecordType>("lab_protocol");
+  const [sourceScope, setSourceScope] = useState<LabSourceScope>("general");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [hypothesis, setHypothesis] = useState("");
@@ -132,6 +140,16 @@ export function LabScreen() {
     setLinkedProtocolId(stringField(record, "protocolRecordId"));
     setEvidenceClass(record.observation?.evidenceClass ?? "observed");
     setTagText(record.tags.join(", "));
+    const sourceReference = SourceTrackReferenceSchema.safeParse(
+      record.fields.sourceTrackRef,
+    );
+    setSourceScope(
+      sourceReference.success &&
+        sourceReference.data.trackId === "psionics" &&
+        sourceReference.data.accessId === "record"
+        ? "psionics-record"
+        : "general",
+    );
     setStatus(
       `Editing version ${String(numberField(record, "version"))}. Saving creates a new revision.`,
     );
@@ -158,6 +176,22 @@ export function LabScreen() {
       return;
     }
 
+    const sourceTrackDecision =
+      sourceScope === "psionics-record"
+        ? evaluateSourceTrackAccess({
+            trackId: "psionics",
+            accessId: "record",
+            destination: "lab",
+            action: "record",
+          })
+        : null;
+    if (sourceTrackDecision && !sourceTrackDecision.allowed) {
+      setError(
+        `${sourceTrackDecision.message} ${sourceTrackDecision.nextAction}`,
+      );
+      return;
+    }
+
     setSaving(true);
     try {
       const now = new Date().toISOString();
@@ -168,12 +202,15 @@ export function LabScreen() {
       const version = existing ? numberField(existing, "version") + 1 : 1;
       const revisionId = `revision-${crypto.randomUUID()}`;
       const tags = [
-        ...new Set(
-          tagText
+        ...new Set([
+          ...tagText
             .split(",")
             .map((tag) => tag.trim().toLowerCase())
             .filter(Boolean),
-        ),
+          ...(sourceScope === "psionics-record"
+            ? ["psionics", "record-only", "user-evidence"]
+            : []),
+        ]),
       ];
       const protocolLink =
         recordType === "lab_result" && linkedProtocolId
@@ -219,6 +256,10 @@ export function LabScreen() {
         revisionIds: [...(existing?.revisionIds ?? []), revisionId],
         pathId: null,
         sessionId: null,
+        contentRef:
+          sourceScope === "psionics-record"
+            ? contentRefFor("workflow.lab")
+            : undefined,
         fields: {
           hypothesis: hypothesis.trim(),
           procedure: procedure.trim(),
@@ -228,6 +269,13 @@ export function LabScreen() {
           protocolRecordId:
             recordType === "lab_result" ? linkedProtocolId || null : null,
           version,
+          ...(sourceScope === "psionics-record"
+            ? {
+                sourceTrackRef: sourceTrackReferenceFor("psionics", "record"),
+                sourceScope: "USER_EVIDENCE_ONLY",
+                sourcePracticeProvided: false,
+              }
+            : {}),
         },
         deletedAt: null,
       });
@@ -273,6 +321,7 @@ export function LabScreen() {
     procedure,
     recordType,
     repository,
+    sourceScope,
     tagText,
     title,
   ]);
@@ -336,6 +385,10 @@ export function LabScreen() {
           revisionIds: [],
           pathId: null,
           sessionId: null,
+          contentRef:
+            sourceScope === "psionics-record"
+              ? contentRefFor("workflow.lab")
+              : undefined,
           fields: {
             voiceRecordingId: capture.recordingId,
             fieldTargetId: capture.fieldTargetId,
@@ -343,6 +396,13 @@ export function LabScreen() {
             transcriptState: capture.queueLocalTranscription
               ? "queued-local"
               : "not-requested",
+            ...(sourceScope === "psionics-record"
+              ? {
+                  sourceTrackRef: sourceTrackReferenceFor("psionics", "record"),
+                  sourceScope: "USER_EVIDENCE_ONLY",
+                  sourcePracticeProvided: false,
+                }
+              : {}),
           },
           deletedAt: null,
         }),
@@ -360,6 +420,7 @@ export function LabScreen() {
       recordType,
       repository,
       runtime.settings.audioRetention,
+      sourceScope,
     ],
   );
 
@@ -419,22 +480,75 @@ export function LabScreen() {
           <StatusBadge status="ready" />
         </div>
 
-        <div className="segmented-control" aria-label="Lab record type">
-          <button
-            type="button"
-            className={recordType === "lab_protocol" ? "active" : undefined}
-            onClick={() => resetForm("lab_protocol")}
+        <div className="platform-field">
+          <label htmlFor="lab-source-scope">Controlled source scope</label>
+          <select
+            id="lab-source-scope"
+            value={sourceScope}
+            disabled={Boolean(editingId)}
+            onChange={(event) => {
+              const nextScope = event.target.value as LabSourceScope;
+              setSourceScope(nextScope);
+              if (nextScope === "psionics-record") {
+                resetForm("lab_result");
+                setSourceScope(nextScope);
+              }
+            }}
           >
-            Protocol
-          </button>
-          <button
-            type="button"
-            className={recordType === "lab_result" ? "active" : undefined}
-            onClick={() => resetForm("lab_result")}
-          >
-            Result
-          </button>
+            <option value="general">General personal experiment</option>
+            <option value="psionics-record">
+              Psionics — user evidence only
+            </option>
+          </select>
         </div>
+
+        {sourceScope === "psionics-record" ? (
+          <div
+            className="notice-card"
+            data-source-track="psionics"
+            data-source-track-status="RECORD_ONLY"
+          >
+            <strong>Record only</strong>
+            <p>
+              QCTP preserves your raw observation, controls, and exportable
+              evidence. It does not provide or validate a psionics method,
+              lesson, timer, or practice.
+            </p>
+          </div>
+        ) : null}
+
+        <div
+          className="notice-card"
+          data-source-track="remote-viewing"
+          data-source-track-status="EXPERIMENTAL_PROTOCOL"
+        >
+          <strong>Remote-viewing protocol hold</strong>
+          <p>
+            The QR recipe may be reviewed in State Atlas after prerequisites,
+            but this generic Lab cannot start it. A separately locked blind
+            target, immutable raw capture, feedback, and calibration protocol
+            must be implemented first.
+          </p>
+        </div>
+
+        {sourceScope === "general" ? (
+          <div className="segmented-control" aria-label="Lab record type">
+            <button
+              type="button"
+              className={recordType === "lab_protocol" ? "active" : undefined}
+              onClick={() => resetForm("lab_protocol")}
+            >
+              Protocol
+            </button>
+            <button
+              type="button"
+              className={recordType === "lab_result" ? "active" : undefined}
+              onClick={() => resetForm("lab_result")}
+            >
+              Result
+            </button>
+          </div>
+        ) : null}
 
         <div className="platform-field">
           <label htmlFor="lab-title">Title</label>
@@ -445,7 +559,7 @@ export function LabScreen() {
             placeholder="A falsifiable, searchable title"
           />
         </div>
-        {recordType === "lab_result" ? (
+        {recordType === "lab_result" && sourceScope === "general" ? (
           <div className="platform-field">
             <label htmlFor="lab-protocol-link">Linked protocol</label>
             <select
@@ -462,20 +576,24 @@ export function LabScreen() {
             </select>
           </div>
         ) : null}
-        {field(
-          "hypothesis",
-          "Hypothesis",
-          hypothesis,
-          setHypothesis,
-          "What result would support or challenge the proposition?",
-        )}
-        {field(
-          "procedure",
-          "Procedure",
-          procedure,
-          setProcedure,
-          "List the reproducible steps in order.",
-        )}
+        {sourceScope === "general"
+          ? field(
+              "hypothesis",
+              "Hypothesis",
+              hypothesis,
+              setHypothesis,
+              "What result would support or challenge the proposition?",
+            )
+          : null}
+        {sourceScope === "general"
+          ? field(
+              "procedure",
+              "Procedure",
+              procedure,
+              setProcedure,
+              "List the reproducible steps in order.",
+            )
+          : null}
         {field(
           "controls",
           "Controls",

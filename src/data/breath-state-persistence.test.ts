@@ -9,8 +9,15 @@ import {
   selectBreathProtocol,
   type BreathSessionRecord,
 } from "../breath";
+import { contentRefFor } from "../controlled-content";
 import { exportJson, importJson, parseQctpJson } from "../export-import";
-import type { StateCapabilityRecord, StateSessionRecord } from "../state-atlas";
+import {
+  capabilitySnapshotsFromRecords,
+  type StateCapabilityRecord,
+  type StateId,
+  type StateSessionRecord,
+} from "../state-atlas";
+import { sourceTrackReferenceFor } from "../source-tracks";
 
 import { deleteQctpDatabase } from "./db";
 import { createQctpRepository, type QctpRepository } from "./repository";
@@ -184,6 +191,36 @@ function capability(
       },
     ],
     updatedAt: later,
+  };
+}
+
+function sourceStateSession(
+  id: string,
+  stateId: StateId,
+  sourceTrackRef?: unknown,
+): StateSessionRecord {
+  return {
+    ...stateSession(id),
+    stateId,
+    sessionRevision: `${stateId}-REV0`,
+    contentRef: contentRefFor(`state.recipe.${stateId}`),
+    ...(sourceTrackRef === undefined ? {} : { sourceTrackRef }),
+  };
+}
+
+function sourceCapability(
+  id: string,
+  stateId: StateId,
+  evidenceSessionId: string,
+): StateCapabilityRecord {
+  const base = capability(id, evidenceSessionId);
+  return {
+    ...base,
+    stateId,
+    transitions: base.transitions.map((transition) => ({
+      ...transition,
+      evidenceAttemptIds: [evidenceSessionId],
+    })),
   };
 }
 
@@ -389,6 +426,109 @@ describe("Breath and State repository CRUD", () => {
     ).toBeUndefined();
     expect(await repository.getStateSession(session.id)).toBeUndefined();
   });
+
+  it("rejects non-writable source sessions atomically", async () => {
+    await expect(
+      repository.saveStateSession(sourceStateSession("focus-unbound", "M-F10")),
+    ).rejects.toMatchObject({ code: "SOURCE_TRACK_BINDING_REQUIRED" });
+    await expect(
+      repository.saveStateSession(
+        sourceStateSession(
+          "qr-read-only",
+          "QR",
+          sourceTrackReferenceFor("remote-viewing", "QR"),
+        ),
+      ),
+    ).rejects.toMatchObject({ code: "SOURCE_TRACK_ACCESS_DENIED" });
+    await expect(
+      repository.saveStateSession(
+        sourceStateSession(
+          "focus-foreign-route",
+          "M-F10",
+          sourceTrackReferenceFor("thomas-campbell", "TC-PC"),
+        ),
+      ),
+    ).rejects.toMatchObject({ code: "SOURCE_TRACK_ROUTE_MISMATCH" });
+    expect(await repository.database.getAll("stateSessions")).toEqual([]);
+  });
+
+  it("strips a caller-supplied derived hold before saving valid capability", async () => {
+    const state = await repository.saveStateSession(
+      stateSession("state-stale-hold"),
+    );
+    const saved = await repository.saveStateCapability({
+      ...capability("capability-stale-hold", state.id),
+      sourceTrackHold: {
+        status: "HELD",
+        code: "SOURCE_TRACK_EVIDENCE_HELD",
+        stateId: "Q1",
+        trackId: null,
+        accessId: null,
+        message: "Caller-supplied stale derived state.",
+      },
+    });
+
+    expect(saved.sourceTrackHold).toBeUndefined();
+    expect(
+      (await repository.database.get("stateCapabilities", saved.id))
+        ?.sourceTrackHold,
+    ).toBeUndefined();
+  });
+
+  it("rejects an evidence-session overwrite that would invalidate existing capability credit", async () => {
+    const original = await repository.saveStateSession(
+      stateSession("state-evidence-overwrite"),
+    );
+    await repository.saveStateCapability(
+      capability("capability-evidence-overwrite", original.id),
+    );
+
+    await expect(
+      repository.saveStateSession({
+        ...original,
+        mechanicsUnderstood: false,
+        mechanicsCorrect: false,
+      }),
+    ).rejects.toThrow(/not supported by the progression gate/i);
+
+    expect(await repository.getStateSession(original.id)).toEqual(original);
+    expect(await repository.listActiveStateCapabilities()).toHaveLength(1);
+  });
+
+  it("serializes concurrent evidence overwrite and capability claims without admitting an invalid union", async () => {
+    const original = await repository.saveStateSession(
+      stateSession("state-concurrent-evidence"),
+    );
+    const invalidOverwrite = {
+      ...original,
+      mechanicsUnderstood: false,
+      mechanicsCorrect: false,
+    };
+
+    const outcomes = await Promise.allSettled([
+      repository.saveStateCapability(
+        capability("capability-concurrent-evidence", original.id),
+      ),
+      repository.saveStateSession(invalidOverwrite),
+    ]);
+
+    expect(
+      outcomes.filter((outcome) => outcome.status === "fulfilled"),
+    ).toHaveLength(1);
+    const activeCapabilities = await repository.listActiveStateCapabilities();
+    const storedSession = await repository.getStateSession(original.id);
+    if (activeCapabilities.length > 0) {
+      expect(storedSession).toMatchObject({
+        mechanicsUnderstood: true,
+        mechanicsCorrect: true,
+      });
+    } else {
+      expect(storedSession).toMatchObject({
+        mechanicsUnderstood: false,
+        mechanicsCorrect: false,
+      });
+    }
+  });
 });
 
 describe("snapshot, JSON, and import preservation", () => {
@@ -421,6 +561,132 @@ describe("snapshot, JSON, and import preservation", () => {
     } finally {
       target.close();
       await deleteQctpDatabase(targetName);
+    }
+  });
+
+  it("quarantines legacy source evidence through public JSON without losing it", async () => {
+    await repository.initializeDefaults(now);
+    const legacy = sourceStateSession("legacy-focus", "M-F10", {
+      legacy: "unverified",
+    });
+    const claimed = sourceCapability(
+      "legacy-focus-capability",
+      "M-F10",
+      legacy.id,
+    );
+    const snapshot = await repository.readSnapshot(later);
+    const json = JSON.stringify({
+      ...snapshot,
+      stateSessions: [legacy],
+      stateCapabilities: [claimed],
+    });
+    const targetName = `qctp-source-hold-import-${crypto.randomUUID()}`;
+    const target = await createQctpRepository({ name: targetName });
+    try {
+      await importJson(target, json, { mode: "replace" });
+      const sessions = await target.listStateSessions("M-F10");
+      const capabilities = await target.listStateCapabilities();
+      expect(sessions).toHaveLength(1);
+      expect(sessions[0]).toMatchObject({
+        sourceTrackRef: { legacy: "unverified" },
+        sourceTrackHold: { code: "SOURCE_TRACK_BINDING_INVALID" },
+      });
+      expect(capabilities).toHaveLength(1);
+      expect(capabilities[0]).toMatchObject({
+        sourceTrackHold: { code: "SOURCE_TRACK_EVIDENCE_HELD" },
+      });
+      expect(await target.listActiveStateCapabilities()).toEqual([]);
+      expect(await target.listHeldStateCapabilities()).toEqual(capabilities);
+      expect(capabilitySnapshotsFromRecords(capabilities)).toEqual([]);
+
+      const preserved = await target.readSnapshot(later);
+      expect(preserved.stateSessions[0]?.sourceTrackRef).toEqual({
+        legacy: "unverified",
+      });
+      expect(preserved.stateCapabilities[0]?.sourceTrackHold).toMatchObject({
+        code: "SOURCE_TRACK_EVIDENCE_HELD",
+      });
+      const reparsed = await parseQctpJson(await exportJson(target));
+      expect(reparsed.stateSessions[0]?.sourceTrackRef).toEqual({
+        legacy: "unverified",
+      });
+      expect(reparsed.stateCapabilities[0]?.sourceTrackHold).toMatchObject({
+        code: "SOURCE_TRACK_EVIDENCE_HELD",
+      });
+    } finally {
+      target.close();
+      await deleteQctpDatabase(targetName);
+    }
+  });
+
+  it("reconciles the final merge union before existing capability credit remains active", async () => {
+    await repository.initializeDefaults(now);
+    const original = await repository.saveStateSession(
+      stateSession("merge-replaced-evidence"),
+    );
+    const earned = await repository.saveStateCapability(
+      capability("merge-existing-capability", original.id),
+    );
+    const incoming = {
+      ...(await repository.readSnapshot(later)),
+      stateSessions: [
+        {
+          ...original,
+          sourceTrackRef: sourceTrackReferenceFor("monroe-buhlman", "M-F10"),
+        },
+      ],
+      stateCapabilities: [],
+    };
+
+    await importJson(repository, JSON.stringify(incoming), { mode: "merge" });
+
+    expect(await repository.getStateSession(original.id)).toMatchObject({
+      sourceTrackHold: { code: "SOURCE_TRACK_UNEXPECTED_BINDING" },
+    });
+    expect(await repository.getStateCapability(earned.id)).toMatchObject({
+      sourceTrackHold: { code: "SOURCE_TRACK_EVIDENCE_HELD" },
+    });
+    expect(await repository.listActiveStateCapabilities()).toEqual([]);
+  });
+
+  it("serializes merge import with a concurrent capability claim before reconciling the final union", async () => {
+    const original = await repository.saveStateSession(
+      stateSession("merge-concurrent-evidence"),
+    );
+    const incoming = {
+      ...(await repository.readSnapshot(later)),
+      stateSessions: [
+        {
+          ...original,
+          mechanicsUnderstood: false,
+          mechanicsCorrect: false,
+        },
+      ],
+      stateCapabilities: [],
+    };
+
+    const outcomes = await Promise.allSettled([
+      repository.saveStateCapability(
+        capability("merge-concurrent-capability", original.id),
+      ),
+      repository.importSnapshot(incoming, { mode: "merge" }),
+    ]);
+
+    expect(
+      outcomes.filter((outcome) => outcome.status === "fulfilled"),
+    ).toHaveLength(1);
+    const activeCapabilities = await repository.listActiveStateCapabilities();
+    const storedSession = await repository.getStateSession(original.id);
+    if (activeCapabilities.length > 0) {
+      expect(storedSession).toMatchObject({
+        mechanicsUnderstood: true,
+        mechanicsCorrect: true,
+      });
+    } else {
+      expect(storedSession).toMatchObject({
+        mechanicsUnderstood: false,
+        mechanicsCorrect: false,
+      });
     }
   });
 

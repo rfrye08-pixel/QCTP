@@ -1,6 +1,18 @@
-import { useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { contentRefFor } from "../../controlled-content";
+import {
+  evaluateSourceTrackAccess,
+  getStateSourceTrackRoute,
+  sourceTrackReferenceFor,
+} from "../../source-tracks";
 import {
   capabilitySnapshotsFromRecords,
   evaluateCapabilityProgression,
@@ -55,7 +67,15 @@ function emptyRatings(): Record<RatingKey, number | null> {
   >;
 }
 
-export function StateAtlasTrainingPanel() {
+export interface StateAtlasTrainingPanelProps {
+  requestedStateId?: StateId | null;
+  onSelectionConsumed?: (stateId: StateId) => void;
+}
+
+export function StateAtlasTrainingPanel({
+  requestedStateId = null,
+  onSelectionConsumed,
+}: StateAtlasTrainingPanelProps = {}) {
   const runtime = useQctp();
   const snapshots = useMemo(
     () => capabilitySnapshotsFromRecords(runtime.stateCapabilities),
@@ -63,12 +83,56 @@ export function StateAtlasTrainingPanel() {
   );
   const [stateId, setStateId] = useState<StateId>("Q1");
   const definition = getStateDefinition(stateId);
-  const recipe = getStatePracticeRecipe(stateId);
   const currentCapability =
-    runtime.stateCapabilities.find((record) => record.stateId === stateId) ??
-    null;
+    runtime.stateCapabilities.find(
+      (record) => record.stateId === stateId && !record.sourceTrackHold,
+    ) ?? null;
   const prerequisite = evaluatePrerequisites(stateId, snapshots);
+  const sourceRecipeRoute = getStateSourceTrackRoute(stateId);
+  const heldSourceSessions = runtime.stateSessions.filter(
+    (session) => session.stateId === stateId && session.sourceTrackHold,
+  );
+  const heldSourceCapabilities = (runtime.stateCapabilityHolds ?? []).filter(
+    (capability) => capability.stateId === stateId,
+  );
+  const heldSourceEvidenceCount =
+    heldSourceSessions.length + heldSourceCapabilities.length;
+  const sourceReadDecision = sourceRecipeRoute
+    ? evaluateSourceTrackAccess({
+        ...sourceRecipeRoute,
+        destination: "paths",
+        action: "read",
+        capabilities: runtime.stateCapabilities,
+      })
+    : null;
+  const sourceStartDecision = sourceRecipeRoute
+    ? evaluateSourceTrackAccess({
+        ...sourceRecipeRoute,
+        destination: "paths",
+        action: "start",
+        capabilities: runtime.stateCapabilities,
+      })
+    : null;
+  const recipeReadable =
+    prerequisite.eligible && (sourceReadDecision?.allowed ?? true);
+  const attemptStartAllowed =
+    recipeReadable && (sourceStartDecision?.allowed ?? true);
+  const recipe = recipeReadable ? getStatePracticeRecipe(stateId) : null;
+  const readHoldRequirements =
+    sourceReadDecision && !sourceReadDecision.allowed
+      ? sourceReadDecision.code === "PREREQUISITES_UNMET" &&
+        sourceReadDecision.unmetPrerequisites.length > 0
+        ? sourceReadDecision.unmetPrerequisites
+        : [sourceReadDecision.message]
+      : prerequisite.unmet;
+  const readHoldNextAction =
+    sourceReadDecision && !sourceReadDecision.allowed
+      ? sourceReadDecision.nextAction
+      : "Complete the listed capability work, then return here to recheck access.";
   const guidance = recommendedGuidanceTier(currentCapability?.level ?? null);
+  const prerequisiteHoldHeadingId = useId();
+  const protocolHoldHeadingId = useId();
+  const lastRequestedStateId = useRef<StateId | null>(null);
   const [startedAt, setStartedAt] = useState<string | null>(null);
   const [markerScores, setMarkerScores] = useState<Record<string, number>>({});
   const [mechanicsUnderstood, setMechanicsUnderstood] = useState(false);
@@ -96,7 +160,7 @@ export function StateAtlasTrainingPanel() {
   const [context, setContext] = useState(definition.permittedContexts[0]!);
   const [message, setMessage] = useState("");
 
-  const resetEvidence = () => {
+  const resetEvidence = useCallback(() => {
     setMarkerScores({});
     setMechanicsUnderstood(false);
     setMechanicsCorrect(false);
@@ -120,19 +184,45 @@ export function StateAtlasTrainingPanel() {
     setOutcomeFeedback("");
     setCoherentEpisode(false);
     setStableEnoughForUse(false);
-  };
+  }, []);
 
-  const selectState = (next: StateId) => {
-    if (startedAt) return;
-    const nextDefinition = getStateDefinition(next);
-    setStateId(next);
-    setContext(nextDefinition.permittedContexts[0]!);
-    resetEvidence();
-    setMessage("");
-  };
+  const selectState = useCallback(
+    (next: StateId) => {
+      if (startedAt) return;
+      const nextDefinition = getStateDefinition(next);
+      setStateId(next);
+      setContext(nextDefinition.permittedContexts[0]!);
+      resetEvidence();
+      setMessage("");
+    },
+    [resetEvidence, startedAt],
+  );
+
+  useEffect(() => {
+    if (requestedStateId === null) {
+      lastRequestedStateId.current = null;
+      return;
+    }
+    if (lastRequestedStateId.current === requestedStateId) return;
+    if (startedAt) {
+      lastRequestedStateId.current = requestedStateId;
+      return;
+    }
+    const requested = requestedStateId;
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      lastRequestedStateId.current = requested;
+      if (requested !== stateId) selectState(requested);
+      onSelectionConsumed?.(requested);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [onSelectionConsumed, requestedStateId, selectState, startedAt, stateId]);
 
   const start = () => {
-    if (!prerequisite.eligible) return;
+    if (!attemptStartAllowed) return;
     resetEvidence();
     setStartedAt(new Date().toISOString());
     setMessage(
@@ -141,7 +231,7 @@ export function StateAtlasTrainingPanel() {
   };
 
   const save = async () => {
-    if (!startedAt) return;
+    if (!startedAt || !attemptStartAllowed) return;
     if (!rawObservation.trim()) {
       setMessage(
         "A raw observation is required before this attempt can be saved.",
@@ -235,6 +325,14 @@ export function StateAtlasTrainingPanel() {
       ...baseAttempt,
       sessionRevision: `${stateId}-REV0`,
       contentRef: contentRefFor(`state.recipe.${stateId}`),
+      ...(sourceRecipeRoute
+        ? {
+            sourceTrackRef: sourceTrackReferenceFor(
+              sourceRecipeRoute.trackId,
+              sourceRecipeRoute.accessId,
+            ),
+          }
+        : {}),
       startedAt,
       posture: "safe supported posture",
       breathMethod: null,
@@ -282,323 +380,418 @@ export function StateAtlasTrainingPanel() {
   };
 
   return (
-    <section className="panel-card state-training-panel">
+    <section
+      id="state-atlas-training"
+      className="panel-card state-training-panel"
+    >
       <StateAtlasProgress
         capabilities={snapshots}
         stateIds={coreStateIds}
         activeStateId={stateId}
         onStateSelect={selectState}
       />
-      <article className="state-training-detail">
+      <article
+        className="state-training-detail"
+        data-source-track-id={sourceRecipeRoute?.trackId}
+        data-source-access-id={sourceRecipeRoute?.accessId}
+        data-source-read-decision={sourceReadDecision?.code}
+        data-source-start-decision={sourceStartDecision?.code}
+      >
         <p className="eyebrow">Controlled attempt · {guidance} guidance</p>
         <h3>
           {stateId} — {definition.title}
         </h3>
         <p className="state-source-label">{definition.sourceLabel}</p>
+        {sourceReadDecision?.track && sourceReadDecision.accessPoint ? (
+          <p className="state-source-registry-label">
+            Controlled scope: {sourceReadDecision.track.label} ·{" "}
+            {sourceReadDecision.accessPoint.label}
+          </p>
+        ) : null}
         <p className="notice-inline">
           This is a controlled practice target, not a promise that a named state
-          will occur. Follow the procedure and report presence, absence, or
-          uncertainty. Elapsed time never proves attainment.
+          will occur. Practice instructions and controls appear only after every
+          prerequisite is met. Elapsed time never proves attainment.
         </p>
-        <details className="state-recipe" open={!startedAt}>
-          <summary>
-            Controlled recipe · about{" "}
-            {Math.ceil(recipeDurationSeconds(recipe) / 60)} minutes
-          </summary>
-          <ol>
-            {recipe.steps.map((step, index) => (
-              <li key={`${step.phase}-${index}`}>
-                <strong>
-                  {step.phase} · {Math.ceil(step.durationSeconds / 60)} min
-                </strong>
-                <p>{step.instruction}</p>
-                <small>Advance when: {step.completionCue}</small>
-              </li>
-            ))}
-          </ol>
-          <h4>Stop conditions</h4>
-          <ul>
-            {recipe.stopConditions.map((condition) => (
-              <li key={condition}>{condition}</li>
-            ))}
-          </ul>
-        </details>
-        <div className="training-process-rail" aria-label="Training process">
-          {TRAINING_PROCESS_PHASES.map((phase) => (
-            <span key={phase}>{phase}</span>
-          ))}
-        </div>
-        {!prerequisite.eligible ? (
-          <div className="notice-inline">
-            {prerequisite.unmet.map((hold) => (
-              <p key={hold}>{hold}</p>
-            ))}
-          </div>
+        {heldSourceEvidenceCount > 0 ? (
+          <section className="state-prerequisite-hold state-ledger-hold">
+            <p className="eyebrow">Preserved evidence hold</p>
+            <h4>Source-track capability credit withheld</h4>
+            <p>
+              {heldSourceEvidenceCount} preserved ledger record
+              {heldSourceEvidenceCount === 1 ? " is" : "s are"} excluded from
+              capability progression until exact controlled source binding,
+              evidence lineage, and current write authority pass.
+            </p>
+            <ul>
+              {heldSourceSessions.map((session) => (
+                <li key={session.id}>
+                  <code>{session.id}</code>: {session.sourceTrackHold?.message}
+                </li>
+              ))}
+              {heldSourceCapabilities.map((capability) => (
+                <li key={capability.id}>
+                  <code>{capability.id}</code>: capability claim preserved;{" "}
+                  {capability.sourceTrackHold?.message}
+                </li>
+              ))}
+            </ul>
+          </section>
         ) : null}
-        <label className="compact-field">
-          Permitted context
-          <select
-            value={context}
-            disabled={Boolean(startedAt)}
-            onChange={(event) => setContext(event.target.value)}
+        {!recipeReadable ? (
+          <section
+            className="state-prerequisite-hold"
+            aria-labelledby={prerequisiteHoldHeadingId}
           >
-            {definition.permittedContexts.map((candidate) => (
-              <option value={candidate} key={candidate}>
-                {candidate.replaceAll("_", " ")}
-              </option>
-            ))}
-          </select>
-        </label>
-        {startedAt ? (
+            <p className="eyebrow">Prerequisite hold</p>
+            <h4 id={prerequisiteHoldHeadingId}>
+              Controlled practice unavailable
+            </h4>
+            <p>
+              The title and source attribution remain visible, but the recipe
+              and all runnable controls stay closed until these requirements are
+              recorded in the local capability ledger.
+            </p>
+            <ul>
+              {readHoldRequirements.map((hold) => (
+                <li key={hold}>{hold}</li>
+              ))}
+            </ul>
+            <p>Next permitted action: {readHoldNextAction}</p>
+          </section>
+        ) : recipe ? (
           <>
-            <fieldset className="state-checks">
-              <legend>Mechanics and safety</legend>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={mechanicsUnderstood}
-                  onChange={(event) =>
-                    setMechanicsUnderstood(event.target.checked)
-                  }
-                />
-                Mechanics understood
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={mechanicsCorrect}
-                  onChange={(event) =>
-                    setMechanicsCorrect(event.target.checked)
-                  }
-                />
-                Mechanics performed correctly
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={safetyStop}
-                  onChange={(event) => setSafetyStop(event.target.checked)}
-                />
-                Safety stop occurred
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={safeAndOriented}
-                  onChange={(event) => setSafeAndOriented(event.target.checked)}
-                />
-                Safe and oriented now
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={returnedSafely}
-                  onChange={(event) => setReturnedSafely(event.target.checked)}
-                />
-                Full return completed
-              </label>
-            </fieldset>
-            <fieldset className="state-marker-grid">
-              <legend>Raw target markers · 0 absent / 4 clear</legend>
-              {definition.targetMarkers.map((marker) => (
-                <label key={marker.id}>
-                  <span>{marker.label}</span>
-                  <input
-                    type="range"
-                    min="0"
-                    max="4"
-                    value={markerScores[marker.id] ?? 0}
-                    onChange={(event) =>
-                      setMarkerScores((current) => ({
-                        ...current,
-                        [marker.id]: Number(event.target.value),
-                      }))
-                    }
-                  />
-                  <output>{markerScores[marker.id] ?? 0}</output>
-                </label>
-              ))}
-            </fieldset>
-            <fieldset className="state-rating-grid">
-              <legend>Observed session ratings · required</legend>
-              {ratingFields.map(([key, label, scale]) => (
-                <label key={key}>
-                  <span>{label}</span>
-                  <select
-                    aria-label={label}
-                    value={ratings[key] ?? ""}
-                    onChange={(event) =>
-                      setRatings((current) => ({
-                        ...current,
-                        [key]:
-                          event.target.value === ""
-                            ? null
-                            : Number(event.target.value),
-                      }))
-                    }
-                  >
-                    <option value="">Not rated</option>
-                    {[0, 1, 2, 3, 4].map((score) => (
-                      <option key={score} value={score}>
-                        {score}
-                      </option>
-                    ))}
-                  </select>
-                  <small>{scale}</small>
-                </label>
-              ))}
-              <label>
-                <span>Recovery after distraction (seconds, optional)</span>
-                <input
-                  aria-label="Recovery after distraction seconds"
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={recoverySeconds}
-                  onChange={(event) => setRecoverySeconds(event.target.value)}
-                />
-              </label>
-            </fieldset>
-            <label className="form-field">
-              Continuous target-state seconds observed
-              <input
-                type="number"
-                min="0"
-                value={continuousSeconds}
-                onChange={(event) =>
-                  setContinuousSeconds(Number(event.target.value))
-                }
-              />
-              <small>
-                Time is supporting evidence only; it cannot pass the gate by
-                itself.
-              </small>
-            </label>
-            <fieldset className="state-checks">
-              <legend>Timing and evidence limits</legend>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={completedTimer}
-                  onChange={(event) => setCompletedTimer(event.target.checked)}
-                />
-                Completed the suggested timing container (not state proof)
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={soleUnusualSensation}
-                  onChange={(event) =>
-                    setSoleUnusualSensation(event.target.checked)
-                  }
-                />
-                The only evidence was one unusual sensation
-              </label>
-            </fieldset>
-            <label className="form-field">
-              Raw observation
-              <textarea
-                value={rawObservation}
-                onChange={(event) => setRawObservation(event.target.value)}
-              />
-            </label>
-            <label className="form-field">
-              Later interpretation
-              <textarea
-                value={interpretation}
-                onChange={(event) => setInterpretation(event.target.value)}
-              />
-            </label>
-            <div className="platform-form-grid">
-              <label className="form-field">
-                Primary failure mode
-                <input
-                  value={failureMode}
-                  onChange={(event) => setFailureMode(event.target.value)}
-                />
-              </label>
-              <label className="form-field">
-                Correction used
-                <input
-                  value={correction}
-                  onChange={(event) => setCorrection(event.target.value)}
-                />
-              </label>
-              <label className="form-field">
-                Functional task attempted
-                <input
-                  value={functionalTask}
-                  onChange={(event) => setFunctionalTask(event.target.value)}
-                />
-              </label>
-            </div>
-            <fieldset className="state-checks">
-              <legend>Functional controls</legend>
-              {[
-                ["Task completed", functionalComplete, setFunctionalComplete],
-                [
-                  "State retained during task",
-                  retainedDuringTask,
-                  setRetainedDuringTask,
-                ],
-                ["Target was blinded", blinded, setBlinded],
-                ["Feedback was scored", feedbackScored, setFeedbackScored],
-                [
-                  "Coherent episode recorded",
-                  coherentEpisode,
-                  setCoherentEpisode,
-                ],
-                [
-                  "Stable enough for use",
-                  stableEnoughForUse,
-                  setStableEnoughForUse,
-                ],
-              ].map(([label, checked, setter]) => (
-                <label key={String(label)}>
-                  <input
-                    type="checkbox"
-                    checked={Boolean(checked)}
-                    onChange={(event) =>
-                      (setter as (next: boolean) => void)(event.target.checked)
-                    }
-                  />
-                  {String(label)}
-                </label>
-              ))}
-            </fieldset>
-            <label className="form-field">
-              Outcome or scoring feedback
-              <textarea
-                value={outcomeFeedback}
-                required={feedbackScored}
-                aria-describedby="state-outcome-help"
-                onChange={(event) => setOutcomeFeedback(event.target.value)}
-              />
-              <small id="state-outcome-help">
-                Required whenever “Feedback was scored” is checked. Preserve the
-                revealed target, rubric, score, correspondences, and misses; do
-                not rewrite the raw observation.
-              </small>
-            </label>
-            <button
-              className="primary-button"
-              type="button"
-              onClick={() => void save()}
+            <details className="state-recipe" open={!startedAt}>
+              <summary>
+                Controlled recipe · about{" "}
+                {Math.ceil(recipeDurationSeconds(recipe) / 60)} minutes
+              </summary>
+              <ol>
+                {recipe.steps.map((step, index) => (
+                  <li key={`${step.phase}-${index}`}>
+                    <strong>
+                      {step.phase} · {Math.ceil(step.durationSeconds / 60)} min
+                    </strong>
+                    <p>{step.instruction}</p>
+                    <small>Advance when: {step.completionCue}</small>
+                  </li>
+                ))}
+              </ol>
+              <h4>Stop conditions</h4>
+              <ul>
+                {recipe.stopConditions.map((condition) => (
+                  <li key={condition}>{condition}</li>
+                ))}
+              </ul>
+            </details>
+            <div
+              className="training-process-rail"
+              aria-label="Training process"
             >
-              Save evidence and evaluate gate
-            </button>
+              {TRAINING_PROCESS_PHASES.map((phase) => (
+                <span key={phase}>{phase}</span>
+              ))}
+            </div>
+            {attemptStartAllowed ? (
+              <label className="compact-field">
+                Permitted context
+                <select
+                  value={context}
+                  disabled={Boolean(startedAt)}
+                  onChange={(event) => setContext(event.target.value)}
+                >
+                  {definition.permittedContexts.map((candidate) => (
+                    <option value={candidate} key={candidate}>
+                      {candidate.replaceAll("_", " ")}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : sourceStartDecision ? (
+              <section
+                className="state-prerequisite-hold state-protocol-hold"
+                aria-labelledby={protocolHoldHeadingId}
+              >
+                <p className="eyebrow">Protocol start hold</p>
+                <h4 id={protocolHoldHeadingId}>
+                  Controlled protocol start unavailable
+                </h4>
+                <p>
+                  The QR recipe is available to review, but QCTP does not yet
+                  provide the separately locked blind-target assignment,
+                  immutable raw-capture lock, feedback reveal, and calibration
+                  workflow required to begin it.
+                </p>
+                <p>{sourceStartDecision.message}</p>
+                <p>
+                  Next permitted action: review the controlled recipe only. No
+                  attempt or evidence record can be started or saved here.
+                </p>
+              </section>
+            ) : null}
+            {startedAt && attemptStartAllowed ? (
+              <>
+                <fieldset className="state-checks">
+                  <legend>Mechanics and safety</legend>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={mechanicsUnderstood}
+                      onChange={(event) =>
+                        setMechanicsUnderstood(event.target.checked)
+                      }
+                    />
+                    Mechanics understood
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={mechanicsCorrect}
+                      onChange={(event) =>
+                        setMechanicsCorrect(event.target.checked)
+                      }
+                    />
+                    Mechanics performed correctly
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={safetyStop}
+                      onChange={(event) => setSafetyStop(event.target.checked)}
+                    />
+                    Safety stop occurred
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={safeAndOriented}
+                      onChange={(event) =>
+                        setSafeAndOriented(event.target.checked)
+                      }
+                    />
+                    Safe and oriented now
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={returnedSafely}
+                      onChange={(event) =>
+                        setReturnedSafely(event.target.checked)
+                      }
+                    />
+                    Full return completed
+                  </label>
+                </fieldset>
+                <fieldset className="state-marker-grid">
+                  <legend>Raw target markers · 0 absent / 4 clear</legend>
+                  {definition.targetMarkers.map((marker) => (
+                    <label key={marker.id}>
+                      <span>{marker.label}</span>
+                      <input
+                        type="range"
+                        min="0"
+                        max="4"
+                        value={markerScores[marker.id] ?? 0}
+                        onChange={(event) =>
+                          setMarkerScores((current) => ({
+                            ...current,
+                            [marker.id]: Number(event.target.value),
+                          }))
+                        }
+                      />
+                      <output>{markerScores[marker.id] ?? 0}</output>
+                    </label>
+                  ))}
+                </fieldset>
+                <fieldset className="state-rating-grid">
+                  <legend>Observed session ratings · required</legend>
+                  {ratingFields.map(([key, label, scale]) => (
+                    <label key={key}>
+                      <span>{label}</span>
+                      <select
+                        aria-label={label}
+                        value={ratings[key] ?? ""}
+                        onChange={(event) =>
+                          setRatings((current) => ({
+                            ...current,
+                            [key]:
+                              event.target.value === ""
+                                ? null
+                                : Number(event.target.value),
+                          }))
+                        }
+                      >
+                        <option value="">Not rated</option>
+                        {[0, 1, 2, 3, 4].map((score) => (
+                          <option key={score} value={score}>
+                            {score}
+                          </option>
+                        ))}
+                      </select>
+                      <small>{scale}</small>
+                    </label>
+                  ))}
+                  <label>
+                    <span>Recovery after distraction (seconds, optional)</span>
+                    <input
+                      aria-label="Recovery after distraction seconds"
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={recoverySeconds}
+                      onChange={(event) =>
+                        setRecoverySeconds(event.target.value)
+                      }
+                    />
+                  </label>
+                </fieldset>
+                <label className="form-field">
+                  Continuous target-state seconds observed
+                  <input
+                    type="number"
+                    min="0"
+                    value={continuousSeconds}
+                    onChange={(event) =>
+                      setContinuousSeconds(Number(event.target.value))
+                    }
+                  />
+                  <small>
+                    Time is supporting evidence only; it cannot pass the gate by
+                    itself.
+                  </small>
+                </label>
+                <fieldset className="state-checks">
+                  <legend>Timing and evidence limits</legend>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={completedTimer}
+                      onChange={(event) =>
+                        setCompletedTimer(event.target.checked)
+                      }
+                    />
+                    Completed the suggested timing container (not state proof)
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={soleUnusualSensation}
+                      onChange={(event) =>
+                        setSoleUnusualSensation(event.target.checked)
+                      }
+                    />
+                    The only evidence was one unusual sensation
+                  </label>
+                </fieldset>
+                <label className="form-field">
+                  Raw observation
+                  <textarea
+                    value={rawObservation}
+                    onChange={(event) => setRawObservation(event.target.value)}
+                  />
+                </label>
+                <label className="form-field">
+                  Later interpretation
+                  <textarea
+                    value={interpretation}
+                    onChange={(event) => setInterpretation(event.target.value)}
+                  />
+                </label>
+                <div className="platform-form-grid">
+                  <label className="form-field">
+                    Primary failure mode
+                    <input
+                      value={failureMode}
+                      onChange={(event) => setFailureMode(event.target.value)}
+                    />
+                  </label>
+                  <label className="form-field">
+                    Correction used
+                    <input
+                      value={correction}
+                      onChange={(event) => setCorrection(event.target.value)}
+                    />
+                  </label>
+                  <label className="form-field">
+                    Functional task attempted
+                    <input
+                      value={functionalTask}
+                      onChange={(event) =>
+                        setFunctionalTask(event.target.value)
+                      }
+                    />
+                  </label>
+                </div>
+                <fieldset className="state-checks">
+                  <legend>Functional controls</legend>
+                  {[
+                    [
+                      "Task completed",
+                      functionalComplete,
+                      setFunctionalComplete,
+                    ],
+                    [
+                      "State retained during task",
+                      retainedDuringTask,
+                      setRetainedDuringTask,
+                    ],
+                    ["Target was blinded", blinded, setBlinded],
+                    ["Feedback was scored", feedbackScored, setFeedbackScored],
+                    [
+                      "Coherent episode recorded",
+                      coherentEpisode,
+                      setCoherentEpisode,
+                    ],
+                    [
+                      "Stable enough for use",
+                      stableEnoughForUse,
+                      setStableEnoughForUse,
+                    ],
+                  ].map(([label, checked, setter]) => (
+                    <label key={String(label)}>
+                      <input
+                        type="checkbox"
+                        checked={Boolean(checked)}
+                        onChange={(event) =>
+                          (setter as (next: boolean) => void)(
+                            event.target.checked,
+                          )
+                        }
+                      />
+                      {String(label)}
+                    </label>
+                  ))}
+                </fieldset>
+                <label className="form-field">
+                  Outcome or scoring feedback
+                  <textarea
+                    value={outcomeFeedback}
+                    required={feedbackScored}
+                    aria-describedby="state-outcome-help"
+                    onChange={(event) => setOutcomeFeedback(event.target.value)}
+                  />
+                  <small id="state-outcome-help">
+                    Required whenever “Feedback was scored” is checked. Preserve
+                    the revealed target, rubric, score, correspondences, and
+                    misses; do not rewrite the raw observation.
+                  </small>
+                </label>
+                <button
+                  className="primary-button"
+                  type="button"
+                  onClick={() => void save()}
+                >
+                  Save evidence and evaluate gate
+                </button>
+              </>
+            ) : attemptStartAllowed ? (
+              <button className="primary-button" type="button" onClick={start}>
+                Start controlled attempt
+              </button>
+            ) : null}
+            {message ? <p className="save-status">{message}</p> : null}
           </>
-        ) : (
-          <button
-            className="primary-button"
-            type="button"
-            disabled={!prerequisite.eligible}
-            onClick={start}
-          >
-            Start controlled attempt
-          </button>
-        )}
-        {message ? <p className="save-status">{message}</p> : null}
+        ) : null}
       </article>
     </section>
   );

@@ -6,9 +6,12 @@ import {
   REG01_PRECEPT,
   REG01_PROMPT,
   REG01_SESSION_ID,
+  REG01_SOURCE_ACCESS_ID,
+  REG01_SOURCE_TRACK_ID,
   REG01_STEPS,
   addReg01Attachment,
   createOrResumeReg01Session,
+  evaluateReg01SourceTrackAccess,
   setReg01PreceptComplete,
   setReg01Step,
   setReg01Text,
@@ -17,6 +20,19 @@ import {
 const now = "2026-08-17T12:00:00.000Z";
 
 describe("REG-01 controlled session updates", () => {
+  it("binds every REG boundary action to the exact released source-track scope", () => {
+    expect(REG01_SOURCE_TRACK_ID).toBe("robert-edward-grant");
+    expect(REG01_SOURCE_ACCESS_ID).toBe("REG-01-A");
+    for (const action of ["read", "start", "save", "complete"] as const) {
+      expect(evaluateReg01SourceTrackAccess(action)).toMatchObject({
+        allowed: true,
+        code: "ALLOWED",
+        track: { id: "robert-edward-grant" },
+        accessPoint: { id: "REG-01-A", destination: "studio" },
+      });
+    }
+  });
+
   it("exposes only the nine controlled steps and exact prompt/precept", () => {
     expect(REG01_STEPS).toHaveLength(9);
     expect(REG01_STEPS[0]).toContain("three coherence breaths");

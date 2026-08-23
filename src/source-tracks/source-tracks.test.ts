@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import { getControlledContent } from "../controlled-content";
 import {
-  CONTROLLED_SOURCE_ARCHITECTURE,
   getCampbellExercise,
   THOMAS_CAMPBELL_EXERCISES,
   THOMAS_CAMPBELL_MODULES,
 } from "./catalog";
+import { CONTROLLED_SOURCE_ARCHITECTURE } from "./registry";
 
 describe("controlled source-track catalogs", () => {
   it("defines all ten Campbell modules without copying paid content", () => {
@@ -47,7 +47,7 @@ describe("controlled source-track catalogs", () => {
       THOMAS_CAMPBELL_MODULES.find((module) => module.id === "TC-02"),
     ).toMatchObject({
       status: "prerequisite",
-      prerequisites: ["Q3 Stabilized"],
+      prerequisites: ["Q3 Stabilized", "Q4 Accessed"],
     });
     expect(
       getCampbellExercise("TC-02-POINT-CONSCIOUSNESS")?.completionGate,

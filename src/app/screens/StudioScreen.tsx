@@ -17,15 +17,18 @@ import {
   REG01_PRECEPT,
   REG01_PROMPT,
   REG01_SESSION_ID,
+  REG01_SOURCE_ACCESS_ID,
   REG01_STEPS,
   addReg01Attachment,
   createOrResumeReg01Session,
+  evaluateReg01SourceTrackAccess,
   linkReg01AutoDictationRecording,
   setReg01PreceptComplete,
   setReg01Step,
   setReg01Text,
   type Reg01TextField,
 } from "../../reg/reg01";
+import type { SourceTrackAccessDecision } from "../../source-tracks";
 import {
   RepositoryCapturePersistence,
   VoiceRecorderPanel,
@@ -105,7 +108,53 @@ function GeometryReference() {
   );
 }
 
-export function StudioScreen() {
+export interface StudioScreenProps {
+  readonly navigationDecision?: SourceTrackAccessDecision;
+}
+
+function Reg01AccessHold({
+  decision,
+}: {
+  readonly decision: SourceTrackAccessDecision;
+}) {
+  return (
+    <section
+      className="panel-card studio-loading"
+      aria-labelledby="reg-source-access-hold-heading"
+    >
+      <p className="eyebrow">Geometry Studio · controlled authority hold</p>
+      <h1 id="reg-source-access-hold-heading">REG-01 is held</h1>
+      <p role="alert">{decision.message}</p>
+      {decision.unmetPrerequisites.length > 0 ? (
+        <ul>
+          {decision.unmetPrerequisites.map((requirement) => (
+            <li key={requirement}>{requirement}</li>
+          ))}
+        </ul>
+      ) : null}
+      <p>
+        <strong>Next controlled action:</strong> {decision.nextAction}
+      </p>
+      <p>
+        Hold code <code>{decision.code}</code> · access{" "}
+        <code>{decision.accessPoint?.id ?? REG01_SOURCE_ACCESS_ID}</code>. No
+        local session was opened and no data changed.
+      </p>
+    </section>
+  );
+}
+
+export function StudioScreen({ navigationDecision }: StudioScreenProps = {}) {
+  const readDecision = evaluateReg01SourceTrackAccess("read");
+  const startDecision = evaluateReg01SourceTrackAccess("start");
+  const heldDecision = [navigationDecision, readDecision, startDecision].find(
+    (decision) => decision && !decision.allowed,
+  );
+  if (heldDecision) return <Reg01AccessHold decision={heldDecision} />;
+  return <AuthorizedReg01StudioScreen />;
+}
+
+function AuthorizedReg01StudioScreen() {
   const runtime = useQctp();
   const { repository } = runtime;
   const [session, setSession] = useState<RegSession | null>(null);
@@ -335,6 +384,13 @@ export function StudioScreen() {
   const completeSession = useCallback(async () => {
     const current = sessionRef.current;
     if (!current || current.status === "complete") return;
+    const access = evaluateReg01SourceTrackAccess("complete");
+    if (!access.allowed) {
+      setError(
+        `${access.message} Next controlled action: ${access.nextAction} No data changed.`,
+      );
+      return;
+    }
     setCompletionBusy(true);
     setError(null);
     setNotice(null);

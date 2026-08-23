@@ -19,6 +19,7 @@ import {
   StateCapabilityIntegrityError,
   assertValidStateCapabilityLedger,
 } from "../state-atlas";
+import { applyStateSourceTrackIntegrityLedger } from "../source-tracks/state-session-integrity";
 
 const MAX_ARCHIVE_UNCOMPRESSED_BYTES = 1024 * 1024 * 1024;
 
@@ -256,9 +257,13 @@ export function validateExportRelations(snapshot: QctpExportData): void {
     }
   }
   try {
-    assertValidStateCapabilityLedger({
+    const stateIntegrity = applyStateSourceTrackIntegrityLedger({
       sessions: snapshot.stateSessions,
       capabilities: snapshot.stateCapabilities,
+    });
+    assertValidStateCapabilityLedger({
+      sessions: stateIntegrity.activeSessions,
+      capabilities: stateIntegrity.activeCapabilities,
     });
   } catch (error) {
     if (error instanceof StateCapabilityIntegrityError) {

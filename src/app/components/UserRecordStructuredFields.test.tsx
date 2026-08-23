@@ -2,6 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { UserRecordStructuredFields } from "./UserRecordStructuredFields";
+import { sourceTrackReferenceFor } from "../../source-tracks";
 
 afterEach(cleanup);
 
@@ -63,6 +64,87 @@ describe("UserRecordStructuredFields", () => {
       screen.queryByText("Originating template / tool"),
     ).not.toBeInTheDocument();
     expect(screen.getByText(/The target was visible/u)).toBeInTheDocument();
+  });
+
+  it("renders only a registry-validated source-track reference as controlled origin", () => {
+    const { rerender } = render(
+      <dl>
+        <UserRecordStructuredFields
+          record={{
+            contentRef: {
+              authorityKey: "grant.exercise.REG-01-A",
+              contentClass: "QCTP_ORIGINAL",
+            },
+            fields: {
+              sourceTrackRef: sourceTrackReferenceFor(
+                "robert-edward-grant",
+                "REG-01-A",
+              ),
+              rawObservation: "Two circles overlap.",
+            },
+          }}
+        />
+      </dl>,
+    );
+
+    const controlledOrigin = screen
+      .getByText("Controlled source-track origin")
+      .closest("div");
+    expect(controlledOrigin).toHaveAttribute(
+      "data-source-track-origin",
+      "robert-edward-grant",
+    );
+    expect(controlledOrigin).toHaveTextContent("REG-01 — Learn to See");
+    expect(controlledOrigin).toHaveTextContent("Released controlled scope");
+    expect(
+      screen.getByText("Structured fields").closest("div"),
+    ).not.toHaveTextContent("sourceTrackRef");
+
+    rerender(
+      <dl>
+        <UserRecordStructuredFields
+          record={{
+            fields: {
+              sourceTrackRef: sourceTrackReferenceFor(
+                "robert-edward-grant",
+                "REG-01-A",
+              ),
+            },
+          }}
+        />
+      </dl>,
+    );
+    expect(
+      screen.queryByText("Controlled source-track origin"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Structured fields").closest("div"),
+    ).toHaveTextContent("Robert Edward Grant");
+
+    rerender(
+      <dl>
+        <UserRecordStructuredFields
+          record={{
+            contentRef: {
+              authorityKey: "grant.exercise.REG-01-A",
+              contentClass: "QCTP_ORIGINAL",
+            },
+            fields: {
+              sourceTrackRef: {
+                trackId: "robert-edward-grant",
+                trackLabel: "User supplied authority claim",
+              },
+            },
+          }}
+        />
+      </dl>,
+    );
+    expect(
+      screen.queryByText("Controlled source-track origin"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Structured fields").closest("div"),
+    ).toHaveTextContent("User supplied authority claim");
   });
 
   it("shows a recoverable legacy hold without a live status claim", () => {

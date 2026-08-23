@@ -1,0 +1,168 @@
+{
+  "schema": "qctp-rev3-source-track-registry-verification-v1",
+  "document_id": "QCTP-REV3-SOURCE-TRACK-REGISTRY-VERIFICATION-REV0",
+  "evidence_id": "QCTP-REV3-SOURCE-TRACK-001",
+  "created_at": "2026-08-23T02:54:18-05:00",
+  "updated_at": "2026-08-23T04:17:09-05:00",
+  "branch": "qctp-platform-rev3-codex",
+  "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
+  "release_authority": "ZERO_RELEASE",
+  "protected_refs": {
+    "main": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
+    "qctp_platform_rev2_codex": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
+    "pr_2_mutated": false
+  },
+  "checkpoint": {
+    "starting_commit": "11ba99b6d429c61a0350f547c7a9739f02da7ab2",
+    "local_implementation_commit": "7afddf50dcfb1ef68ba28b74ccde4c9e9873973e",
+    "local_implementation_commits": [
+      "d2e27f682f311bb7ccdb704c6b007359c6bc40f2",
+      "512728945654c0a2c58c4e87d11905e0356e3b05",
+      "f2c8f11ad29d209af4f989f52e5eb73099b01144",
+      "2ad1b732e2c51ef31c23f364757b13f417e965d4",
+      "e5db02ce7048038f28b7ef858e2e1a00d9cb9be5",
+      "9abadeaa17f4899de5ed6dd80a0ccba3ddf947ee",
+      "0b9824ecc5d1f01753738938f338efcf92d6187a",
+      "2afe0c5023d5ab02aae095387045dcd40f14fac2",
+      "1c2622a09b1467433b29281f1cb7e89623340aeb",
+      "9447c1a292ee3f35a4251013cde44ec23a5537c8",
+      "7afddf50dcfb1ef68ba28b74ccde4c9e9873973e"
+    ],
+    "implementation_tree": "fcc0bc94a060bbd192e71d9728f04659cfadd1e0",
+    "origin_rev3_before_publication": "de973ae6ad56b2394e7aa3c15c22bdfc04894c40",
+    "preliminary_metadata_commit": "cca7fe162d6a70c74135d9500b7f80625ea16e21",
+    "preliminary_metadata_commits": [
+      "b63e43fc8e12c12abf6e2dd40758ff248c21bd62",
+      "cca7fe162d6a70c74135d9500b7f80625ea16e21"
+    ],
+    "local_metadata_commit": null,
+    "remote_checkpoint": null,
+    "remote_tree": null,
+    "publication_status": "PENDING_CONTROLLED_REV3_ONLY"
+  },
+  "recovery": {
+    "backup_branch": "backup/rev3-source-registry-preedit-20260823-021738",
+    "backup_commit": "11ba99b6d429c61a0350f547c7a9739f02da7ab2",
+    "recoverable_bundle": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\backups\\rev3-source-registry-preedit-20260823-021738.bundle",
+    "bundle_verification": "PASS_COMPLETE_HISTORY"
+  },
+  "canonical_contract": {
+    "lifecycle_enum": [
+      "RELEASED",
+      "PREREQUISITE",
+      "RECIPE_ONLY",
+      "ARCHITECTURE_ONLY",
+      "EXPERIMENTAL_PROTOCOL",
+      "RECORD_ONLY",
+      "BLOCKED",
+      "DEFERRED"
+    ],
+    "guarded_actions": [
+      "discover",
+      "read",
+      "start",
+      "save",
+      "complete",
+      "record",
+      "export"
+    ],
+    "content_class_contract": [
+      "SOURCE_FAITHFUL",
+      "SOURCE_ENHANCED",
+      "QCTP_SYNTHESIS",
+      "QCTP_ORIGINAL"
+    ],
+    "unknown_or_mismatched_route": "VISIBLE_ATOMIC_HOLD_NO_WRITE",
+    "registered_foreign_parent": "REJECTED",
+    "user_entered_tags_or_links": "NOT_ACCEPTED_AS_CONTROLLED_AUTHORITY",
+    "database_migration_required": false
+  },
+  "delivered": [
+    "A single validated source-track registry records lifecycle, exact authority keys, controlled content classes, typed State prerequisites, allowed actions, destination, safety, evidence gates, hold reason, next action, and release authority.",
+    "Canonical parent validation rejects an unregistered authority and a registered but foreign authority before a route can open.",
+    "Thomas Campbell TC-01, TC-04, and TC-05 remain released; TC-02 requires Q3 Stabilized and Q4 Accessed and routes only to TC-PC; TC-06 routes only to QI; held modules expose metadata and requirements without exercise controls.",
+    "REG-01 is guarded at navigation, Studio mount before session hooks, UI completion, and repository completion before the readwrite transaction; REG-02 through REG-12 remain deferred.",
+    "Monroe and Buhlman scope is limited to the registered M-F10, M-F12, and QO State Atlas recipes with prerequisites, safety stops, and complete return.",
+    "QR can be discovered and read after prerequisites, but cannot start or save until a separately locked blind-target assignment, immutable raw-capture lock, feedback reveal, and calibration protocol exists.",
+    "Bullard, HeartMath, and Dispenza remain limited to their exact Day 1 operations; no independent source course is inferred.",
+    "Psionics is user-evidence record-only in Lab; Mossbridge remains architecture-only; Lynne McTaggart remains deferred.",
+    "Canonical sourceTrackRef metadata is attached to new Campbell, REG, and psionics user records and rendered separately from user evidence only when a matching controlled parent exists; arbitrary or unbound imported fields remain visible user data and are not promoted to authority.",
+    "Source-track reference authority IDs, authority keys, content classes, labels, lifecycle states, and parent bindings must all match the registry exactly.",
+    "Paths displays human lifecycle labels, exact scope, holds, next controlled action, access points, and release authority without mobile horizontal overflow.",
+    "Offline readiness now persists when Chromium changes navigator.onLine without delivering the offline event.",
+    "State source evidence is reconciled with a least-fixed-point active capability projection; missing, invalid, foreign, parentless, non-writable, temporally impossible, and transitively held evidence remains losslessly visible but cannot earn capability credit.",
+    "State session saves, capability saves, paired reads, and merge imports reconcile and replay the final ledger inside shared IndexedDB transactions, preventing stale-tab or concurrent-write races from unlocking a source route.",
+    "Accepted source references are rewritten to the exact canonical registry object; invalid legacy reference objects remain preserved under an explicit hold.",
+    "The runtime consumes active capabilities explicitly while the State Atlas UI separately exposes preserved held sessions and capability claims."
+  ],
+  "verification": {
+    "repository_gate": {
+      "command": "npm run check",
+      "result": "PASS",
+      "test_files": 76,
+      "tests": 458,
+      "coverage_percent": {
+        "statements": 87.71,
+        "branches": 79.99,
+        "functions": 93.03,
+        "lines": 89.11
+      },
+      "preview_server_tests": "8_OF_8_PASS",
+      "audio_pack": "23_MP3_13340411_BYTES_VERIFIED",
+      "production_build": "PASS",
+      "build_warning": "EXISTING_MAIN_CHUNK_OVER_500_KB_WARNING_NON_BLOCKING"
+    },
+    "focused_source_and_persistence_gate": "54_OF_54_SOURCE_INTEGRITY_PASS_AND_34_OF_34_FINAL_IMPORT_REPOSITORY_PASS",
+    "browser_gate": {
+      "command": "npm run test:e2e",
+      "result": "36_PASS_16_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS",
+      "profiles": ["Chromium desktop", "iPhone portrait"],
+      "source_track_gate": "4_OF_4_PASS",
+      "expected_optional_companion_note": "127.0.0.1:8787 policy proxy refusals occurred because the optional PX13 companion was deliberately absent; Free Local Mode and all applicable acceptance tests passed."
+    },
+    "offline_reliability_gate": "5_OF_5_CONCURRENT_CHROMIUM_REPEATS_PASS_AFTER_MISSED_EVENT_FIX",
+    "reg_browser_gate": "2_OF_2_CHROMIUM_AND_IPHONE_PORTRAIT_PASS",
+    "provenance_trust_boundary_gate": "12_OF_12_FOCUSED_TESTS_PASS_UNBOUND_IMPORTED_REFERENCE_REMAINS_RAW_AND_AUTHORITY_IDS_FAIL_CLOSED",
+    "state_source_integrity_gate": "PASS_CANONICAL_REFERENCES_STRICT_TEMPORAL_PREREQUISITES_LOSSLESS_HOLDS_ACTIVE_PROJECTION_SEMANTIC_REPLAY_AND_TRANSITIVE_FAIL_CLOSED_PROPAGATION",
+    "concurrency_gate": "PASS_SHARED_STORE_READWRITE_TRANSACTIONS_SERIALIZE_SESSION_CAPABILITY_AND_MERGE_IMPORT_FINAL_UNIONS",
+    "test_runtime_stability": "LAB_SOURCE_TRACK_TEST_HAS_LOCAL_10_SECOND_MARGIN_AFTER_ONE_FRESH_REVIEW_GLOBAL_5_SECOND_TIMEOUT; SAME_TEST_PASSED_REPEATEDLY_IN_2_63_TO_4_21_SECONDS",
+    "diff_check": "PASS",
+    "independent_reviews": [
+      "AUTHORITY_AUDIT_INTEGRATED",
+      "FRESH_CONTEXT_JUDGE_INTEGRATED",
+      "MOBILE_UI_FAIL_CLOSED_AUDIT_INTEGRATED",
+      "FRESH_STATE_SOURCE_INTEGRITY_JUDGE_PASS_NO_HIGH_OR_MEDIUM_FINDINGS"
+    ]
+  },
+  "migration_status": {
+    "database_version": 5,
+    "export_schema_version": 3,
+    "strategy": "STATIC_REGISTRY_ADDITIVE_HOLD_FIELDS_LAZY_CANONICAL_REFERENCE_AND_TRANSACTIONAL_FINAL_UNION_RECONCILIATION_NO_DATABASE_REWRITE",
+    "raw_database_rewrite": false,
+    "actual_origin_archive_gate": "OPEN"
+  },
+  "physical_acceptance": {
+    "status": "OPEN",
+    "gates": [
+      "Confirm held and released source states are understandable on the physical iPhone.",
+      "Perform the exact TC-02 to TC-PC, TC-06 to QI, REG-01, QR read-only, and psionics record-only routes on the installed iPhone candidate.",
+      "Perform archive export, restore, and source-provenance trace on actual iPhone data."
+    ],
+    "machine_or_emulator_results_do_not_substitute": true
+  },
+  "deployment": {
+    "staged": false,
+    "deployed": false,
+    "live_private_candidate": "5a884ae9eb3195a32039b5d6780bf2a4d89dfb35",
+    "draft_pr": "https://github.com/rfrye08-pixel/QCTP/pull/4"
+  },
+  "holds": [
+    "This source-track checkpoint is not installed on the private iPhone preview.",
+    "Physical iPhone held-versus-released comprehension and exact route acceptance remain open.",
+    "The locked QR experimental execution protocol does not exist; QR start and save remain blocked.",
+    "Actual-origin archive import and comparison remain open.",
+    "Blind physical natural-voice selection remains open; no full narration was rendered.",
+    "No merge, staging, or deployment is authorized."
+  ],
+  "next_controlled_action": "Continue with the next non-user-dependent source-linked workflow hardening package while physical voice and iPhone gates remain open."
+}

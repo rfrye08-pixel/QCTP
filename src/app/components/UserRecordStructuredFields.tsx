@@ -3,6 +3,10 @@ import {
   getControlledContent,
 } from "../../controlled-content";
 import type { CodexRecord } from "../../domain";
+import {
+  SOURCE_TRACK_LIFECYCLE_DETAILS,
+  SourceTrackReferenceSchema,
+} from "../../source-tracks";
 
 const CONTROLLED_COMPATIBILITY_FIELD_KEYS = new Set([
   "contentClass",
@@ -11,10 +15,13 @@ const CONTROLLED_COMPATIBILITY_FIELD_KEYS = new Set([
 
 function visibleUserRecordFields(
   fields: Readonly<Record<string, unknown>>,
+  hasControlledSourceTrackReference: boolean,
 ): Record<string, unknown> {
   return Object.fromEntries(
     Object.entries(fields).filter(
-      ([key]) => !CONTROLLED_COMPATIBILITY_FIELD_KEYS.has(key),
+      ([key]) =>
+        !CONTROLLED_COMPATIBILITY_FIELD_KEYS.has(key) &&
+        !(hasControlledSourceTrackReference && key === "sourceTrackRef"),
     ),
   );
 }
@@ -24,13 +31,29 @@ export function UserRecordStructuredFields({
 }: {
   record: Pick<CodexRecord, "contentRef" | "controlledContentHold" | "fields">;
 }) {
-  const visibleFields = visibleUserRecordFields(record.fields);
   const controlled = record.contentRef
     ? getControlledContent(record.contentRef.authorityKey)
     : null;
   const classDetails = record.contentRef
     ? CONTROLLED_CONTENT_CLASS_DETAILS[record.contentRef.contentClass]
     : null;
+  const parsedSourceTrackReference = SourceTrackReferenceSchema.safeParse(
+    record.fields.sourceTrackRef,
+  );
+  const sourceTrackReference =
+    parsedSourceTrackReference.success &&
+    record.contentRef &&
+    parsedSourceTrackReference.data.contentRefs.some(
+      (contentRef) =>
+        contentRef.authorityKey === record.contentRef?.authorityKey &&
+        contentRef.contentClass === record.contentRef.contentClass,
+    )
+      ? parsedSourceTrackReference.data
+      : null;
+  const visibleFields = visibleUserRecordFields(
+    record.fields,
+    sourceTrackReference !== null,
+  );
 
   return (
     <>
@@ -76,6 +99,31 @@ export function UserRecordStructuredFields({
               This controlled class belongs to the QCTP template or tool that
               prompted the record. Your observation, interpretation, and result
               remain user evidence.
+            </span>
+          </dd>
+        </div>
+      ) : null}
+      {sourceTrackReference ? (
+        <div
+          className="record-source-track-origin"
+          data-source-track-origin={sourceTrackReference.trackId}
+          data-source-track-access={sourceTrackReference.accessId}
+        >
+          <dt>Controlled source-track origin</dt>
+          <dd>
+            <strong>{sourceTrackReference.trackLabel}</strong>
+            <span>{sourceTrackReference.accessLabel}</span>
+            <span>
+              Lifecycle:{" "}
+              {
+                SOURCE_TRACK_LIFECYCLE_DETAILS[
+                  sourceTrackReference.accessStatus
+                ].label
+              }
+            </span>
+            <span className="record-template-origin-note">
+              This registry binding identifies the controlled tool scope. Your
+              observation, interpretation, and result remain user evidence.
             </span>
           </dd>
         </div>

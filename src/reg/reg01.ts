@@ -5,8 +5,26 @@ import {
   createReg01Session,
   type RegSession,
 } from "../domain";
+import {
+  evaluateSourceTrackAccess,
+  type SourceTrackAccessDecision,
+  type SourceTrackAction,
+} from "../source-tracks";
 
 export const REG01_SESSION_ID = "reg-session:REG-01-A";
+export const REG01_SOURCE_TRACK_ID = "robert-edward-grant";
+export const REG01_SOURCE_ACCESS_ID = "REG-01-A";
+
+export function evaluateReg01SourceTrackAccess(
+  action: SourceTrackAction,
+): SourceTrackAccessDecision {
+  return evaluateSourceTrackAccess({
+    trackId: REG01_SOURCE_TRACK_ID,
+    accessId: REG01_SOURCE_ACCESS_ID,
+    destination: "studio",
+    action,
+  });
+}
 
 export const REG01_STEPS = [
   "Enter the studio state: sit upright, take three coherence breaths, soften the gaze, and observe the blank page as a field.",

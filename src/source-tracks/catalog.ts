@@ -58,7 +58,7 @@ export const THOMAS_CAMPBELL_MODULES: readonly SourceTrackModule[] = [
     objective:
       "Reduce sensory and intellectual dominance without strain while alert continuity remains present.",
     exerciseId: "TC-02-POINT-CONSCIOUSNESS",
-    prerequisites: ["Q3 Stabilized"],
+    prerequisites: ["Q3 Stabilized", "Q4 Accessed"],
     capabilityOutput: "TC-PC Stabilized through evidence, not elapsed time.",
   },
   {
@@ -473,24 +473,6 @@ export const THOMAS_CAMPBELL_EXERCISES: readonly SourceTrackExercise[] = [
       "Exit and orient if fear, disorientation, or persistent derealization occurs.",
     ],
   },
-] as const;
-
-export const CONTROLLED_SOURCE_ARCHITECTURE = [
-  { id: "bullard", label: "Bullard", status: "day1_source_controlled" },
-  { id: "heartmath", label: "HeartMath", status: "day1_source_controlled" },
-  { id: "dispenza", label: "Dispenza", status: "day1_source_controlled" },
-  {
-    id: "monroe-buhlman",
-    label: "Monroe / Buhlman",
-    status: "state_recipe_controlled",
-  },
-  { id: "mossbridge", label: "Mossbridge", status: "architecture_only" },
-  {
-    id: "remote-viewing",
-    label: "Remote viewing",
-    status: "experimental_protocol_controlled",
-  },
-  { id: "psionics", label: "Psionics", status: "record_architecture_only" },
 ] as const;
 
 export function getCampbellExercise(id: string): SourceTrackExercise | null {

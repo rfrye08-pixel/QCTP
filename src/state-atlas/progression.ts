@@ -369,7 +369,9 @@ function transferableGate(
 export function evaluateCapabilityProgression(input: {
   readonly stateId: StateId;
   readonly currentLevel: CapabilityLevel | null;
-  readonly attempts: readonly StateAttempt[];
+  readonly attempts: readonly (StateAttempt & {
+    readonly sourceTrackHold?: unknown;
+  })[];
   readonly capabilities?: readonly CapabilitySnapshot[];
 }): ProgressionEvaluation {
   const stateId = StateIdSchema.parse(input.stateId);
@@ -378,7 +380,7 @@ export function evaluateCapabilityProgression(input: {
       ? null
       : CapabilityLevelSchema.parse(input.currentLevel);
   const attempts = StateAttemptSchema.array()
-    .parse(input.attempts)
+    .parse(input.attempts.filter((attempt) => !attempt.sourceTrackHold))
     .filter((attempt) => attempt.stateId === stateId)
     .sort(
       (left, right) => Date.parse(left.endedAt) - Date.parse(right.endedAt),
@@ -508,10 +510,12 @@ export function nextTrainingProcessPhase(
 export function capabilitySnapshotsFromRecords(
   records: readonly StateCapabilityRecord[],
 ): CapabilitySnapshot[] {
-  return records.map((record) => ({
-    stateId: record.stateId,
-    level: record.level,
-  }));
+  return records
+    .filter((record) => !record.sourceTrackHold)
+    .map((record) => ({
+      stateId: record.stateId,
+      level: record.level,
+    }));
 }
 
 export class StateCapabilityIntegrityError extends Error {

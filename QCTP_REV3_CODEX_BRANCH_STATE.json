@@ -1,8 +1,8 @@
 {
   "schema": "qctp-rev3-codex-branch-state-v3",
   "branch": "qctp-platform-rev3-codex",
-  "updated_at": "2026-08-23T02:06:16-05:00",
-  "status": "CONTROLLED_REV3_CANONICAL_CONTENT_IDENTITY_VERTICAL_SLICE_MACHINE_BROWSER_PASS_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
+  "updated_at": "2026-08-23T04:17:09-05:00",
+  "status": "CONTROLLED_REV3_SOURCE_TRACK_REGISTRY_AND_STATE_SOURCE_EVIDENCE_INTEGRITY_MACHINE_BROWSER_PASS_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
   "release_authority": "ZERO_RELEASE",
   "actual_shas": {
     "main": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -31,8 +31,13 @@
     "pwa_upgrade_rollback_remote_tree": "440bc44788a8dbec85cd4a9cf34223169f8f702c",
     "controlled_content_local_implementation_checkpoint": "be64429a56d73c6bacc350d8916b03935540209f",
     "controlled_content_implementation_tree": "54b391d81ce1d4cb4868455186eb4ccb4544c45a",
+    "controlled_source_track_local_implementation_checkpoint": "7afddf50dcfb1ef68ba28b74ccde4c9e9873973e",
+    "controlled_source_track_implementation_tree": "fcc0bc94a060bbd192e71d9728f04659cfadd1e0",
+    "controlled_source_track_metadata_checkpoint": null,
+    "origin_rev3_before_source_track_publication": "de973ae6ad56b2394e7aa3c15c22bdfc04894c40",
     "state_checkpoint": "21a03b936bf797b15a298ca717789dff889508f9",
-    "origin_rev3_at_state_write": "21a03b936bf797b15a298ca717789dff889508f9"
+    "state_checkpoint_scope": "PRIOR_PUBLISHED_CONTROLLED_CONTENT_CHECKPOINT",
+    "origin_rev3_at_state_write": "de973ae6ad56b2394e7aa3c15c22bdfc04894c40"
   },
   "starting_baseline": {
     "required_rev2_commit": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
@@ -149,6 +154,43 @@
     "new_candidate_deployed": false,
     "protected_refs_mutated": false
   },
+  "controlled_source_track_checkpoint": {
+    "starting_commit": "11ba99b6d429c61a0350f547c7a9739f02da7ab2",
+    "local_implementation_commit": "7afddf50dcfb1ef68ba28b74ccde4c9e9873973e",
+    "local_implementation_commits": [
+      "d2e27f682f311bb7ccdb704c6b007359c6bc40f2",
+      "512728945654c0a2c58c4e87d11905e0356e3b05",
+      "f2c8f11ad29d209af4f989f52e5eb73099b01144",
+      "2ad1b732e2c51ef31c23f364757b13f417e965d4",
+      "e5db02ce7048038f28b7ef858e2e1a00d9cb9be5",
+      "9abadeaa17f4899de5ed6dd80a0ccba3ddf947ee",
+      "0b9824ecc5d1f01753738938f338efcf92d6187a",
+      "2afe0c5023d5ab02aae095387045dcd40f14fac2",
+      "1c2622a09b1467433b29281f1cb7e89623340aeb",
+      "9447c1a292ee3f35a4251013cde44ec23a5537c8",
+      "7afddf50dcfb1ef68ba28b74ccde4c9e9873973e"
+    ],
+    "implementation_tree": "fcc0bc94a060bbd192e71d9728f04659cfadd1e0",
+    "preliminary_metadata_commit": "cca7fe162d6a70c74135d9500b7f80625ea16e21",
+    "preliminary_metadata_commits": [
+      "b63e43fc8e12c12abf6e2dd40758ff248c21bd62",
+      "cca7fe162d6a70c74135d9500b7f80625ea16e21"
+    ],
+    "metadata_commit": null,
+    "remote_commit": null,
+    "remote_tree": null,
+    "origin_publication": "PENDING_REV3_ONLY",
+    "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
+    "local_history_backup_branch": "backup/rev3-source-registry-preedit-20260823-021738",
+    "local_history_backup_commit": "11ba99b6d429c61a0350f547c7a9739f02da7ab2",
+    "recoverable_bundle": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\backups\\rev3-source-registry-preedit-20260823-021738.bundle",
+    "bundle_verification": "PASS_COMPLETE_HISTORY",
+    "new_candidate_staged": false,
+    "new_candidate_deployed": false,
+    "protected_refs_mutated": false,
+    "indexeddb_schema_version": 5,
+    "export_schema_version": 3
+  },
   "preserved_preflight_state": {
     "original_checkout": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\work\\QCTP",
     "original_branch": "qctp-platform-rev2-codex",
@@ -180,7 +222,7 @@
     "breath": "SEVEN_SESSION_FOUNDATIONS_QUICK_DIRECTOR_SAFETY_STOP_RESUME_ACTIVE_FOREGROUND_EVIDENCE",
     "state_atlas": "TWELVE_RECIPES_CONTROLLED_PROCESS_GUIDANCE_TIERS_SEMANTIC_CAPABILITY_REPLAY",
     "today_mobile": "MORNING_ACTION_FIRST_VIEWPORT_SCHEDULE_LATER_ASSIGNMENTS_DURABLE_UNRESOLVED_ISSUE_LOCAL_PX13_PWA_AND_OFFLINE_STATUS",
-    "source_tracks": "CAMPBELL_CONTROLLED_TRACK_REG01_PRESERVED_SOURCE_LABEL_ARCHITECTURE",
+    "source_tracks": "VALIDATED_DEEP_FROZEN_EIGHT_STATE_LIFECYCLE_EXACT_AUTHORITY_PARENT_ACTION_DESTINATION_PREREQUISITE_SAFETY_EVIDENCE_GUARDS_CANONICAL_REFERENCES_STRICT_TEMPORAL_GATES_LOSSLESS_SESSION_AND_CAPABILITY_HOLDS_ACTIVE_PROJECTIONS_TRANSACTIONAL_FINAL_UNION_REPLAY_CAMPBELL_EXACT_STATE_HANDOFF_REG_PRETRANSACTION_QR_READ_ONLY_PSIONICS_RECORD_ONLY_AND_VISIBLE_HELD_SCOPE",
     "data": "INDEXEDDB_V5_ADDITIVE_MIGRATION_REV3_EXPORT_BINARY_ARCHIVE_ATOMIC_REJECTION_AND_RECOVERY",
     "local_ai_voice": "LOCAL_WHISPER_AND_MIRROR_PRESERVED_NO_REQUIRED_PAID_KEY_CAPTURE_RECOVERY_HARDENED",
     "pwa_update_rollback": "EXACT_COMPILED_CANDIDATE_PROMPT_LIFECYCLE_CROSS_TAB_CRITICAL_WORK_LOCKS_SCHEMA_RECORD_AND_BLOB_PRESERVATION_CHROMIUM_COLD_OFFLINE_A_B_A_AND_WEBKIT_ONLINE",
@@ -257,6 +299,22 @@
       "publication_status": "PASS_EXACT_TREE_REV3_ONLY",
       "deployment_status": "NOT_STAGED_NOT_DEPLOYED_LIVE_PREVIEW_REMAINS_5A884AE9"
     },
+    "controlled_source_track_checkpoint": {
+      "path": "QCTP_REV3_SOURCE_TRACK_REGISTRY_VERIFICATION_REV0_2026-08-23.json",
+      "local_implementation_commit": "7afddf50dcfb1ef68ba28b74ccde4c9e9873973e",
+      "implementation_tree": "fcc0bc94a060bbd192e71d9728f04659cfadd1e0",
+      "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
+      "repository_gate": "76_TEST_FILES_458_TESTS_PASS_COVERAGE_BUILD_23_FILE_AUDIO_PACK_PREVIEW_SERVER_8_OF_8",
+      "browser_gate": "36_PASS_16_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS",
+      "dedicated_source_track_gate": "4_OF_4_CHROMIUM_AND_IPHONE_PORTRAIT_PASS",
+      "offline_reconciliation_stability_gate": "5_CONSECUTIVE_OFFLINE_READINESS_RUNS_PASS",
+      "provenance_trust_boundary_gate": "PASS_UNBOUND_OR_INVALID_IMPORTED_REFERENCE_REMAINS_RAW_VALID_REFERENCE_CANONICALIZES_AND_AUTHORITY_IDS_FAIL_CLOSED",
+      "state_source_integrity_gate": "PASS_LEAST_FIXED_POINT_STRICT_TEMPORAL_PREREQUISITES_TRANSITIVE_HELD_EVIDENCE_ACTIVE_PROJECTION_AND_SEMANTIC_REPLAY",
+      "concurrent_final_union_gate": "PASS_SHARED_INDEXEDDB_TRANSACTIONS_FOR_SESSION_CAPABILITY_AND_MERGE_IMPORT_WRITES",
+      "independent_judgement": "PASS_NO_HIGH_OR_MEDIUM_FINDINGS",
+      "publication_status": "PENDING_REV3_ONLY",
+      "deployment_status": "NOT_STAGED_NOT_DEPLOYED_LIVE_PREVIEW_REMAINS_5A884AE9"
+    },
     "voice_free_machine": {
       "path": "QCTP_REV3_VOICE_FREE_DAY1_MACHINE_VERIFICATION_REV0_2026-08-22.json",
       "result": "PASS_75_OF_75",
@@ -277,8 +335,8 @@
     },
     "migration": "13_FILES_89_TESTS_PASS_CONTROLLED_FIXTURES_ACTUAL_ORIGIN_OPEN",
     "ux": "WINDOWS_WEBKIT_26_5_IPHONE13_PROFILE_EIGHT_SCREENSHOTS_PASS_PHYSICAL_IPHONE_OPEN",
-    "repository": "71_TEST_FILES_413_TESTS_PASS_COVERAGE_THRESHOLDS_BUILD_AND_23_FILE_AUDIO_PACK_PASS",
-    "browser_e2e": "32_PASS_16_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS",
+    "repository": "76_TEST_FILES_458_TESTS_PASS_COVERAGE_THRESHOLDS_BUILD_AND_23_FILE_AUDIO_PACK_PASS",
+    "browser_e2e": "36_PASS_16_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS",
     "pwa_upgrade_rollback": "2_GOVERNING_CHROMIUM_WEBKIT_PASSES_6_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS_SCHEMA_RECORD_BLOB_AND_COLD_OFFLINE_EVIDENCE",
     "whisper_companion": "44_TESTS_PASS_99_17_PERCENT_COVERAGE_RUFF_BASEDPYRIGHT_TY_PASS",
     "runtime_tools": "PREVIEW_SERVER_8_OF_8_PASS_AND_POWERSHELL_IMMUTABLE_NO_MUTATION_SELF_TEST_PASS",
@@ -356,6 +414,8 @@
     "Physical iPhone microphone, lifecycle, reconnect, quota, long-binary, and recovery gates remain open.",
     "The debrief, startup-recovery, and PWA upgrade/rollback checkpoints are not installed on the private iPhone preview; the live URL still serves candidate 5a884ae9eb3195a32039b5d6780bf2a4d89dfb35.",
     "The controlled-content identity checkpoint is not installed on the private iPhone preview; scoped label visibility and comprehension on the physical iPhone remain open.",
+    "The controlled source-track checkpoint is not installed on the private iPhone preview; held-versus-released comprehension, exact routes, provenance, export, and restore remain open for physical iPhone acceptance.",
+    "Remote-viewing QR execution remains blocked because the separately locked blind-target, raw-lock, feedback, and calibration protocol is not controlled; only the visible read-only hold is implemented.",
     "One-handed physical post-return debrief and installed-iPhone exact-candidate A to B to A, cold-offline, and local-data-retention acceptance remain open.",
     "The one-time deployed legacy autoUpdate to prompt-mode transition remains open and requires every QCTP client idle or closed plus a recoverable actual-data archive.",
     "Mutable live-root install and rollback are deliberately disabled until a durable immutable-candidate pointer and stopped-listener verified restart transaction are controlled.",
@@ -366,5 +426,5 @@
     "Closed-PWA alert delivery is best effort and must not be described as guaranteed without separately controlled private Web Push architecture and physical proof.",
     "Day 1 daytime and evening clock times remain personal choices because no controlled source supplies exact times."
   ],
-  "next_controlled_action": "Implement the validated generic source-track registry and route guard for QCTP-REV3-F032, preserving all per-source authority holds while the blind physical voice and physical iPhone gates remain open."
+  "next_controlled_action": "Continue the next non-user-dependent QCTP-REV3-F034 source-linked workflow hardening slice while the source-track physical iPhone and blind voice gates remain open."
 }

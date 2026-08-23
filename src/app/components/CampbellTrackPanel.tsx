@@ -3,14 +3,65 @@ import { useMemo, useState } from "react";
 import { contentRefFor } from "../../controlled-content";
 import { CodexRecordSchema } from "../../domain";
 import {
+  evaluateSourceTrackAccess,
   getCampbellExercise,
+  sourceTrackReferenceFor,
+  SOURCE_TRACK_LIFECYCLE_DETAILS,
   THOMAS_CAMPBELL_MODULES,
+  type SourceTrackAccessDecision,
   type SourceExerciseField,
 } from "../../source-tracks";
+import type { StateId } from "../../state-atlas";
 import { FieldDictation } from "./FieldDictation";
 import { ContentClassBadge } from "./ContentClassBadge";
-import { StatusBadge } from "./StatusBadge";
 import { useQctp } from "../qctp-context";
+
+const CAMPBELL_TRACK_ID = "thomas-campbell" as const;
+
+const stateRecipeByModule = {
+  "TC-02": "TC-PC",
+  "TC-06": "QI",
+} as const satisfies Partial<Record<string, StateId>>;
+
+type CampbellStateRecipeId =
+  (typeof stateRecipeByModule)[keyof typeof stateRecipeByModule];
+
+function stateRecipeForModule(moduleId: string): CampbellStateRecipeId | null {
+  return (
+    stateRecipeByModule[moduleId as keyof typeof stateRecipeByModule] ?? null
+  );
+}
+
+function holdText(decision: SourceTrackAccessDecision): string {
+  return [
+    decision.message,
+    ...decision.unmetPrerequisites,
+    `Next: ${decision.nextAction}`,
+  ].join(" ");
+}
+
+function CampbellAccessBadge({
+  decision,
+}: {
+  decision: SourceTrackAccessDecision;
+}) {
+  const lifecycle = decision.accessPoint?.status ?? "BLOCKED";
+  const heldForPrerequisite = decision.code === "PREREQUISITES_UNMET";
+  const label = decision.allowed
+    ? lifecycle === "PREREQUISITE"
+      ? "Prerequisites met"
+      : "Controlled scope available"
+    : heldForPrerequisite
+      ? "Prerequisite hold"
+      : SOURCE_TRACK_LIFECYCLE_DETAILS[lifecycle].label;
+  const style = decision.allowed
+    ? "ready"
+    : heldForPrerequisite
+      ? "in-progress"
+      : "reserved";
+
+  return <span className={`status-badge status-${style}`}>{label}</span>;
+}
 
 function localId(prefix: string): string {
   const random = globalThis.crypto?.randomUUID?.();
@@ -29,24 +80,114 @@ function layerText(
 }
 
 export function CampbellTrackPanel({
-  onOpenPractice,
+  onOpenStateRecipe,
 }: {
-  onOpenPractice: () => void;
+  onOpenStateRecipe?: (stateId: CampbellStateRecipeId) => void;
+  /** @deprecated Kept temporarily so an older Paths caller cannot reopen Day 1. */
+  onOpenPractice?: () => void;
 }) {
   const runtime = useQctp();
-  const [activeExerciseId, setActiveExerciseId] = useState<string | null>(null);
+  const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [values, setValues] = useState<Record<string, string>>({});
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
-  const exercise = useMemo(
-    () => (activeExerciseId ? getCampbellExercise(activeExerciseId) : null),
-    [activeExerciseId],
+  const accessByModule = useMemo(
+    () =>
+      new Map(
+        THOMAS_CAMPBELL_MODULES.map((module) => [
+          module.id,
+          evaluateSourceTrackAccess({
+            trackId: CAMPBELL_TRACK_ID,
+            accessId: module.id,
+            destination: "paths",
+            action: "read",
+            capabilities: runtime.stateCapabilities,
+          }),
+        ]),
+      ),
+    [runtime.stateCapabilities],
   );
+  const activeModule = useMemo(
+    () =>
+      activeModuleId
+        ? (THOMAS_CAMPBELL_MODULES.find(
+            (module) => module.id === activeModuleId,
+          ) ?? null)
+        : null,
+    [activeModuleId],
+  );
+  const activeAccess = activeModule
+    ? (accessByModule.get(activeModule.id) ?? null)
+    : null;
+  const exercise = useMemo(() => {
+    if (!activeModule?.exerciseId || !activeAccess?.allowed) return null;
+    const candidate = getCampbellExercise(activeModule.exerciseId);
+    return candidate?.moduleId === activeModule.id ? candidate : null;
+  }, [activeAccess, activeModule]);
 
-  const openExercise = (exerciseId: string) => {
-    setActiveExerciseId(exerciseId);
+  const openExercise = (moduleId: string) => {
+    const module = THOMAS_CAMPBELL_MODULES.find(
+      (candidate) => candidate.id === moduleId,
+    );
+    const decision = evaluateSourceTrackAccess({
+      trackId: CAMPBELL_TRACK_ID,
+      accessId: moduleId,
+      destination: "paths",
+      action: "read",
+      capabilities: runtime.stateCapabilities,
+    });
+    const candidate = module?.exerciseId
+      ? getCampbellExercise(module.exerciseId)
+      : null;
+    if (!decision.allowed || !module || candidate?.moduleId !== module.id) {
+      setActiveModuleId(null);
+      setValues({});
+      setMessage(
+        decision.allowed
+          ? "Controlled Campbell exercise mismatch. No content was opened."
+          : holdText(decision),
+      );
+      return;
+    }
+    setActiveModuleId(module.id);
     setValues({});
     setMessage("");
+  };
+
+  const openStateRecipe = (moduleId: string) => {
+    const stateId = stateRecipeForModule(moduleId);
+    if (!stateId) {
+      setMessage("No controlled State Atlas route exists for this module.");
+      return;
+    }
+    const moduleDecision = evaluateSourceTrackAccess({
+      trackId: CAMPBELL_TRACK_ID,
+      accessId: moduleId,
+      destination: "paths",
+      action: "read",
+      capabilities: runtime.stateCapabilities,
+    });
+    const recipeDecision = evaluateSourceTrackAccess({
+      trackId: CAMPBELL_TRACK_ID,
+      accessId: stateId,
+      destination: "paths",
+      action: "start",
+      capabilities: runtime.stateCapabilities,
+    });
+    if (!moduleDecision.allowed || !recipeDecision.allowed) {
+      setMessage(
+        holdText(moduleDecision.allowed ? recipeDecision : moduleDecision),
+      );
+      return;
+    }
+    if (!onOpenStateRecipe) {
+      setMessage(
+        `${stateId} passed its authority gate, but this screen has no exact State Atlas handoff. No other practice was opened.`,
+      );
+      return;
+    }
+    setMessage("");
+    onOpenStateRecipe(stateId);
   };
 
   const updateField = (fieldId: string, value: string) => {
@@ -62,7 +203,23 @@ export function CampbellTrackPanel({
   };
 
   const saveExercise = async () => {
-    if (!exercise) return;
+    if (!exercise || !activeModule) {
+      setMessage("Controlled Campbell exercise mismatch. No data changed.");
+      return;
+    }
+    const authorizeSave = () =>
+      evaluateSourceTrackAccess({
+        trackId: CAMPBELL_TRACK_ID,
+        accessId: activeModule.id,
+        destination: "paths",
+        action: "save",
+        capabilities: runtime.stateCapabilities,
+      });
+    const initialDecision = authorizeSave();
+    if (!initialDecision.allowed) {
+      setMessage(holdText(initialDecision));
+      return;
+    }
     const rawText = layerText(exercise.fields, values, "raw");
     const interpretationText = layerText(
       exercise.fields,
@@ -76,6 +233,21 @@ export function CampbellTrackPanel({
     setSaving(true);
     setMessage("");
     try {
+      const sourceTrackReference = sourceTrackReferenceFor(
+        CAMPBELL_TRACK_ID,
+        activeModule.id,
+      );
+      const exerciseAuthorityKey = `campbell.exercise.${exercise.id}`;
+      if (
+        sourceTrackReference.accessId !== activeModule.id ||
+        !sourceTrackReference.contentRefs.some(
+          (reference) => reference.authorityKey === exerciseAuthorityKey,
+        )
+      ) {
+        throw new Error(
+          "SOURCE_TRACK_REFERENCE_HOLD: Campbell authority mismatch. No data changed.",
+        );
+      }
       const now = new Date().toISOString();
       const observationId = localId("tc-observation");
       const record = CodexRecordSchema.parse({
@@ -126,11 +298,13 @@ export function CampbellTrackPanel({
         revisionIds: [],
         pathId: "thomas-campbell",
         sessionId: null,
-        contentRef: contentRefFor(`campbell.exercise.${exercise.id}`),
+        contentRef: contentRefFor(exerciseAuthorityKey),
         fields: {
           sourceTrack: "thomas-campbell",
+          sourceTrackRef: sourceTrackReference,
           moduleId: exercise.moduleId,
           exerciseId: exercise.id,
+          controlledContentAuthorityKey: exerciseAuthorityKey,
           sourceConcept: exercise.sourceConcept,
           structuredFields: values,
           completionGate: exercise.completionGate,
@@ -139,6 +313,11 @@ export function CampbellTrackPanel({
         },
         deletedAt: null,
       });
+      const finalDecision = authorizeSave();
+      if (!finalDecision.allowed) {
+        setMessage(holdText(finalDecision));
+        return;
+      }
       await runtime.repository.saveRecord(record);
       await runtime.refresh();
       setValues({});
@@ -171,58 +350,74 @@ export function CampbellTrackPanel({
         reproduced.
       </p>
       <div className="source-module-list" role="list">
-        {THOMAS_CAMPBELL_MODULES.map((module) => (
-          <article key={module.id} role="listitem">
-            <header>
-              <span>{module.id}</span>
-              <div>
-                <h3>{module.title}</h3>
-                <small>{module.sourceLabel}</small>
-                <ContentClassBadge
-                  authorityKey={`campbell.module.${module.id}`}
-                  scope="Source summary"
-                />
-              </div>
-              <StatusBadge
-                status={
-                  module.status === "ready"
-                    ? "ready"
-                    : module.status === "prerequisite"
-                      ? "in-progress"
-                      : "reserved"
-                }
-              />
-            </header>
-            <p>{module.objective}</p>
-            <dl>
-              <div>
-                <dt>Prerequisites</dt>
-                <dd>
-                  {module.prerequisites.length
-                    ? module.prerequisites.join(" · ")
-                    : "None"}
-                </dd>
-              </div>
-              <div>
-                <dt>Evidence gate</dt>
-                <dd>{module.capabilityOutput}</dd>
-              </div>
-            </dl>
-            {module.exerciseId ? (
-              <button
-                type="button"
-                className="text-button"
-                onClick={() => openExercise(module.exerciseId!)}
-              >
-                Open controlled exercise
-              </button>
-            ) : (
-              <small className="controlled-hold">
-                Controlled metadata only; implementation remains held.
-              </small>
-            )}
-          </article>
-        ))}
+        {THOMAS_CAMPBELL_MODULES.map((module) => {
+          const decision = accessByModule.get(module.id)!;
+          const stateRecipeId = stateRecipeForModule(module.id);
+          const requirements =
+            decision.accessPoint?.prerequisites.map((group) => group.label) ??
+            module.prerequisites;
+          return (
+            <article key={module.id} role="listitem" data-module-id={module.id}>
+              <header>
+                <span>{module.id}</span>
+                <div>
+                  <h3>{module.title}</h3>
+                  <small>{module.sourceLabel}</small>
+                  <ContentClassBadge
+                    authorityKey={`campbell.module.${module.id}`}
+                    scope="Source summary"
+                  />
+                </div>
+                <CampbellAccessBadge decision={decision} />
+              </header>
+              <p>{module.objective}</p>
+              <dl>
+                <div>
+                  <dt>Prerequisites</dt>
+                  <dd>
+                    {requirements.length ? requirements.join(" ") : "None"}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Evidence gate</dt>
+                  <dd>{module.capabilityOutput}</dd>
+                </div>
+              </dl>
+              {decision.allowed && module.exerciseId ? (
+                <div className="platform-action-row">
+                  {stateRecipeId ? (
+                    <button
+                      type="button"
+                      className="text-button"
+                      onClick={() => openStateRecipe(module.id)}
+                    >
+                      Open {stateRecipeId} state recipe
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    className="text-button"
+                    onClick={() => openExercise(module.id)}
+                  >
+                    Open controlled evidence record
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className="controlled-hold"
+                  role="region"
+                  aria-label={`${module.id} controlled hold`}
+                >
+                  <strong>{decision.message}</strong>
+                  {decision.unmetPrerequisites.map((requirement) => (
+                    <span key={requirement}>{requirement}</span>
+                  ))}
+                  <span>Next: {decision.nextAction}</span>
+                </div>
+              )}
+            </article>
+          );
+        })}
       </div>
 
       {exercise ? (
@@ -238,13 +433,13 @@ export function CampbellTrackPanel({
               <li key={instruction}>{instruction}</li>
             ))}
           </ol>
-          {exercise.moduleId === "TC-02" ? (
+          {stateRecipeForModule(exercise.moduleId) ? (
             <button
               type="button"
               className="secondary-button"
-              onClick={onOpenPractice}
+              onClick={() => openStateRecipe(exercise.moduleId)}
             >
-              Open controlled Practice
+              Open {stateRecipeForModule(exercise.moduleId)} state recipe
             </button>
           ) : null}
           <div className="source-exercise-fields">
@@ -309,13 +504,22 @@ export function CampbellTrackPanel({
             <button
               className="secondary-button"
               type="button"
-              onClick={() => setActiveExerciseId(null)}
+              onClick={() => setActiveModuleId(null)}
             >
               Close exercise
             </button>
           </div>
           {message ? <p className="save-status">{message}</p> : null}
         </section>
+      ) : activeModuleId ? (
+        <p className="controlled-hold" role="status">
+          {activeAccess ? holdText(activeAccess) : "No data changed."}
+        </p>
+      ) : null}
+      {!exercise && !activeModuleId && message ? (
+        <p className="save-status" role="status">
+          {message}
+        </p>
       ) : null}
     </section>
   );

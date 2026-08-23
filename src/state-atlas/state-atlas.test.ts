@@ -675,6 +675,24 @@ describe("process and persistence contracts", () => {
         capabilities: [forged],
       }),
     ).toThrow(/null -> Introduced|ordered transition/i);
+    expect(() =>
+      assertValidStateCapabilityLedger({
+        sessions: [session],
+        capabilities: [
+          {
+            ...forged,
+            sourceTrackHold: {
+              status: "HELD",
+              code: "SOURCE_TRACK_EVIDENCE_HELD",
+              stateId: "Q1",
+              trackId: null,
+              accessId: null,
+              message: "Caller-supplied hold cannot bypass raw replay.",
+            },
+          },
+        ],
+      }),
+    ).toThrow(/null -> Introduced|ordered transition/i);
   });
 
   it("recomputes a structurally ordered ledger instead of trusting its final label", () => {

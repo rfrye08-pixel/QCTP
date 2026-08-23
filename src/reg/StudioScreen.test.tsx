@@ -9,6 +9,10 @@ import {
   deleteQctpDatabase,
   type QctpRepository,
 } from "../data";
+import {
+  evaluateSourceTrackAccess,
+  type SourceTrackAccessDecision,
+} from "../source-tracks";
 
 import { REG01_SESSION_ID, REG01_STEPS } from "./reg01";
 
@@ -100,15 +104,51 @@ afterEach(async () => {
   await deleteQctpDatabase(databaseName);
 });
 
-function renderStudio() {
+function renderStudio(navigationDecision?: SourceTrackAccessDecision) {
   return render(
     <QctpContext.Provider value={runtime}>
-      <StudioScreen />
+      <StudioScreen
+        {...(navigationDecision === undefined ? {} : { navigationDecision })}
+      />
     </QctpContext.Provider>,
   );
 }
 
 describe("StudioScreen REG-01-A", () => {
+  it("renders a static authority hold and performs zero writes for a deferred Grant route", async () => {
+    const denied = evaluateSourceTrackAccess({
+      trackId: "robert-edward-grant",
+      accessId: "REG-02",
+      destination: "studio",
+      action: "start",
+    });
+    expect(denied).toMatchObject({
+      allowed: false,
+      code: "LIFECYCLE_HOLD",
+    });
+
+    renderStudio(denied);
+
+    expect(
+      screen.getByRole("heading", { name: "REG-01 is held" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      /runnable lesson and Studio exercise have not been authored/i,
+    );
+    expect(
+      screen.getByText(/No local session was opened/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Learn to See" }),
+    ).not.toBeInTheDocument();
+
+    expect(await repository.getRegSession(REG01_SESSION_ID)).toBeUndefined();
+    expect(await repository.listRecords({ tags: ["reg-01"] })).toEqual([]);
+    expect((await repository.getPath("reg-path"))?.completedModuleIds).toEqual(
+      [],
+    );
+  });
+
   it("persists every gate, completes atomically, and resumes the trace on reload", async () => {
     const user = userEvent.setup();
     const firstRender = renderStudio();
@@ -251,6 +291,23 @@ describe("StudioScreen REG-01-A", () => {
     expect(
       records.every((record) => record.sessionId === REG01_SESSION_ID),
     ).toBe(true);
+    expect(
+      records.every(
+        (record) =>
+          record.fields.sourceTrackId === "robert-edward-grant" &&
+          record.tags.includes("source-track:robert-edward-grant"),
+      ),
+    ).toBe(true);
+    expect(records[0]?.fields.sourceTrackRef).toMatchObject({
+      trackId: "robert-edward-grant",
+      accessId: "REG-01-A",
+      contentRefs: [
+        {
+          authorityKey: "grant.exercise.REG-01-A",
+          contentClass: "QCTP_ORIGINAL",
+        },
+      ],
+    });
     expect(
       (await repository.getPath("reg-path"))?.completedModuleIds,
     ).toContain("REG-01-A");

@@ -19,7 +19,9 @@ const relationshipLabels = {
 } as const;
 
 export interface StateAtlasProgressProps {
-  capabilities: readonly CapabilitySnapshot[];
+  capabilities: readonly (CapabilitySnapshot & {
+    readonly sourceTrackHold?: unknown;
+  })[];
   stateIds?: readonly StateId[];
   activeStateId?: StateId | null;
   onStateSelect?: (stateId: StateId) => void;
@@ -41,7 +43,9 @@ export function StateAtlasProgress({
   const requested = new Set(stateIds ?? STATE_ATLAS.map((state) => state.id));
   const definitions = STATE_ATLAS.filter((state) => requested.has(state.id));
   const levels = new Map(
-    capabilities.map((capability) => [capability.stateId, capability.level]),
+    capabilities
+      .filter((capability) => !capability.sourceTrackHold)
+      .map((capability) => [capability.stateId, capability.level]),
   );
 
   return (

@@ -33,6 +33,7 @@ export interface QctpRuntime {
   breathProfile: BreathProfile;
   breathSessions: BreathSessionRecord[];
   stateCapabilities: StateCapabilityRecord[];
+  stateCapabilityHolds?: StateCapabilityRecord[];
   stateSessions: StateSessionRecord[];
   migration: Rev1MigrationResult;
   revision: number;

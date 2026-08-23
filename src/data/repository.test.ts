@@ -563,6 +563,18 @@ describe("QctpRepository", () => {
       expect(record.contentRef).toEqual(result.session.contentRef);
       expect(record.fields).not.toHaveProperty("contentClass");
       expect(record.observation?.provenance.actor).toBe("user");
+      expect(record.tags).toContain("source-track:robert-edward-grant");
+      expect(record.fields.sourceTrackId).toBe("robert-edward-grant");
+      expect(record.fields.sourceTrackRef).toMatchObject({
+        trackId: "robert-edward-grant",
+        accessId: "REG-01-A",
+        contentRefs: [
+          {
+            authorityKey: "grant.exercise.REG-01-A",
+            contentClass: "QCTP_ORIGINAL",
+          },
+        ],
+      });
     }
   });
 
