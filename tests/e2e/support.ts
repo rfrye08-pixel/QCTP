@@ -64,6 +64,49 @@ export async function readStore<T>(
   );
 }
 
+export async function putStore<T>(
+  page: Page,
+  storeName: string,
+  value: T,
+): Promise<void> {
+  await page.evaluate(
+    ({ databaseName, targetStore, nextValue }) =>
+      new Promise<void>((resolve, reject) => {
+        const request = indexedDB.open(databaseName);
+        request.onerror = () =>
+          reject(request.error ?? new Error("Unable to open QCTP database."));
+        request.onsuccess = () => {
+          const database = request.result;
+          try {
+            const transaction = database.transaction(targetStore, "readwrite");
+            transaction.objectStore(targetStore).put(nextValue);
+            transaction.onerror = () =>
+              reject(
+                transaction.error ?? new Error("Unable to write QCTP store."),
+              );
+            transaction.onabort = transaction.onerror;
+            transaction.oncomplete = () => {
+              database.close();
+              resolve();
+            };
+          } catch (error) {
+            database.close();
+            reject(
+              error instanceof Error
+                ? error
+                : new Error("Unable to access QCTP store.", { cause: error }),
+            );
+          }
+        };
+      }),
+    {
+      databaseName: DATABASE_NAME,
+      targetStore: storeName,
+      nextValue: value,
+    },
+  );
+}
+
 export async function listStoreNames(page: Page): Promise<string[]> {
   return page.evaluate(
     (databaseName) =>

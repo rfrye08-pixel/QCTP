@@ -9,6 +9,7 @@ import {
   MirrorRequestSchema,
   MirrorResultSchema,
   PathStateSchema,
+  PracticeSessionSchema,
   QctpExportDataSchema,
   RegSessionSchema,
   RevisionSchema,
@@ -36,6 +37,7 @@ import {
   type MirrorResult,
   type MirrorResultRevisionAction,
   type PathState,
+  type PracticeSession,
   type Provenance,
   type QctpExportData,
   type RecordKind,
@@ -47,6 +49,23 @@ import {
   type VoiceRecording,
   type WorkbookState,
 } from "../domain";
+import {
+  BreathSessionRecordSchema,
+  createDefaultBreathProfile,
+  normalizeBreathProfile,
+  type BreathGoal,
+  type BreathFoundationSessionId,
+  type BreathProfile,
+  type BreathSessionRecord,
+} from "../breath";
+import {
+  StateCapabilityRecordSchema,
+  StateSessionRecordSchema,
+  assertValidStateCapabilityLedger,
+  type StateCapabilityRecord,
+  type StateId,
+  type StateSessionRecord,
+} from "../state-atlas";
 
 import {
   openQctpDatabase,
@@ -69,6 +88,11 @@ const SNAPSHOT_STORES = [
   "revisions",
   "paths",
   "regSessions",
+  "practiceSessions",
+  "breathProfiles",
+  "breathSessions",
+  "stateSessions",
+  "stateCapabilities",
   "transcriptionQueue",
   "migrationLedger",
   "mirrorRequests",
@@ -199,6 +223,19 @@ function sameIds(left: readonly string[], right: readonly string[]): boolean {
   );
 }
 
+function stateCapabilityEvidenceIds(
+  capability: StateCapabilityRecord,
+): string[] {
+  return [
+    ...new Set([
+      ...capability.evidenceAttemptIds,
+      ...capability.transitions.flatMap(
+        (transition) => transition.evidenceAttemptIds,
+      ),
+    ]),
+  ];
+}
+
 function initialMirrorResultRevision(result: MirrorResult) {
   return {
     id: makeId("mirror-revision"),
@@ -281,7 +318,7 @@ export class QctpRepository {
 
   async initializeDefaults(now = new Date().toISOString()): Promise<void> {
     const transaction = this.database.transaction(
-      ["foundation", "workbook", "settings", "paths"],
+      ["foundation", "workbook", "settings", "paths", "breathProfiles"],
       "readwrite",
     );
     const foundation = await transaction
@@ -299,6 +336,12 @@ export class QctpRepository {
     const settings = await transaction.objectStore("settings").get("settings");
     if (!settings)
       await transaction.objectStore("settings").put(createDefaultSettings(now));
+    const defaultBreathProfile = createDefaultBreathProfile(now);
+    const breathProfile = await transaction
+      .objectStore("breathProfiles")
+      .get(defaultBreathProfile.id);
+    if (!breathProfile)
+      await transaction.objectStore("breathProfiles").put(defaultBreathProfile);
     for (const path of createDefaultPathStates(now)) {
       const current = await transaction.objectStore("paths").get(path.id);
       if (!current) await transaction.objectStore("paths").put(path);
@@ -327,7 +370,8 @@ export class QctpRepository {
   }
 
   async getSettings(): Promise<AppSettings | undefined> {
-    return this.database.get("settings", "settings");
+    const settings = await this.database.get("settings", "settings");
+    return settings ? AppSettingsSchema.parse(settings) : undefined;
   }
 
   async saveSettings(value: AppSettings): Promise<AppSettings> {
@@ -1417,6 +1461,217 @@ export class QctpRepository {
     return this.database.get("regSessions", id);
   }
 
+  async savePracticeSession(value: PracticeSession): Promise<PracticeSession> {
+    const parsed = PracticeSessionSchema.parse(value);
+    await this.database.put("practiceSessions", parsed);
+    return parsed;
+  }
+
+  async savePracticeSessionAndFoundation(
+    value: PracticeSession,
+    foundation: FoundationState,
+    settings?: AppSettings,
+  ): Promise<{
+    practiceSession: PracticeSession;
+    foundation: FoundationState;
+    settings: AppSettings | null;
+  }> {
+    const practiceSession = PracticeSessionSchema.parse(value);
+    const parsedFoundation = FoundationStateSchema.parse(foundation);
+    const parsedSettings = settings ? AppSettingsSchema.parse(settings) : null;
+    const transaction = this.database.transaction(
+      ["practiceSessions", "foundation", "settings"],
+      "readwrite",
+    );
+    const writes: Promise<IDBValidKey>[] = [
+      transaction.objectStore("practiceSessions").put(practiceSession),
+      transaction.objectStore("foundation").put(parsedFoundation),
+    ];
+    if (parsedSettings) {
+      writes.push(transaction.objectStore("settings").put(parsedSettings));
+    }
+    await Promise.all(writes);
+    await transaction.done;
+    return {
+      practiceSession,
+      foundation: parsedFoundation,
+      settings: parsedSettings,
+    };
+  }
+
+  async getPracticeSession(id: string): Promise<PracticeSession | undefined> {
+    return this.database.get("practiceSessions", id);
+  }
+
+  async listPracticeSessions(): Promise<PracticeSession[]> {
+    const sessions = await this.database.getAll("practiceSessions");
+    return sessions
+      .map((session) => PracticeSessionSchema.parse(session))
+      .sort((left, right) => right.startedAt.localeCompare(left.startedAt));
+  }
+
+  async saveBreathProfile(value: BreathProfile): Promise<BreathProfile> {
+    const parsed = normalizeBreathProfile(value);
+    await this.database.put("breathProfiles", parsed);
+    return parsed;
+  }
+
+  async getBreathProfile(id: string): Promise<BreathProfile | undefined> {
+    const value = await this.database.get("breathProfiles", id);
+    return value ? normalizeBreathProfile(value) : undefined;
+  }
+
+  async listBreathProfiles(): Promise<BreathProfile[]> {
+    const profiles = await this.database.getAll("breathProfiles");
+    return profiles
+      .map((profile) => normalizeBreathProfile(profile))
+      .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
+  }
+
+  async deleteBreathProfile(id: string): Promise<void> {
+    await this.database.delete("breathProfiles", id);
+  }
+
+  async saveBreathSession(
+    value: BreathSessionRecord,
+  ): Promise<BreathSessionRecord> {
+    const parsed = BreathSessionRecordSchema.parse(value);
+    await this.database.put("breathSessions", parsed);
+    return parsed;
+  }
+
+  async getBreathSession(id: string): Promise<BreathSessionRecord | undefined> {
+    const value = await this.database.get("breathSessions", id);
+    return value ? BreathSessionRecordSchema.parse(value) : undefined;
+  }
+
+  async listBreathSessions(goal?: BreathGoal): Promise<BreathSessionRecord[]> {
+    const sessions = goal
+      ? await this.database.getAllFromIndex("breathSessions", "goal", goal)
+      : await this.database.getAll("breathSessions");
+    return sessions
+      .map((session) => BreathSessionRecordSchema.parse(session))
+      .sort((left, right) => right.startedAt.localeCompare(left.startedAt));
+  }
+
+  async listBreathFoundationSessions(
+    foundationSessionId: BreathFoundationSessionId,
+  ): Promise<BreathSessionRecord[]> {
+    const sessions = await this.database.getAllFromIndex(
+      "breathSessions",
+      "foundationSessionId",
+      foundationSessionId,
+    );
+    return sessions
+      .map((session) => BreathSessionRecordSchema.parse(session))
+      .sort((left, right) => right.startedAt.localeCompare(left.startedAt));
+  }
+
+  async deleteBreathSession(id: string): Promise<void> {
+    await this.database.delete("breathSessions", id);
+  }
+
+  async saveStateSession(
+    value: StateSessionRecord,
+  ): Promise<StateSessionRecord> {
+    const parsed = StateSessionRecordSchema.parse(value);
+    await this.database.put("stateSessions", parsed);
+    return parsed;
+  }
+
+  async getStateSession(id: string): Promise<StateSessionRecord | undefined> {
+    const value = await this.database.get("stateSessions", id);
+    return value ? StateSessionRecordSchema.parse(value) : undefined;
+  }
+
+  async listStateSessions(stateId?: StateId): Promise<StateSessionRecord[]> {
+    const sessions = stateId
+      ? await this.database.getAllFromIndex("stateSessions", "stateId", stateId)
+      : await this.database.getAll("stateSessions");
+    return sessions
+      .map((session) => StateSessionRecordSchema.parse(session))
+      .sort((left, right) => right.endedAt.localeCompare(left.endedAt));
+  }
+
+  async deleteStateSession(id: string): Promise<void> {
+    const capabilities = await this.database.getAll("stateCapabilities");
+    const referencedBy = capabilities.find((capability) =>
+      stateCapabilityEvidenceIds(capability).includes(id),
+    );
+    if (referencedBy) {
+      throw new Error(
+        `State session ${id} is evidence for capability ${referencedBy.id}.`,
+      );
+    }
+    await this.database.delete("stateSessions", id);
+  }
+
+  async saveStateCapability(
+    value: StateCapabilityRecord,
+  ): Promise<StateCapabilityRecord> {
+    const parsed = StateCapabilityRecordSchema.parse(value);
+    const existing = await this.database.getFromIndex(
+      "stateCapabilities",
+      "stateId",
+      parsed.stateId,
+    );
+    if (existing && existing.id !== parsed.id) {
+      throw new Error(
+        `State ${parsed.stateId} already has capability record ${existing.id}.`,
+      );
+    }
+    for (const evidenceId of stateCapabilityEvidenceIds(parsed)) {
+      const session = await this.database.get("stateSessions", evidenceId);
+      if (!session || session.stateId !== parsed.stateId) {
+        throw new Error(
+          `State capability ${parsed.id} requires matching session ${evidenceId}.`,
+        );
+      }
+    }
+    const [sessions, capabilities] = await Promise.all([
+      this.database.getAll("stateSessions"),
+      this.database.getAll("stateCapabilities"),
+    ]);
+    const nextCapabilities = capabilities.filter(
+      (capability) => capability.id !== parsed.id,
+    );
+    assertValidStateCapabilityLedger({
+      sessions,
+      capabilities: [...nextCapabilities, parsed],
+    });
+    await this.database.put("stateCapabilities", parsed);
+    return parsed;
+  }
+
+  async getStateCapability(
+    id: string,
+  ): Promise<StateCapabilityRecord | undefined> {
+    const value = await this.database.get("stateCapabilities", id);
+    return value ? StateCapabilityRecordSchema.parse(value) : undefined;
+  }
+
+  async getStateCapabilityByStateId(
+    stateId: StateId,
+  ): Promise<StateCapabilityRecord | undefined> {
+    const value = await this.database.getFromIndex(
+      "stateCapabilities",
+      "stateId",
+      stateId,
+    );
+    return value ? StateCapabilityRecordSchema.parse(value) : undefined;
+  }
+
+  async listStateCapabilities(): Promise<StateCapabilityRecord[]> {
+    const capabilities = await this.database.getAll("stateCapabilities");
+    return capabilities
+      .map((capability) => StateCapabilityRecordSchema.parse(capability))
+      .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
+  }
+
+  async deleteStateCapability(id: string): Promise<void> {
+    await this.database.delete("stateCapabilities", id);
+  }
+
   async completeReg01(
     sessionId: string,
     now = new Date().toISOString(),
@@ -1818,6 +2073,11 @@ export class QctpRepository {
       revisions,
       paths,
       regSessions,
+      practiceSessions,
+      breathProfiles,
+      breathSessions,
+      stateSessions,
+      stateCapabilities,
       transcriptionQueue,
       migrationLedger,
       mirrorRequests,
@@ -1835,6 +2095,11 @@ export class QctpRepository {
       transaction.objectStore("revisions").getAll(),
       transaction.objectStore("paths").getAll(),
       transaction.objectStore("regSessions").getAll(),
+      transaction.objectStore("practiceSessions").getAll(),
+      transaction.objectStore("breathProfiles").getAll(),
+      transaction.objectStore("breathSessions").getAll(),
+      transaction.objectStore("stateSessions").getAll(),
+      transaction.objectStore("stateCapabilities").getAll(),
       transaction.objectStore("transcriptionQueue").getAll(),
       transaction.objectStore("migrationLedger").getAll(),
       transaction.objectStore("mirrorRequests").getAll(),
@@ -1843,8 +2108,8 @@ export class QctpRepository {
     ]);
     await transaction.done;
     return QctpExportDataSchema.parse({
-      schema: "qctp-export-v2",
-      schemaVersion: 2,
+      schema: "qctp-export-v3",
+      schemaVersion: 3,
       exportedAt,
       foundation: foundation ?? null,
       workbook: workbook ?? null,
@@ -1857,6 +2122,11 @@ export class QctpRepository {
       revisions,
       paths,
       regSessions,
+      practiceSessions,
+      breathProfiles,
+      breathSessions,
+      stateSessions,
+      stateCapabilities,
       transcriptionQueue,
       migrationLedger,
       mirrorRequests,
@@ -1871,6 +2141,56 @@ export class QctpRepository {
   ): Promise<void> {
     const snapshot = QctpExportDataSchema.parse(value);
     const mode = options.mode ?? "merge";
+    const importedStateSessions = new Map(
+      snapshot.stateSessions.map((session) => [session.id, session]),
+    );
+    for (const capability of snapshot.stateCapabilities) {
+      for (const evidenceId of stateCapabilityEvidenceIds(capability)) {
+        const session =
+          importedStateSessions.get(evidenceId) ??
+          (mode === "merge"
+            ? await this.database.get("stateSessions", evidenceId)
+            : undefined);
+        if (!session || session.stateId !== capability.stateId) {
+          throw new Error(
+            `State capability ${capability.id} requires matching session ${evidenceId}.`,
+          );
+        }
+      }
+    }
+    const [storedSessions, storedCapabilities] =
+      mode === "merge"
+        ? await Promise.all([
+            this.database.getAll("stateSessions"),
+            this.database.getAll("stateCapabilities"),
+          ])
+        : [[], []];
+    const finalSessions = new Map(
+      storedSessions.map((session) => [session.id, session]),
+    );
+    for (const session of snapshot.stateSessions) {
+      finalSessions.set(session.id, session);
+    }
+    const finalCapabilities = new Map(
+      storedCapabilities.map((capability) => [capability.id, capability]),
+    );
+    for (const capability of snapshot.stateCapabilities) {
+      for (const [existingId, existing] of finalCapabilities) {
+        if (
+          existing.stateId === capability.stateId &&
+          existingId !== capability.id
+        ) {
+          throw new Error(
+            `State ${capability.stateId} already has capability record ${existingId}.`,
+          );
+        }
+      }
+      finalCapabilities.set(capability.id, capability);
+    }
+    assertValidStateCapabilityLedger({
+      sessions: [...finalSessions.values()],
+      capabilities: [...finalCapabilities.values()],
+    });
     const transaction = this.database.transaction(ALL_STORES, "readwrite");
     if (mode === "replace") {
       await Promise.all(
@@ -1910,6 +2230,23 @@ export class QctpRepository {
       await transaction.objectStore("paths").put(path);
     for (const session of snapshot.regSessions) {
       await transaction.objectStore("regSessions").put(session);
+    }
+    for (const session of snapshot.practiceSessions) {
+      await transaction.objectStore("practiceSessions").put(session);
+    }
+    for (const profile of snapshot.breathProfiles) {
+      await transaction
+        .objectStore("breathProfiles")
+        .put(normalizeBreathProfile(profile));
+    }
+    for (const session of snapshot.breathSessions) {
+      await transaction.objectStore("breathSessions").put(session);
+    }
+    for (const session of snapshot.stateSessions) {
+      await transaction.objectStore("stateSessions").put(session);
+    }
+    for (const capability of snapshot.stateCapabilities) {
+      await transaction.objectStore("stateCapabilities").put(capability);
     }
     for (const item of snapshot.transcriptionQueue) {
       await transaction.objectStore("transcriptionQueue").put(item);

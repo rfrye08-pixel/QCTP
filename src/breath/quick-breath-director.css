@@ -1,0 +1,269 @@
+.qctp-quick-breath {
+  display: grid;
+  gap: 1rem;
+  color: var(--ink, #e9f6f3);
+}
+
+.qctp-quick-breath-header,
+.qctp-breath-selection,
+.qctp-breath-pacer,
+.qctp-breath-readiness,
+.qctp-breath-prerequisites,
+.qctp-breath-cues {
+  border: 1px solid color-mix(in srgb, var(--accent, #6ee7cf) 28%, transparent);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--panel, #0c1d24) 94%, transparent);
+  padding: 1rem;
+}
+
+.qctp-quick-breath-header p,
+.qctp-breath-selection-label {
+  margin: 0 0 0.25rem;
+  color: var(--accent, #6ee7cf);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.qctp-quick-breath-header h2,
+.qctp-breath-selection h3 {
+  margin: 0;
+}
+
+.qctp-quick-breath-header small,
+.qctp-breath-pacer small {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--muted, #a9c1bd);
+  line-height: 1.45;
+}
+
+.qctp-breath-input-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.qctp-breath-input-grid label,
+.qctp-breath-readiness label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted, #a9c1bd);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.qctp-breath-input-grid select,
+.qctp-breath-input-grid input {
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--accent, #6ee7cf) 25%, transparent);
+  border-radius: 0.65rem;
+  background: var(--panel, #0c1d24);
+  color: var(--ink, #e9f6f3);
+  padding: 0.6rem 0.7rem;
+}
+
+.qctp-breath-readiness,
+.qctp-breath-prerequisites,
+.qctp-breath-cues {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+}
+
+.qctp-breath-readiness legend,
+.qctp-breath-prerequisites legend,
+.qctp-breath-cues legend {
+  padding: 0 0.4rem;
+  font-weight: 800;
+}
+
+.qctp-breath-readiness output {
+  color: var(--ink, #e9f6f3);
+  font-variant-numeric: tabular-nums;
+}
+
+.qctp-breath-prerequisites label,
+.qctp-breath-cues label {
+  display: flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.qctp-breath-prerequisites input,
+.qctp-breath-cues input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--accent, #6ee7cf);
+}
+
+.qctp-breath-selection.is-blocked {
+  border-color: color-mix(in srgb, #f59e7a 55%, transparent);
+  background: color-mix(in srgb, #4a201c 34%, var(--panel, #0c1d24));
+}
+
+.qctp-breath-selection > p:not(.qctp-breath-selection-label) {
+  color: var(--muted, #a9c1bd);
+  line-height: 1.55;
+}
+
+.qctp-breath-details,
+.qctp-breath-selection.is-blocked dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+}
+
+.qctp-breath-details div,
+.qctp-breath-selection.is-blocked dl div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.qctp-breath-details dt,
+.qctp-breath-selection.is-blocked dt {
+  color: var(--accent, #6ee7cf);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.qctp-breath-details dd,
+.qctp-breath-selection.is-blocked dd {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.qctp-breath-prelude,
+.qctp-breath-warnings,
+.qctp-breath-stop-conditions {
+  margin: 0.85rem 0 0;
+}
+
+.qctp-breath-warnings,
+.qctp-breath-stop-conditions ul {
+  padding-left: 1.25rem;
+}
+
+.qctp-breath-stop-conditions summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 750;
+  line-height: 44px;
+}
+
+.qctp-breath-pacer {
+  display: grid;
+  justify-items: center;
+  gap: 0.85rem;
+  overflow: hidden;
+  text-align: center;
+}
+
+.qctp-breath-pacer-static {
+  justify-items: start;
+  text-align: left;
+}
+
+.qctp-breath-pacer-static p {
+  margin: 0;
+}
+
+.qctp-breath-orb {
+  width: min(42vw, 9rem);
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--accent, #6ee7cf) 68%, white);
+  border-radius: 999px;
+  background: radial-gradient(
+    circle at 40% 35%,
+    color-mix(in srgb, white 55%, var(--accent, #6ee7cf)),
+    color-mix(in srgb, var(--accent, #6ee7cf) 24%, transparent) 58%,
+    transparent 72%
+  );
+  box-shadow: 0 0 2rem
+    color-mix(in srgb, var(--accent, #6ee7cf) 25%, transparent);
+  opacity: 0.72;
+  transform: scale(0.66);
+  transition:
+    transform var(--qctp-pacer-seconds) linear,
+    opacity 180ms ease;
+}
+
+.qctp-breath-orb-inhale.is-running {
+  transform: scale(1);
+}
+
+.qctp-breath-orb-exhale.is-running {
+  transform: scale(0.66);
+}
+
+.qctp-breath-orb-hold.is-running {
+  transform: scale(0.83);
+}
+
+.qctp-breath-orb.is-visually-muted {
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.qctp-breath-phase {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+}
+
+.qctp-breath-phase strong {
+  font-size: 1.25rem;
+}
+
+.qctp-breath-phase span {
+  color: var(--muted, #a9c1bd);
+  font-size: 0.82rem;
+}
+
+.qctp-breath-start,
+.qctp-breath-stop {
+  min-width: 9rem;
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.65rem 1rem;
+  font-weight: 800;
+}
+
+.qctp-breath-start {
+  background: var(--accent, #6ee7cf);
+  color: #061512;
+}
+
+.qctp-breath-stop {
+  border-color: color-mix(in srgb, #f59e7a 60%, transparent);
+  background: transparent;
+  color: #ffd8ca;
+}
+
+.qctp-breath-credit-boundary {
+  margin: 0;
+  border-left: 3px solid var(--accent, #6ee7cf);
+  color: var(--muted, #a9c1bd);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  padding-left: 0.75rem;
+}
+
+@media (max-width: 620px) {
+  .qctp-breath-input-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qctp-breath-orb {
+    transition-duration: 100ms;
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "schema": "qctp-macro-deliverable-manifest-v13",
+  "manifest_id": "QCTP-PLATFORM-REV13-REV3-CANDIDATE-CHECKPOINT",
+  "updated_at": "2026-08-22T18:44:13-05:00",
+  "status": "CANDIDATE_CHECKPOINT_MACHINE_VERIFIED_PHYSICAL_GATES_OPEN_ZERO_RELEASE",
+  "supersedes": "QCTP_MACRO_DELIVERABLE_MANIFEST_REV12.json",
+  "north_star": "A source-grounded, natural-sounding, one-tap morning consciousness training platform that works reliably on iPhone with zero recurring API cost and preserves user data and evidence.",
+  "execution_branch": "qctp-platform-rev3-codex",
+  "source_checkpoint": "7f03ec5a7822aefb05ffb50ee16a7453d84a31e4",
+  "deliverables": [
+    {
+      "id": "QCTP-R13-D01",
+      "name": "Immediate morning-practice continuity",
+      "status": "IMPLEMENTED_MACHINE_AND_BROWSER_PASS_PHYSICAL_IPHONE_MORNING_GATE_OPEN",
+      "evidence": [
+        "QCTP_REV3_VOICE_FREE_DAY1_MACHINE_VERIFICATION_REV0_2026-08-22.json",
+        "QCTP_REV3_VOICE_FREE_DAY1_BROWSER_VERIFICATION_REV0_2026-08-22.json"
+      ],
+      "acceptance_remaining": "Ryan physically runs the shortest iPhone/PWA morning, cold-offline, support-audio, marker, and complete-return gate."
+    },
+    {
+      "id": "QCTP-R13-D02",
+      "name": "Natural voice recovery",
+      "status": "THREE_ROUTE_BLIND_AUDITION_MACHINE_BROWSER_PASS_PHYSICAL_SELECTION_OPEN_RELEASE_CRITICAL",
+      "evidence": [
+        "public/voice-audition/",
+        "QCTP_REV3_NATURAL_VOICE_TRADE_AND_LICENSING_REV0_2026-08-22.json",
+        "QCTP_REV3_BLIND_VOICE_PHYSICAL_SELECTION_REV0_2026-08-22.json"
+      ],
+      "acceptance_remaining": "Ryan selects A, B, C, or NONE by physical human naturalness judgment."
+    },
+    {
+      "id": "QCTP-R13-D03",
+      "name": "Source-grounded selected-voice Day 1 production experience",
+      "status": "BLOCKED_BY_D02_PHYSICAL_PASS_NO_FULL_RENDER_AUTHORIZED",
+      "evidence": ["QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json"],
+      "acceptance_remaining": "After a candidate passes: five-minute selected-voice physical gate, then one natural 25-minute physical gate."
+    },
+    {
+      "id": "QCTP-R13-D04",
+      "name": "Breath Director and Breath Foundations",
+      "status": "IMPLEMENTED_AUTOMATED_PASS_PHYSICAL_IPHONE_ACCEPTANCE_OPEN",
+      "evidence": [
+        "src/breath/",
+        "src/app/components/BreathFoundationsPanel.tsx"
+      ],
+      "acceptance_remaining": "Physical iPhone eyes-open/eyes-closed usability, stop, interruption, and safety acceptance."
+    },
+    {
+      "id": "QCTP-R13-D05",
+      "name": "Protocol hardening and State Atlas",
+      "status": "IMPLEMENTED_AUTOMATED_INTEGRITY_PASS_REAL_USER_EVIDENCE_OPEN",
+      "evidence": [
+        "src/state-atlas/",
+        "src/data/breath-state-persistence.test.ts"
+      ],
+      "acceptance_remaining": "Real user evidence and feedback remain required; elapsed time and timer completion do not prove state attainment."
+    },
+    {
+      "id": "QCTP-R13-D06",
+      "name": "User-friendly and exciting mobile experience",
+      "status": "WINDOWS_WEBKIT_MOBILE_PASS_PHYSICAL_IPHONE_ACCEPTANCE_OPEN",
+      "evidence": [
+        "QCTP_REV3_UX_ACCEPTANCE_REV0_2026-08-22.json",
+        "controlled-artifacts/rev3-ux/"
+      ],
+      "acceptance_remaining": "Physical installed-iPhone safe-area, touch, icon, audio, lifecycle, and cold-offline acceptance."
+    },
+    {
+      "id": "QCTP-R13-D07",
+      "name": "Controlled source tracks",
+      "status": "CONTROLLED_MVPS_IMPLEMENTED_AUTOMATED_PASS_BROADER_SOURCE_REVIEW_HOLD",
+      "evidence": [
+        "src/source-tracks/",
+        "src/reg/",
+        "src/app/screens/StudioScreen.tsx",
+        "src/app/studio-styles.css"
+      ],
+      "acceptance_remaining": "Broader source-track content remains held to source review; Foundation Days 2 through 112 remain unauthored."
+    },
+    {
+      "id": "QCTP-R13-D08",
+      "name": "Local-first AI, transcription, voice capture, and data reliability",
+      "status": "IMPLEMENTED_AUTOMATED_FIXTURE_PASS_ACTUAL_ORIGIN_AND_PHYSICAL_RECOVERY_HOLDS_OPEN",
+      "evidence": [
+        "QCTP_REV3_MIGRATION_AND_DATA_PRESERVATION_REV0_2026-08-22.json",
+        "local-whisper-companion/",
+        "src/voice-capture/",
+        "src/mirror/",
+        "src/export-import/"
+      ],
+      "acceptance_remaining": "Actual-origin preservation and real iPhone microphone, reconnect, quota, large-binary, interruption, and recovery gates."
+    },
+    {
+      "id": "QCTP-R13-D09",
+      "name": "Rev3 verification and deployment package",
+      "status": "TOOLING_IMPLEMENTED_SOURCE_CHECKPOINT_PRESERVED_PUSH_STAGE_PRIVATE_PREVIEW_PR_AND_PHYSICAL_GATES_IN_PROGRESS",
+      "evidence": ["tools/rev3-runtime/", "CODEX_EXECUTION_REPORT.md"],
+      "acceptance_remaining": "Exact pushed candidate staging, isolated private preview, draft PR, physical gates, and explicit release authority."
+    }
+  ],
+  "release_authority": "ZERO_RELEASE",
+  "next_controlled_action": "Ryan listens blind to the exact A, B, and C short samples on iPhone at one unchanged volume and reports Best: A, B, C, or NONE plus one short observation."
+}

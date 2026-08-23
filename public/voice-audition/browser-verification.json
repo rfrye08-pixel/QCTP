@@ -1,0 +1,41 @@
+{
+  "schema": "qctp-rev3-blind-natural-voice-browser-verification-v1",
+  "result": "PASS",
+  "base_url": "http://127.0.0.1:4289/voice-audition/",
+  "manifest_sha256": "d8f2e214fb9a32a7844189dd86385f3a2dd66f32e7fc580d75be4d3ec14da63f",
+  "build_record_sha256": "b3edaf96b6a06bf75fe2492fc9a7ba3b8d6e36c536b459edbde35ef8075b754e",
+  "public_route_assignment_absent": true,
+  "cases": {
+    "chromium-desktop": {
+      "result": "PASS",
+      "mp3_support": "probably",
+      "relative_source": "sample-b.mp3",
+      "pre_selection_identity_hidden": true,
+      "blind_mapping_preserved_after_selection": true,
+      "public_route_assignment_absent": true,
+      "local_selection_persisted": true,
+      "local_selection_persisted_after_reload": true,
+      "same_origin_qctp_return": "http://127.0.0.1:4289/"
+    },
+    "webkit-iphone": {
+      "result": "PASS",
+      "mp3_support": "probably",
+      "relative_source": "sample-b.mp3",
+      "pre_selection_identity_hidden": true,
+      "blind_mapping_preserved_after_selection": true,
+      "public_route_assignment_absent": true,
+      "local_selection_persisted": true,
+      "local_selection_persisted_after_reload": true,
+      "same_origin_qctp_return": "http://127.0.0.1:4289/"
+    },
+    "chromium-offline": {
+      "result": "PASS",
+      "service_worker_cached_media": true,
+      "service_worker_cached_grounding": true,
+      "normal_workbox_caches_preserved": true,
+      "stale_audition_cache_removed": true
+    }
+  },
+  "naturalness_gate": "OPEN_PHYSICAL_RYAN_SELECTION",
+  "release_authority": "ZERO_RELEASE"
+}

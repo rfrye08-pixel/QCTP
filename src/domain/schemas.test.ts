@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  AppSettingsSchema,
   CodexRecordSchema,
   MirrorResultSchema,
   QctpExportDataSchema,
@@ -15,6 +16,15 @@ describe("versioned domain schemas", () => {
     const settings = createDefaultSettings(now);
     expect(settings.transcriptionRoute).toBe("local_only");
     expect(settings.neuralVoice).toBe("chill-brian");
+    expect(settings.lastVoiceFreeIssue).toBeNull();
+  });
+
+  it("upgrades pre-Rev3 settings without inventing a practice issue", () => {
+    const legacy: Partial<ReturnType<typeof createDefaultSettings>> = {
+      ...createDefaultSettings(now),
+    };
+    delete legacy.lastVoiceFreeIssue;
+    expect(AppSettingsSchema.parse(legacy).lastVoiceFreeIssue).toBeNull();
   });
 
   it("keeps observation evidence and interpretation as separately identified layers", () => {

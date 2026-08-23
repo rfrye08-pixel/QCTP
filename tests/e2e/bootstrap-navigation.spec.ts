@@ -5,6 +5,7 @@ import {
   expectNoHorizontalOverflow,
   listStoreNames,
   openQctp,
+  putStore,
   readStore,
 } from "./support";
 
@@ -17,7 +18,10 @@ test("boots the PWA into IndexedDB-backed Free Local Mode", async ({
   await openQctp(page);
 
   await expect(
-    page.getByRole("heading", { level: 1, name: "Day 1 — State Control" }),
+    page.getByRole("heading", {
+      level: 1,
+      name: "Day 1 — Baseline Awareness",
+    }),
   ).toBeVisible();
   await expect(page.getByText("25:00 exact", { exact: true })).toBeVisible();
   await expect(page.locator('link[rel="manifest"]')).toHaveCount(1);
@@ -61,6 +65,11 @@ test("boots the PWA into IndexedDB-backed Free Local Mode", async ({
       "transcriptionQueue",
       "mirrorRequests",
       "mirrorResults",
+      "practiceSessions",
+      "breathProfiles",
+      "breathSessions",
+      "stateSessions",
+      "stateCapabilities",
     ]),
   );
   const settings = await readStore<{
@@ -94,7 +103,10 @@ test("boots the PWA into IndexedDB-backed Free Local Mode", async ({
 
   await page.reload();
   await expect(
-    page.getByRole("heading", { level: 1, name: "Day 1 — State Control" }),
+    page.getByRole("heading", {
+      level: 1,
+      name: "Day 1 — Baseline Awareness",
+    }),
   ).toBeVisible();
   expect(
     await page.evaluate(() => Boolean(navigator.serviceWorker.controller)),
@@ -119,13 +131,94 @@ test("boots the PWA into IndexedDB-backed Free Local Mode", async ({
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: browserName === "webkit" ? "Paths" : "Day 1 — State Control",
+      name: browserName === "webkit" ? "Paths" : "Day 1 — Baseline Awareness",
     }),
   ).toBeVisible();
   if (browserName !== "webkit") {
     await expect(page.getByText("25:00 exact", { exact: true })).toBeVisible();
   }
   expect(paidCloudRequests).toEqual([]);
+});
+
+test("Today is a mobile morning cockpit with local controls and explicit holds", async ({
+  page,
+}) => {
+  const paidCloudRequests = auditPaidCloudRequests(page);
+  await openQctp(page);
+
+  await expect(
+    page.getByRole("heading", { name: "Voice-Free Day 1 · 25 minutes" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Choose the safest useful pattern" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: "Capability, guidance, and source control",
+    }),
+  ).toBeVisible();
+  await expect(page.getByText("Narrated Day 1 is held")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Open the blind voice audition" }),
+  ).toHaveAttribute("href", "./voice-audition/");
+  await expect(page.getByText("PX13 companion", { exact: true })).toBeVisible();
+  await expect(page.getByText("App package", { exact: true })).toBeVisible();
+
+  const [settings] = await readStore<Record<string, unknown>>(page, "settings");
+  if (!settings) throw new Error("Default settings were not initialized.");
+  await putStore(page, "settings", {
+    ...settings,
+    lastVoiceFreeIssue: {
+      code: "EARLY_USER_END",
+      message:
+        "Practice ended before the complete return. No completion or state credit was recorded.",
+      occurredAt: "2026-08-22T12:05:00.000Z",
+      elapsedMs: 300_000,
+      supportMode: "ambient",
+      completionCreditGranted: false,
+      stateCapabilityCreditGranted: false,
+    },
+    updatedAt: "2026-08-22T12:05:00.000Z",
+  });
+  await page.reload();
+  await expect(
+    page.getByText("Needs attention", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(/Practice ended before the complete return/),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Record voice note" }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Quick Capture" }),
+  ).toBeVisible();
+  expect(paidCloudRequests).toEqual([]);
+});
+
+test("Paths exposes controlled Breath, State, Grant, and Campbell work without fabricated Foundation days", async ({
+  page,
+}) => {
+  await openQctp(page, "#/paths");
+  await expect(
+    page.getByRole("heading", { name: "Breath Foundations" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Thomas Campbell" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Robert Edward Grant" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: "Capability, guidance, and source control",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(/Days 2–112.*intentionally unauthored/u),
+  ).toBeVisible();
+  await expect(page.getByText("TC-01", { exact: true })).toBeVisible();
+  await expect(page.getByText("TC-10", { exact: true })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
 });
 
 test("bottom navigation and every released platform surface render", async ({
@@ -139,10 +232,10 @@ test("bottom navigation and every released platform surface render", async ({
 
   const primary: Array<[string, string]> = [
     ["Paths", "Paths"],
-    ["Practice", "State Control"],
+    ["Practice", "Voice-Free Day 1"],
     ["Studio", "Learn to See"],
     ["More", "More"],
-    ["Today", "Day 1 — State Control"],
+    ["Today", "Day 1 — Baseline Awareness"],
   ];
   for (const [buttonName, heading] of primary) {
     await navigation

@@ -1,0 +1,132 @@
+{
+  "schema": "qctp-day1-a03r-live-deployment-verification-v1",
+  "action_id": "QCTP-D1-AUDIO-A03R",
+  "result": "PASS",
+  "verified_at": "2026-08-20T21:37:45-05:00",
+  "base_url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/",
+  "transport": "PUBLIC_HTTPS_GITHUB_PAGES",
+  "exact_hash_match_to_machine_verified_publication": "PASS_8_OF_8",
+  "page_markers": "PASS",
+  "gate_summary": {
+    "schema": "qctp-a03r-gate-summary-v1",
+    "result": "PASS"
+  },
+  "machine_verification": {
+    "schema": "qctp-day1-a03-machine-verification-v2",
+    "result": "PASS",
+    "integrated_gate_result": "PASS",
+    "browser_gate": {
+      "chromium": "PASS",
+      "webkit_iphone_profile": "PASS",
+      "candidate_page_http_assets": "PASS"
+    }
+  },
+  "fetched_files": {
+    "index.html": {
+      "status": 200,
+      "url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/",
+      "content_type": "text/html; charset=utf-8",
+      "content_length_header": "5347",
+      "etag": "\"6a87b9ca-14e3\"",
+      "last_modified": "Fri, 21 Aug 2026 02:36:58 GMT",
+      "attempt": 1,
+      "bytes": 5347,
+      "sha256": "742052b67f23ae73265f48d6098a61cf57b0d1313e43eeead6cf1acb23116ea9",
+      "expected_sha256": "742052b67f23ae73265f48d6098a61cf57b0d1313e43eeead6cf1acb23116ea9",
+      "exact_hash_match": true
+    },
+    "acceptance-ambient.mp3": {
+      "status": 200,
+      "url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/acceptance-ambient.mp3",
+      "content_type": "audio/mp3",
+      "content_length_header": "3600909",
+      "etag": "\"6a87b9ca-36f20d\"",
+      "last_modified": "Fri, 21 Aug 2026 02:36:58 GMT",
+      "attempt": 1,
+      "bytes": 3600909,
+      "sha256": "cc75cb78aea097fbe2441e4db9a1319f9996884e5cbab1bca39d0386db24c7e0",
+      "expected_sha256": "cc75cb78aea097fbe2441e4db9a1319f9996884e5cbab1bca39d0386db24c7e0",
+      "exact_hash_match": true
+    },
+    "acceptance-binaural-low-a.mp3": {
+      "status": 200,
+      "url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/acceptance-binaural-low-a.mp3",
+      "content_type": "audio/mp3",
+      "content_length_header": "3600909",
+      "etag": "\"6a87b9ca-36f20d\"",
+      "last_modified": "Fri, 21 Aug 2026 02:36:58 GMT",
+      "attempt": 1,
+      "bytes": 3600909,
+      "sha256": "9e4367fdf6dccba1cb7704930a36a26bb11bb9c12346920b2cb5f2a423bec3ce",
+      "expected_sha256": "9e4367fdf6dccba1cb7704930a36a26bb11bb9c12346920b2cb5f2a423bec3ce",
+      "exact_hash_match": true
+    },
+    "acceptance-minimal.mp3": {
+      "status": 200,
+      "url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/acceptance-minimal.mp3",
+      "content_type": "audio/mp3",
+      "content_length_header": "3600909",
+      "etag": "\"6a87b9ca-36f20d\"",
+      "last_modified": "Fri, 21 Aug 2026 02:36:58 GMT",
+      "attempt": 1,
+      "bytes": 3600909,
+      "sha256": "b2d51b9215fc7332477490222556a8e77d3510482f9888477fd5101d8c0c5011",
+      "expected_sha256": "b2d51b9215fc7332477490222556a8e77d3510482f9888477fd5101d8c0c5011",
+      "exact_hash_match": true
+    },
+    "manifest.json": {
+      "status": 200,
+      "url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/manifest.json",
+      "content_type": "application/json; charset=utf-8",
+      "content_length_header": "31860",
+      "etag": "\"6a87b9ca-7c74\"",
+      "last_modified": "Fri, 21 Aug 2026 02:36:58 GMT",
+      "attempt": 1,
+      "bytes": 31860,
+      "sha256": "4add48d038c516bf9ae27c3c5468dd7fa1e4c64c3b7254572ec881e8152aa541",
+      "expected_sha256": "4add48d038c516bf9ae27c3c5468dd7fa1e4c64c3b7254572ec881e8152aa541",
+      "exact_hash_match": true
+    },
+    "machine-verification.json": {
+      "status": 200,
+      "url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/machine-verification.json",
+      "content_type": "application/json; charset=utf-8",
+      "content_length_header": "18749",
+      "etag": "\"6a87b9ca-493d\"",
+      "last_modified": "Fri, 21 Aug 2026 02:36:58 GMT",
+      "attempt": 1,
+      "bytes": 18749,
+      "sha256": "4b13d81b10b9615c06082dcffb98eda0bdbd634ced51721729c9b6f7b7a18e52",
+      "expected_sha256": "4b13d81b10b9615c06082dcffb98eda0bdbd634ced51721729c9b6f7b7a18e52",
+      "exact_hash_match": true
+    },
+    "critical-asr.json": {
+      "status": 200,
+      "url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/critical-asr.json",
+      "content_type": "application/json; charset=utf-8",
+      "content_length_header": "4977",
+      "etag": "\"6a87b9ca-1371\"",
+      "last_modified": "Fri, 21 Aug 2026 02:36:58 GMT",
+      "attempt": 1,
+      "bytes": 4977,
+      "sha256": "38ac81e35703abafc6c7c788246d1faf4d544f951a0f7609f07c3abc0aff8bb4",
+      "expected_sha256": "38ac81e35703abafc6c7c788246d1faf4d544f951a0f7609f07c3abc0aff8bb4",
+      "exact_hash_match": true
+    },
+    "gate-summary.json": {
+      "status": 200,
+      "url": "https://rfrye08-pixel.github.io/QCTP/device-preview/a03/gate-summary.json",
+      "content_type": "application/json; charset=utf-8",
+      "content_length_header": "2483",
+      "etag": "\"6a87b9ca-9b3\"",
+      "last_modified": "Fri, 21 Aug 2026 02:36:58 GMT",
+      "attempt": 1,
+      "bytes": 2483,
+      "sha256": "08499c79349b9b733cff95bb06198e16b88a4dae5e1b63912764f00b53ac5c56",
+      "expected_sha256": "08499c79349b9b733cff95bb06198e16b88a4dae5e1b63912764f00b53ac5c56",
+      "exact_hash_match": true
+    }
+  },
+  "physical_iphone_acceptance": "OPEN",
+  "release_authority": "ZERO_RELEASE"
+}

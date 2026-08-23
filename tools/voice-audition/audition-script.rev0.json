@@ -1,0 +1,58 @@
+{
+  "schema": "qctp-rev3-natural-voice-audition-script-v1",
+  "script_id": "QCTP-REV3-NATURAL-VOICE-AUDITION-REV0",
+  "source_script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+  "source_script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+  "status": "LOCKED_FOR_BLIND_PHYSICAL_AUDITION",
+  "release_authority": "ZERO_RELEASE",
+  "segments": [
+    {
+      "id": "opening",
+      "requirement": "opening",
+      "source_cue_id": "D1-A02-000",
+      "text_sha256": "e463109d8af9cad472d95e029b24453863b285d8b4830a2f13632d141df3e375",
+      "text": "Sit with both feet supported and let your hands rest. Close your eyes. Before changing anything, notice the state you brought into the session.",
+      "silence_after_seconds": 1.4
+    },
+    {
+      "id": "heartmath-counted",
+      "requirement": "HeartMath five-in/five-out coaching",
+      "source_cue_id": "D1-A02-210",
+      "text_sha256": "eb5a9271377d27b27ce0cf819664e0655c4bfbaa9ca8be14d41b0a7259e6f419",
+      "text": "Begin an easy, even breath. In for five: one, two, three, four, five. Out for five: one, two, three, four, five.",
+      "silence_after_seconds": 1.6
+    },
+    {
+      "id": "heartmath-comfort",
+      "requirement": "HeartMath comfort override",
+      "source_cue_id": "D1-A02-245",
+      "text_sha256": "19fd9ce90b9f1905e8a1630bf3623d6e46b75342e159b1ed5db37bb065a193e5",
+      "text": "Continue a little slower and deeper than usual, but keep it comfortable. If five and five feels strained, use an even rhythm that stays easy.",
+      "silence_after_seconds": 2.1
+    },
+    {
+      "id": "spatial-attention",
+      "requirement": "spatial attention",
+      "source_cue_id": "D1-A02-480",
+      "text_sha256": "dff4b4ab5572fe9ab6ba0f7dab00e7711b30172453eefa9ad2c4bd032953553e",
+      "text": "Bring awareness to the region between your ears. Sense the volume this region occupies. Do not analyze it. Feel that area as existing within space.",
+      "silence_after_seconds": 2.0
+    },
+    {
+      "id": "return",
+      "requirement": "complete return",
+      "source_cue_id": "D1-A02-1440",
+      "text_sha256": "ccf8173d77c72d2f51cd9df45486d6670d55679025799e9ead2d2e3ead9c3e4a",
+      "text": "Begin returning. Feel both feet, the chair, and the weight of your hands. Let the next breath be completely natural.",
+      "silence_after_seconds": 0.9
+    },
+    {
+      "id": "completion",
+      "requirement": "complete return",
+      "source_cue_id": "D1-A02-1495",
+      "text_sha256": "63eaa88048e98e571cc63eb4e5b631987261848a155112f325005b6a030603f6",
+      "text": "Day One is complete.",
+      "silence_after_seconds": 0.0
+    }
+  ]
+}

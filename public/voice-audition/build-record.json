@@ -1,0 +1,24 @@
+{
+  "schema": "qctp-rev3-voice-audition-build-record-v1",
+  "result": "PASS",
+  "elapsed_seconds": 37.459,
+  "python": "3.11.15 (main, Aug  7 2026, 02:24:19) [MSC v.1944 64 bit (AMD64)]",
+  "packages": {
+    "piper-tts": "1.3.0",
+    "kokoro-onnx": "0.4.9",
+    "kittentts": "0.8.1",
+    "numpy": "2.4.6",
+    "soundfile": "0.14.0",
+    "pyloudnorm": "0.2.0"
+  },
+  "manifest_sha256": "d8f2e214fb9a32a7844189dd86385f3a2dd66f32e7fc580d75be4d3ec14da63f",
+  "private_route_assignment_sha256": "54d185742a5fa6fbb18512ba8020fbf4326ee24c1976f7eca3b0c5e7562c518f",
+  "script_sha256": "7d7e4582e9cfb0ad475514eb9a23463e3462dacae1c04cf55128c326cc9fce2e",
+  "cue_grounding_sha256": "47cc3e8e0d06b2cf548786a3471127f65709dcb5b70fdda5b8fe5bde1dbf11b3",
+  "public_cli_invocation_recorded": false,
+  "blind_seed_disclosed": false,
+  "reproduction_evidence_scope": "Runtime/package plus source-grounding and output hashes; pinned-model hashes are committed inside the hashed controlled non-public route assignment; not a public command transcript.",
+  "public_route_assignment_present": false,
+  "full_25_minute_rendered": false,
+  "release_authority": "ZERO_RELEASE"
+}

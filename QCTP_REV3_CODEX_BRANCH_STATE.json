@@ -1,0 +1,123 @@
+{
+  "schema": "qctp-rev3-codex-branch-state-v2",
+  "branch": "qctp-platform-rev3-codex",
+  "updated_at": "2026-08-22T18:44:13-05:00",
+  "status": "LARGEST_SAFE_MACHINE_VERIFIED_CHECKPOINT_PRESERVED_PHYSICAL_SELECTION_OPEN",
+  "release_authority": "ZERO_RELEASE",
+  "actual_shas": {
+    "main": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
+    "rev2": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
+    "rev3_start": "a2093caa714332313fa7196f3dc58a67a2d721d2",
+    "preflight_state": "695b2798ed94b6574e35f5ffa26c3c4de2013fd2",
+    "implementation_checkpoint": "7f03ec5a7822aefb05ffb50ee16a7453d84a31e4",
+    "voice_free_evidence_checkpoint": "dbe7aa8341107c5b3ed2884dd73e605c17b151dd",
+    "ux_evidence_checkpoint": "511860e1bae0d8693c5b220d46a9a17e8f68135c",
+    "state_checkpoint": null,
+    "origin_rev3_at_state_write": "a2093caa714332313fa7196f3dc58a67a2d721d2"
+  },
+  "starting_baseline": {
+    "required_rev2_commit": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
+    "rev3_parent": "1df43eca79673eff602d00e1e284241ecbb6d7fa",
+    "rev3_head": "a2093caa714332313fa7196f3dc58a67a2d721d2",
+    "required_baseline_is_ancestor": true,
+    "bootstrap": "QCTP_REV3_CODEX_BRANCH_BOOTSTRAP_REV0.json",
+    "handoff": "QCTP_CODEX_REV3_FULL_UPGRADE_AND_NATURAL_VOICE_HANDOFF_REV0_2026-08-21.md"
+  },
+  "working_environment": {
+    "worktree": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\work\\QCTP-rev3",
+    "branch": "qctp-platform-rev3-codex",
+    "upstream": "origin/qctp-platform-rev3-codex",
+    "starting_working_tree_status": "CLEAN",
+    "isolated_from_protected_rev2_checkout": true,
+    "protected_main_rev2_pr2_mutation": "NONE"
+  },
+  "preserved_preflight_state": {
+    "original_checkout": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\work\\QCTP",
+    "original_branch": "qctp-platform-rev2-codex",
+    "original_head_before_fetch": "86de3a1a4dad034615afb198f7fd90a7e2056e49",
+    "original_working_tree_status": "CLEAN",
+    "original_local_only_commit_count_against_prefetch_origin": 0,
+    "backup_branch": "backup/qctp-rev2-before-rev3-20260822-163055",
+    "backup_branch_sha": "86de3a1a4dad034615afb198f7fd90a7e2056e49",
+    "backup_bundle": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\backups\\qctp-rev2-before-rev3-20260822-163055.bundle",
+    "backup_bundle_verification": "PASS_COMPLETE_HISTORY",
+    "protected_checkout_mutation": "NONE"
+  },
+  "authority_order": [
+    "QCTP_CODEX_REV3_FULL_UPGRADE_AND_NATURAL_VOICE_HANDOFF_REV0_2026-08-21.md from origin/qctp-platform-rev3-codex",
+    "QCTP_CURRENT_STATE.json from origin/main",
+    "QCTP_MACRO_DELIVERABLE_MANIFEST_REV12.json from origin/main",
+    "QCTP_DAY1_AUDIO_A04_PHYSICAL_VOICE_NATURALNESS_FAILURE_REV0_2026-08-21.md from origin/main",
+    "Every exact authority file named by origin/main QCTP_CURRENT_STATE.json, with branch-specific references read from their named branches",
+    "QCTP_REV2_CODEX_BRANCH_STATE.json from origin/qctp-platform-rev2-codex",
+    "Actual Rev3 source tree, tests, media manifests, and runtime tooling"
+  ],
+  "delivered": {
+    "voice_free_day1": "ONE_TAP_SIX_PHASE_1500_SECOND_SAME_ORIGIN_OFFLINE_THREE_SUPPORT_MODES_HEARTMATH_RAIL_NONVERBAL_MARKERS_COMPLETE_RETURN",
+    "voice_audition": "THREE_MATERIALLY_DISTINCT_ZERO_COST_ROUTES_IDENTICAL_TEXT_NATIVE_PACING_REAL_SILENCE_BLIND_IPHONE_PWA",
+    "breath": "SEVEN_SESSION_FOUNDATIONS_QUICK_DIRECTOR_SAFETY_STOP_RESUME_ACTIVE_FOREGROUND_EVIDENCE",
+    "state_atlas": "TWELVE_RECIPES_CONTROLLED_PROCESS_GUIDANCE_TIERS_SEMANTIC_CAPABILITY_REPLAY",
+    "today_mobile": "MORNING_COCKPIT_DURABLE_UNRESOLVED_ISSUE_STATUS_LOCAL_PX13_AND_PWA_STATUS",
+    "source_tracks": "CAMPBELL_CONTROLLED_TRACK_REG01_PRESERVED_SOURCE_LABEL_ARCHITECTURE",
+    "data": "INDEXEDDB_V5_ADDITIVE_MIGRATION_REV3_EXPORT_BINARY_ARCHIVE_ATOMIC_REJECTION_AND_RECOVERY",
+    "local_ai_voice": "LOCAL_WHISPER_AND_MIRROR_PRESERVED_NO_REQUIRED_PAID_KEY_CAPTURE_RECOVERY_HARDENED",
+    "runtime": "EXACT_SHA_STAGING_FAIL_CLOSED_MEDIA_CHECKS_ISOLATED_TEST_INSTALL_BACKUP_ROLLBACK_TOOLING",
+    "icon": "CRYSTAL_GATEWAY_APPLE_TOUCH_ICON_180_AND_PWA_ICONS_192_512_WIRED"
+  },
+  "evidence": {
+    "voice_free_machine": {
+      "path": "QCTP_REV3_VOICE_FREE_DAY1_MACHINE_VERIFICATION_REV0_2026-08-22.json",
+      "result": "PASS_75_OF_75",
+      "sha256": "3beda97503696ac5e45bc7e5e9923bcbc3eb371b20b936a8513faca5bca93eb3"
+    },
+    "voice_free_browser": {
+      "path": "QCTP_REV3_VOICE_FREE_DAY1_BROWSER_VERIFICATION_REV0_2026-08-22.json",
+      "result": "PASS_CHROMIUM_AND_WINDOWS_WEBKIT",
+      "sha256": "affea8445eeb9d637ca1ac9ecdd0a3d92fec31baea3297f1d78c1ee973937802"
+    },
+    "voice_audition_chain": {
+      "manifest_sha256": "d8f2e214fb9a32a7844189dd86385f3a2dd66f32e7fc580d75be4d3ec14da63f",
+      "build_record_sha256": "b3edaf96b6a06bf75fe2492fc9a7ba3b8d6e36c536b459edbde35ef8075b754e",
+      "machine_sha256": "03ec5c6777f02218e509145efb35a1b0ef6e9ca31c3926dc623ccdb74c99b06b",
+      "browser_sha256": "f9507519a782448a11d01c6d5a7a1f97214bdb1e4f844b587bea098f27759a5a",
+      "gate_summary_sha256": "70e92ea2dfed3e706d76f30bd50078ad9e02cdfa9172b9bf4d27cfc0d96d9c42",
+      "physical_selection": "OPEN"
+    },
+    "migration": "13_FILES_89_TESTS_PASS_CONTROLLED_FIXTURES_ACTUAL_ORIGIN_OPEN",
+    "ux": "WINDOWS_WEBKIT_26_5_IPHONE13_PROFILE_EIGHT_SCREENSHOTS_PASS_PHYSICAL_IPHONE_OPEN",
+    "repository": "56_TEST_FILES_341_TESTS_PASS_COVERAGE_THRESHOLDS_PASS",
+    "browser_e2e": "22_PASS_6_INTENTIONAL_PROJECT_SKIPS",
+    "whisper_companion": "44_TESTS_PASS_99_17_PERCENT_COVERAGE_RUFF_BASEDPYRIGHT_TY_PASS",
+    "runtime_tools": "SELF_TEST_PASS"
+  },
+  "private_voice_mapping": {
+    "tracked_by_git": false,
+    "public_or_dist_copy": false,
+    "repo_local_copy_ignored": true,
+    "external_private_backup": "%LOCALAPPDATA%\\QCTP\\controlled\\rev3-voice-audition\\route-reveal.json",
+    "backup_hash_match": true,
+    "identity_reveal_authority": "WITHHELD_UNTIL_PHYSICAL_SELECTION"
+  },
+  "closeout": {
+    "pushed_to_origin": false,
+    "exact_candidate_staged": false,
+    "isolated_loopback_preview_verified": false,
+    "private_remote_preview": null,
+    "draft_pull_request": null,
+    "merge_performed": false,
+    "deployment_performed": false
+  },
+  "release_holds": [
+    "Do not modify, merge, reset, or rebase main, qctp-platform-rev2-codex, or PR #2.",
+    "Do not merge or deploy Rev3 without explicit Ryan authority.",
+    "Physical Voice-Free Day 1 iPhone morning/cold-offline/audio/return gate remains open.",
+    "Blind physical voice selection remains open; full five-minute and 25-minute voice renders remain withheld.",
+    "Breath Director physical iPhone gate remains open.",
+    "Actual-origin migration and existing-data comparison remain open.",
+    "Physical iPhone microphone, lifecycle, reconnect, quota, long-binary, and recovery gates remain open.",
+    "Tests and timer completion do not establish state attainment.",
+    "Foundation Days 2 through 112 remain unauthored and must not be fabricated.",
+    "Required paid API keys and recurring paid cloud paths remain prohibited."
+  ],
+  "next_controlled_action": "Ryan opens the exact blind Rev3 iPhone/PWA audition, listens to A, B, and C at one unchanged volume, and reports Best: A, B, C, or NONE plus one short naturalness observation."
+}

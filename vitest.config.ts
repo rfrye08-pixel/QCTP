@@ -21,6 +21,9 @@ export default defineConfig({
         "src/**/*.tsx",
         "src/test/**",
         "src/main.tsx",
+        // This virtual-PWA adapter is exercised by Chromium/WebKit service-
+        // worker acceptance; V8 cannot remap the unexecuted virtual import.
+        "src/app/pwa-status.ts",
         "server/**/*.test.ts",
         "server/index.ts",
       ],

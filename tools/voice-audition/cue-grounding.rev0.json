@@ -1,0 +1,186 @@
+{
+  "schema": "qctp-rev3-voice-audition-cue-grounding-v1",
+  "action_id": "QCTP-REV3-NATURAL-VOICE-AUDITION-A01",
+  "result": "PASS",
+  "authority": {
+    "requested_ref": "origin/main",
+    "resolved_commit_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
+    "script_manifest": {
+      "path": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0.json",
+      "git_blob_oid": "c868233ef20f90f76834dbf7cff980731ecdba1c",
+      "blob_sha256": "c0e24fac5c8035770c13d4de9e5b74a9a9d6264e3ec793a56507c0f997af0918",
+      "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+      "status": "SCRIPT_LOCK_CANDIDATE",
+      "semantic_script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+      "semantic_hash_algorithm": "SHA-256 of all 35 spoken_text values joined by LF in cue order"
+    },
+    "script_lock": {
+      "path": "QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json",
+      "git_blob_oid": "16507f2635470cfd61ba94605ee6f3c3001b1781",
+      "blob_sha256": "c679c53be5879a7f8903f323259851657d4151959bc3b5082b49557a8abadd4e",
+      "lock_id": "QCTP-D1-SOURCE-SCRIPT-LOCK-REV0",
+      "status": "LOCKED_FOR_TEST_RENDERING",
+      "render_authority": "TEST_RENDER_AUTHORIZED",
+      "release_authority": "ZERO_RELEASE",
+      "semantic_script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555"
+    },
+    "cue_parts": [
+      {
+        "path": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART1.json",
+        "git_blob_oid": "6c0532354d2de0d980549d7b648e5680991fec10",
+        "blob_sha256": "a38be53317d1cbf59a36d9da557abf1c4b05c00b14b11cfa014580bd646ef09e",
+        "part": 1,
+        "cue_count": 7
+      },
+      {
+        "path": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART2.json",
+        "git_blob_oid": "26a74646c77d5609bf6a9f49f71421cf02d59fa8",
+        "blob_sha256": "f26448ebbf8ee2ca6e1d8656f65cd32c3166e5c9c1240c40e6a31fe937e9fe6a",
+        "part": 2,
+        "cue_count": 8
+      },
+      {
+        "path": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART3.json",
+        "git_blob_oid": "9eaf738ffae71efcfdd79da75b0fce9b3596b209",
+        "blob_sha256": "0caf0573af210474d5ac715e098371a62d95dfaa97ac6eebe6e6bd1582f04772",
+        "part": 3,
+        "cue_count": 6
+      },
+      {
+        "path": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART4.json",
+        "git_blob_oid": "a00a370a9f312b7f8b11dada860c61317658c184",
+        "blob_sha256": "7e6bebe42c115a105cb8a2348634e1876a865d722f4fe333be7e52334ccddc82",
+        "part": 4,
+        "cue_count": 7
+      },
+      {
+        "path": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART5.json",
+        "git_blob_oid": "737a78c912ca2271c7fa92c4aa20d915ae6fca20",
+        "blob_sha256": "52d37b4b96721ffc75b11be404b9069a1e457ff56564ce95499bc687ab6483b7",
+        "part": 5,
+        "cue_count": 7
+      }
+    ]
+  },
+  "audition_script": {
+    "path": "tools/voice-audition/audition-script.rev0.json",
+    "sha256": "7d7e4582e9cfb0ad475514eb9a23463e3462dacae1c04cf55128c326cc9fce2e",
+    "script_id": "QCTP-REV3-NATURAL-VOICE-AUDITION-REV0",
+    "source_script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+    "source_semantic_script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555"
+  },
+  "cues": [
+    {
+      "audition_segment_id": "opening",
+      "requirement": "opening",
+      "source_cue_id": "D1-A02-000",
+      "authority": {
+        "path": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART1.json",
+        "json_pointer": "/cues/0",
+        "part": 1,
+        "index": 0,
+        "source_id": "QCTP-BASELINE-OBSERVATION",
+        "start_seconds": 0,
+        "text_sha256": "e463109d8af9cad472d95e029b24453863b285d8b4830a2f13632d141df3e375"
+      },
+      "audition_text_sha256": "e463109d8af9cad472d95e029b24453863b285d8b4830a2f13632d141df3e375",
+      "exact_text_match": true,
+      "declared_hashes_match": true
+    },
+    {
+      "audition_segment_id": "heartmath-counted",
+      "requirement": "HeartMath five-in/five-out coaching",
+      "source_cue_id": "D1-A02-210",
+      "authority": {
+        "path": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART2.json",
+        "json_pointer": "/cues/1",
+        "part": 2,
+        "index": 1,
+        "source_id": "HM-QC-01",
+        "start_seconds": 210,
+        "text_sha256": "eb5a9271377d27b27ce0cf819664e0655c4bfbaa9ca8be14d41b0a7259e6f419"
+      },
+      "audition_text_sha256": "eb5a9271377d27b27ce0cf819664e0655c4bfbaa9ca8be14d41b0a7259e6f419",
+      "exact_text_match": true,
+      "declared_hashes_match": true
+    },
+    {
+      "audition_segment_id": "heartmath-comfort",
+      "requirement": "HeartMath comfort override",
+      "source_cue_id": "D1-A02-245",
+      "authority": {
+        "path": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART2.json",
+        "json_pointer": "/cues/2",
+        "part": 2,
+        "index": 2,
+        "source_id": "HM-QC-01",
+        "start_seconds": 245,
+        "text_sha256": "19fd9ce90b9f1905e8a1630bf3623d6e46b75342e159b1ed5db37bb065a193e5"
+      },
+      "audition_text_sha256": "19fd9ce90b9f1905e8a1630bf3623d6e46b75342e159b1ed5db37bb065a193e5",
+      "exact_text_match": true,
+      "declared_hashes_match": true
+    },
+    {
+      "audition_segment_id": "spatial-attention",
+      "requirement": "spatial attention",
+      "source_cue_id": "D1-A02-480",
+      "authority": {
+        "path": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART3.json",
+        "json_pointer": "/cues/0",
+        "part": 3,
+        "index": 0,
+        "source_id": "JD-SPACE-01",
+        "start_seconds": 480,
+        "text_sha256": "dff4b4ab5572fe9ab6ba0f7dab00e7711b30172453eefa9ad2c4bd032953553e"
+      },
+      "audition_text_sha256": "dff4b4ab5572fe9ab6ba0f7dab00e7711b30172453eefa9ad2c4bd032953553e",
+      "exact_text_match": true,
+      "declared_hashes_match": true
+    },
+    {
+      "audition_segment_id": "return",
+      "requirement": "complete return",
+      "source_cue_id": "D1-A02-1440",
+      "authority": {
+        "path": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART5.json",
+        "json_pointer": "/cues/3",
+        "part": 5,
+        "index": 3,
+        "source_id": "QCTP-RETURN-01",
+        "start_seconds": 1440,
+        "text_sha256": "ccf8173d77c72d2f51cd9df45486d6670d55679025799e9ead2d2e3ead9c3e4a"
+      },
+      "audition_text_sha256": "ccf8173d77c72d2f51cd9df45486d6670d55679025799e9ead2d2e3ead9c3e4a",
+      "exact_text_match": true,
+      "declared_hashes_match": true
+    },
+    {
+      "audition_segment_id": "completion",
+      "requirement": "complete return",
+      "source_cue_id": "D1-A02-1495",
+      "authority": {
+        "path": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART5.json",
+        "json_pointer": "/cues/6",
+        "part": 5,
+        "index": 6,
+        "source_id": "QCTP-RETURN-01",
+        "start_seconds": 1495,
+        "text_sha256": "63eaa88048e98e571cc63eb4e5b631987261848a155112f325005b6a030603f6"
+      },
+      "audition_text_sha256": "63eaa88048e98e571cc63eb4e5b631987261848a155112f325005b6a030603f6",
+      "exact_text_match": true,
+      "declared_hashes_match": true
+    }
+  ],
+  "verification": {
+    "controlled_cue_count": 35,
+    "audition_cue_count": 6,
+    "all_exact_text_matches": true,
+    "all_declared_text_hashes_match": true,
+    "semantic_source_script_hash_recomputed": true,
+    "script_lock_matches": true
+  },
+  "physical_naturalness": "NOT_EVALUATED_BY_CUE_GROUNDING",
+  "release_authority": "ZERO_RELEASE"
+}

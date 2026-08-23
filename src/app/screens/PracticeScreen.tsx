@@ -15,13 +15,16 @@ import {
   type Day1CueMode,
   type Day1SequencerState,
 } from "../../foundation";
+import type { VoiceFreeDay1SessionController } from "../../practice";
 import { ScreenHeader } from "../components/ScreenHeader";
 import { StatusBadge } from "../components/StatusBadge";
+import { VoiceFreeDay1Screen } from "./VoiceFreeDay1Screen";
 
 export interface PracticeScreenProps {
   cueMode?: Day1CueMode;
   testMode?: boolean;
   onMorningComplete?: () => Promise<void> | void;
+  voiceFreeSession?: VoiceFreeDay1SessionController;
 }
 
 const SILENT_AUDIO_DATA_URL =
@@ -32,7 +35,14 @@ function formatSeconds(seconds: number): string {
   return `${Math.floor(wholeSeconds / 60)}:${String(wholeSeconds % 60).padStart(2, "0")}`;
 }
 
-export function PracticeScreen({
+export function PracticeScreen(props: PracticeScreenProps) {
+  if (props.voiceFreeSession) {
+    return <VoiceFreeDay1Screen session={props.voiceFreeSession} />;
+  }
+  return <LegacyNarratedDay1Screen {...props} />;
+}
+
+export function LegacyNarratedDay1Screen({
   cueMode: initialCueMode = "guided",
   testMode = false,
   onMorningComplete,

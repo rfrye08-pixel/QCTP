@@ -1,0 +1,34 @@
+{
+  "schema": "qctp-rev3-blind-natural-voice-gate-summary-v1",
+  "result": "PASS",
+  "machine_verification": {
+    "result": "PASS",
+    "sha256": "03ec5c6777f02218e509145efb35a1b0ef6e9ca31c3926dc623ccdb74c99b06b"
+  },
+  "browser_verification": {
+    "result": "PASS",
+    "sha256": "f9507519a782448a11d01c6d5a7a1f97214bdb1e4f844b587bea098f27759a5a"
+  },
+  "build_record": {
+    "result": "PASS",
+    "sha256": "b3edaf96b6a06bf75fe2492fc9a7ba3b8d6e36c536b459edbde35ef8075b754e"
+  },
+  "cue_grounding": {
+    "result": "PASS",
+    "sha256": "47cc3e8e0d06b2cf548786a3471127f65709dcb5b70fdda5b8fe5bde1dbf11b3",
+    "day1_authority_commit_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175"
+  },
+  "manifest_sha256": "d8f2e214fb9a32a7844189dd86385f3a2dd66f32e7fc580d75be4d3ec14da63f",
+  "integrity_chain": "PASS",
+  "physical_naturalness": "OPEN_RYAN_IPHONE_SELECTION",
+  "valid_physical_choices": [
+    "A",
+    "B",
+    "C",
+    "NONE"
+  ],
+  "five_minute_render_authority": "WITHHELD",
+  "twenty_five_minute_render_authority": "WITHHELD",
+  "release_authority": "ZERO_RELEASE",
+  "errors": []
+}

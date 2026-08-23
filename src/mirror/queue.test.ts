@@ -80,6 +80,10 @@ describe("iPhone Mirror offline queue and PX13 synchronization", () => {
   });
 
   afterEach(async () => {
+    Object.defineProperty(navigator, "onLine", {
+      configurable: true,
+      value: true,
+    });
     repository.close();
     await deleteQctpDatabase(databaseName);
   });
@@ -194,6 +198,130 @@ describe("iPhone Mirror offline queue and PX13 synchronization", () => {
     expect(queued).toMatchObject({ status: "RETRY_WAIT", remoteJobId: null });
     expect(queued?.lastError).toContain("remains queued");
     expect(queued?.lastError?.toLowerCase()).not.toContain("api key");
+  });
+
+  it("survives an explicit offline cycle and submits unchanged after reconnect", async () => {
+    const local = await enqueueMirrorRequest(
+      repository,
+      {
+        prompt: "Submit this exact question after connectivity returns.",
+        sourceRecordIds: ["source-one"],
+      },
+      timestamp,
+    );
+    const request = vi.fn(() =>
+      Promise.resolve(
+        response(
+          {
+            id: "px13-reconnected-job",
+            requestId: local.id,
+            status: "queued",
+            createdAt: timestamp,
+            updatedAt: timestamp,
+            attempts: 0,
+            lastError: null,
+            result: null,
+          },
+          202,
+        ),
+      ),
+    );
+    const client = new MirrorServiceClient({
+      accessToken: token,
+      fetch: request,
+    });
+    Object.defineProperty(navigator, "onLine", {
+      configurable: true,
+      value: false,
+    });
+
+    await expect(
+      synchronizeMirrorRequests(repository, client),
+    ).resolves.toEqual({ completedRequestIds: [], queuedRequestIds: [] });
+    expect(request).not.toHaveBeenCalled();
+    expect(await repository.getMirrorRequest(local.id)).toEqual(local);
+
+    Object.defineProperty(navigator, "onLine", {
+      configurable: true,
+      value: true,
+    });
+    await expect(
+      synchronizeMirrorRequests(repository, client),
+    ).resolves.toEqual({
+      completedRequestIds: [],
+      queuedRequestIds: [local.id],
+    });
+    expect(request).toHaveBeenCalledOnce();
+    expect(await repository.getMirrorRequest(local.id)).toMatchObject({
+      prompt: local.prompt,
+      sourceRecordIds: local.sourceRecordIds,
+      sourceSnapshots: local.sourceSnapshots,
+      status: "QUEUED_PX13",
+      remoteJobId: "px13-reconnected-job",
+    });
+  });
+
+  it("reuses the stable idempotency key when a submit response is lost", async () => {
+    const local = await enqueueMirrorRequest(repository, {
+      prompt: "Do not duplicate this request after a lost response.",
+      sourceRecordIds: ["source-one"],
+    });
+    const submissions: Array<{ key: string | null; body: string | null }> = [];
+    let attempt = 0;
+    const request = vi.fn(
+      (_input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+        attempt += 1;
+        submissions.push({
+          key: new Headers(init?.headers).get("Idempotency-Key"),
+          body: typeof init?.body === "string" ? init.body : null,
+        });
+        if (attempt === 1) {
+          return Promise.reject(new TypeError("response lost after submit"));
+        }
+        return Promise.resolve(
+          response(
+            {
+              id: "px13-idempotent-job",
+              requestId: local.id,
+              status: "queued",
+              createdAt: timestamp,
+              updatedAt: timestamp,
+              attempts: 0,
+              lastError: null,
+              result: null,
+            },
+            202,
+          ),
+        );
+      },
+    );
+    const client = new MirrorServiceClient({
+      accessToken: token,
+      fetch: request,
+    });
+
+    await synchronizeMirrorRequests(repository, client);
+    const retryWait = await repository.getMirrorRequest(local.id);
+    if (!retryWait) throw new Error("Retry request was not retained.");
+    expect(retryWait).toMatchObject({
+      status: "RETRY_WAIT",
+      remoteJobId: null,
+      attempts: 1,
+    });
+    await repository.saveMirrorRequest({
+      ...retryWait,
+      nextAttemptAt: null,
+    });
+    await synchronizeMirrorRequests(repository, client);
+
+    expect(submissions).toHaveLength(2);
+    expect(submissions[0]?.key).toBe(`mirror-${local.id}`);
+    expect(submissions[1]).toEqual(submissions[0]);
+    expect(await repository.getMirrorRequest(local.id)).toMatchObject({
+      status: "QUEUED_PX13",
+      remoteJobId: "px13-idempotent-job",
+      attempts: 2,
+    });
   });
 
   it("rejects non-TLS remote endpoints before any source can leave the device", () => {
@@ -329,6 +457,62 @@ describe("iPhone Mirror offline queue and PX13 synchronization", () => {
       ).toBeUndefined();
     },
   );
+
+  it.each([
+    {
+      label: "a completed status without a result",
+      result: null,
+    },
+    {
+      label: "an empty source excerpt",
+      result: {
+        text:
+          "Grounded claim [source:source-one].\n" +
+          "Proposed question: What changed? [source:source-one]\n" +
+          "Proposed action: Record it. [source:source-one]",
+        model: "mock-local",
+        citations: [
+          {
+            recordId: "source-one",
+            title: "Two circles observation",
+            excerpt: "",
+          },
+        ],
+        createdAt: timestamp,
+      },
+    },
+  ])("never marks a request complete for $label", async ({ result }) => {
+    const local = await enqueueMirrorRequest(repository, {
+      prompt: "Keep invalid completion out of the local result ledger.",
+      sourceRecordIds: ["source-one"],
+    });
+    const client = new MirrorServiceClient({
+      accessToken: token,
+      fetch: vi.fn(() =>
+        Promise.resolve(
+          response({
+            id: "invalid-completion-job",
+            requestId: local.id,
+            status: "complete",
+            createdAt: timestamp,
+            updatedAt: timestamp,
+            attempts: 1,
+            lastError: null,
+            result,
+          }),
+        ),
+      ),
+    });
+
+    await synchronizeMirrorRequests(repository, client);
+
+    expect(await repository.getMirrorRequest(local.id)).toMatchObject({
+      status: "FAILED",
+    });
+    expect(
+      await repository.getMirrorResultForRequest(local.id),
+    ).toBeUndefined();
+  });
 });
 
 describe("explicit Local AI Mirror proposal extraction", () => {

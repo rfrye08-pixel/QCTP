@@ -11,8 +11,11 @@
   --text: #edf4fb;
   --muted: #9bafbd;
   --blue: #8bb8ff;
+  --cyan: #67d7ff;
   --mint: #7bd8bb;
   --amber: #f2c879;
+  --gold: #f2c879;
+  --danger: #ff9b9b;
   --shadow: 0 18px 50px rgb(0 0 0 / 28%);
 }
 

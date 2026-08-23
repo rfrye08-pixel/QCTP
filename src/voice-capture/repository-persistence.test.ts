@@ -6,7 +6,10 @@ import {
   type QctpRepository,
 } from "../data";
 
-import { RepositoryCapturePersistence } from "./repository-persistence";
+import {
+  recoverInterruptedCaptures,
+  RepositoryCapturePersistence,
+} from "./repository-persistence";
 
 async function testBlob(value: string): Promise<Blob> {
   return new Response(value, {
@@ -161,5 +164,65 @@ describe("RepositoryCapturePersistence", () => {
       durationMs: 1_000,
       segments: [{ sequence: 0, durationMs: 1_000 }],
     });
+  });
+
+  it("recovers durable chunks left CAPTURING by a hard browser exit", async () => {
+    await persistence.begin({
+      recordingId: "hard-exit",
+      mimeType: "audio/webm",
+      createdAt: "2026-08-17T12:00:00.000Z",
+      append: false,
+    });
+    await persistence.appendChunk(
+      "hard-exit",
+      0,
+      await testBlob("survived-process-exit"),
+    );
+    const stranded = await repository.getRecording("hard-exit");
+    if (!stranded) throw new Error("Stranded capture was not created.");
+    await repository.saveRecording({
+      ...stranded,
+      updatedAt: "2026-08-17T12:00:01.250Z",
+    });
+
+    // A new persistence instance models a new PWA process with no in-memory
+    // active-segment map from the interrupted recorder.
+    const recovery = await recoverInterruptedCaptures(repository);
+
+    expect(recovery).toEqual({
+      recoveredRecordingIds: ["hard-exit"],
+      discardedEmptyRecordingIds: [],
+      failedRecordingIds: [],
+    });
+    expect(await repository.getRecording("hard-exit")).toMatchObject({
+      status: "LOCAL_ONLY",
+      durationMs: 1_250,
+      sizeBytes: 21,
+      segments: [{ durationMs: 1_250, chunkIds: [expect.any(String)] }],
+    });
+    await expect(
+      repository.assembleRecordingBlob("hard-exit"),
+    ).resolves.toBeInstanceOf(Blob);
+    expect(
+      await (await repository.assembleRecordingBlob("hard-exit")).text(),
+    ).toBe("survived-process-exit");
+  });
+
+  it("cleans an empty hard-exit take without sacrificing other recoveries", async () => {
+    await persistence.begin({
+      recordingId: "empty-hard-exit",
+      mimeType: "audio/webm",
+      createdAt: "2026-08-17T12:00:00.000Z",
+      append: false,
+    });
+
+    const recovery = await recoverInterruptedCaptures(repository);
+
+    expect(recovery).toEqual({
+      recoveredRecordingIds: [],
+      discardedEmptyRecordingIds: ["empty-hard-exit"],
+      failedRecordingIds: [],
+    });
+    expect(await repository.getRecording("empty-hard-exit")).toBeUndefined();
   });
 });

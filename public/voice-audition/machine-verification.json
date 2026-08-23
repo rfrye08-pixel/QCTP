@@ -1,0 +1,103 @@
+{
+  "schema": "qctp-rev3-blind-natural-voice-machine-verification-v1",
+  "action_id": "QCTP-REV3-NATURAL-VOICE-AUDITION-A01",
+  "result": "PASS",
+  "manifest_sha256": "d8f2e214fb9a32a7844189dd86385f3a2dd66f32e7fc580d75be4d3ec14da63f",
+  "build_record_sha256": "b3edaf96b6a06bf75fe2492fc9a7ba3b8d6e36c536b459edbde35ef8075b754e",
+  "private_route_assignment_sha256": "54d185742a5fa6fbb18512ba8020fbf4326ee24c1976f7eca3b0c5e7562c518f",
+  "public_route_assignment_absent": true,
+  "licensing_record_sha256": "f7f9600b68ce017c341e3cc44a7f0c75415eb46a2a463ce8b1f49d4e0055e586",
+  "script_sha256": "7d7e4582e9cfb0ad475514eb9a23463e3462dacae1c04cf55128c326cc9fce2e",
+  "cue_grounding_sha256": "47cc3e8e0d06b2cf548786a3471127f65709dcb5b70fdda5b8fe5bde1dbf11b3",
+  "day1_authority_commit_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
+  "source_cue_grounding": "PASS_EXACT_TEXT_AND_DECLARED_HASHES_ALL_SIX",
+  "route_count": 3,
+  "distinct_engine_families": [
+    "KittenTTS Mini ONNX",
+    "Kokoro 82M ONNX",
+    "Piper VITS ONNX"
+  ],
+  "identical_locked_text_all_routes": "PASS",
+  "generation_pacing": "PASS_PINNED_PIPER_DEFAULT_AND_EXPLICIT_1_0_FOR_KOKORO_KITTEN_NO_POSTHOC_STRETCH",
+  "real_silence": "PASS",
+  "broad_spectral_time_stretch": "PROHIBITED_NOT_USED",
+  "matched_loudness": {
+    "A": {
+      "duration_seconds": 50.033875,
+      "integrated_lufs": -21.4556,
+      "peak_linear": 0.698114,
+      "real_silence_runs_seconds": [
+        1.4621,
+        1.674,
+        2.1685,
+        2.0618,
+        0.9652
+      ],
+      "sha256": "69ffb7cd8c29ac66725da1796ebd68fbf8221dffce01e2692585e45e6b4ec19f"
+    },
+    "B": {
+      "duration_seconds": 52.051208,
+      "integrated_lufs": -21.4459,
+      "peak_linear": 0.634777,
+      "real_silence_runs_seconds": [
+        1.419,
+        1.6135,
+        2.1236,
+        2.0122,
+        0.919
+      ],
+      "sha256": "0e13dbfc7cd90ae5bfc1a6df15a91145aa087118be01b59cec1b1e34518359ba"
+    },
+    "C": {
+      "duration_seconds": 54.859625,
+      "integrated_lufs": -21.4455,
+      "peak_linear": 0.741606,
+      "real_silence_runs_seconds": [
+        1.4909,
+        1.7048,
+        2.1829,
+        2.0928,
+        0.972
+      ],
+      "sha256": "8c6906cddbbceb11016bb8a557d5e5d99f8410c458599fdcbf4b4ff945dc829d"
+    }
+  },
+  "critical_asr": {
+    "A": {
+      "raw_transcript": "Sit with both feet supported and let your hands rest. Close your eyes. Before changing anything, notice the state you brought into the session. Begin an easy, even breath. In for 5, 1, 2, 3, 4, 5, out for 5, 1, 2, 3, 4, 5. Continue a little slower and deeper than usual, but keep it comfortable. If 5 and 5 feel strained, use an even rhythm that stays easy. Bring awareness to the region between your ears. Sense the volume this region occupies. Do not analyze it. Feel that area as existing within space. Begin returning. Feel both feet, the chair, and the weight of your hands. Let the next breath be completely natural. Day one is complete.",
+      "normalized_transcript": "sit with both feet supported and let your hands rest close your eyes before changing anything notice the state you brought into the session begin an easy even breath in for 5 1 2 3 4 5 out for 5 1 2 3 4 5 continue a little slower and deeper than usual but keep it comfortable if 5 and 5 feel strained use an even rhythm that stays easy bring awareness to the region between your ears sense the volume this region occupies do not analyze it feel that area as existing within space begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural day one is complete",
+      "expected_normalized": "sit with both feet supported and let your hands rest close your eyes before changing anything notice the state you brought into the session begin an easy even breath in for five one two three four five out for five one two three four five continue a little slower and deeper than usual but keep it comfortable if five and five feels strained use an even rhythm that stays easy bring awareness to the region between your ears sense the volume this region occupies do not analyze it feel that area as existing within space begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural day one is complete",
+      "wer": 0.12605042016806722,
+      "model": "local-whisper/base",
+      "language": "en",
+      "language_probability": 1,
+      "scope": "INTELLIGIBILITY_ONLY_NOT_NATURALNESS"
+    },
+    "B": {
+      "raw_transcript": "Sit with both feet supported and let your hands rest. Close your eyes. Before changing anything, notice the state you brought into the session. Begin an easy, even breath in for five. One, two, three, four, five. Out for five. One, two, three, four, five. Continue a little slower and deeper than usual, but keep it comfortable. If five and five feels strained, use an even rhythm that stays easy. Bring awareness to the region between your ears. Since the volume, this region occupies. Do not analyze it. Feel that area as existing within space. Begin returning. Feel both feet, the chair, and the weight of your hands. Let the next breath be completely natural. Day one is complete.",
+      "normalized_transcript": "sit with both feet supported and let your hands rest close your eyes before changing anything notice the state you brought into the session begin an easy even breath in for five one two three four five out for five one two three four five continue a little slower and deeper than usual but keep it comfortable if five and five feels strained use an even rhythm that stays easy bring awareness to the region between your ears since the volume this region occupies do not analyze it feel that area as existing within space begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural day one is complete",
+      "expected_normalized": "sit with both feet supported and let your hands rest close your eyes before changing anything notice the state you brought into the session begin an easy even breath in for five one two three four five out for five one two three four five continue a little slower and deeper than usual but keep it comfortable if five and five feels strained use an even rhythm that stays easy bring awareness to the region between your ears sense the volume this region occupies do not analyze it feel that area as existing within space begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural day one is complete",
+      "wer": 0.008403361344537815,
+      "model": "local-whisper/base",
+      "language": "en",
+      "language_probability": 1,
+      "scope": "INTELLIGIBILITY_ONLY_NOT_NATURALNESS"
+    },
+    "C": {
+      "raw_transcript": "Sit with both feet supported and let your hands rest. Close your eyes. Before changing anything, notice the state you brought into the session. Begin an easy even breath. In for 5, 1, 2, 3, 4, 5. Out for 5, 1, 2, 3, 4, 5. Continue a little slower and deeper than usual, but keep it comfortable. If 5 and 5 feel strained, use an even rhythm that stays easy. Bring awareness to the region between your ears. Sense the volume this region occupies. Do not analyze it. Feel that area as existing within space. Begin returning. Feel both feet, the chair, and the weight of your hands. Let the next breath be completely natural. Day 1 is complete.",
+      "normalized_transcript": "sit with both feet supported and let your hands rest close your eyes before changing anything notice the state you brought into the session begin an easy even breath in for 5 1 2 3 4 5 out for 5 1 2 3 4 5 continue a little slower and deeper than usual but keep it comfortable if 5 and 5 feel strained use an even rhythm that stays easy bring awareness to the region between your ears sense the volume this region occupies do not analyze it feel that area as existing within space begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural day 1 is complete",
+      "expected_normalized": "sit with both feet supported and let your hands rest close your eyes before changing anything notice the state you brought into the session begin an easy even breath in for five one two three four five out for five one two three four five continue a little slower and deeper than usual but keep it comfortable if five and five feels strained use an even rhythm that stays easy bring awareness to the region between your ears sense the volume this region occupies do not analyze it feel that area as existing within space begin returning feel both feet the chair and the weight of your hands let the next breath be completely natural day one is complete",
+      "wer": 0.13445378151260504,
+      "model": "local-whisper/base",
+      "language": "en",
+      "language_probability": 1,
+      "scope": "INTELLIGIBILITY_ONLY_NOT_NATURALNESS"
+    }
+  },
+  "naturalness_gate": "OPEN_PHYSICAL_RYAN_SELECTION",
+  "machine_metrics_can_promote_voice": false,
+  "full_five_minute_render_authority": "WITHHELD",
+  "full_twenty_five_minute_render_authority": "WITHHELD",
+  "release_authority": "ZERO_RELEASE",
+  "errors": []
+}

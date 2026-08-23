@@ -6,6 +6,24 @@ import {
   VoiceRecorderPanel,
   type AcceptedCapture,
 } from "../voice-capture";
+import {
+  AppSettingsSchema,
+  FoundationStateSchema,
+  PracticeSessionSchema,
+} from "../domain";
+import {
+  createFoundationProgress,
+  getFoundationDayComponents,
+  markFoundationComponentComplete,
+} from "../foundation";
+import {
+  useVoiceFreeDay1Session,
+  VOICE_FREE_DAY1_PRACTICE_ID,
+  VOICE_FREE_DAY1_SCRIPT_ID,
+  VOICE_FREE_DAY1_SCRIPT_SHA256,
+  type VoiceFreeAttemptIssue,
+  type VoiceFreeNaturalCompletion,
+} from "../practice";
 import { Shell } from "./Shell";
 import {
   MoreOverview,
@@ -44,6 +62,99 @@ export function App() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
+  const saveVoiceFreeCompletion = useCallback(
+    async (completion: VoiceFreeNaturalCompletion) => {
+      const practiceSession = PracticeSessionSchema.parse({
+        schemaVersion: 1,
+        id: completion.id,
+        practiceId: VOICE_FREE_DAY1_PRACTICE_ID,
+        foundationDay: 1,
+        scriptId: VOICE_FREE_DAY1_SCRIPT_ID,
+        scriptSha256: VOICE_FREE_DAY1_SCRIPT_SHA256,
+        startedAt: completion.startedAt,
+        endedAt: completion.endedAt,
+        elapsedMs: completion.elapsedMs,
+        completionMode: "VOICE_FREE_FALLBACK",
+        supportMode: completion.supportMode,
+        sourceSequence: ["Bullard", "HeartMath", "Dispenza", "QCTP return"],
+        heartMathBreath:
+          "approximately five seconds in / five seconds out or comfortable; no hold",
+        naturalCompletion: true,
+        narrationUsed: false,
+        narratedContentAcceptance: "NOT_APPLICABLE",
+        stateAttainment: "NOT_ASSESSED",
+        createdAt: completion.endedAt,
+      });
+      const current =
+        (await runtime.repository.getFoundationState()) ?? runtime.foundation;
+      const progress = createFoundationProgress(
+        current.currentDay,
+        Object.fromEntries(
+          Object.entries(current.completion).map(([day, value]) => [
+            Number(day),
+            value,
+          ]),
+        ),
+      );
+      const nextProgress = markFoundationComponentComplete(
+        progress,
+        1,
+        "morning",
+      );
+      const foundation = FoundationStateSchema.parse({
+        ...current,
+        currentDay: nextProgress.currentDay,
+        completion: {
+          ...current.completion,
+          "1": getFoundationDayComponents(nextProgress, 1),
+        },
+        updatedAt: completion.endedAt,
+      });
+      const currentSettings =
+        (await runtime.repository.getSettings()) ?? runtime.settings;
+      const settings = AppSettingsSchema.parse({
+        ...currentSettings,
+        lastVoiceFreeIssue: null,
+        updatedAt: completion.endedAt,
+      });
+      await runtime.repository.savePracticeSessionAndFoundation(
+        practiceSession,
+        foundation,
+        settings,
+      );
+      await runtime.refresh();
+    },
+    [runtime],
+  );
+
+  const saveVoiceFreeIssue = useCallback(
+    async (issue: VoiceFreeAttemptIssue) => {
+      const current =
+        (await runtime.repository.getSettings()) ?? runtime.settings;
+      await runtime.repository.saveSettings(
+        AppSettingsSchema.parse({
+          ...current,
+          lastVoiceFreeIssue: issue,
+          updatedAt: issue.occurredAt,
+        }),
+      );
+      await runtime.refresh();
+    },
+    [runtime],
+  );
+
+  const voiceFreeSession = useVoiceFreeDay1Session({
+    testMode: runtime.settings.testMode,
+    keepAwake: runtime.settings.keepAwake,
+    onNaturalComplete: saveVoiceFreeCompletion,
+    onAttemptIssue: saveVoiceFreeIssue,
+  });
+
+  const startVoiceFreeDay1 = useCallback(() => {
+    voiceFreeSession.start();
+    navigate("practice");
+  }, [navigate, voiceFreeSession]);
+
   const acceptQuickCapture = useCallback(
     async (capture: AcceptedCapture) => {
       await acceptVoiceCapture(runtime.repository, capture);
@@ -61,19 +172,20 @@ export function App() {
   const screen = (() => {
     switch (route) {
       case "today":
-        return <TodayOverview onNavigate={navigate} />;
+        return (
+          <TodayOverview
+            onNavigate={navigate}
+            voiceFreeSession={voiceFreeSession}
+            onStartVoiceFreeDay1={startVoiceFreeDay1}
+            onQuickCapture={() => setQuickCaptureOpen(true)}
+          />
+        );
       case "paths":
         return <PathsOverview onNavigate={navigate} />;
       case "more":
         return <MoreOverview onNavigate={navigate} />;
       case "practice":
-        return (
-          <PracticeScreen
-            cueMode={runtime.settings.guidanceMode}
-            testMode={runtime.settings.testMode}
-            onMorningComplete={() => runtime.markFoundationComponent("morning")}
-          />
-        );
+        return <PracticeScreen voiceFreeSession={voiceFreeSession} />;
       case "studio":
         return <StudioScreen />;
       case "lab":
@@ -93,6 +205,14 @@ export function App() {
       foundationDay={runtime.foundation.currentDay}
       onNavigate={navigate}
       onQuickCapture={() => setQuickCaptureOpen(true)}
+      practiceActive={[
+        "starting",
+        "running",
+        "paused",
+        "recording_issue",
+        "saving",
+        "save_pending",
+      ].includes(voiceFreeSession.status)}
     >
       {screen}
       {quickCaptureOpen ? (

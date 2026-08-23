@@ -1,0 +1,134 @@
+{
+  "schema": "qctp-rev3-natural-voice-trade-and-licensing-v1",
+  "record_id": "QCTP-REV3-NATURAL-VOICE-TRADE-LICENSING-REV0",
+  "checked_at": "2026-08-22",
+  "status": "THREE_AUDITION_ROUTES_CLEARED_PHYSICAL_SELECTION_OPEN",
+  "release_authority": "ZERO_RELEASE",
+  "scope_note": "Engineering due-diligence record, not legal advice. The audition redistributes generated MP3 samples only; it does not ship engine binaries, model weights, or third-party reference audio.",
+  "governing_controls": {
+    "zero_recurring_cost": true,
+    "required_paid_api_key": false,
+    "local_cpu_inference": true,
+    "voice_cloning_used": false,
+    "provider_owned_reference_audio_used": false,
+    "broad_spectral_time_stretch_used": false,
+    "physical_naturalness_selection_required": true
+  },
+  "routes": [
+    {
+      "route_id": "PIPER_LJSPEECH_HIGH_V1",
+      "engine_family": "Piper VITS ONNX",
+      "engine_package": "piper-tts 1.3.0",
+      "engine_license": "GPL-3.0-or-later",
+      "engine_source": "https://github.com/OHF-Voice/piper1-gpl",
+      "model_id": "rhasspy/piper-voices/en_US-ljspeech-high",
+      "model_revision": "v1.0.0",
+      "model_repository_license_metadata": "MIT",
+      "model_source": "https://huggingface.co/rhasspy/piper-voices/tree/v1.0.0/en/en_US/ljspeech/high",
+      "voice_or_dataset_rights": "The publisher model card identifies the LJ Speech dataset as public domain. This route uses its stock single-speaker voice and no cloned reference.",
+      "voice_rights_source": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/high/MODEL_CARD",
+      "model_files": [
+        {
+          "name": "en_US-ljspeech-high.onnx",
+          "bytes": 114199011,
+          "sha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a"
+        },
+        {
+          "name": "en_US-ljspeech-high.onnx.json",
+          "bytes": 4970,
+          "sha256": "7e1f4634af596d83cca997fb7a931ba80b70f8a316a2655ee69c55365e0ace14"
+        }
+      ],
+      "audition_generated_audio_redistribution": "PASS",
+      "selected_runtime_condition": "If Piper itself or its model files are distributed later, preserve and satisfy the applicable GPL/MIT notices and source obligations. The present audition ships neither."
+    },
+    {
+      "route_id": "KOKORO_82M_V1_AF_HEART",
+      "engine_family": "Kokoro 82M ONNX",
+      "engine_package": "kokoro-onnx 0.4.9",
+      "engine_license": "MIT",
+      "engine_source": "https://github.com/thewh1teagle/kokoro-onnx",
+      "model_id": "hexgrad/Kokoro-82M",
+      "model_revision": "v1.0 / model-files-v1.0",
+      "model_license": "Apache-2.0",
+      "model_source": "https://huggingface.co/hexgrad/Kokoro-82M",
+      "voice_or_dataset_rights": "Uses the stock af_heart style from the Apache-2.0 model. The publisher states that training audio was permissive/non-copyrighted and lists the CC BY sources requiring attribution. No cloned reference is used.",
+      "attributions": [
+        {
+          "source": "Koniwa tnc",
+          "license": "CC BY 3.0",
+          "publisher_record": "https://huggingface.co/hexgrad/Kokoro-82M#creative-commons-attribution"
+        },
+        {
+          "source": "SIWIS",
+          "license": "CC BY 4.0",
+          "publisher_record": "https://huggingface.co/hexgrad/Kokoro-82M#creative-commons-attribution"
+        }
+      ],
+      "model_files": [
+        {
+          "name": "kokoro-v1.0.onnx",
+          "bytes": 325532387,
+          "sha256": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5"
+        },
+        {
+          "name": "voices-v1.0.bin",
+          "bytes": 28214398,
+          "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+        }
+      ],
+      "audition_generated_audio_redistribution": "PASS",
+      "selected_runtime_condition": "Preserve Apache-2.0 and MIT notices and the publisher's listed CC attributions if the route advances."
+    },
+    {
+      "route_id": "KITTEN_TTS_MINI_0_8_JASPER",
+      "engine_family": "KittenTTS Mini ONNX",
+      "engine_package": "kittentts 0.8.1",
+      "engine_license": "Apache-2.0",
+      "engine_source": "https://github.com/KittenML/KittenTTS",
+      "model_id": "KittenML/kitten-tts-mini-0.8",
+      "model_revision": "c02725660cea441db4c383af69f1f26f5cd00947",
+      "model_license": "Apache-2.0",
+      "model_source": "https://huggingface.co/KittenML/kitten-tts-mini-0.8/tree/c02725660cea441db4c383af69f1f26f5cd00947",
+      "voice_or_dataset_rights": "Uses the publisher-supplied Jasper stock voice from the Apache-2.0 model. No cloned or separately owned reference audio is used or redistributed.",
+      "model_files": [
+        {
+          "name": "kitten_tts_mini_v0_8.onnx",
+          "bytes": 78268016,
+          "sha256": "0f5bbae4fc4800c98dbc544a87ecfa79510de2fb8222db30d12e5bfe9177df91"
+        },
+        {
+          "name": "voices.npz",
+          "bytes": 3278902,
+          "sha256": "40ad2638952b77b7b2f30127e2608e169fc69dd256b53bd8aaa3409a33193c42"
+        }
+      ],
+      "audition_generated_audio_redistribution": "PASS",
+      "selected_runtime_condition": "Preserve Apache-2.0 notices if the model or engine advances into a distributed runtime."
+    }
+  ],
+  "routes_examined_but_excluded": [
+    {
+      "route": "Inherited A05 Chatterbox Nano/Turbo matrix using Chill Brian reference",
+      "reason": "Not materially independent, carries the rejected A03R family, and the provider-owned reference redistribution basis is not clear enough for Rev3."
+    },
+    {
+      "route": "Piper en_US-lessac-medium",
+      "reason": "Excluded after its linked Blizzard 2013 dataset terms were found to be research-only and non-transferable despite broad repository-level license metadata."
+    },
+    {
+      "route": "Windows SAPI/OneCore stock voices",
+      "reason": "Excluded because a specific generated-audio redistribution grant was not established in the controlled evidence."
+    },
+    {
+      "route": "Paid or free-credit cloud TTS",
+      "reason": "Excluded from the critical path by zero-recurring-cost authority and provider-credit history."
+    }
+  ],
+  "selection_authority": {
+    "physical_user": "Ryan",
+    "valid_choices": ["A", "B", "C", "NONE"],
+    "machine_metrics_cannot_promote": true,
+    "full_session_render_authority": "WITHHELD_PENDING_EXPLICIT_PHYSICAL_PASS"
+  }
+}

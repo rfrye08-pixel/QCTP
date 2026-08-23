@@ -1,0 +1,22 @@
+{
+  "schema": "qctp-rev3-blind-voice-physical-selection-v1",
+  "record_id": "QCTP-REV3-BLIND-VOICE-PHYSICAL-SELECTION-REV0",
+  "status": "OPEN_PHYSICAL_USER_DECISION",
+  "release_authority": "ZERO_RELEASE",
+  "audition_package": {
+    "path": "public/voice-audition/",
+    "manifest_sha256": "d8f2e214fb9a32a7844189dd86385f3a2dd66f32e7fc580d75be4d3ec14da63f",
+    "build_record_sha256": "b3edaf96b6a06bf75fe2492fc9a7ba3b8d6e36c536b459edbde35ef8075b754e",
+    "gate_summary_sha256": "70e92ea2dfed3e706d76f30bd50078ad9e02cdfa9172b9bf4d27cfc0d96d9c42",
+    "machine_gate": "PASS",
+    "mapping_publicly_available": false
+  },
+  "valid_choices": ["A", "B", "C", "NONE"],
+  "selected_choice": null,
+  "physical_naturalness_result": "OPEN",
+  "user_observation": null,
+  "performed_at": null,
+  "full_five_minute_render_authorized": false,
+  "full_twenty_five_minute_render_authorized": false,
+  "next_controlled_action": "Ryan opens this exact blind iPhone/PWA audition package, listens at one unchanged volume, and reports Best: A, B, C, or NONE plus the shortest naturalness observation."
+}

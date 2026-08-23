@@ -2,7 +2,7 @@ import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 
 import {
   ArchiveManifestSchema,
-  QctpExportDataSchema,
+  QctpExportImportSchema,
   type ArchiveBinaryEntry,
   type ArchiveManifest,
   type QctpExportData,
@@ -13,6 +13,10 @@ import type {
   ImportSnapshotOptions,
   QctpRepository,
 } from "../data";
+import {
+  StateCapabilityIntegrityError,
+  assertValidStateCapabilityLedger,
+} from "../state-atlas";
 
 const MAX_ARCHIVE_UNCOMPRESSED_BYTES = 1024 * 1024 * 1024;
 
@@ -75,6 +79,30 @@ export function validateExportRelations(snapshot: QctpExportData): void {
     "REG session",
   );
   assertUnique(
+    snapshot.practiceSessions.map((entity) => entity.id),
+    "practice session",
+  );
+  assertUnique(
+    snapshot.breathProfiles.map((entity) => entity.id),
+    "breath profile",
+  );
+  assertUnique(
+    snapshot.breathSessions.map((entity) => entity.id),
+    "breath session",
+  );
+  assertUnique(
+    snapshot.stateSessions.map((entity) => entity.id),
+    "state session",
+  );
+  assertUnique(
+    snapshot.stateCapabilities.map((entity) => entity.id),
+    "state capability",
+  );
+  assertUnique(
+    snapshot.stateCapabilities.map((entity) => entity.stateId),
+    "state capability state",
+  );
+  assertUnique(
     snapshot.mirrorRequests.map((entity) => entity.id),
     "Mirror request",
   );
@@ -111,6 +139,9 @@ export function validateExportRelations(snapshot: QctpExportData): void {
   const records = new Set(snapshot.records.map((record) => record.id));
   const mirrorRequests = new Map(
     snapshot.mirrorRequests.map((request) => [request.id, request]),
+  );
+  const stateSessions = new Map(
+    snapshot.stateSessions.map((session) => [session.id, session]),
   );
   const chunkIds: string[] = [];
   for (const recording of snapshot.recordings) {
@@ -150,6 +181,38 @@ export function validateExportRelations(snapshot: QctpExportData): void {
         }
       }
     }
+  }
+  for (const capability of snapshot.stateCapabilities) {
+    const evidenceIds = new Set([
+      ...capability.evidenceAttemptIds,
+      ...capability.transitions.flatMap(
+        (transition) => transition.evidenceAttemptIds,
+      ),
+    ]);
+    for (const evidenceId of evidenceIds) {
+      const session = stateSessions.get(evidenceId);
+      if (!session) {
+        throw new QctpImportError(
+          `State capability ${capability.id} references missing session ${evidenceId}`,
+        );
+      }
+      if (session.stateId !== capability.stateId) {
+        throw new QctpImportError(
+          `State capability ${capability.id} references session ${evidenceId} for ${session.stateId}`,
+        );
+      }
+    }
+  }
+  try {
+    assertValidStateCapabilityLedger({
+      sessions: snapshot.stateSessions,
+      capabilities: snapshot.stateCapabilities,
+    });
+  } catch (error) {
+    if (error instanceof StateCapabilityIntegrityError) {
+      throw new QctpImportError(error.message, { cause: error });
+    }
+    throw error;
   }
   for (const request of snapshot.mirrorRequests) {
     for (const sourceId of request.sourceRecordIds) {
@@ -217,12 +280,12 @@ export async function parseQctpJson(input: unknown): Promise<QctpExportData> {
   try {
     if (isBlobLike(input)) value = JSON.parse(await input.text()) as unknown;
     else if (typeof input === "string") value = JSON.parse(input) as unknown;
-    const parsed = QctpExportDataSchema.parse(value);
+    const parsed = QctpExportImportSchema.parse(value);
     validateExportRelations(parsed);
     return parsed;
   } catch (error) {
     if (error instanceof QctpImportError) throw error;
-    throw new QctpImportError("The file is not valid QCTP Rev2 JSON.", {
+    throw new QctpImportError("The file is not valid QCTP Rev2/Rev3 JSON.", {
       cause: error,
     });
   }

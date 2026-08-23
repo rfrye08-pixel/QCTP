@@ -1,12 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { registerSW } from "virtual:pwa-register";
 
 import { App } from "./app/App";
+import { startPwaLifecycle } from "./app/pwa-status";
 import { QctpProvider } from "./app/QctpProvider";
 import "./app/styles.css";
 
-registerSW({ immediate: true });
+startPwaLifecycle();
 
 const root = document.querySelector<HTMLDivElement>("#root");
 if (!root) throw new Error("QCTP root element is missing.");

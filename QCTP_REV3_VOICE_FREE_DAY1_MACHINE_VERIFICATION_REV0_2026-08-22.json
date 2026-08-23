@@ -1,0 +1,1477 @@
+{
+  "schema": "qctp-rev3-voice-free-day1-machine-verification-v1",
+  "package_id": "QCTP-REV3-P0-VOICE-FREE-DAY1-REV0",
+  "verified_at": "2026-08-22T23:39:25.828131+00:00",
+  "result": "PASS",
+  "status": "MACHINE_PASS_PHYSICAL_GATE_OPEN",
+  "release_authority": "ZERO_RELEASE",
+  "physical_gate": {
+    "voice_free_morning_mode": "OPEN",
+    "machine_evidence_substitutes_for_physical_use": false
+  },
+  "branch": "qctp-platform-rev3-codex",
+  "head": "7f03ec5a7822aefb05ffb50ee16a7453d84a31e4",
+  "source_grounding": {
+    "main_commit": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
+    "lock": {
+      "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+      "script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+      "duration_seconds": 1500,
+      "cue_count": 35,
+      "status": "LOCKED_FOR_TEST_RENDERING",
+      "release_authority": "ZERO_RELEASE"
+    },
+    "cue_part_sha256": {
+      "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART1.json": "a38be53317d1cbf59a36d9da557abf1c4b05c00b14b11cfa014580bd646ef09e",
+      "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART2.json": "f26448ebbf8ee2ca6e1d8656f65cd32c3166e5c9c1240c40e6a31fe937e9fe6a",
+      "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART3.json": "0caf0573af210474d5ac715e098371a62d95dfaa97ac6eebe6e6bd1582f04772",
+      "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART4.json": "7e6bebe42c115a105cb8a2348634e1876a865d722f4fe333be7e52334ccddc82",
+      "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART5.json": "52d37b4b96721ffc75b11be404b9069a1e457ff56564ce95499bc687ab6483b7"
+    },
+    "boundary_records": [
+      {
+        "start_seconds": 0,
+        "cue_id": "D1-A02-000",
+        "source_id": "QCTP-BASELINE-OBSERVATION",
+        "expected_source_id": "QCTP-BASELINE-OBSERVATION"
+      },
+      {
+        "start_seconds": 180,
+        "cue_id": "D1-A02-180",
+        "source_id": "HM-QC-01",
+        "expected_source_id": "HM-QC-01"
+      },
+      {
+        "start_seconds": 480,
+        "cue_id": "D1-A02-480",
+        "source_id": "JD-SPACE-01",
+        "expected_source_id": "JD-SPACE-01"
+      },
+      {
+        "start_seconds": 780,
+        "cue_id": "D1-A02-780",
+        "source_id": "JD-SPACE-01",
+        "expected_source_id": "JD-SPACE-01"
+      },
+      {
+        "start_seconds": 1380,
+        "cue_id": "D1-A02-1380",
+        "source_id": "QCTP-PURE-OBSERVATION",
+        "expected_source_id": "QCTP-PURE-OBSERVATION"
+      },
+      {
+        "start_seconds": 1440,
+        "cue_id": "D1-A02-1440",
+        "source_id": "QCTP-RETURN-01",
+        "expected_source_id": "QCTP-RETURN-01"
+      }
+    ],
+    "source_ranges": [
+      {
+        "phase_id": "settle",
+        "start_seconds": 0,
+        "end_seconds": 180,
+        "actual_source_ids": [
+          "QCTP-BASELINE-OBSERVATION",
+          "QCTP-TRANSITION-01",
+          "TB-ANCHOR-01"
+        ],
+        "expected_source_ids": [
+          "QCTP-BASELINE-OBSERVATION",
+          "QCTP-TRANSITION-01",
+          "TB-ANCHOR-01"
+        ]
+      },
+      {
+        "phase_id": "coherence",
+        "start_seconds": 180,
+        "end_seconds": 480,
+        "actual_source_ids": [
+          "HM-QC-01",
+          "QCTP-TRANSITION-01"
+        ],
+        "expected_source_ids": [
+          "HM-QC-01",
+          "QCTP-TRANSITION-01"
+        ]
+      },
+      {
+        "phase_id": "attention-contrast",
+        "start_seconds": 480,
+        "end_seconds": 780,
+        "actual_source_ids": [
+          "JD-SPACE-01",
+          "QCTP-TRANSITION-01"
+        ],
+        "expected_source_ids": [
+          "JD-SPACE-01",
+          "QCTP-TRANSITION-01"
+        ]
+      },
+      {
+        "phase_id": "open-space",
+        "start_seconds": 780,
+        "end_seconds": 1380,
+        "actual_source_ids": [
+          "JD-SPACE-01",
+          "QCTP-TRANSITION-01"
+        ],
+        "expected_source_ids": [
+          "JD-SPACE-01",
+          "QCTP-TRANSITION-01"
+        ]
+      },
+      {
+        "phase_id": "observe",
+        "start_seconds": 1380,
+        "end_seconds": 1440,
+        "actual_source_ids": [
+          "QCTP-PURE-OBSERVATION"
+        ],
+        "expected_source_ids": [
+          "QCTP-PURE-OBSERVATION"
+        ]
+      },
+      {
+        "phase_id": "return",
+        "start_seconds": 1440,
+        "end_seconds": 1500,
+        "actual_source_ids": [
+          "QCTP-RETURN-01"
+        ],
+        "expected_source_ids": [
+          "QCTP-RETURN-01"
+        ]
+      }
+    ]
+  },
+  "runtime_contract": {
+    "phase_records": [
+      {
+        "id": "settle",
+        "start_seconds": 0,
+        "end_seconds": 180,
+        "found": true
+      },
+      {
+        "id": "coherence",
+        "start_seconds": 180,
+        "end_seconds": 480,
+        "found": true
+      },
+      {
+        "id": "attention-contrast",
+        "start_seconds": 480,
+        "end_seconds": 780,
+        "found": true
+      },
+      {
+        "id": "open-space",
+        "start_seconds": 780,
+        "end_seconds": 1380,
+        "found": true
+      },
+      {
+        "id": "observe",
+        "start_seconds": 1380,
+        "end_seconds": 1440,
+        "found": true
+      },
+      {
+        "id": "return",
+        "start_seconds": 1440,
+        "end_seconds": 1500,
+        "found": true
+      }
+    ],
+    "heartmath": {
+      "source_id": "HM-QC-01",
+      "visual_rail_window_seconds": [
+        180,
+        480
+      ],
+      "acoustic_rail_window_seconds": [
+        224,
+        462
+      ],
+      "suggested_inhale_seconds": 5,
+      "suggested_exhale_seconds": 5,
+      "hold_seconds": 0,
+      "comfort_override": true,
+      "route_requirement": "none",
+      "note": "The source-grounded visual rail covers the coherence phase. The quiet optional acoustic rail begins after the first counted cycle and ends at the source transition."
+    },
+    "completion_conditions": {
+      "support_audio_authoritative_clock": true,
+      "duration_fail_closed": true,
+      "early_user_end_labeled": true,
+      "short_test_labeled": true,
+      "early_audio_end_rejected": true,
+      "natural_elapsed_exact": true,
+      "completion_once": true,
+      "voice_free_mode_persisted": true,
+      "natural_completion_persisted": true,
+      "narration_not_used": true,
+      "acceptance_not_applicable": true,
+      "state_not_assessed": true
+    },
+    "definition_size_bytes": 8373,
+    "hook_size_bytes": 16682,
+    "app_completion_mapping_observed": true,
+    "normalized_definition_size": 8300
+  },
+  "media": [
+    {
+      "mode": "ambient",
+      "identity": {
+        "path": "public/audio/day1-source-rev0/support-ambient-1500.mp3",
+        "sha256": "eb32e69b73099e6b20dc2107cf836be72cdf6ca79a07d267da2f9abf95610726",
+        "bytes": 12000576,
+        "probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "mp3",
+              "sample_rate": "24000",
+              "channels": 2
+            }
+          ],
+          "format": {
+            "duration": "1500.000000",
+            "bit_rate": "64003"
+          }
+        }
+      },
+      "continuity": {
+        "silence_events": [],
+        "max_volume_dbfs": -18.0
+      },
+      "phase_markers": [
+        {
+          "boundary_seconds": 180,
+          "marker_start_seconds": 179.6,
+          "tone_amplitude": 0.024760750659784607,
+          "adjacent_tone_amplitude": 0.003063467552070348,
+          "ratio": 8.082589496680267
+        },
+        {
+          "boundary_seconds": 480,
+          "marker_start_seconds": 479.6,
+          "tone_amplitude": 0.024233643506983517,
+          "adjacent_tone_amplitude": 0.005027498552072346,
+          "ratio": 4.8202188933489305
+        },
+        {
+          "boundary_seconds": 780,
+          "marker_start_seconds": 779.6,
+          "tone_amplitude": 0.026378706529410934,
+          "adjacent_tone_amplitude": 0.007553458603446774,
+          "ratio": 3.4922686300781303
+        },
+        {
+          "boundary_seconds": 1380,
+          "marker_start_seconds": 1379.6,
+          "tone_amplitude": 0.022260837339827977,
+          "adjacent_tone_amplitude": 0.005665215233162359,
+          "ratio": 3.929389515427437
+        },
+        {
+          "boundary_seconds": 1440,
+          "marker_start_seconds": 1439.6,
+          "tone_amplitude": 0.026103962307611014,
+          "adjacent_tone_amplitude": 0.006254093811286465,
+          "ratio": 4.173900023773618
+        }
+      ],
+      "heartmath_acoustic_rail": {
+        "inside_tone_amplitudes": [
+          0.019466129982961454,
+          0.015651591087813957,
+          0.009055284535501237
+        ],
+        "outside_tone_amplitudes": [
+          0.0021385391612334403,
+          0.003654313873714214
+        ],
+        "ratio": 2.4779712001852543
+      },
+      "return_window_rms": 0.029610825702548027
+    },
+    {
+      "mode": "binaural_low_a",
+      "identity": {
+        "path": "public/audio/day1-source-rev0/support-binaural-low-a-1500.mp3",
+        "sha256": "e592c954af517c2022f7c3e5f653591e026e6d3ff467c8afb6b78647510912fe",
+        "bytes": 12000576,
+        "probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "mp3",
+              "sample_rate": "24000",
+              "channels": 2
+            }
+          ],
+          "format": {
+            "duration": "1500.000000",
+            "bit_rate": "64003"
+          }
+        }
+      },
+      "continuity": {
+        "silence_events": [],
+        "max_volume_dbfs": -17.7
+      },
+      "phase_markers": [
+        {
+          "boundary_seconds": 180,
+          "marker_start_seconds": 179.6,
+          "tone_amplitude": 0.025570415670489642,
+          "adjacent_tone_amplitude": 0.0024920002135749176,
+          "ratio": 10.261000593498109
+        },
+        {
+          "boundary_seconds": 480,
+          "marker_start_seconds": 479.6,
+          "tone_amplitude": 0.02455594100894564,
+          "adjacent_tone_amplitude": 0.005445190515255997,
+          "ratio": 4.509656905510712
+        },
+        {
+          "boundary_seconds": 780,
+          "marker_start_seconds": 779.6,
+          "tone_amplitude": 0.026856497548028442,
+          "adjacent_tone_amplitude": 0.00886495430397816,
+          "ratio": 3.029513365452606
+        },
+        {
+          "boundary_seconds": 1380,
+          "marker_start_seconds": 1379.6,
+          "tone_amplitude": 0.022411978626999438,
+          "adjacent_tone_amplitude": 0.005728025742943468,
+          "ratio": 3.912688181370247
+        },
+        {
+          "boundary_seconds": 1440,
+          "marker_start_seconds": 1439.6,
+          "tone_amplitude": 0.026604131956860864,
+          "adjacent_tone_amplitude": 0.0056293804063484295,
+          "ratio": 4.725943183171375
+        }
+      ],
+      "heartmath_acoustic_rail": {
+        "inside_tone_amplitudes": [
+          0.019262104032596823,
+          0.015621011484180235,
+          0.008772693130265437
+        ],
+        "outside_tone_amplitudes": [
+          0.002129865126519961,
+          0.003291836904190188
+        ],
+        "ratio": 2.6649841366984655
+      },
+      "return_window_rms": 0.0294862762093544
+    },
+    {
+      "mode": "minimal_continuity",
+      "identity": {
+        "path": "public/audio/day1-source-rev0/support-minimal-1500.mp3",
+        "sha256": "4611a2cb65a553a9904777aaaa65bc70461fd3c325e1dfd7715bb83d6c3ca0cb",
+        "bytes": 12000576,
+        "probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "mp3",
+              "sample_rate": "24000",
+              "channels": 2
+            }
+          ],
+          "format": {
+            "duration": "1500.000000",
+            "bit_rate": "64003"
+          }
+        }
+      },
+      "continuity": {
+        "silence_events": [],
+        "max_volume_dbfs": -22.5
+      },
+      "phase_markers": [
+        {
+          "boundary_seconds": 180,
+          "marker_start_seconds": 179.6,
+          "tone_amplitude": 0.024352536058208717,
+          "adjacent_tone_amplitude": 0.0019975502692766265,
+          "ratio": 12.19120060844702
+        },
+        {
+          "boundary_seconds": 480,
+          "marker_start_seconds": 479.6,
+          "tone_amplitude": 0.02579486798225519,
+          "adjacent_tone_amplitude": 0.0014974840610459889,
+          "ratio": 17.225470810178464
+        },
+        {
+          "boundary_seconds": 780,
+          "marker_start_seconds": 779.6,
+          "tone_amplitude": 0.02471896645030011,
+          "adjacent_tone_amplitude": 0.0025958031868277987,
+          "ratio": 9.522665884584233
+        },
+        {
+          "boundary_seconds": 1380,
+          "marker_start_seconds": 1379.6,
+          "tone_amplitude": 0.023708142112760924,
+          "adjacent_tone_amplitude": 0.002758232001405847,
+          "ratio": 8.595412605131507
+        },
+        {
+          "boundary_seconds": 1440,
+          "marker_start_seconds": 1439.6,
+          "tone_amplitude": 0.02324209979694022,
+          "adjacent_tone_amplitude": 0.004104779528806326,
+          "ratio": 5.662204177796376
+        }
+      ],
+      "heartmath_acoustic_rail": {
+        "inside_tone_amplitudes": [
+          0.02693377202184727,
+          0.0197977645894494,
+          0.01956771339362314
+        ],
+        "outside_tone_amplitudes": [
+          0.0013393724596438335,
+          0.0010264224217428409
+        ],
+        "ratio": 14.609613071203954
+      },
+      "return_window_rms": 0.014401668682694435
+    }
+  ],
+  "offline_and_quarantine": {
+    "vite_configuration": {
+      "mp3_and_json_globbed": true,
+      "cache_limit_covers_12mb_stems": true,
+      "rejected_acceptance_ignored": true,
+      "rejected_voice_ignored": true,
+      "rejected_composite_ignored": true
+    },
+    "public_rejected_absence": {
+      "public/a03-acceptance": true,
+      "public/audio/day1-source-rev0/voice-1500.mp3": true,
+      "public/audio/day1-source-rev0/composite-ambient-low-1500.mp3": true,
+      "public/audio/day1-source-rev0/manifest.json": true,
+      "public/audio/day1-source-rev0/machine-verification.json": true,
+      "public/audio/day1-source-rev0/gate-summary.json": true,
+      "public/audio/day1-source-rev0/critical-asr.json": true
+    },
+    "quarantine": {
+      "controlled-artifacts/a03r-rejected/voice-1500.mp3": {
+        "exists": true,
+        "sha256": "6126445935ff15d059f5fec278617bf943664414072821a2d0340e8b74c6e4c1",
+        "expected_sha256": "6126445935ff15d059f5fec278617bf943664414072821a2d0340e8b74c6e4c1"
+      },
+      "controlled-artifacts/a03r-rejected/composite-ambient-low-1500.mp3": {
+        "exists": true,
+        "sha256": "41a404ad01b3d6c9c7fac2d1e6ae0a27f945f106e2702f6a2ebd30e97ea743d3",
+        "expected_sha256": "41a404ad01b3d6c9c7fac2d1e6ae0a27f945f106e2702f6a2ebd30e97ea743d3"
+      },
+      "controlled-artifacts/a03r-rejected/a03-acceptance/acceptance-ambient.mp3": {
+        "exists": true,
+        "sha256": "cc75cb78aea097fbe2441e4db9a1319f9996884e5cbab1bca39d0386db24c7e0",
+        "expected_sha256": "cc75cb78aea097fbe2441e4db9a1319f9996884e5cbab1bca39d0386db24c7e0"
+      },
+      "controlled-artifacts/a03r-rejected/a03-acceptance/acceptance-binaural-low-a.mp3": {
+        "exists": true,
+        "sha256": "9e4367fdf6dccba1cb7704930a36a26bb11bb9c12346920b2cb5f2a423bec3ce",
+        "expected_sha256": "9e4367fdf6dccba1cb7704930a36a26bb11bb9c12346920b2cb5f2a423bec3ce"
+      },
+      "controlled-artifacts/a03r-rejected/a03-acceptance/acceptance-minimal.mp3": {
+        "exists": true,
+        "sha256": "b2d51b9215fc7332477490222556a8e77d3510482f9888477fd5101d8c0c5011",
+        "expected_sha256": "b2d51b9215fc7332477490222556a8e77d3510482f9888477fd5101d8c0c5011"
+      }
+    },
+    "dist_support_assets": {
+      "support-ambient-1500.mp3": {
+        "exists": true,
+        "sha256": "eb32e69b73099e6b20dc2107cf836be72cdf6ca79a07d267da2f9abf95610726",
+        "precache_entry": true
+      },
+      "support-binaural-low-a-1500.mp3": {
+        "exists": true,
+        "sha256": "e592c954af517c2022f7c3e5f653591e026e6d3ff467c8afb6b78647510912fe",
+        "precache_entry": true
+      },
+      "support-minimal-1500.mp3": {
+        "exists": true,
+        "sha256": "4611a2cb65a553a9904777aaaa65bc70461fd3c325e1dfd7715bb83d6c3ca0cb",
+        "precache_entry": true
+      }
+    },
+    "dist_rejected_paths_present": {
+      "a03-acceptance": false,
+      "voice-1500.mp3": false,
+      "composite-ambient-low-1500.mp3": false,
+      "legacy-manifest.json": false
+    },
+    "service_worker_sha256": "8c15b7f9f6c7d34e81a24f9410fbb260d8641e1ef5e91058e1829ff7d9d085e4"
+  },
+  "generated_evidence": {
+    "phase_marker_build_record": {
+      "path": "tools/voice-free-day1/phase-marker-build-record.json",
+      "sha256": "079531facf71af56a8afc6aae2e83c3288ac282f882e2178eb686d14dd588729",
+      "conditions": {
+        "pinned_source_ref": true,
+        "manifest_hashes_match_outputs": true,
+        "narration_not_used": true,
+        "time_stretch_not_used": true,
+        "timing_not_changed": true,
+        "all_five_markers_built": true
+      }
+    },
+    "browser_report": {
+      "path": "QCTP_REV3_VOICE_FREE_DAY1_BROWSER_VERIFICATION_REV0_2026-08-22.json",
+      "sha256": "affea8445eeb9d637ca1ac9ecdd0a3d92fec31baea3297f1d78c1ee973937802",
+      "result": "PASS"
+    },
+    "targeted_tests": {
+      "command": "node node_modules/vitest/vitest.mjs run src/practice/voice-free-day1.evidence.test.ts src/practice/voice-free-day1.test.ts src/practice/use-voice-free-day1-session.test.tsx",
+      "exit_code": 0,
+      "observed_pass_summary": "3 test files / 13 tests",
+      "captured_output_sha256": "1526cabfce6d7738cc7d202f7bb773b401ce5e61d4ccc8590bcab01f41a68f4c"
+    }
+  },
+  "checks": [
+    {
+      "id": "execution_branch",
+      "result": "PASS",
+      "evidence": {
+        "branch": "qctp-platform-rev3-codex"
+      }
+    },
+    {
+      "id": "clean_manifest_identity",
+      "result": "PASS",
+      "evidence": {
+        "schema": "qctp-rev3-voice-free-day1-media-v1",
+        "status": "MACHINE_CANDIDATE_PHYSICAL_GATE_OPEN",
+        "release_authority": "ZERO_RELEASE",
+        "narration_used": false,
+        "paid_api_required": false
+      }
+    },
+    {
+      "id": "authority_part_1_script_id",
+      "result": "PASS",
+      "evidence": {
+        "file": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART1.json",
+        "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0"
+      }
+    },
+    {
+      "id": "authority_part_2_script_id",
+      "result": "PASS",
+      "evidence": {
+        "file": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART2.json",
+        "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0"
+      }
+    },
+    {
+      "id": "authority_part_3_script_id",
+      "result": "PASS",
+      "evidence": {
+        "file": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART3.json",
+        "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0"
+      }
+    },
+    {
+      "id": "authority_part_4_script_id",
+      "result": "PASS",
+      "evidence": {
+        "file": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART4.json",
+        "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0"
+      }
+    },
+    {
+      "id": "authority_part_5_script_id",
+      "result": "PASS",
+      "evidence": {
+        "file": "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART5.json",
+        "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0"
+      }
+    },
+    {
+      "id": "locked_script_identity",
+      "result": "PASS",
+      "evidence": {
+        "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+        "script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+        "duration_seconds": 1500,
+        "cue_count": 35
+      }
+    },
+    {
+      "id": "all_35_authority_cues_loaded",
+      "result": "PASS",
+      "evidence": {
+        "cue_count": 35,
+        "unique_start_count": 35
+      }
+    },
+    {
+      "id": "source_boundary_0",
+      "result": "PASS",
+      "evidence": {
+        "start_seconds": 0,
+        "cue_id": "D1-A02-000",
+        "source_id": "QCTP-BASELINE-OBSERVATION",
+        "expected_source_id": "QCTP-BASELINE-OBSERVATION"
+      }
+    },
+    {
+      "id": "source_boundary_180",
+      "result": "PASS",
+      "evidence": {
+        "start_seconds": 180,
+        "cue_id": "D1-A02-180",
+        "source_id": "HM-QC-01",
+        "expected_source_id": "HM-QC-01"
+      }
+    },
+    {
+      "id": "source_boundary_480",
+      "result": "PASS",
+      "evidence": {
+        "start_seconds": 480,
+        "cue_id": "D1-A02-480",
+        "source_id": "JD-SPACE-01",
+        "expected_source_id": "JD-SPACE-01"
+      }
+    },
+    {
+      "id": "source_boundary_780",
+      "result": "PASS",
+      "evidence": {
+        "start_seconds": 780,
+        "cue_id": "D1-A02-780",
+        "source_id": "JD-SPACE-01",
+        "expected_source_id": "JD-SPACE-01"
+      }
+    },
+    {
+      "id": "source_boundary_1380",
+      "result": "PASS",
+      "evidence": {
+        "start_seconds": 1380,
+        "cue_id": "D1-A02-1380",
+        "source_id": "QCTP-PURE-OBSERVATION",
+        "expected_source_id": "QCTP-PURE-OBSERVATION"
+      }
+    },
+    {
+      "id": "source_boundary_1440",
+      "result": "PASS",
+      "evidence": {
+        "start_seconds": 1440,
+        "cue_id": "D1-A02-1440",
+        "source_id": "QCTP-RETURN-01",
+        "expected_source_id": "QCTP-RETURN-01"
+      }
+    },
+    {
+      "id": "source_range_settle",
+      "result": "PASS",
+      "evidence": {
+        "phase_id": "settle",
+        "start_seconds": 0,
+        "end_seconds": 180,
+        "actual_source_ids": [
+          "QCTP-BASELINE-OBSERVATION",
+          "QCTP-TRANSITION-01",
+          "TB-ANCHOR-01"
+        ],
+        "expected_source_ids": [
+          "QCTP-BASELINE-OBSERVATION",
+          "QCTP-TRANSITION-01",
+          "TB-ANCHOR-01"
+        ]
+      }
+    },
+    {
+      "id": "source_range_coherence",
+      "result": "PASS",
+      "evidence": {
+        "phase_id": "coherence",
+        "start_seconds": 180,
+        "end_seconds": 480,
+        "actual_source_ids": [
+          "HM-QC-01",
+          "QCTP-TRANSITION-01"
+        ],
+        "expected_source_ids": [
+          "HM-QC-01",
+          "QCTP-TRANSITION-01"
+        ]
+      }
+    },
+    {
+      "id": "source_range_attention-contrast",
+      "result": "PASS",
+      "evidence": {
+        "phase_id": "attention-contrast",
+        "start_seconds": 480,
+        "end_seconds": 780,
+        "actual_source_ids": [
+          "JD-SPACE-01",
+          "QCTP-TRANSITION-01"
+        ],
+        "expected_source_ids": [
+          "JD-SPACE-01",
+          "QCTP-TRANSITION-01"
+        ]
+      }
+    },
+    {
+      "id": "source_range_open-space",
+      "result": "PASS",
+      "evidence": {
+        "phase_id": "open-space",
+        "start_seconds": 780,
+        "end_seconds": 1380,
+        "actual_source_ids": [
+          "JD-SPACE-01",
+          "QCTP-TRANSITION-01"
+        ],
+        "expected_source_ids": [
+          "JD-SPACE-01",
+          "QCTP-TRANSITION-01"
+        ]
+      }
+    },
+    {
+      "id": "source_range_observe",
+      "result": "PASS",
+      "evidence": {
+        "phase_id": "observe",
+        "start_seconds": 1380,
+        "end_seconds": 1440,
+        "actual_source_ids": [
+          "QCTP-PURE-OBSERVATION"
+        ],
+        "expected_source_ids": [
+          "QCTP-PURE-OBSERVATION"
+        ]
+      }
+    },
+    {
+      "id": "source_range_return",
+      "result": "PASS",
+      "evidence": {
+        "phase_id": "return",
+        "start_seconds": 1440,
+        "end_seconds": 1500,
+        "actual_source_ids": [
+          "QCTP-RETURN-01"
+        ],
+        "expected_source_ids": [
+          "QCTP-RETURN-01"
+        ]
+      }
+    },
+    {
+      "id": "code_phase_settle",
+      "result": "PASS",
+      "evidence": {
+        "id": "settle",
+        "start_seconds": 0,
+        "end_seconds": 180,
+        "found": true
+      }
+    },
+    {
+      "id": "code_phase_coherence",
+      "result": "PASS",
+      "evidence": {
+        "id": "coherence",
+        "start_seconds": 180,
+        "end_seconds": 480,
+        "found": true
+      }
+    },
+    {
+      "id": "code_phase_attention-contrast",
+      "result": "PASS",
+      "evidence": {
+        "id": "attention-contrast",
+        "start_seconds": 480,
+        "end_seconds": 780,
+        "found": true
+      }
+    },
+    {
+      "id": "code_phase_open-space",
+      "result": "PASS",
+      "evidence": {
+        "id": "open-space",
+        "start_seconds": 780,
+        "end_seconds": 1380,
+        "found": true
+      }
+    },
+    {
+      "id": "code_phase_observe",
+      "result": "PASS",
+      "evidence": {
+        "id": "observe",
+        "start_seconds": 1380,
+        "end_seconds": 1440,
+        "found": true
+      }
+    },
+    {
+      "id": "code_phase_return",
+      "result": "PASS",
+      "evidence": {
+        "id": "return",
+        "start_seconds": 1440,
+        "end_seconds": 1500,
+        "found": true
+      }
+    },
+    {
+      "id": "code_duration_and_script_lock",
+      "result": "PASS",
+      "evidence": {
+        "duration_seconds": 1500,
+        "script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555"
+      }
+    },
+    {
+      "id": "code_operations_settle",
+      "result": "PASS",
+      "evidence": {
+        "required_terms": [
+          "starting mind",
+          "contraction",
+          "acceptance",
+          "gratitude"
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "code_operations_coherence",
+      "result": "PASS",
+      "evidence": {
+        "required_terms": [
+          "heart area",
+          "five seconds in",
+          "five seconds out",
+          "comfortable rhythm",
+          "Do not hold"
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "code_operations_attention-contrast",
+      "result": "PASS",
+      "evidence": {
+        "required_terms": [
+          "between the ears",
+          "space around",
+          "torso",
+          "whole body",
+          "do not construct"
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "code_operations_open-space",
+      "result": "PASS",
+      "evidence": {
+        "required_terms": [
+          "surrounding the whole body",
+          "room as one volume",
+          "sounds",
+          "attention is captured",
+          "stop deliberately widening"
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "code_operations_observe",
+      "result": "PASS",
+      "evidence": {
+        "required_terms": [
+          "Release breath control",
+          "Observe the mind, body, emotion"
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "code_operations_return",
+      "result": "PASS",
+      "evidence": {
+        "required_terms": [
+          "feet",
+          "chair",
+          "time of day",
+          "next action",
+          "open the eyes",
+          "fully oriented"
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "heartmath_visual_rail_five_five_no_hold",
+      "result": "PASS",
+      "evidence": {
+        "window_seconds": [
+          180,
+          480
+        ],
+        "cycle_seconds": 10,
+        "inhale_seconds": 5,
+        "exhale_seconds": 5,
+        "hold_seconds": 0,
+        "comfort_override": true,
+        "source_checks": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "id": "same_origin_url_contract",
+      "result": "PASS",
+      "evidence": {
+        "manifest": "voice-free-manifest.json",
+        "absolute_url_present": false
+      }
+    },
+    {
+      "id": "natural_completion_credit_gate",
+      "result": "PASS",
+      "evidence": {
+        "support_audio_authoritative_clock": true,
+        "duration_fail_closed": true,
+        "early_user_end_labeled": true,
+        "short_test_labeled": true,
+        "early_audio_end_rejected": true,
+        "natural_elapsed_exact": true,
+        "completion_once": true,
+        "voice_free_mode_persisted": true,
+        "natural_completion_persisted": true,
+        "narration_not_used": true,
+        "acceptance_not_applicable": true,
+        "state_not_assessed": true
+      }
+    },
+    {
+      "id": "code_manifest_media_hash_alignment",
+      "result": "PASS",
+      "evidence": {
+        "asset_count": 3
+      }
+    },
+    {
+      "id": "media_identity_ambient",
+      "result": "PASS",
+      "evidence": {
+        "path": "public/audio/day1-source-rev0/support-ambient-1500.mp3",
+        "sha256": "eb32e69b73099e6b20dc2107cf836be72cdf6ca79a07d267da2f9abf95610726",
+        "bytes": 12000576,
+        "duration_seconds": 1500.0,
+        "sample_rate_hz": "24000",
+        "channels": 2
+      }
+    },
+    {
+      "id": "continuous_support_ambient",
+      "result": "PASS",
+      "evidence": {
+        "threshold_db": -55,
+        "minimum_silence_seconds": 0.75,
+        "silence_events": []
+      }
+    },
+    {
+      "id": "no_clipping_ambient",
+      "result": "PASS",
+      "evidence": {
+        "max_volume_dbfs": -18.0
+      }
+    },
+    {
+      "id": "marker_ambient_180",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 180,
+        "marker_start_seconds": 179.6,
+        "tone_amplitude": 0.024760750659784607,
+        "adjacent_tone_amplitude": 0.003063467552070348,
+        "ratio": 8.082589496680267
+      }
+    },
+    {
+      "id": "marker_ambient_480",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 480,
+        "marker_start_seconds": 479.6,
+        "tone_amplitude": 0.024233643506983517,
+        "adjacent_tone_amplitude": 0.005027498552072346,
+        "ratio": 4.8202188933489305
+      }
+    },
+    {
+      "id": "marker_ambient_780",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 780,
+        "marker_start_seconds": 779.6,
+        "tone_amplitude": 0.026378706529410934,
+        "adjacent_tone_amplitude": 0.007553458603446774,
+        "ratio": 3.4922686300781303
+      }
+    },
+    {
+      "id": "marker_ambient_1380",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 1380,
+        "marker_start_seconds": 1379.6,
+        "tone_amplitude": 0.022260837339827977,
+        "adjacent_tone_amplitude": 0.005665215233162359,
+        "ratio": 3.929389515427437
+      }
+    },
+    {
+      "id": "marker_ambient_1440",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 1440,
+        "marker_start_seconds": 1439.6,
+        "tone_amplitude": 0.026103962307611014,
+        "adjacent_tone_amplitude": 0.006254093811286465,
+        "ratio": 4.173900023773618
+      }
+    },
+    {
+      "id": "acoustic_breath_rail_ambient",
+      "result": "PASS",
+      "evidence": {
+        "verified_window_seconds": [
+          224,
+          462
+        ],
+        "inside_tone_amplitudes": [
+          0.019466129982961454,
+          0.015651591087813957,
+          0.009055284535501237
+        ],
+        "outside_tone_amplitudes": [
+          0.0021385391612334403,
+          0.003654313873714214
+        ],
+        "minimum_inside_to_maximum_outside_ratio": 2.4779712001852543
+      }
+    },
+    {
+      "id": "complete_return_support_ambient",
+      "result": "PASS",
+      "evidence": {
+        "window_seconds": [
+          1440,
+          1500
+        ],
+        "rms": 0.029610825702548027
+      }
+    },
+    {
+      "id": "media_identity_binaural_low_a",
+      "result": "PASS",
+      "evidence": {
+        "path": "public/audio/day1-source-rev0/support-binaural-low-a-1500.mp3",
+        "sha256": "e592c954af517c2022f7c3e5f653591e026e6d3ff467c8afb6b78647510912fe",
+        "bytes": 12000576,
+        "duration_seconds": 1500.0,
+        "sample_rate_hz": "24000",
+        "channels": 2
+      }
+    },
+    {
+      "id": "continuous_support_binaural_low_a",
+      "result": "PASS",
+      "evidence": {
+        "threshold_db": -55,
+        "minimum_silence_seconds": 0.75,
+        "silence_events": []
+      }
+    },
+    {
+      "id": "no_clipping_binaural_low_a",
+      "result": "PASS",
+      "evidence": {
+        "max_volume_dbfs": -17.7
+      }
+    },
+    {
+      "id": "marker_binaural_low_a_180",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 180,
+        "marker_start_seconds": 179.6,
+        "tone_amplitude": 0.025570415670489642,
+        "adjacent_tone_amplitude": 0.0024920002135749176,
+        "ratio": 10.261000593498109
+      }
+    },
+    {
+      "id": "marker_binaural_low_a_480",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 480,
+        "marker_start_seconds": 479.6,
+        "tone_amplitude": 0.02455594100894564,
+        "adjacent_tone_amplitude": 0.005445190515255997,
+        "ratio": 4.509656905510712
+      }
+    },
+    {
+      "id": "marker_binaural_low_a_780",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 780,
+        "marker_start_seconds": 779.6,
+        "tone_amplitude": 0.026856497548028442,
+        "adjacent_tone_amplitude": 0.00886495430397816,
+        "ratio": 3.029513365452606
+      }
+    },
+    {
+      "id": "marker_binaural_low_a_1380",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 1380,
+        "marker_start_seconds": 1379.6,
+        "tone_amplitude": 0.022411978626999438,
+        "adjacent_tone_amplitude": 0.005728025742943468,
+        "ratio": 3.912688181370247
+      }
+    },
+    {
+      "id": "marker_binaural_low_a_1440",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 1440,
+        "marker_start_seconds": 1439.6,
+        "tone_amplitude": 0.026604131956860864,
+        "adjacent_tone_amplitude": 0.0056293804063484295,
+        "ratio": 4.725943183171375
+      }
+    },
+    {
+      "id": "acoustic_breath_rail_binaural_low_a",
+      "result": "PASS",
+      "evidence": {
+        "verified_window_seconds": [
+          224,
+          462
+        ],
+        "inside_tone_amplitudes": [
+          0.019262104032596823,
+          0.015621011484180235,
+          0.008772693130265437
+        ],
+        "outside_tone_amplitudes": [
+          0.002129865126519961,
+          0.003291836904190188
+        ],
+        "minimum_inside_to_maximum_outside_ratio": 2.6649841366984655
+      }
+    },
+    {
+      "id": "complete_return_support_binaural_low_a",
+      "result": "PASS",
+      "evidence": {
+        "window_seconds": [
+          1440,
+          1500
+        ],
+        "rms": 0.0294862762093544
+      }
+    },
+    {
+      "id": "media_identity_minimal_continuity",
+      "result": "PASS",
+      "evidence": {
+        "path": "public/audio/day1-source-rev0/support-minimal-1500.mp3",
+        "sha256": "4611a2cb65a553a9904777aaaa65bc70461fd3c325e1dfd7715bb83d6c3ca0cb",
+        "bytes": 12000576,
+        "duration_seconds": 1500.0,
+        "sample_rate_hz": "24000",
+        "channels": 2
+      }
+    },
+    {
+      "id": "continuous_support_minimal_continuity",
+      "result": "PASS",
+      "evidence": {
+        "threshold_db": -55,
+        "minimum_silence_seconds": 0.75,
+        "silence_events": []
+      }
+    },
+    {
+      "id": "no_clipping_minimal_continuity",
+      "result": "PASS",
+      "evidence": {
+        "max_volume_dbfs": -22.5
+      }
+    },
+    {
+      "id": "marker_minimal_continuity_180",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 180,
+        "marker_start_seconds": 179.6,
+        "tone_amplitude": 0.024352536058208717,
+        "adjacent_tone_amplitude": 0.0019975502692766265,
+        "ratio": 12.19120060844702
+      }
+    },
+    {
+      "id": "marker_minimal_continuity_480",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 480,
+        "marker_start_seconds": 479.6,
+        "tone_amplitude": 0.02579486798225519,
+        "adjacent_tone_amplitude": 0.0014974840610459889,
+        "ratio": 17.225470810178464
+      }
+    },
+    {
+      "id": "marker_minimal_continuity_780",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 780,
+        "marker_start_seconds": 779.6,
+        "tone_amplitude": 0.02471896645030011,
+        "adjacent_tone_amplitude": 0.0025958031868277987,
+        "ratio": 9.522665884584233
+      }
+    },
+    {
+      "id": "marker_minimal_continuity_1380",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 1380,
+        "marker_start_seconds": 1379.6,
+        "tone_amplitude": 0.023708142112760924,
+        "adjacent_tone_amplitude": 0.002758232001405847,
+        "ratio": 8.595412605131507
+      }
+    },
+    {
+      "id": "marker_minimal_continuity_1440",
+      "result": "PASS",
+      "evidence": {
+        "boundary_seconds": 1440,
+        "marker_start_seconds": 1439.6,
+        "tone_amplitude": 0.02324209979694022,
+        "adjacent_tone_amplitude": 0.004104779528806326,
+        "ratio": 5.662204177796376
+      }
+    },
+    {
+      "id": "acoustic_breath_rail_minimal_continuity",
+      "result": "PASS",
+      "evidence": {
+        "verified_window_seconds": [
+          224,
+          462
+        ],
+        "inside_tone_amplitudes": [
+          0.02693377202184727,
+          0.0197977645894494,
+          0.01956771339362314
+        ],
+        "outside_tone_amplitudes": [
+          0.0013393724596438335,
+          0.0010264224217428409
+        ],
+        "minimum_inside_to_maximum_outside_ratio": 14.609613071203954
+      }
+    },
+    {
+      "id": "complete_return_support_minimal_continuity",
+      "result": "PASS",
+      "evidence": {
+        "window_seconds": [
+          1440,
+          1500
+        ],
+        "rms": 0.014401668682694435
+      }
+    },
+    {
+      "id": "offline_precache_configuration",
+      "result": "PASS",
+      "evidence": {
+        "mp3_and_json_globbed": true,
+        "cache_limit_covers_12mb_stems": true,
+        "rejected_acceptance_ignored": true,
+        "rejected_voice_ignored": true,
+        "rejected_composite_ignored": true
+      }
+    },
+    {
+      "id": "rejected_a03r_absent_from_public",
+      "result": "PASS",
+      "evidence": {
+        "public/a03-acceptance": true,
+        "public/audio/day1-source-rev0/voice-1500.mp3": true,
+        "public/audio/day1-source-rev0/composite-ambient-low-1500.mp3": true,
+        "public/audio/day1-source-rev0/manifest.json": true,
+        "public/audio/day1-source-rev0/machine-verification.json": true,
+        "public/audio/day1-source-rev0/gate-summary.json": true,
+        "public/audio/day1-source-rev0/critical-asr.json": true
+      }
+    },
+    {
+      "id": "rejected_a03r_preserved_in_quarantine",
+      "result": "PASS",
+      "evidence": {
+        "controlled-artifacts/a03r-rejected/voice-1500.mp3": {
+          "exists": true,
+          "sha256": "6126445935ff15d059f5fec278617bf943664414072821a2d0340e8b74c6e4c1",
+          "expected_sha256": "6126445935ff15d059f5fec278617bf943664414072821a2d0340e8b74c6e4c1"
+        },
+        "controlled-artifacts/a03r-rejected/composite-ambient-low-1500.mp3": {
+          "exists": true,
+          "sha256": "41a404ad01b3d6c9c7fac2d1e6ae0a27f945f106e2702f6a2ebd30e97ea743d3",
+          "expected_sha256": "41a404ad01b3d6c9c7fac2d1e6ae0a27f945f106e2702f6a2ebd30e97ea743d3"
+        },
+        "controlled-artifacts/a03r-rejected/a03-acceptance/acceptance-ambient.mp3": {
+          "exists": true,
+          "sha256": "cc75cb78aea097fbe2441e4db9a1319f9996884e5cbab1bca39d0386db24c7e0",
+          "expected_sha256": "cc75cb78aea097fbe2441e4db9a1319f9996884e5cbab1bca39d0386db24c7e0"
+        },
+        "controlled-artifacts/a03r-rejected/a03-acceptance/acceptance-binaural-low-a.mp3": {
+          "exists": true,
+          "sha256": "9e4367fdf6dccba1cb7704930a36a26bb11bb9c12346920b2cb5f2a423bec3ce",
+          "expected_sha256": "9e4367fdf6dccba1cb7704930a36a26bb11bb9c12346920b2cb5f2a423bec3ce"
+        },
+        "controlled-artifacts/a03r-rejected/a03-acceptance/acceptance-minimal.mp3": {
+          "exists": true,
+          "sha256": "b2d51b9215fc7332477490222556a8e77d3510482f9888477fd5101d8c0c5011",
+          "expected_sha256": "b2d51b9215fc7332477490222556a8e77d3510482f9888477fd5101d8c0c5011"
+        }
+      }
+    },
+    {
+      "id": "built_offline_package",
+      "result": "PASS",
+      "evidence": {
+        "dist_exists": true,
+        "service_worker": true,
+        "clean_manifest_exists": true,
+        "clean_manifest_precached": true,
+        "support_assets": {
+          "support-ambient-1500.mp3": {
+            "exists": true,
+            "sha256": "eb32e69b73099e6b20dc2107cf836be72cdf6ca79a07d267da2f9abf95610726",
+            "precache_entry": true
+          },
+          "support-binaural-low-a-1500.mp3": {
+            "exists": true,
+            "sha256": "e592c954af517c2022f7c3e5f653591e026e6d3ff467c8afb6b78647510912fe",
+            "precache_entry": true
+          },
+          "support-minimal-1500.mp3": {
+            "exists": true,
+            "sha256": "4611a2cb65a553a9904777aaaa65bc70461fd3c325e1dfd7715bb83d6c3ca0cb",
+            "precache_entry": true
+          }
+        },
+        "rejected_dist_paths_present": {
+          "a03-acceptance": false,
+          "voice-1500.mp3": false,
+          "composite-ambient-low-1500.mp3": false,
+          "legacy-manifest.json": false
+        }
+      }
+    },
+    {
+      "id": "deterministic_marker_build_record",
+      "result": "PASS",
+      "evidence": {
+        "pinned_source_ref": true,
+        "manifest_hashes_match_outputs": true,
+        "narration_not_used": true,
+        "time_stretch_not_used": true,
+        "timing_not_changed": true,
+        "all_five_markers_built": true
+      }
+    },
+    {
+      "id": "chromium_and_iphone_webkit_offline_evidence",
+      "result": "PASS",
+      "evidence": {
+        "path": "QCTP_REV3_VOICE_FREE_DAY1_BROWSER_VERIFICATION_REV0_2026-08-22.json",
+        "sha256": "affea8445eeb9d637ca1ac9ecdd0a3d92fec31baea3297f1d78c1ee973937802",
+        "result": "PASS",
+        "routes": [
+          {
+            "route": "chromium",
+            "result": "PASS"
+          },
+          {
+            "route": "iphone-webkit",
+            "result": "PASS"
+          }
+        ]
+      }
+    },
+    {
+      "id": "targeted_voice_free_unit_and_hook_tests",
+      "result": "PASS",
+      "evidence": {
+        "command": "node node_modules/vitest/vitest.mjs run src/practice/voice-free-day1.evidence.test.ts src/practice/voice-free-day1.test.ts src/practice/use-voice-free-day1-session.test.tsx",
+        "exit_code": 0,
+        "expected_test_files": 3,
+        "expected_tests": 13,
+        "observed_pass_summary": "3 test files / 13 tests",
+        "captured_output_sha256": "1526cabfce6d7738cc7d202f7bb773b401ce5e61d4ccc8590bcab01f41a68f4c"
+      }
+    }
+  ],
+  "summary": {
+    "total": 75,
+    "passed": 75,
+    "failed": 0
+  },
+  "errors": [],
+  "holds": [
+    "Ryan must physically run the shortest Voice-Free Day 1 morning-mode gate on the iPhone/PWA.",
+    "Machine evidence does not grant release authority, narrated-content acceptance, or state attainment.",
+    "Rev3 remains ZERO_RELEASE and must not merge or deploy without explicit authority."
+  ]
+}

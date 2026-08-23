@@ -1,0 +1,208 @@
+{
+  "schema": "qctp-rev3-voice-free-day1-browser-verification-v1",
+  "verified_at": "2026-08-22T23:39:14.610Z",
+  "result": "PASS",
+  "status": "BROWSER_MACHINE_PASS_WEBKIT_COLD_OFFLINE_PHYSICAL_HOLD_OPEN",
+  "release_authority": "ZERO_RELEASE",
+  "package_id": "QCTP-REV3-P0-VOICE-FREE-DAY1-REV0",
+  "routes": [
+    {
+      "route": "chromium",
+      "result": "PASS",
+      "checks": [
+        {
+          "id": "six_phase_mobile_ui",
+          "result": "PASS",
+          "evidence": {
+            "phaseCount": 6
+          }
+        },
+        {
+          "id": "twenty_five_minute_clock",
+          "result": "PASS",
+          "evidence": {
+            "timer": "25:00"
+          }
+        },
+        {
+          "id": "service_worker_precaches_support_package",
+          "result": "PASS",
+          "evidence": {
+            "cacheNames": [
+              "workbox-precache-v2-http://127.0.0.1:54879/"
+            ],
+            "requiredCachePaths": [
+              "/audio/day1-source-rev0/voice-free-manifest.json",
+              "/audio/day1-source-rev0/support-ambient-1500.mp3",
+              "/audio/day1-source-rev0/support-binaural-low-a-1500.mp3",
+              "/audio/day1-source-rev0/support-minimal-1500.mp3"
+            ]
+          }
+        },
+        {
+          "id": "service_worker_excludes_rejected_a03r",
+          "result": "PASS",
+          "evidence": {
+            "rejectedMatches": []
+          }
+        },
+        {
+          "id": "offline_reload_and_service_worker_manifest_retrieval",
+          "result": "PASS",
+          "evidence": {
+            "ok": true,
+            "schema": "qctp-rev3-voice-free-day1-media-v1",
+            "assetCount": 3,
+            "route": "service-worker-fetch"
+          }
+        },
+        {
+          "id": "offline_support_binary_retrieval",
+          "result": "PASS",
+          "evidence": [
+            {
+              "path": "audio/day1-source-rev0/support-ambient-1500.mp3",
+              "cached": true,
+              "size": 12000576
+            },
+            {
+              "path": "audio/day1-source-rev0/support-binaural-low-a-1500.mp3",
+              "cached": true,
+              "size": 12000576
+            },
+            {
+              "path": "audio/day1-source-rev0/support-minimal-1500.mp3",
+              "cached": true,
+              "size": 12000576
+            }
+          ]
+        },
+        {
+          "id": "same_origin_only",
+          "result": "PASS",
+          "evidence": {
+            "externalRequests": []
+          }
+        },
+        {
+          "id": "no_rejected_narration_requests",
+          "result": "PASS",
+          "evidence": {
+            "rejectedRequests": []
+          }
+        },
+        {
+          "id": "no_unexpected_request_failures",
+          "result": "PASS",
+          "evidence": {
+            "unexpectedFailures": []
+          }
+        }
+      ],
+      "request_count": 13,
+      "cache_entry_count": 50
+    },
+    {
+      "route": "iphone-webkit",
+      "result": "PASS",
+      "checks": [
+        {
+          "id": "six_phase_mobile_ui",
+          "result": "PASS",
+          "evidence": {
+            "phaseCount": 6
+          }
+        },
+        {
+          "id": "twenty_five_minute_clock",
+          "result": "PASS",
+          "evidence": {
+            "timer": "25:00"
+          }
+        },
+        {
+          "id": "service_worker_precaches_support_package",
+          "result": "PASS",
+          "evidence": {
+            "cacheNames": [
+              "workbox-precache-v2-http://127.0.0.1:54879/"
+            ],
+            "requiredCachePaths": [
+              "/audio/day1-source-rev0/voice-free-manifest.json",
+              "/audio/day1-source-rev0/support-ambient-1500.mp3",
+              "/audio/day1-source-rev0/support-binaural-low-a-1500.mp3",
+              "/audio/day1-source-rev0/support-minimal-1500.mp3"
+            ]
+          }
+        },
+        {
+          "id": "service_worker_excludes_rejected_a03r",
+          "result": "PASS",
+          "evidence": {
+            "rejectedMatches": []
+          }
+        },
+        {
+          "id": "offline_cache_api_manifest_retrieval_windows_harness",
+          "result": "PASS",
+          "evidence": {
+            "ok": true,
+            "schema": "qctp-rev3-voice-free-day1-media-v1",
+            "assetCount": 3,
+            "route": "cache-api"
+          }
+        },
+        {
+          "id": "offline_support_binary_retrieval",
+          "result": "PASS",
+          "evidence": [
+            {
+              "path": "audio/day1-source-rev0/support-ambient-1500.mp3",
+              "cached": true,
+              "size": 12000576
+            },
+            {
+              "path": "audio/day1-source-rev0/support-binaural-low-a-1500.mp3",
+              "cached": true,
+              "size": 12000576
+            },
+            {
+              "path": "audio/day1-source-rev0/support-minimal-1500.mp3",
+              "cached": true,
+              "size": 12000576
+            }
+          ]
+        },
+        {
+          "id": "same_origin_only",
+          "result": "PASS",
+          "evidence": {
+            "externalRequests": []
+          }
+        },
+        {
+          "id": "no_rejected_narration_requests",
+          "result": "PASS",
+          "evidence": {
+            "rejectedRequests": []
+          }
+        },
+        {
+          "id": "no_unexpected_request_failures",
+          "result": "PASS",
+          "evidence": {
+            "unexpectedFailures": []
+          }
+        }
+      ],
+      "request_count": 7,
+      "cache_entry_count": 50
+    }
+  ],
+  "physical_gate": {
+    "voice_free_morning_mode": "OPEN",
+    "iphone_webkit_cold_offline_launch": "OPEN_PHYSICAL_DEVICE",
+    "windows_webkit_harness_limitation": "Context-offline navigation is aborted before service-worker handling; performed Cache API retrieval is not labeled a cold reload.",
+    "browser_automation_substitutes_for_physical_use": false
+  }
+}

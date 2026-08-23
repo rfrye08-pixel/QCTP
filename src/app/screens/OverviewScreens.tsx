@@ -1,22 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   DAY1_EVENING_PRACTICE,
   DAY1_MICRO_PRACTICE,
   DAY1_WORKBOOK_PROMPTS,
 } from "../../foundation";
+import { QuickBreathDirector } from "../../breath";
+import {
+  VOICE_FREE_SUPPORT_MODES,
+  type VoiceFreeDay1SessionController,
+  type VoiceFreeSupportMode,
+} from "../../practice";
+import type { PracticeSession } from "../../domain";
+import { StateAtlasProgress } from "../../state-atlas";
+import { CONTROLLED_SOURCE_ARCHITECTURE } from "../../source-tracks";
 import { FieldDictation } from "../components/FieldDictation";
+import { CampbellTrackPanel } from "../components/CampbellTrackPanel";
+import { BreathFoundationsPanel } from "../components/BreathFoundationsPanel";
+import { StateAtlasTrainingPanel } from "../components/StateAtlasTrainingPanel";
+import { usePwaStatus } from "../pwa-status";
 import { ScreenHeader } from "../components/ScreenHeader";
 import { StatusBadge } from "../components/StatusBadge";
+import { VoiceFreePhasePlan } from "../components/VoiceFreePhasePlan";
 import { useQctp } from "../qctp-context";
 import type { AppRoute } from "../routes";
 
 export function TodayOverview({
   onNavigate,
+  voiceFreeSession,
+  onStartVoiceFreeDay1,
+  onQuickCapture,
 }: {
   onNavigate: (route: AppRoute) => void;
+  voiceFreeSession: VoiceFreeDay1SessionController;
+  onStartVoiceFreeDay1: () => void;
+  onQuickCapture: () => void;
 }) {
   const runtime = useQctp();
+  const pwaStatus = usePwaStatus();
+  const [online, setOnline] = useState(() => navigator.onLine);
+  const [lastPracticeSession, setLastPracticeSession] =
+    useState<PracticeSession | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>(
     () => runtime.workbook.answers["1"] ?? {},
   );
@@ -26,6 +50,24 @@ export function TodayOverview({
     evening: false,
   };
   const completedCount = Object.values(completion).filter(Boolean).length;
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine);
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
+  useEffect(() => {
+    let disposed = false;
+    void runtime.repository.listPracticeSessions().then((sessions) => {
+      if (!disposed) setLastPracticeSession(sessions[0] ?? null);
+    });
+    return () => {
+      disposed = true;
+    };
+  }, [runtime.repository, runtime.revision]);
   const saveAnswer = async (promptId: string, value: string) => {
     setAnswers((current) => ({ ...current, [promptId]: value }));
     await runtime.updateWorkbookAnswer(1, promptId, value);
@@ -39,47 +81,175 @@ export function TodayOverview({
     <>
       <ScreenHeader
         eyebrow="Foundation path · Week 1"
-        title="Day 1 — State Control"
+        title="Day 1 — Baseline Awareness"
       >
         <p>
-          Learn the adjustable controls of attention, coherence, narrow focus,
-          and open awareness. This released sequence is preserved from Rev1.1.4.
+          Begin the source-grounded morning sequence immediately. Narration is
+          held until a new voice passes Ryan’s blind physical audition.
         </p>
       </ScreenHeader>
-      <section className="hero-card protected-card">
+      <section className="today-status-grid" aria-label="Today readiness">
+        <article>
+          <span>Local use</span>
+          <strong>{online ? "Device online" : "Offline-ready"}</strong>
+          <small>
+            {online
+              ? "The local ledger remains authoritative."
+              : "Practice, recording, and queued work remain available."}
+          </small>
+        </article>
+        <article>
+          <span>PX13 companion</span>
+          <strong>
+            {runtime.localTranscriptionStatus === "ready" &&
+            runtime.mirror.connectivity === "online"
+              ? "Online"
+              : "Optional / queued"}
+          </strong>
+          <small>
+            Whisper: {runtime.localTranscriptionStatus.replace("-", " ")} ·
+            Mirror: {runtime.mirror.connectivity}
+          </small>
+        </article>
+        <article>
+          <span>App package</span>
+          <strong>{pwaStatus.installed ? "Installed" : "PWA available"}</strong>
+          <small>{pwaStatus.message}</small>
+        </article>
+        <article>
+          <span>Last morning result</span>
+          <strong>
+            {lastPracticeSession?.naturalCompletion
+              ? "Full return completed"
+              : "No completed session yet"}
+          </strong>
+          <small>
+            {lastPracticeSession
+              ? `${Math.round(lastPracticeSession.elapsedMs / 60_000)} minutes · ${lastPracticeSession.supportMode}`
+              : "Voice-Free Day 1 is ready now."}
+          </small>
+        </article>
+        <article>
+          <span>Unresolved practice issue</span>
+          <strong>
+            {runtime.settings.lastVoiceFreeIssue
+              ? "Needs attention"
+              : "None recorded"}
+          </strong>
+          <small>
+            {runtime.settings.lastVoiceFreeIssue?.message ??
+              "A future interruption or audio failure will remain visible here until a full return is saved."}
+          </small>
+        </article>
+      </section>
+      <section className="hero-card protected-card morning-mission">
         <div className="card-heading">
           <div>
-            <p className="eyebrow">Protected baseline</p>
-            <h2>Lesson → 25-minute practice</h2>
+            <p className="eyebrow">Morning practice ready now</p>
+            <h2>Voice-Free Day 1 · 25 minutes</h2>
           </div>
-          <StatusBadge status="released" />
+          <StatusBadge status="ready" />
         </div>
         <div className="metric-grid">
           <div className="metric">
-            <span>Guide</span>
-            <strong>Chill Brian</strong>
+            <span>Guidance</span>
+            <strong>Nonverbal</strong>
           </div>
           <div className="metric">
             <span>Timeline</span>
             <strong>25:00 exact</strong>
           </div>
           <div className="metric">
-            <span>Progression</span>
-            <strong>Completion-based</strong>
+            <span>Breath</span>
+            <strong>5 in / 5 out or comfortable</strong>
           </div>
         </div>
+        <VoiceFreePhasePlan />
+        <label className="compact-field morning-support-select">
+          Continuous support
+          <select
+            value={voiceFreeSession.supportMode}
+            disabled={
+              voiceFreeSession.status === "running" ||
+              voiceFreeSession.status === "paused" ||
+              voiceFreeSession.status === "starting" ||
+              voiceFreeSession.status === "recording_issue" ||
+              voiceFreeSession.status === "saving" ||
+              voiceFreeSession.status === "save_pending"
+            }
+            onChange={(event) =>
+              voiceFreeSession.setSupportMode(
+                event.target.value as VoiceFreeSupportMode,
+              )
+            }
+          >
+            {Object.values(VOICE_FREE_SUPPORT_MODES).map((mode) => (
+              <option key={mode.id} value={mode.id}>
+                {mode.label}
+              </option>
+            ))}
+          </select>
+        </label>
         <button
           className="primary-button"
           type="button"
-          onClick={() => onNavigate("practice")}
+          onClick={onStartVoiceFreeDay1}
+          disabled={voiceFreeSession.readiness !== "ready"}
         >
-          Begin today
+          Begin Voice-Free Day 1
         </button>
+        <p className="fine-print" role="status">
+          {voiceFreeSession.offlinePackageReady
+            ? "Selected 25-minute support is verified in the offline cache."
+            : "Audio can play when ready; the selected offline support package is still being verified."}
+        </p>
         <p className="fine-print">
-          Morning completion is saved only after the full practice naturally
-          reaches 0:00.
+          One tap starts the selected same-origin support track and opens the
+          practice cockpit. The full return must finish before a
+          VOICE_FREE_FALLBACK completion is saved. State attainment and voice
+          acceptance remain separate.
         </p>
       </section>
+      <section className="notice-card voice-hold-card">
+        <strong>Narrated Day 1 is held</strong>
+        <p>
+          The A03R voice was physically rejected as robotic. QCTP will not use
+          it while the blind natural-voice audition remains open.
+        </p>
+        <a className="secondary-link" href="./voice-audition/">
+          Open the blind voice audition
+        </a>
+      </section>
+      <section className="panel-card today-voice-note">
+        <div>
+          <p className="eyebrow">One-tap local note</p>
+          <h2>Capture what is present</h2>
+          <p>
+            Raw audio is saved locally first. Transcription can wait safely for
+            the no-cost PX13 companion.
+          </p>
+        </div>
+        <button
+          className="secondary-button"
+          type="button"
+          onClick={onQuickCapture}
+        >
+          Record voice note
+        </button>
+      </section>
+      <QuickBreathDirector
+        className="today-breath-director"
+        preferences={runtime.breathProfile.quickDirector}
+        onPreferencesChange={(preferences) =>
+          void runtime.updateQuickBreathPreferences(preferences)
+        }
+      />
+      <StateAtlasProgress
+        className="today-state-atlas"
+        stateIds={["Q1", "Q2", "Q3", "Q4"]}
+        capabilities={runtime.stateCapabilities}
+        onStateSelect={() => onNavigate("paths")}
+      />
       <section className="panel-card">
         <div className="card-heading">
           <div>
@@ -168,7 +338,7 @@ export function TodayOverview({
             <span className="component-dot" />
             <p>
               <strong>Morning lesson + practice</strong>
-              <small>Protected Day 1 sequence</small>
+              <small>Source-grounded Voice-Free Day 1 fallback</small>
             </p>
             <span>{completion.morning ? "Complete" : "Pending"}</span>
           </div>
@@ -252,8 +422,9 @@ export function PathsOverview({
           <StatusBadge status="released" />
         </div>
         <p>
-          Day 1 is released. Days 2–112 retain their controlled module slots and
-          remain intentionally unauthored.
+          Day 1 has a source-grounded voice-free morning candidate. Narrated
+          acceptance remains held. Days 2–112 retain their controlled module
+          slots and remain intentionally unauthored.
         </p>
         <button
           className="secondary-button"
@@ -294,6 +465,25 @@ export function PathsOverview({
         >
           Open REG-01
         </button>
+      </section>
+      <BreathFoundationsPanel />
+      <StateAtlasTrainingPanel />
+      <CampbellTrackPanel onOpenPractice={() => onNavigate("practice")} />
+      <section className="panel-card controlled-source-map">
+        <p className="eyebrow">Controlled source architecture</p>
+        <h2>Authority and implementation stay separate</h2>
+        <p>
+          These source families remain labeled by their actual implementation
+          status. An architecture slot is not presented as released content.
+        </p>
+        <div>
+          {CONTROLLED_SOURCE_ARCHITECTURE.map((source) => (
+            <article key={source.id}>
+              <strong>{source.label}</strong>
+              <small>{source.status.replaceAll("_", " ")}</small>
+            </article>
+          ))}
+        </div>
       </section>
     </>
   );
@@ -359,7 +549,7 @@ export function MoreOverview({
       <section className="notice-card">
         <strong>Release control</strong>
         <p>
-          Rev2 has zero release authority. This branch cannot merge or deploy
+          Rev3 has zero release authority. This branch cannot merge or deploy
           without explicit controlled approval.
         </p>
       </section>

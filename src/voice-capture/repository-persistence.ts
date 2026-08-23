@@ -9,6 +9,74 @@ interface ActiveSegment {
   priorDurationMs: number;
 }
 
+export interface InterruptedCaptureRecoveryResult {
+  recoveredRecordingIds: string[];
+  discardedEmptyRecordingIds: string[];
+  failedRecordingIds: string[];
+}
+
+function inferredInterruptedDurationMs(
+  priorDurationMs: number,
+  startedAt: string,
+  lastPersistedAt: string,
+): number {
+  const started = Date.parse(startedAt);
+  const persisted = Date.parse(lastPersistedAt);
+  const activeDurationMs =
+    Number.isFinite(started) && Number.isFinite(persisted)
+      ? Math.max(0, persisted - started)
+      : 0;
+  return priorDurationMs + activeDurationMs;
+}
+
+/**
+ * Repairs CAPTURING rows left behind by a browser/process interruption.
+ *
+ * MediaRecorder chunks are committed to IndexedDB as they arrive, while the
+ * recording is finalized only after the browser's stop event. A hard process
+ * exit can therefore leave durable audio behind a CAPTURING row. This boot-safe
+ * pass converts every such row into LOCAL_ONLY, rolls back an empty append, or
+ * removes an empty first take. Failures are isolated per recording so one bad
+ * legacy row cannot hide other recoverable captures.
+ */
+export async function recoverInterruptedCaptures(
+  repository: QctpRepository,
+): Promise<InterruptedCaptureRecoveryResult> {
+  const result: InterruptedCaptureRecoveryResult = {
+    recoveredRecordingIds: [],
+    discardedEmptyRecordingIds: [],
+    failedRecordingIds: [],
+  };
+  const persistence = new RepositoryCapturePersistence(repository);
+  const interrupted = await repository.listRecordings("CAPTURING");
+
+  for (const recording of interrupted) {
+    const activeSegment = recording.segments.at(-1);
+    if (!activeSegment) {
+      result.failedRecordingIds.push(recording.id);
+      continue;
+    }
+    const durationMs = inferredInterruptedDurationMs(
+      recording.durationMs,
+      activeSegment.startedAt,
+      recording.updatedAt,
+    );
+    try {
+      const recovered = await persistence.recoverInterrupted(
+        recording.id,
+        durationMs,
+        activeSegment.mimeType || recording.mimeType,
+      );
+      if (recovered) result.recoveredRecordingIds.push(recording.id);
+      else result.discardedEmptyRecordingIds.push(recording.id);
+    } catch {
+      result.failedRecordingIds.push(recording.id);
+    }
+  }
+
+  return result;
+}
+
 /**
  * Persists every MediaRecorder chunk immediately. The in-memory map only
  * identifies the currently open segment; raw audio always lives in IndexedDB.

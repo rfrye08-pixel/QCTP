@@ -7,26 +7,49 @@ import { readVerifiedMirrorDeletionResponse } from "./delete-proof";
 const CitationSchema = z.object({
   recordId: z.string().min(1),
   title: z.string().min(1),
-  excerpt: z.string(),
+  excerpt: z.string().trim().min(1).max(1_250),
 });
 
-const RemoteMirrorJobSchema = z.object({
-  id: z.string().min(1),
-  requestId: z.string().min(1),
-  status: z.enum(["queued", "processing", "retry_wait", "complete", "failed"]),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  attempts: z.number().int().nonnegative(),
-  lastError: z.string().nullable(),
-  result: z
-    .object({
-      text: z.string(),
-      model: z.string().min(1),
-      citations: z.array(CitationSchema),
-      createdAt: z.string().datetime(),
-    })
-    .nullable(),
-});
+const RemoteMirrorJobSchema = z
+  .object({
+    id: z.string().min(1),
+    requestId: z.string().min(1),
+    status: z.enum([
+      "queued",
+      "processing",
+      "retry_wait",
+      "complete",
+      "failed",
+    ]),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    attempts: z.number().int().nonnegative(),
+    lastError: z.string().nullable(),
+    result: z
+      .object({
+        text: z.string(),
+        model: z.string().min(1),
+        citations: z.array(CitationSchema),
+        createdAt: z.string().datetime(),
+      })
+      .nullable(),
+  })
+  .superRefine((job, context) => {
+    if (job.status === "complete" && job.result === null) {
+      context.addIssue({
+        code: "custom",
+        path: ["result"],
+        message: "A completed Mirror job must include its result.",
+      });
+    }
+    if (job.status !== "complete" && job.result !== null) {
+      context.addIssue({
+        code: "custom",
+        path: ["result"],
+        message: "Only a completed Mirror job may include a result.",
+      });
+    }
+  });
 
 const RemoteMirrorJobsSchema = z.union([
   z.array(RemoteMirrorJobSchema),

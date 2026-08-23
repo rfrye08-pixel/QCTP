@@ -65,6 +65,10 @@ describe("Free Local Mode transcription client", () => {
 
   afterEach(async () => {
     vi.useRealTimers();
+    Object.defineProperty(navigator, "onLine", {
+      configurable: true,
+      value: true,
+    });
     repository.close();
     await deleteQctpDatabase(databaseName);
   });
@@ -196,6 +200,72 @@ describe("Free Local Mode transcription client", () => {
     expect(await repository.listTranscriptionQueue()).toEqual([]);
   });
 
+  it("leaves its IndexedDB queue untouched offline and drains it after reconnect", async () => {
+    const request = vi.fn((input: RequestInfo | URL): Promise<Response> => {
+      if (requestUrl(input).endsWith("/policy")) {
+        return Promise.resolve(
+          jsonResponse({
+            mode: "free-local",
+            provider: "local-whisper",
+            paidCloudEnabled: false,
+            hardSpendLimitUsd: 0,
+          }),
+        );
+      }
+      return Promise.resolve(
+        jsonResponse(
+          {
+            recordingId: "local-recording",
+            transcriptId: "15d564c2-0fa8-48a1-b96f-bf800a2be2db",
+            status: "TRANSCRIBED",
+            originalText: "Recovered from the offline queue.",
+            provider: "local-whisper",
+            model: "base",
+            language: "en",
+            durationMs: 1_200,
+            detectedMimeType: "audio/webm",
+            acceptedAt: "2026-08-17T12:05:00.000Z",
+          },
+          201,
+        ),
+      );
+    });
+    const client = new LocalTranscriptionClient({
+      accessToken,
+      fetch: request,
+    });
+    Object.defineProperty(navigator, "onLine", {
+      configurable: true,
+      value: false,
+    });
+
+    await expect(client.processQueue(repository)).resolves.toEqual({
+      completed: [],
+      failed: [],
+    });
+    expect(request).not.toHaveBeenCalled();
+    expect(await repository.listTranscriptionQueue()).toEqual([
+      expect.objectContaining({
+        recordingId: "local-recording",
+        status: "QUEUED",
+        attempts: 0,
+      }),
+    ]);
+
+    Object.defineProperty(navigator, "onLine", {
+      configurable: true,
+      value: true,
+    });
+    await expect(client.processQueue(repository)).resolves.toEqual({
+      completed: ["local-recording"],
+      failed: [],
+    });
+    expect(
+      await repository.getTranscriptForRecording("local-recording"),
+    ).toMatchObject({ originalText: "Recovered from the offline queue." });
+    expect(await repository.listTranscriptionQueue()).toEqual([]);
+  });
+
   it("refuses a paid-cloud policy before uploading any audio", async () => {
     const request = vi.fn((): Promise<Response> =>
       Promise.resolve(
@@ -211,6 +281,31 @@ describe("Free Local Mode transcription client", () => {
       accessToken,
       fetch: request,
     });
+    await expect(
+      client.transcribeRecording(repository, "local-recording"),
+    ).rejects.toMatchObject({
+      code: "NON_LOCAL_POLICY",
+      retryable: false,
+    });
+    expect(request).toHaveBeenCalledTimes(1);
+  });
+
+  it("refuses a nominally local policy with any nonzero spend allowance", async () => {
+    const request = vi.fn((): Promise<Response> =>
+      Promise.resolve(
+        jsonResponse({
+          mode: "free-local",
+          provider: "misconfigured-local-service",
+          paidCloudEnabled: false,
+          hardSpendLimitUsd: 0.01,
+        }),
+      ),
+    );
+    const client = new LocalTranscriptionClient({
+      accessToken,
+      fetch: request,
+    });
+
     await expect(
       client.transcribeRecording(repository, "local-recording"),
     ).rejects.toMatchObject({
@@ -281,10 +376,19 @@ describe("Free Local Mode transcription client", () => {
   it("deletes remote artifacts without following redirects", async () => {
     const request = vi.fn((): Promise<Response> =>
       Promise.resolve(
-        jsonResponse({
-          recordingId: "local-recording",
-          remoteObject: "deleted",
-        }),
+        new Response(
+          JSON.stringify({
+            recordingId: "local-recording",
+            remoteObject: "deleted",
+          }),
+          {
+            status: 200,
+            headers: {
+              "content-type": "application/json",
+              "X-Request-Id": "delete-recording-1",
+            },
+          },
+        ),
       ),
     );
     const client = new LocalTranscriptionClient({
@@ -299,5 +403,61 @@ describe("Free Local Mode transcription client", () => {
       "/api/transcriptions/local-recording",
       expect.objectContaining({ method: "DELETE", redirect: "error" }),
     );
+  });
+
+  it("preserves local data when deletion lacks application-level proof", async () => {
+    const missingProof = new LocalTranscriptionClient({
+      accessToken,
+      fetch: vi.fn(() =>
+        Promise.resolve(
+          jsonResponse({
+            recordingId: "local-recording",
+            remoteObject: "deleted",
+          }),
+        ),
+      ),
+    });
+    await expect(
+      missingProof.deleteRemoteRecording("local-recording"),
+    ).rejects.toMatchObject({
+      code: "DELETION_UNVERIFIED",
+      retryable: false,
+    });
+    expect(await repository.getRecording("local-recording")).toBeDefined();
+    expect(await repository.listAudioChunks("local-recording")).not.toEqual([]);
+
+    const mismatched = new LocalTranscriptionClient({
+      accessToken,
+      fetch: vi.fn(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({
+              recordingId: "different-recording",
+              remoteObject: "deleted",
+            }),
+            { headers: { "X-Request-Id": "delete-recording-2" } },
+          ),
+        ),
+      ),
+    });
+    await expect(
+      mismatched.deleteRemoteRecording("local-recording"),
+    ).rejects.toMatchObject({ code: "DELETION_UNVERIFIED" });
+    expect(await repository.getRecording("local-recording")).toBeDefined();
+  });
+
+  it("preserves local data when PX13 deletion cannot be reached", async () => {
+    const client = new LocalTranscriptionClient({
+      accessToken,
+      fetch: vi.fn(() => Promise.reject(new TypeError("offline"))),
+    });
+
+    await expect(
+      client.deleteRemoteRecording("local-recording"),
+    ).rejects.toMatchObject({
+      code: "DELETION_UNVERIFIED",
+      retryable: true,
+    });
+    expect(await repository.getRecording("local-recording")).toBeDefined();
   });
 });

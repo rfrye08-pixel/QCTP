@@ -1,0 +1,96 @@
+{
+  "schema": "qctp-rev3-voice-free-phase-marker-build-v1",
+  "status": "BUILT_MACHINE_VERIFICATION_REQUIRED",
+  "release_authority": "ZERO_RELEASE",
+  "source_git_ref": "a2093caa714332313fa7196f3dc58a67a2d721d2",
+  "source_assets": {
+    "support-ambient-1500.mp3": {
+      "sha256": "3aeb72be1b4fae7dc9a8aa2543e3fdefb75c5a85c8f5142154b6149c43f34d20",
+      "mode": "ambient"
+    },
+    "support-binaural-low-a-1500.mp3": {
+      "sha256": "2e33b45490a9b64c8dea2843024b4d0ac4d8ef70560e28da35d5e5b6b1216eba",
+      "mode": "binaural_low_a"
+    },
+    "support-minimal-1500.mp3": {
+      "sha256": "d3ea4fbee34c8a4e1f15f2693a75d3fc682bee09956cfe170e554378b1549b50",
+      "mode": "minimal_continuity"
+    }
+  },
+  "operations": {
+    "narration_used": false,
+    "time_stretch_used": false,
+    "source_bed_timing_changed": false,
+    "marker_boundaries_seconds": [180, 480, 780, 1380, 1440],
+    "marker_lead_seconds": 0.4,
+    "marker_duration_seconds": 0.26,
+    "marker_frequencies_hz": [330, 495],
+    "marker_peak_formula": "0.018 * (sin(330 Hz) + 0.35 * sin(495 Hz)) * sin^2 envelope",
+    "encoding": "ffmpeg libmp3lame 64 kbps, 24 kHz, stereo"
+  },
+  "outputs": [
+    {
+      "mode": "ambient",
+      "path": "public/audio/day1-source-rev0/support-ambient-1500.mp3",
+      "bytes": 12000576,
+      "sha256": "eb32e69b73099e6b20dc2107cf836be72cdf6ca79a07d267da2f9abf95610726",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "24000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "1500.000000",
+          "bit_rate": "64003"
+        }
+      }
+    },
+    {
+      "mode": "binaural_low_a",
+      "path": "public/audio/day1-source-rev0/support-binaural-low-a-1500.mp3",
+      "bytes": 12000576,
+      "sha256": "e592c954af517c2022f7c3e5f653591e026e6d3ff467c8afb6b78647510912fe",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "24000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "1500.000000",
+          "bit_rate": "64003"
+        }
+      }
+    },
+    {
+      "mode": "minimal_continuity",
+      "path": "public/audio/day1-source-rev0/support-minimal-1500.mp3",
+      "bytes": 12000576,
+      "sha256": "4611a2cb65a553a9904777aaaa65bc70461fd3c325e1dfd7715bb83d6c3ca0cb",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "24000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "1500.000000",
+          "bit_rate": "64003"
+        }
+      }
+    }
+  ]
+}

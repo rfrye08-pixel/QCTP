@@ -1,0 +1,79 @@
+{
+  "schema": "qctp-rev3-mobile-ux-capture-v1",
+  "generated_at": "2026-08-22T23:41:52.012Z",
+  "base_url": "http://127.0.0.1:4193",
+  "runner": {
+    "engine": "Playwright WebKit on Windows",
+    "browser_version": "26.5",
+    "descriptor": "iPhone 13",
+    "viewport_css_pixels": {
+      "width": 390,
+      "height": 664
+    },
+    "device_scale_factor": 3,
+    "is_mobile": true,
+    "has_touch": true
+  },
+  "assertions": {
+    "today_morning_cockpit": "PASS",
+    "today_durable_practice_issue_after_reload": "PASS",
+    "voice_free_day1": "PASS",
+    "paths_overview": "PASS",
+    "breath_foundations": "PASS",
+    "state_atlas": "PASS",
+    "blind_audition_mapping_secrecy": "PASS",
+    "critical_tap_targets_44_css_px": "PASS",
+    "horizontal_overflow": "PASS",
+    "paid_cloud_request_audit": "PASS",
+    "page_error_audit": "PASS"
+  },
+  "observations": {
+    "console_errors": [
+      {
+        "location": {
+          "url": "http://127.0.0.1:4193/api/transcriptions/policy",
+          "line": 0,
+          "column": 0,
+          "lineNumber": 0,
+          "columnNumber": 0
+        },
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+      },
+      {
+        "location": {
+          "url": "http://127.0.0.1:4193/api/transcriptions/policy",
+          "line": 0,
+          "column": 0,
+          "lineNumber": 0,
+          "columnNumber": 0
+        },
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+      }
+    ],
+    "http_errors": [
+      {
+        "status": 401,
+        "url": "http://127.0.0.1:4193/api/transcriptions/policy"
+      },
+      {
+        "status": 401,
+        "url": "http://127.0.0.1:4193/api/transcriptions/policy"
+      }
+    ],
+    "failed_same_origin_requests": [],
+    "paid_cloud_requests": [],
+    "page_errors": []
+  },
+  "screenshots": [
+    "01-today-morning-cockpit-iphone13-webkit.png",
+    "02-voice-free-day1-iphone13-webkit.png",
+    "03-paths-overview-iphone13-webkit.png",
+    "04-breath-foundations-iphone13-webkit.png",
+    "05-state-atlas-iphone13-webkit.png",
+    "06-blind-voice-audition-iphone13-webkit.png",
+    "07-blind-voice-controls-iphone13-webkit.png",
+    "08-today-durable-practice-issue-iphone13-webkit.png"
+  ],
+  "physical_acceptance": "NOT_PERFORMED",
+  "release_authority": "ZERO_RELEASE"
+}

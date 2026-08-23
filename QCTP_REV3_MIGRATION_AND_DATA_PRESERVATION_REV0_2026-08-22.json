@@ -1,0 +1,288 @@
+{
+  "schema": "qctp-rev3-migration-and-data-preservation-evidence-v1",
+  "artifact_id": "QCTP-REV3-MIGRATION-AND-DATA-PRESERVATION-REV0",
+  "verified_at": "2026-08-22T18:43:11-05:00",
+  "result": "CONTROLLED_FIXTURE_PASS_ACTUAL_ORIGIN_HOLD_OPEN",
+  "release_authority": "ZERO_RELEASE",
+  "scope": {
+    "performed": [
+      "Inspected the Rev1 localStorage migration, IndexedDB version lineage, repository transactions, Rev3 export/import envelope, binary archive path, state-capability semantic validation, capture interruption recovery, and deletion boundaries in the active Rev3 working tree.",
+      "Ran focused automated tests against isolated fake-indexeddb databases and browser-DOM test harnesses.",
+      "Verified additive schema upgrade fixtures from IndexedDB versions 1, 2, 3, and 4 to version 5, including preservation of a stored version-4 practice record.",
+      "Verified Rev1 raw and wrapped migration fixtures, byte-identical source snapshots, fingerprint idempotency, malformed-field warnings, and fail-before-write behavior for corrupt input.",
+      "Verified Rev3 JSON identity, legacy Rev2 JSON normalization, checksummed binary archive round trips, duplicate/reference/semantic rejection, and validation before replace transactions.",
+      "Verified local recording chunk durability, reload assembly, background/foreground interruption recovery, hard-exit repair, empty-capture cleanup, append rollback, explicit acceptance, and selective/complete deletion behavior.",
+      "Verified that unresolved Voice-Free attempt issues use a typed settings field with a backward-compatible null default, remain part of the settings object carried by Rev3 exports, and are cleared in the same transaction as successful practice evidence and Foundation morning completion."
+    ],
+    "not_performed": [
+      "No production or private-live origin was opened, upgraded, imported, exported, cleared, or mutated for this evidence run.",
+      "No physical iPhone or installed PWA storage profile was migrated or compared before and after upgrade.",
+      "No actual Ryan-owned IndexedDB record, Rev1 localStorage payload, recording blob, attachment blob, setting, or migration-ledger entry was inspected or hashed.",
+      "No release, merge, live-root installation, or deployment was authorized or performed."
+    ]
+  },
+  "repository_identity": {
+    "branch": "qctp-platform-rev3-codex",
+    "head_at_verification": "511860e1bae0d8693c5b220d46a9a17e8f68135c",
+    "origin_shas": {
+      "main": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
+      "rev2": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
+      "rev3": "a2093caa714332313fa7196f3dc58a67a2d721d2"
+    },
+    "working_tree": "CLEAN_AT_VERIFICATION_START",
+    "uncommitted_path_count_at_verification": 0,
+    "interpretation": "The focused migration and preservation command verified the exact committed Rev3 checkpoint and the source hashes below. Writing this evidence file afterward is the expected evidence-only change.",
+    "audited_source_sha256": {
+      "src/data/db.ts": "f93d06b3882eff90c9340206c87bbec8a6b1ff025e698ec42b98fc823836af33",
+      "src/data/migrate-rev1.ts": "f02ce522200e5e4ee0e836963b8b1c64e6495a0dd8b460d817bd2074b7af319d",
+      "src/data/repository.ts": "b1183b8a376cea6256d2b800be0b367a8550f6ede9e8a89a08a63e395cb0086c",
+      "src/domain/schemas.ts": "a7d18b614807d00aaba3b8924a39873f82bb7cc3bb081a899d3133d0e8861620",
+      "src/export-import/index.ts": "abc5a171b1ae311e405f883260d5303407866157f45850170a48be387e81d831",
+      "src/voice-capture/repository-persistence.ts": "e49ebe8492ca5f932b597d96c3c59ebcba6c8e9b10b7bcda20699db9071fd886",
+      "src/domain/defaults.ts": "11bc15c0b1584dfd202c3371cdb18dada432abcdb853b9bd2bef214d66be76ef",
+      "src/app/App.tsx": "2cf3630ffde08ebbbeb83ffb52c24ca0c09950e440d0f457ef2f0a6e754545a6",
+      "src/data/practice-session.test.ts": "02b7ee0949098b4db76b574cdffd958ce6920fac854723e3fa394e4cd1ca0642",
+      "src/domain/schemas.test.ts": "85e81f18b857ee0c082a50f3c1beb0468fd5216f679637a28f5dfa5bca2b3249"
+    }
+  },
+  "runtime": {
+    "os": "Windows PX13",
+    "node": "v22.23.2",
+    "npm": "12.0.2",
+    "vitest": "4.1.10",
+    "database_test_backend": "fake-indexeddb",
+    "browser_dom_test_backend": "jsdom"
+  },
+  "schema_and_migration_lineage": {
+    "rev1_local_storage": {
+      "source_key": "qctp-state",
+      "migration_id": "rev1-localstorage-qctp-state",
+      "accepted_shapes": [
+        "raw Rev1 state object",
+        "Rev1 wrapper with a state object"
+      ],
+      "preservation_contract": [
+        "The exact input string is copied into migrationLedger.sourceSnapshotJson.",
+        "A deterministic 64-bit FNV-1a-style source fingerprint makes byte-identical migration idempotent.",
+        "Foundation current day/completion, workbook answers, recognized settings, test/neural settings, and valid legacy logs are mapped into typed records.",
+        "Unknown or malformed source content remains recoverable in the exact source snapshot even when typed fields require normalization or generate warnings.",
+        "Corrupt JSON is rejected before a migration-ledger write; absence of the source key is a no-op.",
+        "The migration implementation reads but does not delete the Rev1 localStorage key."
+      ]
+    },
+    "indexeddb": {
+      "database_name": "qctp-rev2",
+      "database_name_preserved_for_origin_continuity": true,
+      "current_version": 5,
+      "current_object_store_count": 24,
+      "versions": [
+        {
+          "version": 1,
+          "adds": [
+            "foundation",
+            "workbook",
+            "settings",
+            "records",
+            "searchDocuments",
+            "recordings",
+            "audioChunks",
+            "transcripts",
+            "derivedNotes",
+            "transcriptionQueue",
+            "attachments",
+            "attachmentBlobs",
+            "revisions",
+            "paths",
+            "regSessions",
+            "migrationLedger"
+          ]
+        },
+        {
+          "version": 2,
+          "adds": ["mirrorRequests", "mirrorResults"]
+        },
+        {
+          "version": 3,
+          "adds": ["mirrorInsightFeedback"]
+        },
+        {
+          "version": 4,
+          "adds": ["practiceSessions"]
+        },
+        {
+          "version": 5,
+          "adds": [
+            "breathProfiles",
+            "breathSessions",
+            "stateSessions",
+            "stateCapabilities"
+          ]
+        }
+      ],
+      "upgrade_behavior": [
+        "Version gates are additive; the v5 upgrade creates Breath and State stores without clearing existing stores.",
+        "An upgrade blocked by an older open tab rejects with explicit close-other-tab/reopen guidance instead of hanging.",
+        "A database connection receiving a blocking event closes so a newer tab can proceed.",
+        "The blocked opener is closed if it resolves after the caller has already received the recovery error."
+      ]
+    },
+    "export_import": {
+      "current_json_schema": "qctp-export-v3",
+      "current_json_schema_version": 3,
+      "accepted_legacy_json_schema": "qctp-export-v2",
+      "legacy_v2_normalization": "The parser changes identity to qctp-export-v3/version 3 and supplies empty additive practice, Breath, and State collections when absent.",
+      "archive_schema": "qctp-archive-manifest-v1",
+      "archive_version": 1,
+      "archive_uncompressed_limit_bytes": 1073741824,
+      "binary_contract": [
+        "Audio chunks and attachment blobs are stored outside the JSON entity snapshot and included in the ZIP archive.",
+        "Every archive binary is checked for safe path, declared byte size, SHA-256, manifest membership, and owner relation.",
+        "All entity, relation, state-capability, and binary reconstruction validation completes before the single IndexedDB import transaction begins.",
+        "Replace mode clears and writes the complete store set inside one readwrite transaction only after prevalidation."
+      ]
+    },
+    "voice_free_unresolved_issue": {
+      "storage_location": "AppSettings.lastVoiceFreeIssue in the IndexedDB settings object store",
+      "schema": "PracticeAttemptIssueSchema or null",
+      "backward_compatibility": "AppSettingsSchema defaults a missing lastVoiceFreeIssue field to null, so pre-Rev3 settings do not invent an issue.",
+      "preserved_fields": [
+        "code",
+        "message",
+        "occurredAt",
+        "elapsedMs",
+        "supportMode",
+        "completionCreditGranted=false",
+        "stateCapabilityCreditGranted=false"
+      ],
+      "export_contract": "QctpExportDataSchema carries the complete AppSettings object in its settings field; the complete-settings JSON round-trip test passed. Source inspection confirms lastVoiceFreeIssue is not stripped or separately transformed.",
+      "clear_contract": "The successful natural-completion path parses settings with lastVoiceFreeIssue=null and passes them with the practice session and Foundation state to one IndexedDB transaction over practiceSessions, foundation, and settings.",
+      "precision_note": "The automated suite explicitly seeds and atomically clears a non-null issue and separately round-trips the complete settings object. It does not contain a dedicated named fixture that exports a non-null issue without clearing it first."
+    }
+  },
+  "preservation_and_rejection_gates": [
+    {
+      "id": "REV1_EXACT_SOURCE_AND_IDEMPOTENCY",
+      "result": "PASS_FIXTURE",
+      "evidence": "Six Rev1 tests covered raw/wrapped inputs, exact sourceSnapshotJson bytes, imported typed data, byte-identical idempotency, malformed-field warnings with retained source, corrupt-input no-write behavior, and absent-key no-op."
+    },
+    {
+      "id": "INDEXEDDB_V1_TO_V5_ADDITIVE_UPGRADE",
+      "result": "PASS_FIXTURE",
+      "evidence": "Five schema tests opened fixtures at versions 1 through 4, reached version 5, found the expected additive stores, preserved a version-4 practice value, and rejected a blocked upgrade with recovery guidance."
+    },
+    {
+      "id": "BINARY_RECORDING_DURABILITY",
+      "result": "PASS_FIXTURE",
+      "evidence": "Immediate audio-chunk persistence, ordered multi-segment append, close/reopen assembly, accepted-record linkage, transcription-failure preservation, and checksummed ZIP round trip all passed."
+    },
+    {
+      "id": "EXPORT_V3_AND_LEGACY_V2",
+      "result": "PASS_FIXTURE",
+      "evidence": "The repository emitted qctp-export-v3/version 3; a legacy qctp-export-v2/version 2 snapshot parsed into the Rev3 shape with empty additive collections; JSON and binary archives round-tripped."
+    },
+    {
+      "id": "DUPLICATE_REFERENCE_TAMPER_AND_SEMANTIC_REJECTION",
+      "result": "PASS_FIXTURE",
+      "evidence": "Tests rejected duplicate entity/practice/audio-chunk IDs, missing cross-entity references, unsafe paths, missing files, size/hash/owner mismatches, invalid Mirror provenance, broken state evidence, and crafted semantic capability inflation before destructive replace writes."
+    },
+    {
+      "id": "CAPTURE_INTERRUPTION_REPAIR",
+      "result": "PASS_FIXTURE",
+      "evidence": "Tests recovered persisted chunks after foreground loss, disposal, direct interruption, and hard browser exit; stopped all microphone tracks; removed empty interrupted takes; and rolled an empty interrupted append back to the earlier intact take."
+    },
+    {
+      "id": "CONTROLLED_DELETION",
+      "result": "PASS_FIXTURE",
+      "evidence": "Tests covered transactional selective and complete voice-layer deletion, typed-confirmation orphan discard, Mirror tombstone/restore/purge ordering, reference-protected source deletion, and preservation of live data when a purge precondition fails."
+    },
+    {
+      "id": "VOICE_FREE_COMPLETION_ATOMICITY",
+      "result": "PASS_FIXTURE",
+      "evidence": "A seeded unresolved Voice-Free issue was cleared together with practice evidence and the Foundation morning-completion flag in one transaction; invalid Foundation or settings input failed before any practice write. Fallback completion remained separate from narration acceptance and state attainment."
+    },
+    {
+      "id": "VOICE_FREE_ISSUE_SETTINGS_COMPATIBILITY_AND_EXPORT",
+      "result": "PASS_TEST_AND_SOURCE_INSPECTION",
+      "evidence": "Domain tests proved a null default and safe parsing of pre-Rev3 settings without the field. Repository tests persisted a typed non-null issue and verified its atomic clear. The complete JSON entity snapshot test round-tripped settings exactly, while source inspection confirmed the issue is a normal AppSettings field in qctp-export-v3."
+    }
+  ],
+  "performed_verification": [
+    {
+      "command": ".\\node_modules\\.bin\\vitest.cmd run src/data/migrate-rev1.test.ts src/data/db-migration.test.ts src/data/repository.test.ts src/voice-capture/repository-persistence.test.ts src/voice-capture/accept-capture.test.ts src/export-import/index.test.ts src/data/breath-state-persistence.test.ts src/state-atlas/state-atlas.test.ts src/voice-capture/browser-recorder.test.ts src/codex/CodexScreen.test.tsx src/data/practice-session.test.ts src/data/mirror-result-lifecycle.test.ts src/domain/schemas.test.ts --reporter=verbose",
+      "started_local": "2026-08-22T18:43:11-05:00",
+      "exit_code": 0,
+      "test_files_passed": 13,
+      "test_files_failed": 0,
+      "tests_passed": 89,
+      "tests_failed": 0,
+      "duration_seconds": 6.16,
+      "per_file": {
+        "src/data/migrate-rev1.test.ts": 6,
+        "src/data/db-migration.test.ts": 5,
+        "src/data/repository.test.ts": 8,
+        "src/voice-capture/repository-persistence.test.ts": 7,
+        "src/voice-capture/accept-capture.test.ts": 1,
+        "src/export-import/index.test.ts": 7,
+        "src/data/breath-state-persistence.test.ts": 9,
+        "src/state-atlas/state-atlas.test.ts": 20,
+        "src/voice-capture/browser-recorder.test.ts": 6,
+        "src/codex/CodexScreen.test.tsx": 3,
+        "src/data/practice-session.test.ts": 3,
+        "src/data/mirror-result-lifecycle.test.ts": 8,
+        "src/domain/schemas.test.ts": 6
+      }
+    }
+  ],
+  "verification_summary": {
+    "test_files_passed": 13,
+    "test_files_failed": 0,
+    "tests_passed": 89,
+    "tests_failed": 0,
+    "product_test_result": "PASS",
+    "evidence_result": "MACHINE_FIXTURE_PASS_ONLY"
+  },
+  "harness_invocation_diagnostics": [
+    {
+      "command": "npm exec vitest run -- src/data/migrate-rev1.test.ts src/data/db-migration.test.ts src/data/repository.test.ts src/voice-capture/repository-persistence.test.ts src/voice-capture/accept-capture.test.ts src/export-import/index.test.ts src/data/breath-state-persistence.test.ts src/state-atlas/state-atlas.test.ts --reporter=verbose",
+      "exit_code": 1,
+      "classification": "HARNESS_INVOCATION_ERROR_NOT_PRODUCT_TEST_FAILURE",
+      "error": "npm 12 interpreted --reporter as an npm configuration flag (EUNKNOWNCONFIG); Vitest did not start."
+    },
+    {
+      "command": "npm exec -- vitest run src/data/migrate-rev1.test.ts src/data/db-migration.test.ts src/data/repository.test.ts src/voice-capture/repository-persistence.test.ts src/voice-capture/accept-capture.test.ts src/export-import/index.test.ts src/data/breath-state-persistence.test.ts src/state-atlas/state-atlas.test.ts --reporter=verbose",
+      "exit_code": 1,
+      "classification": "HARNESS_INVOCATION_ERROR_NOT_PRODUCT_TEST_FAILURE",
+      "error": "npm 12 again interpreted --reporter as an npm configuration flag (EUNKNOWNCONFIG); Vitest did not start. The direct checked-in Vitest executable was then used successfully."
+    }
+  ],
+  "limitations_and_holds": [
+    {
+      "id": "ACTUAL_ORIGIN_MIGRATION",
+      "status": "OPEN_RELEASE_HOLD",
+      "reason": "Synthetic databases and jsdom cannot prove preservation of Ryan's existing private-origin Safari/PWA data.",
+      "required_evidence": "At the exact intended private HTTPS origin and actual iPhone/PWA profile, preserve a pre-upgrade JSON export and checksummed binary archive, record entity/binary counts and hashes, load the Rev3 candidate once, export again, and compare the preserved source records, recordings, settings, migration ledger, and blobs without clearing site data or uninstalling the PWA."
+    },
+    {
+      "id": "REAL_BROWSER_UPGRADE_CONTENTION",
+      "status": "OPEN_RELEASE_HOLD",
+      "reason": "The v4-to-v5 blocked-tab recovery passed fake-indexeddb; real iPhone WebKit multi-tab/PWA upgrade contention was not physically exercised."
+    },
+    {
+      "id": "REAL_MICROPHONE_INTERRUPTION",
+      "status": "OPEN_RELEASE_HOLD",
+      "reason": "MediaRecorder lifecycle and persistence tests used deterministic fakes; real iPhone lock/background/foreground, permission interruption, and long recording recovery remain physical gates."
+    },
+    {
+      "id": "REAL_BINARY_SCALE",
+      "status": "OPEN_RELEASE_HOLD",
+      "reason": "Checksummed ZIP tests used small deterministic blobs; actual long recordings, available storage, Safari quota behavior, archive size near device limits, and recovery after low-storage interruption were not exercised."
+    },
+    {
+      "id": "PUSHED_EXACT_CANDIDATE_FULL_GATE",
+      "status": "OPEN_CHECKPOINT_HOLD",
+      "reason": "The focused 89-test gate passed from a clean committed checkpoint. The full repository, browser, companion, and runtime gates must still pass for the exact pushed closeout candidate."
+    }
+  ],
+  "release_statement": "These results establish strong automated migration and data-preservation behavior for controlled fixtures only. They do not establish actual-origin preservation, physical iPhone recovery, release completeness, or release authority. Rev3 remains ZERO_RELEASE.",
+  "next_controlled_action": "Before any Rev3 release or replacement of the existing private-origin app, perform the supervised actual-origin pre/post export and binary-hash comparison on Ryan's real iPhone/PWA storage without clearing or reinstalling it."
+}

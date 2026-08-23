@@ -1,0 +1,135 @@
+{
+  "schema": "qctp-rev3-ux-acceptance-v1",
+  "artifact_id": "QCTP-REV3-UX-ACCEPTANCE-REV0",
+  "captured_at": "2026-08-22T23:41:52.012Z",
+  "status": "AUTOMATED_WINDOWS_WEBKIT_MOBILE_PASS_PHYSICAL_IPHONE_HOLD_OPEN",
+  "candidate": {
+    "branch": "qctp-platform-rev3-codex",
+    "head_at_capture": "dbe7aa8341107c5b3ed2884dd73e605c17b151dd",
+    "working_tree_clean_at_capture": true,
+    "working_tree_entries_at_capture": 0,
+    "base_url": "http://127.0.0.1:4193",
+    "build_assets": [
+      {
+        "path": "dist/assets/index-BNJrClhK.css",
+        "bytes": 60478,
+        "sha256": "bafc9f3e4082ad9e38c4336a63e8e955c9c0ae503d9f65de7e907ff16eed72ba"
+      },
+      {
+        "path": "dist/assets/index-CWQaLBQ2.js",
+        "bytes": 751443,
+        "sha256": "22f34bc39e2d23b33817622e4df7f303e03803684fb7af66c54264ee028cf363"
+      },
+      {
+        "path": "dist/index.html",
+        "bytes": 1283,
+        "sha256": "963d8325de6810799953081b7c3c4417d7f0c43cdcfdb3ea967e32a43e33fbcf"
+      },
+      {
+        "path": "dist/manifest.webmanifest",
+        "bytes": 662,
+        "sha256": "db6284dbf3c895c80b8f8e2e7844c69530e3eb1950d1b2c7b93d7f58a8108e21"
+      },
+      {
+        "path": "dist/sw.js",
+        "bytes": 4943,
+        "sha256": "8c15b7f9f6c7d34e81a24f9410fbb260d8641e1ef5e91058e1829ff7d9d085e4"
+      }
+    ]
+  },
+  "runner": {
+    "host": "Windows PX13",
+    "engine": "Playwright WebKit 26.5 on Windows",
+    "project_profile": "iphone-portrait equivalent",
+    "device_descriptor": "Playwright iPhone 13",
+    "viewport_css_pixels": {
+      "width": 390,
+      "height": 664
+    },
+    "device_scale_factor": 3,
+    "screenshot_pixels": {
+      "width": 1170,
+      "height": 1992
+    },
+    "mobile": true,
+    "touch": true,
+    "locale": "en-US",
+    "timezone": "America/Chicago"
+  },
+  "assertions": {
+    "today_morning_cockpit": "PASS",
+    "today_durable_practice_issue_after_reload": "PASS",
+    "voice_free_day1_six_phase_1500_second_presentation": "PASS",
+    "paths_no_fabricated_days_2_through_112": "PASS",
+    "breath_foundations_seven_sessions": "PASS",
+    "state_atlas_twelve_controlled_states": "PASS",
+    "blind_audition_mapping_secrecy": "PASS",
+    "critical_tap_targets_at_least_44_css_pixels": "PASS",
+    "horizontal_overflow": "PASS",
+    "paid_cloud_request_audit": "PASS",
+    "page_error_audit": "PASS"
+  },
+  "screenshots": [
+    {
+      "path": "controlled-artifacts/rev3-ux/01-today-morning-cockpit-iphone13-webkit.png",
+      "bytes": 145032,
+      "sha256": "324538db78c63c61c24013a7a0f5332ab55bb034bb718daf335efd4541c47b72"
+    },
+    {
+      "path": "controlled-artifacts/rev3-ux/02-voice-free-day1-iphone13-webkit.png",
+      "bytes": 220529,
+      "sha256": "d048120f069f88dce7084e4f1e496a2e77426f0e75c50e9b734f3710919b22b0"
+    },
+    {
+      "path": "controlled-artifacts/rev3-ux/03-paths-overview-iphone13-webkit.png",
+      "bytes": 195947,
+      "sha256": "2175572a588065a7882e9a0148d7dc54e2e0b96e12ae96ba96166b90f87d3258"
+    },
+    {
+      "path": "controlled-artifacts/rev3-ux/04-breath-foundations-iphone13-webkit.png",
+      "bytes": 185407,
+      "sha256": "985dad808a089b5cd638d129af08d18c4789964372467ca2879aa947f905b000"
+    },
+    {
+      "path": "controlled-artifacts/rev3-ux/05-state-atlas-iphone13-webkit.png",
+      "bytes": 163237,
+      "sha256": "67a75d6199a5a5e5944f0582f7cbcbc65a603b7f6adfcc5814af5be033b7ef99"
+    },
+    {
+      "path": "controlled-artifacts/rev3-ux/06-blind-voice-audition-iphone13-webkit.png",
+      "bytes": 189264,
+      "sha256": "f3059c6e3cb9bf7a96255a132b8e39d9d47b7362fe40d1ad31f3b7aa814bc89d"
+    },
+    {
+      "path": "controlled-artifacts/rev3-ux/07-blind-voice-controls-iphone13-webkit.png",
+      "bytes": 141070,
+      "sha256": "fdafcf070efdabe6f9c4e60bd7be1babbfdebfa2958291fd4542c6600e9da393"
+    },
+    {
+      "path": "controlled-artifacts/rev3-ux/08-today-durable-practice-issue-iphone13-webkit.png",
+      "bytes": 164065,
+      "sha256": "29851043c3d9411a26905f1a6bf7f58e4ad234f62467f58ddecfe507a4d5bc16"
+    }
+  ],
+  "observations": {
+    "paid_cloud_requests": [],
+    "page_errors": [],
+    "failed_same_origin_requests": [],
+    "expected_fail_closed_responses": [
+      {
+        "status": 401,
+        "path": "/api/transcriptions/policy",
+        "count": 2,
+        "reason": "A clean browser has no private PX13 session cookie; the restore probe fails closed and the app remains usable in local-only mode."
+      }
+    ]
+  },
+  "holds": [
+    "Physical iPhone rendering, safe-area, touch, installed-PWA, Home Screen icon, cold-offline launch, and foreground/background recovery were not performed.",
+    "Physical iPhone audio playback, nonverbal-marker perception, wake-lock behavior, and a complete 25-minute morning practice were not performed.",
+    "Human natural-voice selection remains an open physical gate; route identities remain blind in public evidence.",
+    "The private PX13 companion was intentionally unauthenticated in this clean automated browser context."
+  ],
+  "physical_iphone_acceptance": "NOT_PERFORMED",
+  "release_authority": "ZERO_RELEASE"
+}

@@ -1,0 +1,167 @@
+{
+  "schema": "qctp-rev3-blind-natural-voice-audition-v1",
+  "action_id": "QCTP-REV3-NATURAL-VOICE-AUDITION-A01",
+  "status": "MACHINE_BUILD_COMPLETE_PHYSICAL_SELECTION_OPEN",
+  "release_authority": "ZERO_RELEASE",
+  "purpose": "Short physical naturalness selection before any five- or twenty-five-minute narration render.",
+  "blind_labels": [
+    "A",
+    "B",
+    "C"
+  ],
+  "none_option_required": true,
+  "label_assignment": "CONTROLLED_NON_PUBLIC_MAPPING_REVEALED_ONLY_AFTER_REPORTED_SELECTION",
+  "randomization": {
+    "algorithm": "CONTROLLED_PRIVATE_RANDOM_ASSIGNMENT",
+    "route_order_commitment_sha256": "f531af91d6cc0bf0adc4d153ee3c01208b06502622566806830a24ef257a80c8"
+  },
+  "audition_script": {
+    "file": "audition-script.json",
+    "sha256": "7d7e4582e9cfb0ad475514eb9a23463e3462dacae1c04cf55128c326cc9fce2e",
+    "locked_text_sha256": "1fba8ec4814814e716e0921ed4c389a080058e406c82f2d777bf1f6ad11d30a4",
+    "source_script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+    "source_script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+    "requirements": [
+      "opening",
+      "HeartMath five-in/five-out coaching and comfort override",
+      "spatial attention",
+      "complete return"
+    ]
+  },
+  "audio_contract": {
+    "same_identical_text_all_routes": true,
+    "generation_pacing": {
+      "piper": "PINNED_MODEL_AND_CONFIG_DEFAULTS",
+      "kokoro": "EXPLICIT_SPEED_1_0",
+      "kitten_tts": "EXPLICIT_SPEED_1_0",
+      "post_render_spectral_time_stretch": "NONE"
+    },
+    "real_silence_inserted_between_source_cues": true,
+    "broad_spectral_time_stretch": "PROHIBITED_AND_NOT_USED",
+    "target_integrated_lufs": -21.0,
+    "sample_rate": 24000,
+    "channels": 1,
+    "same_origin_relative_media": true
+  },
+  "samples": [
+    {
+      "sample_code": "A",
+      "file": "sample-a.mp3",
+      "bytes": 1002284,
+      "sha256": "69ffb7cd8c29ac66725da1796ebd68fbf8221dffce01e2692585e45e6b4ec19f",
+      "duration_seconds": 50.033875,
+      "target_lufs": -21.0,
+      "measured_lufs_before_normalization": -21.8566,
+      "measured_lufs_after_normalization": -21.0,
+      "peak_linear": 0.73433,
+      "delivery": "SOURCE_CUE_SEGMENTS_PLUS_INSERTED_REAL_SILENCE",
+      "model_native_speed": 1.0,
+      "spectral_time_stretch_used": false,
+      "time_stretch_factor": 1.0,
+      "inserted_real_silence_seconds": 8.0,
+      "segment_count": 6,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "24000",
+            "channels": 1
+          }
+        ],
+        "format": {
+          "format_name": "mp3",
+          "duration": "50.033875",
+          "bit_rate": "160256"
+        }
+      },
+      "route_commitment_sha256": "f536a5cf95ff7975718630f99b65d9ee92786d583faccb313f58b980bb16a789"
+    },
+    {
+      "sample_code": "B",
+      "file": "sample-b.mp3",
+      "bytes": 1042604,
+      "sha256": "0e13dbfc7cd90ae5bfc1a6df15a91145aa087118be01b59cec1b1e34518359ba",
+      "duration_seconds": 52.051208,
+      "target_lufs": -21.0,
+      "measured_lufs_before_normalization": -17.195,
+      "measured_lufs_after_normalization": -21.0,
+      "peak_linear": 0.664055,
+      "delivery": "SOURCE_CUE_SEGMENTS_PLUS_INSERTED_REAL_SILENCE",
+      "model_native_speed": 1.0,
+      "spectral_time_stretch_used": false,
+      "time_stretch_factor": 1.0,
+      "inserted_real_silence_seconds": 8.0,
+      "segment_count": 6,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "24000",
+            "channels": 1
+          }
+        ],
+        "format": {
+          "format_name": "mp3",
+          "duration": "52.051208",
+          "bit_rate": "160242"
+        }
+      },
+      "route_commitment_sha256": "8df2ff1fffd7969fa00c524b0a0e6a67c2da132c3876a9cd96068e09b1ffd980"
+    },
+    {
+      "sample_code": "C",
+      "file": "sample-c.mp3",
+      "bytes": 1098764,
+      "sha256": "8c6906cddbbceb11016bb8a557d5e5d99f8410c458599fdcbf4b4ff945dc829d",
+      "duration_seconds": 54.859625,
+      "target_lufs": -21.0,
+      "measured_lufs_before_normalization": -21.296,
+      "measured_lufs_after_normalization": -21.0,
+      "peak_linear": 0.779181,
+      "delivery": "SOURCE_CUE_SEGMENTS_PLUS_INSERTED_REAL_SILENCE",
+      "model_native_speed": 1.0,
+      "spectral_time_stretch_used": false,
+      "time_stretch_factor": 1.0,
+      "inserted_real_silence_seconds": 8.0,
+      "segment_count": 6,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "24000",
+            "channels": 1
+          }
+        ],
+        "format": {
+          "format_name": "mp3",
+          "duration": "54.859625",
+          "bit_rate": "160229"
+        }
+      },
+      "route_commitment_sha256": "2a9333ba6f582937c8778338aa812dd3f42df518d5e3a35f2d447bc35cf63c28"
+    }
+  ],
+  "route_assignment": {
+    "availability": "CONTROLLED_ARTIFACT_ONLY_NOT_PUBLIC_OR_FETCHABLE",
+    "reveal_condition": "AFTER_RYAN_REPORTS_PHYSICAL_SELECTION",
+    "commitment_sha256": "54d185742a5fa6fbb18512ba8020fbf4326ee24c1976f7eca3b0c5e7562c518f"
+  },
+  "physical_gate": {
+    "status": "OPEN_RYAN_IPHONE_SELECTION",
+    "valid_choices": [
+      "A",
+      "B",
+      "C",
+      "NONE"
+    ],
+    "human_naturalness_is_governing": true,
+    "machine_or_browser_pass_cannot_select_a_voice": true,
+    "full_25_minute_render_authorized": false
+  }
+}

@@ -7,6 +7,11 @@ import type {
   Rev1MigrationResult,
 } from "../data";
 import type {
+  BreathProfile,
+  BreathSessionRecord,
+  StoredQuickBreathDirectorPreferences,
+} from "../breath";
+import type {
   AppSettings,
   FoundationState,
   MirrorCitation,
@@ -17,12 +22,17 @@ import type {
 } from "../domain";
 import type { MirrorServicePolicy } from "../mirror";
 import type { LocalTranscriptionPolicy } from "../transcription";
+import type { StateCapabilityRecord, StateSessionRecord } from "../state-atlas";
 
 export interface QctpRuntime {
   repository: QctpRepository;
   foundation: FoundationState;
   settings: AppSettings;
   workbook: WorkbookState;
+  breathProfile: BreathProfile;
+  breathSessions: BreathSessionRecord[];
+  stateCapabilities: StateCapabilityRecord[];
+  stateSessions: StateSessionRecord[];
   migration: Rev1MigrationResult;
   revision: number;
   localTranscriptionStatus:
@@ -40,6 +50,12 @@ export interface QctpRuntime {
     promptId: string,
     value: string,
   ): Promise<void>;
+  updateQuickBreathPreferences(
+    preferences: StoredQuickBreathDirectorPreferences,
+  ): Promise<void>;
+  saveBreathSession(session: BreathSessionRecord): Promise<void>;
+  saveStateSession(session: StateSessionRecord): Promise<void>;
+  saveStateCapability(capability: StateCapabilityRecord): Promise<void>;
   configureLocalTranscription(
     accessToken: string,
     baseUrl?: string,

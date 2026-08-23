@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#07131c" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; media-src 'self' blob:; connect-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; worker-src 'self'"
+    />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <title>QCTP Blind Natural-Voice Audition</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #07131c;
+        color: #f3f8fa;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(
+            circle at 50% -5%,
+            rgba(67, 164, 182, 0.24),
+            transparent 38rem
+          ),
+          linear-gradient(180deg, #0b1c27, #061017 72%);
+      }
+      main {
+        width: min(100%, 46rem);
+        margin: 0 auto;
+        padding: calc(1.4rem + env(safe-area-inset-top)) 1rem
+          calc(2.4rem + env(safe-area-inset-bottom));
+      }
+      .return-link {
+        display: inline-flex;
+        min-height: 2.75rem;
+        align-items: center;
+        color: #c2e3e5;
+        font-weight: 750;
+        text-decoration-thickness: 0.08em;
+        text-underline-offset: 0.2em;
+      }
+      .eyebrow {
+        color: #9bd3da;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+      h1 {
+        margin: 0.35rem 0 0.8rem;
+        font-size: clamp(2rem, 10vw, 3.2rem);
+        line-height: 0.98;
+      }
+      h2 {
+        margin: 0 0 0.8rem;
+        font-size: 1.15rem;
+      }
+      p {
+        line-height: 1.55;
+      }
+      .warning,
+      .card {
+        border: 1px solid #294653;
+        border-radius: 1rem;
+        padding: 1rem;
+        margin: 0.85rem 0;
+        background: rgba(8, 25, 35, 0.88);
+        box-shadow: 0 1.1rem 2.8rem rgba(0, 0, 0, 0.24);
+      }
+      .warning {
+        background: #3a2b13;
+        border-color: #8e692d;
+        color: #ffe3a2;
+        font-weight: 800;
+      }
+      .fine {
+        color: #afc2c9;
+        font-size: 0.92rem;
+      }
+      .coverage {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        padding: 0;
+        list-style: none;
+      }
+      .coverage li {
+        border: 1px solid #3a5c69;
+        border-radius: 999px;
+        padding: 0.35rem 0.65rem;
+        color: #c2e3e5;
+        font-size: 0.82rem;
+      }
+      .sample-grid,
+      .choice-grid {
+        display: grid;
+        gap: 0.65rem;
+      }
+      .sample-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .choice-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      button {
+        min-height: 3.2rem;
+        border: 1px solid #456674;
+        border-radius: 0.9rem;
+        padding: 0.75rem;
+        background: #102b38;
+        color: #f5fbfc;
+        font: inherit;
+        font-weight: 750;
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      button.selected {
+        background: #214b59;
+        border-color: #a6e1e5;
+        box-shadow: 0 0 0 2px rgba(166, 225, 229, 0.18);
+      }
+      button.primary {
+        width: 100%;
+        margin-top: 0.8rem;
+        background: #d8f5f2;
+        color: #07131c;
+        border: 0;
+      }
+      button.secondary {
+        width: 100%;
+        margin-top: 0.65rem;
+        background: transparent;
+      }
+      audio {
+        width: 100%;
+        margin: 0.85rem 0 0.25rem;
+      }
+      .status {
+        min-height: 1.5rem;
+        margin-bottom: 0;
+        color: #b8d8dc;
+      }
+      .hidden {
+        display: none;
+      }
+      .result {
+        border-left: 0.25rem solid #9fdade;
+        padding-left: 0.85rem;
+      }
+      .identity {
+        border-top: 1px solid #294653;
+        padding-top: 0.8rem;
+        margin-top: 0.8rem;
+      }
+      code {
+        overflow-wrap: anywhere;
+        color: #d6ecee;
+      }
+      @media (max-width: 25rem) {
+        .sample-grid {
+          grid-template-columns: 1fr;
+        }
+        .choice-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a class="return-link" href="../">← Return to QCTP</a>
+      <div class="eyebrow">QCTP · Rev3 · physical gate</div>
+      <h1>Blind voice audition</h1>
+      <div class="warning">
+        VOICE TEST ONLY — NOT A MEDITATION — NO COMPLETION CREDIT.
+      </div>
+
+      <section class="card">
+        <h2>One fair comparison</h2>
+        <p>
+          A, B, and C speak the identical locked Day 1 excerpts. Their engine
+          identities stay hidden through your physical choice and are kept out
+          of this audition package. Use the same iPhone volume and listen for a
+          voice that feels human, unforced, and easy to follow.
+        </p>
+        <ul class="coverage" aria-label="Audition coverage">
+          <li>Opening</li>
+          <li>Five in / five out</li>
+          <li>Comfort override</li>
+          <li>Spatial attention</li>
+          <li>Complete return</li>
+        </ul>
+        <p class="fine">
+          All files are same-origin and cached for offline replay. No paid API
+          or provider key is used.
+        </p>
+      </section>
+
+      <section class="card" aria-labelledby="listen-heading">
+        <h2 id="listen-heading">1. Listen</h2>
+        <div class="sample-grid" id="sample-grid"></div>
+        <audio id="player" controls preload="metadata" playsinline></audio>
+        <p class="status" id="play-status" role="status">
+          Choose A, B, or C to begin.
+        </p>
+      </section>
+
+      <section class="card" aria-labelledby="choose-heading">
+        <h2 id="choose-heading">2. Choose the most natural</h2>
+        <p class="fine">
+          Choose NONE if every sample still sounds artificial. Machine checks
+          cannot make this choice.
+        </p>
+        <div class="choice-grid" id="choice-grid"></div>
+        <button class="primary" id="confirm" disabled>
+          Confirm physical choice
+        </button>
+        <p class="status" id="choice-status" role="status">No choice saved.</p>
+      </section>
+
+      <section class="card hidden" id="saved" aria-live="polite">
+        <h2>Choice saved — blind mapping preserved</h2>
+        <p class="result" id="result"></p>
+        <p class="fine">
+          Report the letter and one observation to Codex. Route identities stay
+          outside this public package until the controlled result is recorded. A
+          choice does not authorize a five-minute or full twenty-five-minute
+          render, integration, merge, deployment, or release.
+        </p>
+        <button class="secondary" id="retake">
+          Clear local choice and retake blind
+        </button>
+      </section>
+
+      <section class="card">
+        <h2>What to report</h2>
+        <p><strong>Best: A, B, C, or NONE</strong></p>
+        <p class="fine">
+          Then add what you noticed: tone, rhythm, pauses, pronunciation,
+          emotion, or anything that sounded artificial.
+        </p>
+      </section>
+
+      <p class="fine">
+        Naturalness gate: OPEN · Full-session authority: WITHHELD · Release
+        authority: ZERO RELEASE
+      </p>
+    </main>
+    <script>
+      const labels = ["A", "B", "C"];
+      const storageKey = "qctp.rev3.voiceAuditionSelection.v1";
+      const player = document.querySelector("#player");
+      const playStatus = document.querySelector("#play-status");
+      const choiceStatus = document.querySelector("#choice-status");
+      const confirmButton = document.querySelector("#confirm");
+      const savedPanel = document.querySelector("#saved");
+      let selectedChoice = null;
+
+      function shuffled(values) {
+        const copy = [...values];
+        const random = new Uint32Array(copy.length);
+        crypto.getRandomValues(random);
+        return copy.sort(
+          (a, b) => random[values.indexOf(a)] - random[values.indexOf(b)],
+        );
+      }
+
+      function setChoice(value) {
+        selectedChoice = value;
+        document.querySelectorAll("[data-choice]").forEach((button) => {
+          button.classList.toggle("selected", button.dataset.choice === value);
+          button.setAttribute(
+            "aria-pressed",
+            String(button.dataset.choice === value),
+          );
+        });
+        confirmButton.disabled = false;
+        choiceStatus.textContent = `${value} selected but not yet confirmed.`;
+      }
+
+      function makeControls() {
+        const sampleGrid = document.querySelector("#sample-grid");
+        shuffled(labels).forEach((label) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.dataset.sample = label;
+          button.textContent = `Play Sample ${label}`;
+          button.addEventListener("click", async () => {
+            document
+              .querySelectorAll("[data-sample]")
+              .forEach((item) => item.classList.remove("selected"));
+            button.classList.add("selected");
+            player.src = `sample-${label.toLowerCase()}.mp3`;
+            player.currentTime = 0;
+            try {
+              await player.play();
+              playStatus.textContent = `Playing Sample ${label}.`;
+            } catch {
+              playStatus.textContent = `Sample ${label} is loaded. Tap the audio play control once.`;
+            }
+          });
+          sampleGrid.append(button);
+        });
+
+        const choiceGrid = document.querySelector("#choice-grid");
+        [...labels, "NONE"].forEach((choice) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.dataset.choice = choice;
+          button.setAttribute("aria-pressed", "false");
+          button.textContent = choice;
+          button.addEventListener("click", () => setChoice(choice));
+          choiceGrid.append(button);
+        });
+      }
+
+      confirmButton.addEventListener("click", () => {
+        if (!selectedChoice) return;
+        const selection = {
+          schema: "qctp-rev3-local-voice-audition-selection-v1",
+          choice: selectedChoice,
+          selected_at: new Date().toISOString(),
+          naturalness_authority: "PHYSICAL_USER",
+          release_authority: "ZERO_RELEASE",
+        };
+        localStorage.setItem(storageKey, JSON.stringify(selection));
+        confirmButton.disabled = true;
+        choiceStatus.textContent = `${selectedChoice} saved locally on this device.`;
+        document.querySelector("#result").textContent =
+          `Saved physical choice: ${selection.choice}`;
+        savedPanel.classList.remove("hidden");
+        savedPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
+      document.querySelector("#retake").addEventListener("click", () => {
+        localStorage.removeItem(storageKey);
+        selectedChoice = null;
+        savedPanel.classList.add("hidden");
+        confirmButton.disabled = true;
+        choiceStatus.textContent = "Local choice cleared. No choice saved.";
+        document.querySelectorAll("[data-choice]").forEach((button) => {
+          button.classList.remove("selected");
+          button.setAttribute("aria-pressed", "false");
+        });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      makeControls();
+      const prior = localStorage.getItem(storageKey);
+      if (prior) {
+        try {
+          const selection = JSON.parse(prior);
+          choiceStatus.textContent = `${selection.choice} was previously saved locally.`;
+          document.querySelector("#result").textContent =
+            `Saved physical choice: ${selection.choice}`;
+          savedPanel.classList.remove("hidden");
+        } catch {
+          localStorage.removeItem(storageKey);
+        }
+      }
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () =>
+          navigator.serviceWorker.register("sw.js").catch(() => {}),
+        );
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,168 @@
+{
+  "schema": "qctp-rev3-voice-free-day1-media-v1",
+  "package_id": "QCTP-REV3-P0-VOICE-FREE-DAY1-REV0",
+  "status": "MACHINE_CANDIDATE_PHYSICAL_GATE_OPEN",
+  "release_authority": "ZERO_RELEASE",
+  "practice_id": "foundation-day1-source-rev0-voice-free",
+  "duration_seconds": 1500,
+  "script_authority": {
+    "main_commit": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
+    "script_id": "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+    "script_sha256": "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+    "cue_count": 35,
+    "lock_file": "QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json",
+    "cue_part_files": [
+      "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART1.json",
+      "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART2.json",
+      "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART3.json",
+      "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART4.json",
+      "QCTP_DAY1_SOURCE_LABELED_SCRIPT_CANDIDATE_REV0_PART5.json"
+    ]
+  },
+  "phases": [
+    {
+      "id": "settle",
+      "start_seconds": 0,
+      "end_seconds": 180,
+      "source_ids": [
+        "QCTP-BASELINE-OBSERVATION",
+        "TB-ANCHOR-01",
+        "QCTP-TRANSITION-01"
+      ],
+      "marker_at_start": false
+    },
+    {
+      "id": "coherence",
+      "start_seconds": 180,
+      "end_seconds": 480,
+      "source_ids": ["HM-QC-01", "QCTP-TRANSITION-01"],
+      "marker_at_start": true
+    },
+    {
+      "id": "attention-contrast",
+      "start_seconds": 480,
+      "end_seconds": 780,
+      "source_ids": ["JD-SPACE-01", "QCTP-TRANSITION-01"],
+      "marker_at_start": true
+    },
+    {
+      "id": "open-space",
+      "start_seconds": 780,
+      "end_seconds": 1380,
+      "source_ids": ["JD-SPACE-01", "QCTP-TRANSITION-01"],
+      "marker_at_start": true
+    },
+    {
+      "id": "observe",
+      "start_seconds": 1380,
+      "end_seconds": 1440,
+      "source_ids": ["QCTP-PURE-OBSERVATION"],
+      "marker_at_start": true
+    },
+    {
+      "id": "return",
+      "start_seconds": 1440,
+      "end_seconds": 1500,
+      "source_ids": ["QCTP-RETURN-01"],
+      "marker_at_start": true
+    }
+  ],
+  "heartmath_breath_contract": {
+    "source_id": "HM-QC-01",
+    "visual_rail_window_seconds": [180, 480],
+    "acoustic_rail_window_seconds": [224, 462],
+    "suggested_inhale_seconds": 5,
+    "suggested_exhale_seconds": 5,
+    "hold_seconds": 0,
+    "comfort_override": true,
+    "route_requirement": "none",
+    "note": "The source-grounded visual rail covers the coherence phase. The quiet optional acoustic rail begins after the first counted cycle and ends at the source transition."
+  },
+  "nonverbal_phase_marker": {
+    "boundaries_seconds": [180, 480, 780, 1380, 1440],
+    "lead_seconds": 0.4,
+    "duration_seconds": 0.26,
+    "frequencies_hz": [330, 495],
+    "source_attribution": "QCTP SUPPORT",
+    "narration": false
+  },
+  "assets": [
+    {
+      "mode": "ambient",
+      "path": "support-ambient-1500.mp3",
+      "bytes": 12000576,
+      "sha256": "eb32e69b73099e6b20dc2107cf836be72cdf6ca79a07d267da2f9abf95610726",
+      "duration_seconds": 1500.0,
+      "sample_rate_hz": 24000,
+      "channels": 2,
+      "binaural": false,
+      "headphones_required": false
+    },
+    {
+      "mode": "binaural_low_a",
+      "path": "support-binaural-low-a-1500.mp3",
+      "bytes": 12000576,
+      "sha256": "e592c954af517c2022f7c3e5f653591e026e6d3ff467c8afb6b78647510912fe",
+      "duration_seconds": 1500.0,
+      "sample_rate_hz": 24000,
+      "channels": 2,
+      "binaural": true,
+      "left_hz": 216,
+      "right_hz": 224,
+      "difference_hz": 8,
+      "headphones_required": true
+    },
+    {
+      "mode": "minimal_continuity",
+      "path": "support-minimal-1500.mp3",
+      "bytes": 12000576,
+      "sha256": "4611a2cb65a553a9904777aaaa65bc70461fd3c325e1dfd7715bb83d6c3ca0cb",
+      "duration_seconds": 1500.0,
+      "sample_rate_hz": 24000,
+      "channels": 2,
+      "binaural": false,
+      "headphones_required": false
+    }
+  ],
+  "runtime_contract": {
+    "same_origin_relative_media": true,
+    "offline_precache_required": true,
+    "support_continuous_for_full_duration": true,
+    "support_audio_is_authoritative_clock": true,
+    "duration_gate_seconds": [1499, 1501],
+    "full_return_window_seconds": [1440, 1500],
+    "natural_completion_minimum_audio_seconds": 1499,
+    "natural_completion_elapsed_ms": 1500000,
+    "early_end_completion_credit": false,
+    "shortened_test_completion_credit": false,
+    "completion_mode": "VOICE_FREE_FALLBACK",
+    "narrated_content_acceptance": "NOT_APPLICABLE",
+    "state_attainment": "NOT_ASSESSED",
+    "narration_used": false,
+    "runtime_tts_provider": false,
+    "paid_api_required": false
+  },
+  "rejected_a03r_quarantine": {
+    "disposition": "REJECTED_DO_NOT_PROMOTE",
+    "public_runtime_paths_absent": [
+      "a03-acceptance/",
+      "audio/day1-source-rev0/voice-1500.mp3",
+      "audio/day1-source-rev0/composite-ambient-low-1500.mp3"
+    ],
+    "preserved_controlled_artifacts": [
+      {
+        "path": "controlled-artifacts/a03r-rejected/voice-1500.mp3",
+        "sha256": "6126445935ff15d059f5fec278617bf943664414072821a2d0340e8b74c6e4c1"
+      },
+      {
+        "path": "controlled-artifacts/a03r-rejected/composite-ambient-low-1500.mp3",
+        "sha256": "41a404ad01b3d6c9c7fac2d1e6ae0a27f945f106e2702f6a2ebd30e97ea743d3"
+      }
+    ]
+  },
+  "physical_gate": {
+    "voice_free_morning_mode": "OPEN",
+    "machine_verification_can_promote_physical_gate": false,
+    "release_authority": "ZERO_RELEASE"
+  }
+}

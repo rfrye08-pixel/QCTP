@@ -1,0 +1,10 @@
+{
+  "name": "QCTP Blind Natural-Voice Audition",
+  "short_name": "QCTP Voice Test",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07131c",
+  "theme_color": "#07131c",
+  "description": "Offline-capable blind physical naturalness gate for QCTP Rev3."
+}

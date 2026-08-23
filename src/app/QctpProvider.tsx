@@ -15,6 +15,13 @@ import {
   type Rev1MigrationResult,
 } from "../data";
 import {
+  normalizeBreathProfile,
+  recoverInterruptedBreathSessions,
+  type BreathProfile,
+  type BreathSessionRecord,
+  type StoredQuickBreathDirectorPreferences,
+} from "../breath";
+import {
   AppSettingsSchema,
   FoundationStateSchema,
   WorkbookStateSchema,
@@ -41,6 +48,8 @@ import {
   synchronizeMirrorRequests,
   type MirrorServicePolicy,
 } from "../mirror";
+import { recoverInterruptedCaptures } from "../voice-capture/repository-persistence";
+import type { StateCapabilityRecord, StateSessionRecord } from "../state-atlas";
 
 import {
   QctpContext,
@@ -53,6 +62,10 @@ interface ReadyState {
   foundation: FoundationState;
   settings: AppSettings;
   workbook: WorkbookState;
+  breathProfile: BreathProfile;
+  breathSessions: BreathSessionRecord[];
+  stateCapabilities: StateCapabilityRecord[];
+  stateSessions: StateSessionRecord[];
   migration: Rev1MigrationResult;
 }
 
@@ -202,27 +215,51 @@ export function QctpProvider({ children }: { children: ReactNode }) {
         const repository = await createQctpRepository();
         opened = repository;
         await repository.initializeDefaults();
+        await recoverInterruptedCaptures(repository);
+        await recoverInterruptedBreathSessions(repository);
         let migration = emptyMigration();
         try {
           migration = await migrateRev1LocalStorage(repository);
         } catch (error) {
           migration = emptyMigration(error);
         }
-        const [foundation, settings, workbook, initialMirrorJobs] =
-          await Promise.all([
-            repository.getFoundationState(),
-            repository.getSettings(),
-            repository.getWorkbookState(),
-            readMirrorJobs(repository),
-          ]);
-        if (!foundation || !settings || !workbook)
+        const [
+          foundation,
+          settings,
+          workbook,
+          breathProfile,
+          breathSessions,
+          stateCapabilities,
+          stateSessions,
+          initialMirrorJobs,
+        ] = await Promise.all([
+          repository.getFoundationState(),
+          repository.getSettings(),
+          repository.getWorkbookState(),
+          repository.getBreathProfile("breath-profile"),
+          repository.listBreathSessions(),
+          repository.listStateCapabilities(),
+          repository.listStateSessions(),
+          readMirrorJobs(repository),
+        ]);
+        if (!foundation || !settings || !workbook || !breathProfile)
           throw new Error("Local defaults were not initialized.");
         if (disposed) {
           repository.close();
           return;
         }
         setMirrorJobs(initialMirrorJobs);
-        setReady({ repository, foundation, settings, workbook, migration });
+        setReady({
+          repository,
+          foundation,
+          settings,
+          workbook,
+          breathProfile,
+          breathSessions,
+          stateCapabilities,
+          stateSessions,
+          migration,
+        });
       } catch (error) {
         if (!disposed) {
           setBootError(
@@ -241,16 +278,40 @@ export function QctpProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     if (!ready) return;
-    const [foundation, settings, workbook, nextMirrorJobs] = await Promise.all([
+    const [
+      foundation,
+      settings,
+      workbook,
+      breathProfile,
+      breathSessions,
+      stateCapabilities,
+      stateSessions,
+      nextMirrorJobs,
+    ] = await Promise.all([
       ready.repository.getFoundationState(),
       ready.repository.getSettings(),
       ready.repository.getWorkbookState(),
+      ready.repository.getBreathProfile("breath-profile"),
+      ready.repository.listBreathSessions(),
+      ready.repository.listStateCapabilities(),
+      ready.repository.listStateSessions(),
       readMirrorJobs(ready.repository),
     ]);
-    if (!foundation || !settings || !workbook)
+    if (!foundation || !settings || !workbook || !breathProfile)
       throw new Error("Local QCTP state is incomplete.");
     setReady((current) =>
-      current ? { ...current, foundation, settings, workbook } : current,
+      current
+        ? {
+            ...current,
+            foundation,
+            settings,
+            workbook,
+            breathProfile,
+            breathSessions,
+            stateCapabilities,
+            stateSessions,
+          }
+        : current,
     );
     setMirrorJobs(nextMirrorJobs);
     setRevision((value) => value + 1);
@@ -321,6 +382,48 @@ export function QctpProvider({ children }: { children: ReactNode }) {
         updatedAt: new Date().toISOString(),
       });
       await ready.repository.saveWorkbookState(workbook);
+      await refresh();
+    },
+    [ready, refresh],
+  );
+
+  const updateQuickBreathPreferences = useCallback(
+    async (preferences: StoredQuickBreathDirectorPreferences) => {
+      if (!ready) return;
+      const profile = normalizeBreathProfile({
+        ...ready.breathProfile,
+        comfortableMethodIds: preferences.director.comfortableMethodIds,
+        quickDirector: preferences,
+        updatedAt: new Date().toISOString(),
+      });
+      await ready.repository.saveBreathProfile(profile);
+      await refresh();
+    },
+    [ready, refresh],
+  );
+
+  const saveBreathSession = useCallback(
+    async (session: BreathSessionRecord) => {
+      if (!ready) return;
+      await ready.repository.saveBreathSession(session);
+      await refresh();
+    },
+    [ready, refresh],
+  );
+
+  const saveStateSession = useCallback(
+    async (session: StateSessionRecord) => {
+      if (!ready) return;
+      await ready.repository.saveStateSession(session);
+      await refresh();
+    },
+    [ready, refresh],
+  );
+
+  const saveStateCapability = useCallback(
+    async (capability: StateCapabilityRecord) => {
+      if (!ready) return;
+      await ready.repository.saveStateCapability(capability);
       await refresh();
     },
     [ready, refresh],
@@ -792,6 +895,10 @@ export function QctpProvider({ children }: { children: ReactNode }) {
             markFoundationComponent,
             updateSettings,
             updateWorkbookAnswer,
+            updateQuickBreathPreferences,
+            saveBreathSession,
+            saveStateSession,
+            saveStateCapability,
             configureLocalTranscription,
             clearLocalTranscription,
             processTranscriptionQueue,
@@ -811,7 +918,11 @@ export function QctpProvider({ children }: { children: ReactNode }) {
       ready,
       refresh,
       revision,
+      saveBreathSession,
+      saveStateSession,
+      saveStateCapability,
       updateSettings,
+      updateQuickBreathPreferences,
       updateWorkbookAnswer,
     ],
   );

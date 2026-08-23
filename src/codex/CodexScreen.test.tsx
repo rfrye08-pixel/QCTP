@@ -30,7 +30,8 @@ beforeEach(async () => {
   const foundation = await repository.getFoundationState();
   const settings = await repository.getSettings();
   const workbook = await repository.getWorkbookState();
-  if (!foundation || !settings || !workbook) {
+  const breathProfile = await repository.getBreathProfile("breath-profile");
+  if (!foundation || !settings || !workbook || !breathProfile) {
     throw new Error("Test defaults were not initialized.");
   }
   runtime = {
@@ -38,6 +39,10 @@ beforeEach(async () => {
     foundation,
     settings,
     workbook,
+    breathProfile,
+    breathSessions: [],
+    stateCapabilities: [],
+    stateSessions: [],
     migration: {
       status: "no_source",
       fingerprint: null,
@@ -71,6 +76,10 @@ beforeEach(async () => {
     markFoundationComponent: () => Promise.resolve(),
     updateSettings: () => Promise.resolve(),
     updateWorkbookAnswer: () => Promise.resolve(),
+    updateQuickBreathPreferences: () => Promise.resolve(),
+    saveBreathSession: () => Promise.resolve(),
+    saveStateSession: () => Promise.resolve(),
+    saveStateCapability: () => Promise.resolve(),
     configureLocalTranscription: () => Promise.resolve(),
     clearLocalTranscription: () => Promise.resolve(),
     processTranscriptionQueue: () =>
@@ -138,7 +147,7 @@ describe("CodexScreen local workflows", () => {
     expect(records[0]?.interpretation?.basedOnEvidenceIds).toEqual([
       records[0]?.observation?.id,
     ]);
-  });
+  }, 10_000);
 
   it("selectively deletes clean notes while preserving transcript and audio", async () => {
     const record = buildRecord(

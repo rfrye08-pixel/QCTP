@@ -1,12 +1,12 @@
-# QCTP Platform Rev2
+# QCTP Platform Rev3
 
-QCTP is a mobile-first, local-first Quantum Consciousness Training Platform. This branch replaces the Rev1 global-script prototype with typed React/TypeScript modules, IndexedDB persistence, explicit migrations, authenticated local processing boundaries, and automated tests.
+QCTP is a mobile-first, local-first Quantum Consciousness Training Platform. Rev3 preserves the typed Rev2 data and private-processing foundations while adding a source-grounded voice-free morning practice, controlled Breath Foundations, evidence-gated State Atlas training, a blind natural-voice audition, and a safer private-runtime candidate workflow.
 
-**Release status:** non-production Rev2 implementation candidate on `qctp-platform-rev2-codex`. Release authority is `ZERO_RELEASE`. Do not merge, deploy, or change the GitHub Pages source without a separate controlled release decision.
+**Release status:** non-production Rev3 implementation candidate on `qctp-platform-rev3-codex`. Release authority is `ZERO_RELEASE`. Do not merge, promote, or change the GitHub Pages source without a separate controlled release decision. `main`, `qctp-platform-rev2-codex`, and PR #2 remain protected predecessors.
 
 ## Controlled scope
 
-- The released Foundation Day 1 content remains the protected baseline: Chill Brian narration, a 1,500-second practice, and cue timestamps `0, 45, 105, 180, 240, 330, 420, 480, 600, 720, 780, 840, 930, 1020, 1110, 1200, 1290, 1360, 1380, 1440, 1490`.
+- The released Foundation Day 1 Chill Brian package remains an exact regression baseline. Rev3 separately adds the locked 35-cue source-grounded, 1,500-second sequence as Voice-Free Day 1; the A03R narration is quarantined and rejected as robotic.
 - Days 2–112 contain only reserved metadata. They are not authored or inferred.
 - REG-01-A implements the original QCTP “Learn to See” Studio session with nine controlled steps, observation/interpretation separation, accepted five-minute voice auto-dictation, a drawing/photo attachment, integration action, precept review, and atomic path/Codex/Mirror record creation.
 - Quick Capture, field dictation, experiment capture, and 5/10/20-minute auto-dictation preserve raw audio locally before any processing route is used.
@@ -15,7 +15,7 @@ QCTP is a mobile-first, local-first Quantum Consciousness Training Platform. Thi
 
 The controlling requirements are in the dated `QCTP_*.md` and manifest files in this repository. `QCTP_ZERO_RECURRING_COST_RUNTIME_REQUIREMENT_REV0_2026-08-17.md` supersedes the earlier preferred paid transcription route, and `QCTP_LOCAL_AI_MIRROR_REQUIREMENT_REV0_2026-08-17.md` controls the Mirror layers and generated-reflection lifecycle: **Free Local Mode is the default release baseline**.
 
-`QCTP_CURRENT_STATE.json` remains an unmodified upstream controlled snapshot and therefore still describes the pre-implementation handoff. For this branch, `QCTP_REV2_CODEX_BRANCH_STATE.json` is the implementation/verification ledger and explicitly supersedes that stale snapshot without rewriting historical authority.
+`QCTP_CURRENT_STATE.json` is the proposed Rev3 current-state record. `QCTP_REV3_CODEX_BRANCH_STATE.json` is the execution and verification ledger. Earlier state, manifests, and the Rev2 ledger remain historical authority rather than being silently rewritten.
 
 ## Free Local Mode
 
@@ -59,7 +59,7 @@ npm run test:e2e
 npx playwright install chromium
 ```
 
-See `REV2_VERIFICATION.md` for the evidence actually collected for this branch. Automated browser coverage is not a substitute for an iPhone microphone, installation, backgrounding, and full natural-duration Day 1 acceptance pass.
+See `CODEX_EXECUTION_REPORT.md` and the `QCTP_REV3_*_VERIFICATION_*` artifacts for evidence actually collected on this branch. Automated browser coverage is not a substitute for the explicit physical iPhone gates.
 
 ## Run the local development stack
 
@@ -148,7 +148,7 @@ On the iPhone, open the private HTTPS PWA origin, install it, leave the gateway 
 
 ## Data, migration, and recovery
 
-Rev2 stores structured state and binary blobs in IndexedDB database `qctp-rev2` (current database version 3). On first startup it reads the Rev1 `localStorage` key `qctp-state`, validates and maps supported fields, writes a fingerprinted migration ledger entry with the exact source snapshot, and leaves the Rev1 source untouched. Re-running the same migration is idempotent. Version 2 adds durable Mirror requests/results; version 3 adds separately reviewable deterministic-insight feedback.
+Rev3 stores structured state and binary blobs in IndexedDB database `qctp-rev2` (current database version 5, retaining the database name for in-place compatibility). On first startup it reads the Rev1 `localStorage` key `qctp-state`, validates and maps supported fields, writes a fingerprinted migration ledger entry with the exact source snapshot, and leaves the Rev1 source untouched. Re-running the same migration is idempotent. Versions 4 and 5 add practice, Breath, and State ledgers; blocked upgrades fail with a recoverable close-the-old-tab instruction instead of hanging.
 
 Use Settings to create:
 
@@ -163,6 +163,9 @@ Imports validate schemas, relationships, archive paths, sizes, checksums, and bi
 - `src/domain` — versioned Zod entities and evidence/source separation
 - `src/data` — IndexedDB schema, repository, atomic operations, and Rev1 migration
 - `src/foundation` and `src/audio-player` — protected Day 1 content and deterministic sequencer
+- `src/practice` — source-grounded Voice-Free Day 1 media, phase, offline-readiness, and completion contracts
+- `src/breath` and `src/state-atlas` — controlled protocols, recovery checkpoints, evidence gates, and capability replay
+- `src/source-tracks` — controlled Campbell/source architecture with explicit content holds
 - `src/voice-capture` and `src/transcription` — browser recording, local persistence, explicit acceptance, and queue client
 - `src/reg` — REG-01 session engine and completion gates
 - `src/mirror` — iPhone-side offline queue, PX13 client, status/result synchronization, and citations
@@ -172,11 +175,12 @@ Imports validate schemas, relationships, archive paths, sizes, checksums, and bi
 - `local-whisper-companion` — isolated Python local transcription service
 - `src/export-import` — JSON and integrity-checked ZIP portability
 - `tests/e2e` — responsive/offline/browser acceptance coverage
+- `tools/voice-free-day1`, `tools/voice-audition`, and `tools/rev3-runtime` — deterministic media evidence, blind physical audition, and immutable private-preview/rollback gates
 
 Read `ARCHITECTURE.md` for boundaries and trust flows.
 
 ## Preview and release control
 
-`npm run build` creates a non-production artifact in `dist`; `npm run server` serves the integrated PWA/API preview from loopback. `npm run preview` is a UI-only Vite helper and does not supply the authenticated APIs. None of these commands authorize deployment. The Rev1.1.4 `main` runtime remains recoverable and unchanged. This branch must stay in a draft PR until its documented holds are resolved and an independent authority explicitly changes `ZERO_RELEASE`.
+`npm run build` creates a non-production artifact in `dist`; `npm run server` serves the integrated PWA/API preview from loopback. `npm run preview` is a UI-only Vite helper and does not supply the authenticated APIs. `tools/rev3-runtime` stages only an exact clean and pushed Rev3 commit, creates content identities, verifies isolated serving, and provides explicit backup/rollback commands. None of these commands grant release authority. The existing private runtime remains recoverable and unchanged unless a separately authorized install is performed. This branch must stay in a draft PR until its documented holds are resolved and an independent authority explicitly changes `ZERO_RELEASE`.
 
 The local model/runtime, representative grounded PX13 benchmark, private Tailscale HTTPS origin, and first physical-iPhone cited request/result round trip are verified. Release authority remains held until the rest of the physical-iPhone protocol covers real microphone duration/background behavior, offline/reconnect, notifications, review, deletion/restore/purge, and export. Mock-provider and desktop-browser results do not satisfy those remaining hardware checks.

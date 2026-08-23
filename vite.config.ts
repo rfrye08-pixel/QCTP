@@ -51,7 +51,16 @@ export default defineConfig({
       workbox: {
         navigateFallback: "index.html",
         globPatterns: ["**/*.{js,css,html,svg,png,woff2,mp3,json}"],
-        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
+        globIgnores: [
+          "a03-acceptance/**",
+          "audio/day1-source-rev0/voice-1500.mp3",
+          "audio/day1-source-rev0/composite-ambient-low-1500.mp3",
+          "audio/day1-source-rev0/acceptance-*.mp3",
+        ],
+        // Each controlled support-only stem is approximately 12 MB. The
+        // rejected narration and composites are explicitly ignored above.
+        maximumFileSizeToCacheInBytes: 13 * 1024 * 1024,
+        cleanupOutdatedCaches: true,
       },
     }),
   ],

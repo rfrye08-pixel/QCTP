@@ -37,6 +37,13 @@ const DeleteResponseSchema = z.object({
   remoteObject: z.enum(["deleted", "not_found", "not_configured"]),
 });
 
+const GatewayRequestIdSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(200)
+  .regex(/^[A-Za-z0-9._:-]+$/u);
+
 const PROCESSING_LEASE_MS = 30 * 60_000;
 
 export type LocalTranscriptionPolicy = z.infer<typeof PolicySchema>;
@@ -197,7 +204,11 @@ export class LocalTranscriptionClient {
     accuracy: "default" | "high" = "default",
   ): Promise<Transcript> {
     const policy = await this.getPolicy();
-    if (policy.mode !== "free-local" || policy.paidCloudEnabled) {
+    if (
+      policy.mode !== "free-local" ||
+      policy.paidCloudEnabled ||
+      policy.hardSpendLimitUsd !== 0
+    ) {
       throw new LocalTranscriptionError(
         "Free Local Mode refused a transcription service that is not confirmed local-only.",
         "NON_LOCAL_POLICY",
@@ -268,29 +279,45 @@ export class LocalTranscriptionClient {
   async deleteRemoteRecording(
     recordingId: string,
   ): Promise<"deleted" | "not_found" | "not_configured"> {
-    const response = await this.request(
-      endpoint(
-        this.baseUrl,
-        `/api/transcriptions/${encodeURIComponent(recordingId)}`,
-      ),
-      {
-        method: "DELETE",
-        redirect: "error",
-        credentials: "include",
-        headers: this.headers(),
-      },
-    );
+    let response: Response;
+    try {
+      response = await this.request(
+        endpoint(
+          this.baseUrl,
+          `/api/transcriptions/${encodeURIComponent(recordingId)}`,
+        ),
+        {
+          method: "DELETE",
+          redirect: "error",
+          credentials: "include",
+          headers: this.headers(),
+        },
+      );
+    } catch {
+      throw new LocalTranscriptionError(
+        "PX13 deletion could not be verified. The local recording was preserved.",
+        "DELETION_UNVERIFIED",
+        true,
+      );
+    }
     const json = await responseJson(response);
     if (!response.ok) throw this.toError(json, response.status);
-    const result = DeleteResponseSchema.parse(json);
-    if (result.recordingId !== recordingId) {
+    const requestId = GatewayRequestIdSchema.safeParse(
+      response.headers.get("X-Request-Id"),
+    );
+    const result = DeleteResponseSchema.safeParse(json);
+    if (
+      !requestId.success ||
+      !result.success ||
+      result.data.recordingId !== recordingId
+    ) {
       throw new LocalTranscriptionError(
-        "The service returned a mismatched recording identifier.",
-        "RESPONSE_MISMATCH",
+        "PX13 returned an unverified deletion response. The local recording was preserved.",
+        "DELETION_UNVERIFIED",
         false,
       );
     }
-    return result.remoteObject;
+    return result.data.remoteObject;
   }
 
   async processQueue(

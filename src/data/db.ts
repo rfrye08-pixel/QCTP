@@ -1,5 +1,6 @@
 import { deleteDB, openDB, type DBSchema, type IDBPDatabase } from "idb";
 
+import type { BreathProfile, BreathSessionRecord } from "../breath";
 import type {
   AppSettings,
   Attachment,
@@ -11,6 +12,7 @@ import type {
   MirrorRequest,
   MirrorResult,
   PathState,
+  PracticeSession,
   RegSession,
   Revision,
   SearchDocument,
@@ -19,9 +21,10 @@ import type {
   VoiceRecording,
   WorkbookState,
 } from "../domain";
+import type { StateCapabilityRecord, StateSessionRecord } from "../state-atlas";
 
 export const QCTP_DATABASE_NAME = "qctp-rev2";
-export const QCTP_DATABASE_VERSION = 3;
+export const QCTP_DATABASE_VERSION = 5;
 
 export interface AudioChunk {
   schemaVersion: 1;
@@ -154,6 +157,52 @@ interface QctpDbSchema extends DBSchema {
       status: RegSession["status"];
     };
   };
+  practiceSessions: {
+    key: string;
+    value: PracticeSession;
+    indexes: {
+      foundationDay: PracticeSession["foundationDay"];
+      completionMode: PracticeSession["completionMode"];
+      startedAt: string;
+    };
+  };
+  breathProfiles: {
+    key: string;
+    value: BreathProfile;
+    indexes: {
+      updatedAt: string;
+    };
+  };
+  breathSessions: {
+    key: string;
+    value: BreathSessionRecord;
+    indexes: {
+      goal: BreathSessionRecord["goal"];
+      context: BreathSessionRecord["context"];
+      foundationSessionId: string;
+      startedAt: string;
+      status: BreathSessionRecord["status"];
+    };
+  };
+  stateSessions: {
+    key: string;
+    value: StateSessionRecord;
+    indexes: {
+      stateId: StateSessionRecord["stateId"];
+      guidanceTier: StateSessionRecord["guidanceTier"];
+      endedAt: string;
+      saveStatus: StateSessionRecord["saveStatus"];
+    };
+  };
+  stateCapabilities: {
+    key: string;
+    value: StateCapabilityRecord;
+    indexes: {
+      stateId: StateCapabilityRecord["stateId"];
+      level: StateCapabilityRecord["level"];
+      updatedAt: string;
+    };
+  };
   migrationLedger: {
     key: string;
     value: MigrationLedgerEntry;
@@ -202,10 +251,24 @@ export interface OpenQctpDatabaseOptions {
 export async function openQctpDatabase(
   options: OpenQctpDatabaseOptions = {},
 ): Promise<QctpDatabase> {
-  return openDB<QctpDbSchema>(
+  let rejectBlocked: ((error: Error) => void) | null = null;
+  const blocked = new Promise<never>((_resolve, reject) => {
+    rejectBlocked = reject;
+  });
+  const opening = openDB<QctpDbSchema>(
     options.name ?? QCTP_DATABASE_NAME,
     QCTP_DATABASE_VERSION,
     {
+      blocked() {
+        rejectBlocked?.(
+          new Error(
+            "QCTP data upgrade is blocked by another open QCTP tab. Close the other tab, then reopen this app; local data remains unchanged.",
+          ),
+        );
+      },
+      blocking(_currentVersion, _blockedVersion, event) {
+        (event.target as IDBDatabase | null)?.close();
+      },
       upgrade(database, oldVersion) {
         if (oldVersion < 1) {
           database.createObjectStore("foundation", { keyPath: "id" });
@@ -331,9 +394,65 @@ export async function openQctpDatabase(
           feedback.createIndex("disposition", "disposition");
           feedback.createIndex("updatedAt", "updatedAt");
         }
+
+        if (oldVersion < 4) {
+          const practiceSessions = database.createObjectStore(
+            "practiceSessions",
+            { keyPath: "id" },
+          );
+          practiceSessions.createIndex("foundationDay", "foundationDay");
+          practiceSessions.createIndex("completionMode", "completionMode");
+          practiceSessions.createIndex("startedAt", "startedAt");
+        }
+
+        if (oldVersion < 5) {
+          const breathProfiles = database.createObjectStore("breathProfiles", {
+            keyPath: "id",
+          });
+          breathProfiles.createIndex("updatedAt", "updatedAt");
+
+          const breathSessions = database.createObjectStore("breathSessions", {
+            keyPath: "id",
+          });
+          breathSessions.createIndex("goal", "goal");
+          breathSessions.createIndex("context", "context");
+          breathSessions.createIndex(
+            "foundationSessionId",
+            "foundationSessionId",
+          );
+          breathSessions.createIndex("startedAt", "startedAt");
+          breathSessions.createIndex("status", "status");
+
+          const stateSessions = database.createObjectStore("stateSessions", {
+            keyPath: "id",
+          });
+          stateSessions.createIndex("stateId", "stateId");
+          stateSessions.createIndex("guidanceTier", "guidanceTier");
+          stateSessions.createIndex("endedAt", "endedAt");
+          stateSessions.createIndex("saveStatus", "saveStatus");
+
+          const stateCapabilities = database.createObjectStore(
+            "stateCapabilities",
+            { keyPath: "id" },
+          );
+          stateCapabilities.createIndex("stateId", "stateId", {
+            unique: true,
+          });
+          stateCapabilities.createIndex("level", "level");
+          stateCapabilities.createIndex("updatedAt", "updatedAt");
+        }
       },
     },
   );
+  try {
+    return await Promise.race([opening, blocked]);
+  } catch (error) {
+    void opening.then(
+      (database) => database.close(),
+      () => undefined,
+    );
+    throw error;
+  }
 }
 
 export async function deleteQctpDatabase(

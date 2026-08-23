@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
   createReg01Session,
+  PracticeSessionSchema,
   type Attachment,
   type QctpExportData,
   type VoiceRecording,
@@ -16,6 +17,7 @@ import {
   exportJson,
   importArchive,
   importJson,
+  parseQctpJson,
   validateExportRelations,
 } from "./index";
 
@@ -120,6 +122,37 @@ afterEach(async () => {
 });
 
 describe("versioned export/import", () => {
+  it("emits a distinct Rev3 identity while safely upgrading Rev2 snapshots", async () => {
+    const current = await source.readSnapshot(now);
+    expect(current).toMatchObject({
+      schema: "qctp-export-v3",
+      schemaVersion: 3,
+    });
+
+    const legacy = { ...current } as Record<string, unknown>;
+    legacy.schema = "qctp-export-v2";
+    legacy.schemaVersion = 2;
+    for (const field of [
+      "practiceSessions",
+      "breathProfiles",
+      "breathSessions",
+      "stateSessions",
+      "stateCapabilities",
+    ]) {
+      delete legacy[field];
+    }
+    const migrated = await parseQctpJson(JSON.stringify(legacy));
+    expect(migrated).toMatchObject({
+      schema: "qctp-export-v3",
+      schemaVersion: 3,
+      practiceSessions: [],
+      breathProfiles: [],
+      breathSessions: [],
+      stateSessions: [],
+      stateCapabilities: [],
+    });
+  });
+
   it("validates cross-entity references before any JSON write", async () => {
     const base = await source.readSnapshot(now);
     const record = {
@@ -222,6 +255,34 @@ describe("versioned export/import", () => {
     expect(() =>
       validateExportRelations({ ...valid, records: [record, record] }),
     ).toThrow("Duplicate record id");
+    const practice = PracticeSessionSchema.parse({
+      schemaVersion: 1,
+      id: "duplicate-practice",
+      practiceId: "foundation-day1-source-rev0-voice-free",
+      foundationDay: 1,
+      scriptId: "QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0",
+      scriptSha256:
+        "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+      startedAt: now,
+      endedAt: now,
+      elapsedMs: 1_500_000,
+      completionMode: "VOICE_FREE_FALLBACK",
+      supportMode: "ambient",
+      sourceSequence: ["Bullard", "HeartMath", "Dispenza", "QCTP return"],
+      heartMathBreath:
+        "approximately five seconds in / five seconds out or comfortable; no hold",
+      naturalCompletion: true,
+      narrationUsed: false,
+      narratedContentAcceptance: "NOT_APPLICABLE",
+      stateAttainment: "NOT_ASSESSED",
+      createdAt: now,
+    });
+    expect(() =>
+      validateExportRelations({
+        ...valid,
+        practiceSessions: [practice, practice],
+      }),
+    ).toThrow("Duplicate practice session id");
     expect(() =>
       validateExportRelations({
         ...valid,

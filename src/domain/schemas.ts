@@ -1,7 +1,16 @@
 import { z } from "zod";
 
+import {
+  BreathProfileSchema,
+  BreathSessionRecordSchema,
+} from "../breath/types";
+import {
+  StateCapabilityRecordSchema,
+  StateSessionRecordSchema,
+} from "../state-atlas/types";
+
 export const CURRENT_DOMAIN_VERSION = 1 as const;
-export const CURRENT_EXPORT_VERSION = 2 as const;
+export const CURRENT_EXPORT_VERSION = 3 as const;
 
 export const EntityIdSchema = z.string().trim().min(1).max(240);
 export const IsoDateTimeSchema = z.string().datetime({ offset: true });
@@ -70,6 +79,7 @@ export const RevisionSchema = z.object({
     "transcript",
     "derived_note",
     "reg_session",
+    "practice_session",
     "path",
     "foundation",
     "workbook",
@@ -160,11 +170,70 @@ export const FoundationStateSchema = z.object({
   updatedAt: IsoDateTimeSchema,
 });
 
+export const PracticeCompletionModeSchema = z.enum([
+  "VOICE_FREE_FALLBACK",
+  "NARRATED_CANDIDATE",
+  "NARRATED_ACCEPTED",
+]);
+
+export const PracticeSupportModeSchema = z.enum([
+  "ambient",
+  "binaural_low_a",
+  "minimal_continuity",
+]);
+
+export const PracticeSessionSchema = z.object({
+  schemaVersion: z.literal(CURRENT_DOMAIN_VERSION),
+  id: EntityIdSchema,
+  practiceId: z.literal("foundation-day1-source-rev0-voice-free"),
+  foundationDay: z.literal(1),
+  scriptId: z.literal("QCTP-D1-SOURCE-LABELED-SCRIPT-CANDIDATE-REV0"),
+  scriptSha256: z.literal(
+    "2649ce70e5ab824dbc6b797e07082567fda2443962016e8e6c7dbe454f5ee555",
+  ),
+  startedAt: IsoDateTimeSchema,
+  endedAt: IsoDateTimeSchema,
+  elapsedMs: z.number().int().min(1_499_000).max(1_501_000),
+  completionMode: PracticeCompletionModeSchema,
+  supportMode: PracticeSupportModeSchema,
+  sourceSequence: z.tuple([
+    z.literal("Bullard"),
+    z.literal("HeartMath"),
+    z.literal("Dispenza"),
+    z.literal("QCTP return"),
+  ]),
+  heartMathBreath: z.literal(
+    "approximately five seconds in / five seconds out or comfortable; no hold",
+  ),
+  naturalCompletion: z.literal(true),
+  narrationUsed: z.literal(false),
+  narratedContentAcceptance: z.literal("NOT_APPLICABLE"),
+  stateAttainment: z.literal("NOT_ASSESSED"),
+  createdAt: IsoDateTimeSchema,
+});
+
 export const WorkbookStateSchema = z.object({
   schemaVersion: z.literal(CURRENT_DOMAIN_VERSION),
   id: z.literal("workbook"),
   answers: z.record(z.string(), z.record(z.string(), z.string())),
   updatedAt: IsoDateTimeSchema,
+});
+
+export const PracticeAttemptIssueSchema = z.object({
+  code: z.enum([
+    "EARLY_USER_END",
+    "AUDIO_DURATION_INVALID",
+    "AUDIO_LOAD_FAILED",
+    "AUDIO_START_BLOCKED",
+    "AUDIO_RESUME_BLOCKED",
+    "AUDIO_ENDED_EARLY",
+  ]),
+  message: z.string().trim().min(1).max(500),
+  occurredAt: IsoDateTimeSchema,
+  elapsedMs: z.number().int().nonnegative().max(1_500_000),
+  supportMode: PracticeSupportModeSchema,
+  completionCreditGranted: z.literal(false),
+  stateCapabilityCreditGranted: z.literal(false),
 });
 
 export const AppSettingsSchema = z.object({
@@ -182,6 +251,7 @@ export const AppSettingsSchema = z.object({
   neuralEnabled: z.boolean(),
   transcriptionRoute: z.enum(["local_only", "server_openai", "server_custom"]),
   audioRetention: z.enum(["keep", "delete_after_export", "manual"]),
+  lastVoiceFreeIssue: PracticeAttemptIssueSchema.nullable().default(null),
   updatedAt: IsoDateTimeSchema,
 });
 
@@ -554,7 +624,7 @@ export const MirrorInsightFeedbackSchema = z.object({
 });
 
 export const QctpExportDataSchema = z.object({
-  schema: z.literal("qctp-export-v2"),
+  schema: z.literal("qctp-export-v3"),
   schemaVersion: z.literal(CURRENT_EXPORT_VERSION),
   exportedAt: IsoDateTimeSchema,
   foundation: FoundationStateSchema.nullable(),
@@ -568,12 +638,31 @@ export const QctpExportDataSchema = z.object({
   revisions: z.array(RevisionSchema),
   paths: z.array(PathStateSchema),
   regSessions: z.array(RegSessionSchema),
+  practiceSessions: z.array(PracticeSessionSchema).default([]),
+  breathProfiles: z.array(BreathProfileSchema).default([]),
+  breathSessions: z.array(BreathSessionRecordSchema).default([]),
+  stateSessions: z.array(StateSessionRecordSchema).default([]),
+  stateCapabilities: z.array(StateCapabilityRecordSchema).default([]),
   transcriptionQueue: z.array(TranscriptionQueueItemSchema),
   migrationLedger: z.array(MigrationLedgerEntrySchema),
   mirrorRequests: z.array(MirrorRequestSchema).default([]),
   mirrorResults: z.array(MirrorResultSchema).default([]),
   mirrorInsightFeedback: z.array(MirrorInsightFeedbackSchema).default([]),
 });
+
+const QctpLegacyExportV2Schema = QctpExportDataSchema.extend({
+  schema: z.literal("qctp-export-v2"),
+  schemaVersion: z.literal(2),
+});
+
+export const QctpExportImportSchema = z.union([
+  QctpExportDataSchema,
+  QctpLegacyExportV2Schema.transform((legacy) => ({
+    ...legacy,
+    schema: "qctp-export-v3" as const,
+    schemaVersion: CURRENT_EXPORT_VERSION,
+  })),
+]);
 
 export const ArchiveBinaryEntrySchema = z.object({
   id: EntityIdSchema,
@@ -605,7 +694,13 @@ export type RecordKind = z.infer<typeof RecordKindSchema>;
 export type CodexRecord = z.infer<typeof CodexRecordSchema>;
 export type DayCompletion = z.infer<typeof DayCompletionSchema>;
 export type FoundationState = z.infer<typeof FoundationStateSchema>;
+export type PracticeCompletionMode = z.infer<
+  typeof PracticeCompletionModeSchema
+>;
+export type PracticeSupportMode = z.infer<typeof PracticeSupportModeSchema>;
+export type PracticeSession = z.infer<typeof PracticeSessionSchema>;
 export type WorkbookState = z.infer<typeof WorkbookStateSchema>;
+export type PracticeAttemptIssue = z.infer<typeof PracticeAttemptIssueSchema>;
 export type AppSettings = z.infer<typeof AppSettingsSchema>;
 export type VoiceDestination = z.infer<typeof VoiceDestinationSchema>;
 export type RecordingStatus = z.infer<typeof RecordingStatusSchema>;
