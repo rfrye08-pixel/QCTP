@@ -1,8 +1,8 @@
 {
   "schema": "qctp-rev3-codex-branch-state-v3",
   "branch": "qctp-platform-rev3-codex",
-  "updated_at": "2026-08-22T21:42:00-05:00",
-  "status": "CONTROLLED_REV3_SCHEDULE_AND_REMINDER_VERTICAL_SLICE_MACHINE_BROWSER_PASS_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
+  "updated_at": "2026-08-22T22:22:00-05:00",
+  "status": "CONTROLLED_REV3_DEBRIEF_AND_STARTUP_RECOVERY_VERTICAL_SLICE_MACHINE_BROWSER_PASS_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
   "release_authority": "ZERO_RELEASE",
   "actual_shas": {
     "main": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -20,8 +20,12 @@
     "schedule_local_implementation_checkpoint": "8203eaf0203fe9b267f0281930d8b36a005c35e9",
     "schedule_implementation_tree": "8b2c1d4aaa4d7da148356f7e62967f12cea266c3",
     "schedule_metadata_checkpoint": "03668f2327e3bb41270095f023cbf259a477c8cc",
-    "state_checkpoint": "03668f2327e3bb41270095f023cbf259a477c8cc",
-    "origin_rev3_at_state_write": "03668f2327e3bb41270095f023cbf259a477c8cc"
+    "debrief_recovery_implementation_checkpoint": "84042dd0d95a8d4f028138bdd2d284c97417deeb",
+    "debrief_recovery_local_implementation_checkpoint": "36849d82f1dd79fc17296bee2d0b34edb4a06b9c",
+    "debrief_recovery_implementation_tree": "e1cced628e665e645319a334f2d69b252c7c7333",
+    "debrief_recovery_metadata_checkpoint": "PENDING_PUBLICATION_STATE",
+    "state_checkpoint": "PENDING_PUBLICATION_STATE",
+    "origin_rev3_at_state_write": "84042dd0d95a8d4f028138bdd2d284c97417deeb"
   },
   "starting_baseline": {
     "required_rev2_commit": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
@@ -81,6 +85,15 @@
     "local_history_backup_branch": "backup/rev3-schedule-local-20260822-214118",
     "protected_refs_mutated": false
   },
+  "debrief_recovery_publish": {
+    "local_implementation_commit": "36849d82f1dd79fc17296bee2d0b34edb4a06b9c",
+    "remote_implementation_commit": "84042dd0d95a8d4f028138bdd2d284c97417deeb",
+    "remote_parent": "ca0cf36b5cab8c59d24eb3bdda8a723751e0d399",
+    "implementation_tree": "e1cced628e665e645319a334f2d69b252c7c7333",
+    "tree_identity_verification": "PASS_EXACT",
+    "metadata_commit": "PENDING_PUBLICATION_STATE",
+    "protected_refs_mutated": false
+  },
   "preserved_preflight_state": {
     "original_checkout": "C:\\Users\\nfrye\\Documents\\Codex\\2026-08-17\\execute-qctp-codex-rev2-handoff-rev0\\work\\QCTP",
     "original_branch": "qctp-platform-rev2-codex",
@@ -105,6 +118,8 @@
   "delivered": {
     "controlled_feature_backlog": "61_FEATURES_ALL_35_MINIMUM_SCOPE_ITEMS_MACHINE_VALIDATED_WITH_STATUS_DEPENDENCIES_ACCEPTANCE_EVIDENCE_DEFERRALS_AND_ZERO_RELEASE",
     "schedule_and_reminders": "04_00_LOCAL_DST_SAFE_DAY1_ONLY_READINESS_USER_SELECTED_DAYTIME_EVENING_TIMES_DURABLE_RECEIPTS_PERMISSION_STATUS_AND_IN_APP_FALLBACK",
+    "post_session_debrief": "VOICE_FREE_RAW_FIRST_TYPED_OR_OFFLINE_VOICE_DEFER_SKIP_DUE_REMINDER_ATOMIC_EVIDENCE_LINKAGE_NO_INTERPRETATION_OR_STATE_CREDIT",
+    "startup_recovery": "STATIC_NON_WHITE_SHELL_PWA_STARTUP_WARNING_TOP_LEVEL_SAFE_RETRY_AND_PREVIEW_RANGE_ERROR_CONTAINMENT_WITHOUT_DATA_CLEAR",
     "voice_free_day1": "ONE_TAP_SIX_PHASE_1500_SECOND_SAME_ORIGIN_OFFLINE_THREE_SUPPORT_MODES_HEARTMATH_RAIL_NONVERBAL_MARKERS_COMPLETE_RETURN",
     "voice_audition": "THREE_MATERIALLY_DISTINCT_ZERO_COST_ROUTES_IDENTICAL_TEXT_NATIVE_PACING_REAL_SILENCE_BLIND_IPHONE_PWA",
     "breath": "SEVEN_SESSION_FOUNDATIONS_QUICK_DIRECTOR_SAFETY_STOP_RESUME_ACTIVE_FOREGROUND_EVIDENCE",
@@ -144,6 +159,16 @@
       "repository_gate": "59_TEST_FILES_357_TESTS_PASS_COVERAGE_BUILD_AUDIO_PACK",
       "browser_gate": "25_PASS_7_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS_CHROMIUM_AND_IPHONE_PORTRAIT_WEBKIT",
       "publication_status": "PASS_EXACT_TREE_REV3_ONLY"
+    },
+    "post_session_debrief_and_startup_recovery": {
+      "path": "QCTP_REV3_POST_SESSION_DEBRIEF_AND_STARTUP_RECOVERY_VERIFICATION_REV0_2026-08-22.json",
+      "implementation_commit": "84042dd0d95a8d4f028138bdd2d284c97417deeb",
+      "local_implementation_commit": "36849d82f1dd79fc17296bee2d0b34edb4a06b9c",
+      "implementation_tree": "e1cced628e665e645319a334f2d69b252c7c7333",
+      "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN",
+      "repository_gate": "64_TEST_FILES_378_TESTS_PASS_COVERAGE_BUILD_AUDIO_PACK_PREVIEW_SERVER",
+      "browser_gate": "30_PASS_8_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS_INCLUDING_FORCED_BUNDLE_FAILURE_CHROMIUM_AND_IPHONE_PORTRAIT",
+      "publication_status": "IMPLEMENTATION_PASS_EXACT_TREE_METADATA_PENDING"
     },
     "voice_free_machine": {
       "path": "QCTP_REV3_VOICE_FREE_DAY1_MACHINE_VERIFICATION_REV0_2026-08-22.json",
@@ -238,6 +263,8 @@
     "Breath Director physical iPhone gate remains open.",
     "Actual-origin migration and existing-data comparison remain open.",
     "Physical iPhone microphone, lifecycle, reconnect, quota, long-binary, and recovery gates remain open.",
+    "The debrief and startup-recovery checkpoint is not installed on the private iPhone preview; the live URL still serves the prior controlled candidate until an authorized exact-candidate staging action.",
+    "One-handed physical post-return debrief and installed-iPhone two-version service-worker upgrade/rollback acceptance remain open.",
     "Tests and timer completion do not establish state attainment.",
     "Foundation Days 2 through 112 remain unauthored and must not be fabricated.",
     "Required paid API keys and recurring paid cloud paths remain prohibited.",
@@ -245,5 +272,5 @@
     "Closed-PWA alert delivery is best effort and must not be described as guaranteed without separately controlled private Web Push architecture and physical proof.",
     "Day 1 daytime and evening clock times remain personal choices because no controlled source supplies exact times."
   ],
-  "next_controlled_action": "Continue the independent Today/workbook/voice-note and recovery hardening package while the blind physical voice decision remains open."
+  "next_controlled_action": "Build the explicit two-version service-worker update and rollback regression while the blind physical voice decision remains open."
 }

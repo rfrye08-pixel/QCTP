@@ -2,7 +2,7 @@
   "schema": "qctp-rev3-controlled-feature-backlog-v1",
   "branch": "qctp-platform-rev3-codex",
   "created_at": "2026-08-22T20:42:00-05:00",
-  "updated_at": "2026-08-22T21:42:00-05:00",
+  "updated_at": "2026-08-22T22:22:00-05:00",
   "status": "ACTIVE_ZERO_RELEASE",
   "authority_snapshot": {
     "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -79,13 +79,24 @@
       "verification": "npm run check PASS with 59 files and 357 tests; npm run test:e2e PASS with 25 passes and 7 intentional project/platform skips; no paid-cloud request",
       "evidence": "QCTP_REV3_LOCAL_SCHEDULE_AND_REMINDER_VERIFICATION_REV0_2026-08-22.json",
       "release_authority": "ZERO_RELEASE"
+    },
+    {
+      "checkpoint_id": "QCTP-REV3-DEBRIEF-RECOVERY-001",
+      "commit": "84042dd0d95a8d4f028138bdd2d284c97417deeb",
+      "local_commit": "36849d82f1dd79fc17296bee2d0b34edb4a06b9c",
+      "tree": "e1cced628e665e645319a334f2d69b252c7c7333",
+      "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN",
+      "delivered": "Voice-Free post-session raw-observation debrief with typed or offline voice capture, atomic evidence linkage, durable defer/skip states, export validation, non-white startup recovery, and resilient ranged preview media serving",
+      "verification": "npm run check PASS with 64 files and 378 tests; npm run test:e2e PASS with 28 passes and 8 intentional project/platform skips; forced app-bundle failure recovery PASS in Chromium and iPhone portrait; preview server 4 of 4 PASS",
+      "evidence": "QCTP_REV3_POST_SESSION_DEBRIEF_AND_STARTUP_RECOVERY_VERIFICATION_REV0_2026-08-22.json",
+      "release_authority": "ZERO_RELEASE"
     }
   ],
   "summary": {
     "feature_count": 61,
     "EXISTING": 2,
-    "NEEDS_HARDENING": 44,
-    "NEW": 10,
+    "NEEDS_HARDENING": 45,
+    "NEW": 9,
     "BLOCKED": 3,
     "DEFERRED": 2
   },
@@ -724,7 +735,7 @@
         "QCTP_TRAINING_PROTOCOL_HARDENING_AND_INSTRUCTION_STANDARD_REV0_2026-08-18.md",
         "QCTP_DAY1_SOURCE_SCRIPT_LOCK_REV0.json post_session_debrief"
       ],
-      "status": "NEW",
+      "status": "NEEDS_HARDENING",
       "dependencies": [
         "Practice completion flow",
         "QCTP-REV3-F013",
@@ -742,11 +753,16 @@
       ],
       "release_authority": "VOICE_FREE_DEBRIEF_IMPLEMENTATION_AUTHORIZED; narrated-specific integration waits for selected voice; ZERO_RELEASE.",
       "evidence_produced": [
-        "Locked Day 1 debrief contract; no normal Voice-Free completion UI yet"
+        "src/practice/debrief.ts",
+        "src/app/components/PostSessionDebrief.tsx",
+        "src/data/repository.ts atomic typed and voice acceptance",
+        "tests/e2e/practice-regression.spec.ts",
+        "tests/e2e/voice-offline.spec.ts",
+        "QCTP_REV3_POST_SESSION_DEBRIEF_AND_STARTUP_RECOVERY_VERIFICATION_REV0_2026-08-22.json"
       ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Add Voice-Free raw-first completion debrief without waiting for narration."
+        "next_executable_step": "Run the one-handed physical iPhone post-return debrief and real microphone/background acceptance; add narrated review dimensions only after a voice receives physical PASS."
       }
     },
     {
@@ -779,7 +795,8 @@
         "src/transcription/local-client.ts",
         "server/providers/local-whisper.ts",
         "local-whisper-companion/",
-        "44 companion tests recorded PASS in branch state"
+        "44 companion tests recorded PASS in branch state",
+        "tests/e2e/voice-offline.spec.ts post-session offline queue acceptance"
       ],
       "deferral": {
         "reason": null,
@@ -816,7 +833,8 @@
         "src/domain/schemas.ts",
         "src/data/repository.ts",
         "src/codex/workflows.ts",
-        "repository and Codex tests"
+        "repository and Codex tests",
+        "atomic practice-debrief audio, record, search, transcript-queue, transcript, and session bundle tests"
       ],
       "deferral": {
         "reason": null,
@@ -926,6 +944,7 @@
         "src/app/screens/OverviewScreens.tsx",
         "tests/e2e/bootstrap-navigation.spec.ts",
         "tests/e2e/schedule-reminders.spec.ts",
+        "Today unresolved raw-observation card and durable practice handoff",
         "QCTP_REV3_UX_ACCEPTANCE_REV0_2026-08-22.json",
         "QCTP_REV3_LOCAL_SCHEDULE_AND_REMINDER_VERIFICATION_REV0_2026-08-22.json"
       ],
@@ -1447,7 +1466,8 @@
         "src/export-import/index.ts",
         "src/data/repository.ts",
         "src/mirror/deletion.ts",
-        "export/import and deletion tests"
+        "export/import and deletion tests",
+        "typed and voice debrief relationship, queue uniqueness, recording linkage, and ZIP binary round-trip tests"
       ],
       "deferral": {
         "reason": null,
@@ -1514,8 +1534,13 @@
       "release_authority": "PRIVATE_TEST_AUTHORIZED_ZERO_RELEASE.",
       "evidence_produced": [
         "src/app/pwa-status.ts",
+        "index.html static recovery shell",
+        "src/startup/QctpErrorBoundary.tsx",
+        "src/startup/mount-qctp.tsx",
         "vite.config.ts",
         "tests/e2e/bootstrap-navigation.spec.ts",
+        "tools/rev3-runtime/preview-server.test.mjs",
+        "QCTP_REV3_POST_SESSION_DEBRIEF_AND_STARTUP_RECOVERY_VERIFICATION_REV0_2026-08-22.json",
         "QCTP_REV3_PRIVATE_PREVIEW_STARTUP_RECOVERY_REV0_2026-08-22.json"
       ],
       "deferral": {
@@ -1588,6 +1613,7 @@
       "evidence_produced": [
         "src/voice-capture/",
         "tests/e2e/voice-offline.spec.ts",
+        "post-session offline voice acceptance with preserved playback chunks and queued local transcription",
         "QCTP_REV3_MIGRATION_AND_DATA_PRESERVATION_REV0_2026-08-22.json",
         "runtime rollback tools"
       ],
@@ -1874,11 +1900,12 @@
         "src/data/repository.ts",
         "src/insights/analyzer.ts",
         "src/state-atlas/progression.ts",
-        "cross-domain tests"
+        "cross-domain tests",
+        "Voice-Free post-session raw-observation schema, atomic typed/voice persistence, and export lineage tests"
       ],
       "deferral": {
         "reason": null,
-        "next_executable_step": "Extend the proven core schema contract to the new experiment log, post-session debrief, controlled Lab, schedule, and future source-track destinations."
+        "next_executable_step": "Extend the proven core schema contract to the new experiment log, controlled Lab, schedule, and future source-track destinations."
       }
     },
     {

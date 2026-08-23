@@ -1,0 +1,99 @@
+{
+  "schema": "qctp-rev3-post-session-debrief-startup-recovery-verification-v1",
+  "document_id": "QCTP-REV3-DEBRIEF-RECOVERY-A01",
+  "recorded_at": "2026-08-22T22:22:00-05:00",
+  "branch": "qctp-platform-rev3-codex",
+  "starting_commit": "ca0cf36b5cab8c59d24eb3bdda8a723751e0d399",
+  "implementation_commit": "84042dd0d95a8d4f028138bdd2d284c97417deeb",
+  "local_implementation_commit": "36849d82f1dd79fc17296bee2d0b34edb4a06b9c",
+  "implementation_tree": "e1cced628e665e645319a334f2d69b252c7c7333",
+  "metadata_commit": "PENDING_PUBLICATION_STATE",
+  "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
+  "release_authority": "ZERO_RELEASE",
+  "delivered": {
+    "post_session_contract": "ADDITIVE_PENDING_REMIND_LATER_SKIPPED_COMPLETED_STATE_MACHINE_CREATED_ONLY_AFTER_NATURAL_1500_SECOND_RETURN",
+    "raw_first_ui": "DEDICATED_POST_RETURN_VOICE_CAPTURE_WITH_TYPED_FALLBACK_REMIND_ONE_HOUR_AND_SKIP_WITHOUT_RATING_INTERPRETATION_OR_STATE_CREDIT",
+    "atomic_voice_acceptance": "RECORDING_RECORD_SEARCH_TRANSCRIPTION_QUEUE_TRANSCRIPT_AND_PRACTICE_SESSION_COMMIT_AS_ONE_IDEMPOTENT_INDEXEDDB_TRANSACTION",
+    "offline_transcription": "RAW_AUDIO_AND_QUEUE_PERSIST_WHILE_PX13_IS_OFFLINE_WITHOUT_API_KEY_ERROR",
+    "today_recovery": "NEWEST_UNRESOLVED_DEBRIEF_SURFACES_ON_TODAY_AND_DUE_REMINDERS_REOPEN_WITHOUT_RELOAD",
+    "export_lineage": "TYPED_AND_VOICE_DEBRIEFS_VALIDATE_SESSION_RECORD_RECORDING_AND_QUEUE_RELATIONSHIPS_AND_ROUND_TRIP_BINARY_AUDIO",
+    "startup_recovery": "DARK_STATIC_PRE_JAVASCRIPT_SHELL_SAFE_PWA_LIFECYCLE_WARNING_AND_TOP_LEVEL_RETRY_OR_RELOAD_WITHOUT_LOCAL_DATA_CLEAR",
+    "preview_server": "MALFORMED_URL_CONTAINMENT_SINGLE_RANGE_MEDIA_206_OR_416_AND_SAFE_CACHE_CONTROL_BY_ASSET_IDENTITY",
+    "cost": "ZERO_RECURRING_API_COST_NO_PAID_CLOUD_CRITICAL_PATH"
+  },
+  "authority_constraints": {
+    "raw_before_interpretation": "The debrief stores direct observation first and creates no interpretation or unsupported state claim.",
+    "completion_boundary": "Early exit and shortened test mode create no practice completion and no debrief.",
+    "state_progression": "The debrief cannot award Foundation completion, capability credit, or state attainment.",
+    "voice_selection": "Narrated-candidate review dimensions and any selected-voice render remain withheld until Ryan physically passes a blind voice.",
+    "data_preservation": "Retry, reload, failed acceptance, import validation, and preview errors clear no local user data.",
+    "release": "No merge, public deployment, main mutation, Rev2 mutation, or PR #2 mutation is authorized."
+  },
+  "verification": {
+    "repository_gate": {
+      "command": "npm run check",
+      "result": "PASS",
+      "test_files": 64,
+      "tests": 378,
+      "coverage": {
+        "statements_percent": 87.73,
+        "branches_percent": 79.0,
+        "functions_percent": 92.62,
+        "lines_percent": 89.2
+      },
+      "audio_pack": "PASS_23_MP3_13340411_BYTES",
+      "production_build": "PASS_54_PRECACHE_ENTRIES",
+      "preview_server": "PASS_4_OF_4"
+    },
+    "browser_gate": {
+      "command": "npm run test:e2e plus focused forced-bundle-failure gate",
+      "result": "PASS",
+      "passed": 30,
+      "intentional_project_or_platform_skips": 8,
+      "projects": ["chromium", "iphone-portrait-webkit"],
+      "assertions": [
+        "Pending debrief survives reload and typed raw evidence closes it without state credit.",
+        "Offline voice debrief preserves playable IndexedDB chunks and queues local PX13 transcription.",
+        "A blocked application JavaScript bundle leaves the static non-white recovery screen visible.",
+        "No OpenAI, Anthropic, paid transcription, or other paid-cloud request is introduced.",
+        "Voice-Free Day 1, Mirror, REG-01, reminders, navigation, and existing voice capture remain green."
+      ]
+    },
+    "debrief_unit_gate": "PASS_35_FOCUSED_SCHEMA_STATE_REPOSITORY_RECORDER_EXPORT_AND_UI_TESTS_PLUS_DUE_REMINDER_TEST",
+    "startup_unit_gate": "PASS_5_OF_5_STATIC_SHELL_PWA_STARTUP_AND_ERROR_BOUNDARY_TESTS",
+    "atomicity_gate": "PASS_MISSING_OR_TERMINAL_PRACTICE_LINK_ROLLS_BACK_RECORDING_RECORD_QUEUE_AND_SESSION_WRITES",
+    "idempotency_gate": "PASS_REPLAY_PRESERVES_EXACT_RECORD_SESSION_QUEUE_TIMESTAMPS_AND_NEVER_REQUEUES_A_COMPLETED_TRANSCRIPT"
+  },
+  "migration_status": {
+    "database_version": 5,
+    "database_version_change": "NONE",
+    "strategy": "Additive defaulted debrief field on the existing practice-session record; legacy sessions parse with debrief null.",
+    "legacy_practice_parse": "PASS",
+    "json_and_zip_export_import": "PASS",
+    "existing_data_reset": "NONE"
+  },
+  "white_screen_status": {
+    "reported_surface": "Ryan supplied an iPhone Safari screenshot showing a white page at the private Rev3 URL.",
+    "old_candidate_probe": "PASS_HTTP_200_CANDIDATE_5a884ae9eb3195a32039b5d6780bf2a4d89dfb35_AT_CHECK_TIME",
+    "exact_root_cause": "NOT_PROVEN_FROM_SCREENSHOT_ALONE",
+    "covered_failure_modes": [
+      "Application bundle unavailable or blocked",
+      "Synchronous service-worker lifecycle startup failure",
+      "Top-level React render failure",
+      "Malformed preview request URL",
+      "Preview static-file read error",
+      "Invalid or unsatisfiable media range"
+    ],
+    "new_candidate_live_status": "NOT_DEPLOYED_ZERO_RELEASE",
+    "physical_confirmation": "OPEN"
+  },
+  "remaining_holds": [
+    "The exact Rev3 checkpoint is not deployed; the current private preview still serves the prior controlled candidate until an authorized staging action is performed.",
+    "One-handed physical iPhone post-return debrief, microphone, background/lock, reconnect, and long-recording acceptance remain open.",
+    "Installed-iPhone two-version service-worker upgrade, cold-offline launch, rollback, and local-data retention remain open.",
+    "Blind physical voice selection remains open; no five-minute or full 25-minute narrated render is authorized.",
+    "Foundation Days 2 through 112 remain unauthored and must not be fabricated.",
+    "No merge or production deployment is authorized."
+  ],
+  "next_controlled_action": "Build the explicit two-version service-worker update and rollback regression while the physical voice decision remains open."
+}
