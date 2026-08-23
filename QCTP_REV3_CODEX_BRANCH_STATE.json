@@ -1,7 +1,7 @@
 {
   "schema": "qctp-rev3-codex-branch-state-v3",
   "branch": "qctp-platform-rev3-codex",
-  "updated_at": "2026-08-22T21:34:00-05:00",
+  "updated_at": "2026-08-22T21:42:00-05:00",
   "status": "CONTROLLED_REV3_SCHEDULE_AND_REMINDER_VERTICAL_SLICE_MACHINE_BROWSER_PASS_PHYSICAL_IPHONE_GATE_OPEN_ZERO_RELEASE",
   "release_authority": "ZERO_RELEASE",
   "actual_shas": {
@@ -16,10 +16,12 @@
     "private_preview_recovery_checkpoint": "712aeace2b981fa677c9be6b762f5903232835a9",
     "controlled_backlog_baseline": "712aeace2b981fa677c9be6b762f5903232835a9",
     "controlled_backlog_checkpoint": "bac3326d7d180b632dba328e8f38f1e2deffe542",
-    "schedule_implementation_checkpoint": "8203eaf0203fe9b267f0281930d8b36a005c35e9",
+    "schedule_implementation_checkpoint": "0dcd564b8bea2d6fc09f7a6d8aa346cfcc589e78",
+    "schedule_local_implementation_checkpoint": "8203eaf0203fe9b267f0281930d8b36a005c35e9",
     "schedule_implementation_tree": "8b2c1d4aaa4d7da148356f7e62967f12cea266c3",
-    "state_checkpoint": "8203eaf0203fe9b267f0281930d8b36a005c35e9",
-    "origin_rev3_at_state_write": "3c924355cd8e2af448001a1ba1231a5ab0911594"
+    "schedule_metadata_checkpoint": "03668f2327e3bb41270095f023cbf259a477c8cc",
+    "state_checkpoint": "03668f2327e3bb41270095f023cbf259a477c8cc",
+    "origin_rev3_at_state_write": "03668f2327e3bb41270095f023cbf259a477c8cc"
   },
   "starting_baseline": {
     "required_rev2_commit": "5eb60e1290ecaa5e6d06592eeba3992212ac31f3",
@@ -63,6 +65,20 @@
     "remote_parent": "712aeace2b981fa677c9be6b762f5903232835a9",
     "exact_tree": "f3e9e85f58a0f7ef1e78d758f8c3b2dadcd96036",
     "tree_identity_verification": "PASS_EXACT",
+    "protected_refs_mutated": false
+  },
+  "schedule_publish": {
+    "local_commits": [
+      "8203eaf0203fe9b267f0281930d8b36a005c35e9",
+      "8ef7e6e746ead1b4050c3d37c82e1fd0f09bdcba"
+    ],
+    "remote_implementation_commit": "0dcd564b8bea2d6fc09f7a6d8aa346cfcc589e78",
+    "remote_metadata_commit": "03668f2327e3bb41270095f023cbf259a477c8cc",
+    "remote_parent": "3c924355cd8e2af448001a1ba1231a5ab0911594",
+    "implementation_tree": "8b2c1d4aaa4d7da148356f7e62967f12cea266c3",
+    "metadata_tree": "3f28bc025a2f4fd8e7b278bbb6afaf0df1827e01",
+    "tree_identity_verification": "PASS_EXACT",
+    "local_history_backup_branch": "backup/rev3-schedule-local-20260822-214118",
     "protected_refs_mutated": false
   },
   "preserved_preflight_state": {
@@ -120,12 +136,14 @@
     },
     "schedule_and_reminders": {
       "path": "QCTP_REV3_LOCAL_SCHEDULE_AND_REMINDER_VERIFICATION_REV0_2026-08-22.json",
-      "implementation_commit": "8203eaf0203fe9b267f0281930d8b36a005c35e9",
+      "implementation_commit": "0dcd564b8bea2d6fc09f7a6d8aa346cfcc589e78",
+      "local_implementation_commit": "8203eaf0203fe9b267f0281930d8b36a005c35e9",
+      "metadata_commit": "03668f2327e3bb41270095f023cbf259a477c8cc",
       "implementation_tree": "8b2c1d4aaa4d7da148356f7e62967f12cea266c3",
       "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN",
       "repository_gate": "59_TEST_FILES_357_TESTS_PASS_COVERAGE_BUILD_AUDIO_PACK",
       "browser_gate": "25_PASS_7_INTENTIONAL_PROJECT_OR_PLATFORM_SKIPS_CHROMIUM_AND_IPHONE_PORTRAIT_WEBKIT",
-      "publication_status": "PENDING_CONTROLLED_PUBLICATION"
+      "publication_status": "PASS_EXACT_TREE_REV3_ONLY"
     },
     "voice_free_machine": {
       "path": "QCTP_REV3_VOICE_FREE_DAY1_MACHINE_VERIFICATION_REV0_2026-08-22.json",

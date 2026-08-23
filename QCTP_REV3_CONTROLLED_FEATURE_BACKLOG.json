@@ -2,7 +2,7 @@
   "schema": "qctp-rev3-controlled-feature-backlog-v1",
   "branch": "qctp-platform-rev3-codex",
   "created_at": "2026-08-22T20:42:00-05:00",
-  "updated_at": "2026-08-22T21:34:00-05:00",
+  "updated_at": "2026-08-22T21:42:00-05:00",
   "status": "ACTIVE_ZERO_RELEASE",
   "authority_snapshot": {
     "main_sha": "6ec334f6e703821b2e157fe69698b7c5aa6d8175",
@@ -70,7 +70,9 @@
     },
     {
       "checkpoint_id": "QCTP-REV3-SCHEDULE-001",
-      "commit": "8203eaf0203fe9b267f0281930d8b36a005c35e9",
+      "commit": "0dcd564b8bea2d6fc09f7a6d8aa346cfcc589e78",
+      "local_commit": "8203eaf0203fe9b267f0281930d8b36a005c35e9",
+      "metadata_commit": "03668f2327e3bb41270095f023cbf259a477c8cc",
       "tree": "8b2c1d4aaa4d7da148356f7e62967f12cea266c3",
       "result": "PASS_MACHINE_AND_BROWSER_PHYSICAL_IPHONE_GATE_OPEN",
       "delivered": "DST-safe 04:00 local Day 1 readiness, user-selected additional-practice times, durable reminder receipts, explicit permission/fallback status, atomic settings persistence, and a morning-first iPhone cockpit",
